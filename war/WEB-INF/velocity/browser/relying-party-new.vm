@@ -1,0 +1,121 @@
+#* ========================================================================
+ * Copyright (c) 2011 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ *#
+
+##
+## Templates for new rp register page 
+##
+
+
+#parse ( "crumbs.vm" )
+
+##
+## ----- Left side content -----
+##
+
+<div id="PageContent">
+<table cellpadding="3" >
+<tr>
+<td valign="top" height="400" width="10"> </td>
+<td valign="top" align="left">
+
+##
+## ----- Main policy list page -----
+##
+
+
+<h3>Shibboleth Service Provider Registry</h3>
+
+#if ( $errmsg )
+<div class="err">$errmsg</div>
+#end
+
+Enter the DNS name of your Service Provider.
+
+<p>
+<form type="GET" action="$root$vers/rp">
+<input type="hidden" name="view" value="lookup">
+<input id="dns" type="text" width="40" name="dns" value="">
+
+<p>
+<ul>
+<p>
+<li>
+Add the port number to the domain if your service uses a nonstandard port, e.g. <tt>example.com:9443</tt>
+</li>
+<p>
+<li>
+You must be the registered owner of the DNS name of your SP.
+</li>
+<p>
+<li>
+The registry will attempt to retrieve metadata from your SP itself,
+from the standard metadata endpoint, /Shibboleth.sso/Metadata.
+Make sure that address is public.  There are no private data in your
+SP's metadata, so there is normally no reason to restrict 
+access to this endpoint.
+</li>
+<p>
+<li>
+If that retrieval fails the registry will generate default values
+for much of your SP's metadata.  It assumes you are registering 
+a Shibboleth 2.x SP.
+</li>
+</ul>
+<p>
+
+<input class="chooserbutton" type="submit" name="doit" value="Lookup">
+</form>
+
+
+
+##
+## ----- right side extra text ----
+##
+
+</td>
+
+<td width="20"></td>
+<td valign="top" align="left" width="35%">
+
+<p height="100px">&nbsp;</p>
+
+
+<table class="helptext" cellpadding="4px">
+<tr><th align="left" colspan="99">Metadata Retrieval</td></tr>
+<tr><td width="10px"/><td valign="top" colspan="2">Metadata retrieved from your 
+   SP is generally complete in its technical details, but does not have
+   contact information.  You will supply that.
+   </td></tr>
+
+</table>
+
+
+##
+## ----- end -----
+##
+
+</td></tr></table>
+
+
+</div>
+
+## error and status messages
+<div id="requestStatusDiv" class="notice">&nbsp;
+</div>
+<div class="status">$!{status}
+</div>
+

@@ -1,0 +1,115 @@
+#* ========================================================================
+ * Copyright (c) 2010-2011 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ *#
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"> 
+
+## shib sp registration (main page)
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+ <link rel="stylesheet" type="text/css" href="${root}/sp.css"/>
+ <script rel="script" type="text/javascript" src="${root}/sp.js"></script>
+ <title>${pageTitle}</title>
+</head>
+
+<body onLoad="rpOnLoad()" id="documentbody">
+
+<script>
+v_root='$root';
+v_vers='$vers';
+v_remoteUser='$remote_user';
+v_entityId = '$!{relyingParty.entityId}'
+v_mdId = '$!{relyingParty.metadataId}'
+v_canEdit = false;
+</script>
+
+## banner
+
+<table class="banner" border="0" width="100%">
+<tr padding="0">
+  <td align="left"><img src="/uofw-small.gif"/></td>
+  #if ( $bannerText )
+  <td align="center" class="bannernote">${bannerText}</td>
+  #end
+  <td align="right">
+     <span class="bannernote">Service Provider Registry</span>
+  </td>
+</tr>
+</table>
+
+
+## common definitions
+
+#set ( $selected = 'selected="selected"' )
+#set ( $checked = 'checked="checked"' )
+#set ( $hide = 'style="display:none"' )
+#set ( $disable = 'disabled="disabled"' )
+#set ( $nowrap = 'nowrap="nowrap"' )
+
+#macro ( pageStart )
+<div id="PageContent">
+<table cellpadding="3" >
+<tr>
+<td valign="top" height="400" width="10"> </td>
+<td valign="top" align="left">
+#end
+
+#macro ( pageMiddle )
+</td>
+<td width="20"></td>
+<td valign="top" align="left" width="35%">
+#end
+
+#macro ( pageEnd )
+</td></tr></table>
+</div>
+#end
+
+
+## content
+
+#parse( "${pageType}.vm" )
+
+
+## footer
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td class="footleft" width="53" height="37"><a href="http://www.washington.edu/"><img src="/UWw.gif" alt="UW Logo"/></a></td>
+<td align="left" class="footright">
+<a href="http://www.washington.edu/uwit/">UW Information Technology</a>
+<br/>
+<a href="mailto:help@uw.edu">Contact us</a>
+<br/>
+&copy; 2008-2011, University of Washington
+</td>
+<td align="right" class="footright" valign="top">
+Identity and Access Management
+<br/>
+Service Provider Registry 1.0.1
+<br/>
+Revision 03/29/2011
+</td>
+</tr>
+</table>
+
+
+</body>
+</html>
+

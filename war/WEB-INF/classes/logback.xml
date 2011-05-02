@@ -1,0 +1,29 @@
+<configuration>
+
+
+  <appender name="SP_LOGS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>/logs/sp-registry/process.log</File>
+
+         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>/logs/sp-registry/process-%d{yyyy-MM-dd}.log</FileNamePattern>
+         </rollingPolicy>
+
+       <layout class="ch.qos.logback.classic.PatternLayout">
+            <!-- General logging pattern -->
+            <Pattern>%date{HH:mm:ss.SSS} %level [%logger:%line] - %msg%n %ex{1}</Pattern>
+        </layout>
+
+  </appender>
+
+  <root>
+     <level value="ERROR" />
+     <appender-ref ref="SP_LOGS" />
+  </root>
+
+   <logger name="edu.washington">
+         <level value="DEBUG"/>
+   </logger>
+
+
+
+</configuration>

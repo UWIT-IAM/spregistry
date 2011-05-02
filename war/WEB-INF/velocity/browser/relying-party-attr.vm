@@ -1,0 +1,239 @@
+#* ========================================================================
+ * Copyright (c) 2011 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ *#
+
+##
+## Template for rp attributes display 
+##
+
+#parse ( "crumbs.vm" )
+
+<script>
+v_sectionType = 'rpattr';
+
+
+// make a response for an attribute
+function attributeItem (id) {
+   chk = document.getElementById('attr_' + id).checked;
+
+   if (chk) return '<Attribute id="' + id + '"/>';
+   return '';
+}
+
+function showSubmitted() {
+   // hidePopin(null, 'arDiv');
+   document.getElementById('arDiv').style.display = 'none';
+   showPopin('arOk', 'arLocator');
+   document.body.style.cursor = 'default';
+}
+   
+function submitAttributeRequest() {
+   xml = '<Attributes>';
+   #foreach ($attr in $attributes)
+    xml = xml + attributeItem('${attr.id}');
+   #end
+   xml = xml + '<Message>' + document.getElementById('exptext').value.trim() + '</Message>';
+   xml = xml + '</Attributes>';
+   action = '${root}${vers}/rp/attrReq?id=${relyingPartyId}&policyId=${group.id}';
+   // finalAction = '${root}${vers}/rp/attr?id=${relyingPartyId}';
+   // alert(xml);
+   finalAction = showSubmitted;
+   doRequest('PUT', action, xml, '$!{etag}');
+}
+
+</script>
+
+
+##
+## ----- Left side content -----
+##
+
+## popin for requesting attributes
+<div class="infobox" name="popin" id="arDiv">
+<form action="javascript:submitAttributeRequest()">
+<table cellpadding="2" width="100%">
+ <tr><td align="left">Attribute request</td>
+       <td align="right"><a href="javascript:hidePopin(null, 'arDiv')"/><img src="/close.png" alt="close"/></a></td>
+ </tr>
+ <tr><td>Check the attributes you need; uncheck those you no longer need.
+<br>
+ In the text area explain your need for the checked attributes
+<br>(except core policy attributes).
+</td></tr>
+</table>
+
+<table>
+
+#set ($caneditsomething = false)
+#foreach ( $attr in $attributes )
+
+  #if ($filterPolicyManager.userCanEdit($attr, $remoteUser)) #set ($caneditsomething=true) #end
+
+  ## we need to know if the attribute is already selected
+  #set ( $chk = '' )
+  #set ( $dis = '' )
+  #foreach ( $group in $filterPolicyGroups )
+     #foreach ( $policy in $group.filterPolicies )
+      #if ( $policy.matches($relyingPartyId) )
+       #foreach ( $attribute in $policy.attributeRules )
+        #if (${attr.id} == ${attribute.id})
+          #set ($chk=$checked)
+          #if (!$group.editable) #set ($dis = $disable) #end
+        #end
+       #end ## attrs
+      #end ## if match
+   #end  ## policies
+  #end ## group
+    
+  <tr><td><input type="checkbox" id="attr_${attr.id}" ${chk} ${dis}/></td><td>${attr.id}</td></tr>
+#end
+<tr><td colspan="99">Explain your need for the attributes.</td></tr>
+<tr><td colspan="99"><textarea id="exptext" rows="10" cols="50" ></textarea></td></tr>
+
+      <tr>
+      <td align="left" colspan="2">
+       <input type="submit" value="Submit request" />
+      </td>
+      </tr>
+</table>
+
+</div>
+
+## popin for acknowledgement of request
+<div class="infobox" name="popin" id="arOk">
+<table cellpadding="2" width="100%">
+ <tr><td align="left">Request submitted</td>
+       <td align="right"><a href="javascript:hidePopin(null, 'arOk')"/><img src="/close.png" alt="close"/></a></td>
+ </tr>
+ <tr><td height="20"></td></tr>
+ <tr><td>Your request has been submitted.  Notifications will be sent to '${remoteUser}@washington.edu'</td></tr>
+</table>
+
+</div
+
+
+#pageStart
+
+<table cellpadding="0" cellspacing="0" border="0">
+
+<tr><td class="title" align="left" colspan="99">${relyingParty.entityId}</td></tr>
+## <tr><td class="subtitle" id="groupCn" align="left" colspan="2">${group.cn}</td></tr>
+
+<tr>
+ <td class="optionbar" align="left" colspan="99">
+    <a href="javascript:goTo('${root}${vers}/rp/?id=${relyingParty.entityId}')" title="Show metadata for the service provider">Metadata</a>
+    &nbsp;|&nbsp;Attributes
+  </td>
+</tr>
+
+<tr>
+ <td class="optionbot" align="left" colspan="99">
+     View
+#if ($caneditsomething)
+     &nbsp;|&nbsp;<a href="javascript:goTo('${root}${vers}/rp/attr?id=${relyingParty.entityId}&view=edit')">Edit</a>
+#end
+#if ( $domainOwner )
+     &nbsp;|&nbsp;<a href="javascript:showPopin('arDiv', 'arLocator')">Request attributes</a><span id="arLocator"></span>
+#end
+ </td>
+</tr>
+
+
+ <tr><td height="10px" colspan="99"/></tr>
+
+  #foreach ( $group in $filterPolicyGroups )
+    <tr><td class="groupindenttitle" >Attributes released by $group.description</td></tr>
+     <tr><td class="groupindent">
+       <table >
+
+## entity id
+     #foreach ( $policy in $group.filterPolicies )
+
+      #if ( $policy.matches($relyingPartyId) )
+       #foreach ( $attribute in $policy.attributeRules )
+        <tr><td class="grouplabel">$!{attribute.id}</td>
+        </tr>
+        #foreach ( $value in $attribute.valueRules )
+          #if ( $value.type == "basic:ANY" )
+          <tr><td class="groupitem" colspan="2">All values</td><td/></tr>
+          #else
+           #foreach ( $rule in $value.rules )
+             <tr><td class="groupitem" colspan="2">${rule.value}</td><td/></tr>
+           #end
+          #end
+        #end ## value
+       #end ## attrs
+      #end ## if match
+   #end  ## policies
+
+   </table></td></tr>
+
+ #end  ## groups
+
+
+   <tr><td/><td colspan="99"><hr></td></tr>
+ 
+  </table>
+
+
+#pageMiddle
+
+##
+## ----- right side extra text ----
+##
+
+
+<p height="100px">&nbsp;</p>
+
+
+<table class="helptext" cellpadding="4px">
+<tr><th align="left" colspan="2">Attributes</td></tr>
+<tr><td width="10px"/><td valign="top">This page shows the attributes that are released to this service provider.
+   </td></tr>
+<tr class="cleanDetail"><td width="10px"/><td valign="top">Shown is a summary of the
+  Service Provider's metadata.  Click <i>Show details</i> to see the details 
+   of these metadata.
+   </td></tr>
+<tr class="cleanDetail"><td></td><td>
+<ul>
+   <li><b>UW core filter policies</b>
+    <p>These are non-editable attribute policies, generally applicable to all "*.uw.edu" or
+"*.washington.edu" providers.
+    </p>
+   <li><b>UW ad-hoc filter policies</b>
+    <p>These are policies directed to specific service providers.</p>
+</ul>
+
+#if ( $showEditRP )
+<tr><td width="10px"/><td valign="top">Click <b>Edit this entity</b> 
+  to edit this entry.
+   </td></tr>
+#end
+</table>
+
+
+#pageEnd
+
+##
+## ----- end -----
+##
+
+## error and status messages
+<div id="requestStatusDiv" class="notice">&nbsp;
+</div>
+<div class="status">$!{status}
+</div>
+

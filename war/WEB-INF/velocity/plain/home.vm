@@ -1,0 +1,67 @@
+#* ========================================================================
+ * Copyright (c) 2009 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ *#
+
+##
+## Template for base page 
+##
+
+  <div>
+  UW Groups Service 
+  <ul class="categories">
+
+     <li><form rel="search" class="category" name="all_stem_search" method="get" action="/{root}/{vers}/search">
+         <input type="text" name="stem"/>
+         <input type="hidden" name="scope" value="all"/>
+         <input type="submit" name="submit"/>
+         </form>
+     </li>
+     <li><form rel="search" class="category" name="one_stem_search" method="get" action="/{root}/{vers}/search">
+         <input type="text" name="stem"/>
+         <input type="hidden" name="scope" value="one"/>
+         <input type="submit" name="submit"/>
+         </form>
+     </li>
+     <li><form rel="search" class="category" name="direct_member_search" method="get" action="/{root}/{vers}/search">
+         <input type="text" name="member"></input>
+         <input type="hidden" name="type" value="direct"/>
+         <input type="submit" name="submit"/>
+         </form>
+     </li>
+     <li><form rel="search" class="category" name="effective_member_search" method="get" action="/{root}/{vers}/search">
+         <input type="text" name="member"></input>
+         <input type="hidden" name="type" value="effective"/>
+         <input type="submit" name="submit"/>
+         </form>
+     </li>
+     <li><form rel="search" class="category" name="direct_owner_search" method="get" action="/{root}/{vers}/search">
+         <input type="text" name="owner"></input>
+         <input type="hidden" name="type" value="direct"/>
+         <input type="submit" name="submit"/>
+         </form>
+     </li>
+     <li><form rel="search" class="category" name="effective_owner_search" method="get" action="/{root}/{vers}/search">
+         <input type="text" name="owner"></input>
+         <input type="hidden" name="type" value="effective"/>
+         <input type="submit" name="submit"/>
+         </form>
+     </li>
+  </ul>
+  </div>
+
+
+<div class="status">${status}</div>
+

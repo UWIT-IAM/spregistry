@@ -1,0 +1,228 @@
+<script>
+/* ========================================================================
+ * Copyright (c) 2009 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ */
+
+
+/* Server reg javascript */
+
+ var userId;
+ var userEtag;
+ var pageEtag;
+ var request;
+ var action;
+ var finalAction = '';
+ var finalErrorElement = null;
+ var supplementals = '{supplementals}';
+
+function setUserId(v) {
+  userId = v;
+}
+function setUserEtag(v) {
+  userEtag = v;
+}
+
+
+// Trim leading and following spaces from a string
+String.prototype.trim = function () {
+   return this.replace(/^\s*|\s*$/g,"");
+}
+
+
+// Get error text from ws response 
+// --- ms part of this don't quite work yet
+function getErrorFromXML(xml) {
+  ret = '';
+  try {//Internet Explorer
+     xmlDoc=new ActiveXObject('Microsoft.XMLDOM');
+     xmlDoc.async="false";
+     xmlDoc.loadXML(xml.substring(xml.indexOf('<html')));
+     alerts = xmlDoc.getElementsByTagName("alert");
+  }  catch(e) {
+     // alert (e.description);
+     try { // all others
+        parser=new DOMParser();
+        xmlDoc=parser.parseFromString(xml,'text/xml');
+        alerts = xmlDoc.getElementsByTagName("alert");
+     } catch(e) {
+        alert (e.description);
+        return ret;
+     }
+  }
+  try {
+     ret = alerts[0].childNodes[0].nodeValue;
+     // seems that '\n' comes through as text. fix to newlines
+     ret = ret.replace(/\\n/g,'\n');
+  } catch(e) {
+     // alert(e);
+  }
+  return (ret.trim());
+}
+
+// Get a request oject
+function request_object() {
+  try {
+     return new ActiveXObject('Msxml2.XMLHTTP');
+  } catch(e) {
+     try {
+       return new ActiveXObject('Microsoft.XMLHTTP');
+     } catch(e) {
+       return new XMLHttpRequest();
+     }
+  }
+}
+
+
+// On success update page, else report error
+function handleRequestResponse()
+{
+   if(request.readyState==4) {
+            //  alert('status: ' + request.status);
+      if (request.status==302) {
+         document.getElementById('requestStatusDiv').innerHTML = 'Relogin needed: Refresh the page.';
+         alert('Your session has expired. Refresh the page to relogin.');
+      } else {
+         document.getElementById('requestStatusDiv').innerHTML = request.status + ': ' + request.statusText;
+         if (request.status==200 || request.status==201) {
+              // alert('OK' + request.responseText);
+            window.location = finalAction;
+         } else {
+              alert(request.responseText);
+            if (finalErrorElement!=null) {
+               finalErrorElement.innerHTML = request.responseText;
+               finalErrorElement.style.display = '';
+            }
+            etext = getErrorFromXML(request.responseText);
+            if (etext=='') etext = request.statusText;
+            alert(etext);
+         }
+      }
+   }
+}
+
+
+// Perform a post request
+function doRequest(method, action, data, ifmatch)
+{
+   document.getElementById('requestStatusDiv').innerHTML = 'processing...';
+   request=request_object();
+   request.open(method,action,true);
+   request.onreadystatechange=handleRequestResponse;
+   if (ifmatch!=null) request.setRequestHeader('if-Match', ifmatch);
+   request.send(data);
+}
+
+
+
+// Show help text
+function showHelp(h) 
+{
+    document.getElementById(h + 'Help').style.display = '';
+    document.getElementById(h + 'NoHelpLink').style.display = '';
+    document.getElementById(h + 'HelpLink').style.display = 'none';
+}
+
+// Hide help
+function showNoHelp(h) 
+{
+    document.getElementById(h + 'Help').style.display = 'none';
+    document.getElementById(h + 'NoHelpLink').style.display = 'none';
+    document.getElementById(h + 'HelpLink').style.display = '';
+}
+
+
+
+// Prevent Enter from submitting a form
+function noenter(e) 
+{
+  if (!e) e = window.event;
+  return !(e && e.keyCode == 13);
+}
+
+
+// Show (hide) an element
+
+function toggleVis(id)
+{
+   div = document.getElementById(id);
+   if (div) {
+      if (div.style.display == 'none') div.style.display = '';
+      else div.style.display = 'none';
+   }
+}
+
+function togglePolicyVis(id) {
+   detail = document.getElementById(id + '.detail');
+   // alert ('detail: ' + id + '.detail'); 
+   if (detail) {
+      if (detail.style.display == 'none') {
+          detail.style.display = '';
+      } else {
+          detail.style.display = 'none';
+      }
+      toggleVis(id + ".plus");
+      toggleVis(id + ".minus");
+   }
+}
+
+
+function goTo(loc)
+{
+   window.location = loc;
+}
+
+// get elements by class name
+function getElementsByClass(searchClass) {
+   var tagName = '*';
+   var el = new Array();
+   var tags = document.getElementsByTagName(tagName);
+   var tcl = " "+searchClass+" ";
+   for(i=0,j=0; i<tags.length; i++) {
+   	var test = " " + tags[i].className + " ";
+   	if (test.indexOf(tcl) != -1)
+   		el[j++] = tags[i];
+   }
+   return el;
+}
+
+
+// set details visible
+function showDetails() {
+  toHide = getElementsByClass('cleanDetail');
+  for (var i=0; i<toHide.length; i++) {
+    toHide[i].style.display = 'none';
+  }
+  toShow = getElementsByClass('messyDetail');
+  for (var i=0; i<toShow.length; i++) {
+    toShow[i].style.display = '';
+  }
+}
+
+// set details invisible
+function hideDetails() {
+  toHide = getElementsByClass('messyDetail');
+  for (var i=0; i<toHide.length; i++) {
+    toHide[i].style.display = 'none';
+  }
+  toShow = getElementsByClass('cleanDetail');
+  for (var i=0; i<toShow.length; i++) {
+    toShow[i].style.display = '';
+  }
+}
+
+
+
+</script>

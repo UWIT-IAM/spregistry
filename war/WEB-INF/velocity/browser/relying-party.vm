@@ -1,0 +1,244 @@
+#* ========================================================================
+ * Copyright (c) 2009-2011 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ *#
+
+##
+## Template for rp display 
+##
+
+#parse ( "crumbs.vm" )
+
+<script>
+v_sectionType = 'rp';
+#if ($showEditCrumb)
+v_canEdit = true;
+#end
+</script>
+
+##
+## ----- Left side content -----
+##
+
+#pageStart
+
+<table cellpadding="0" cellspacing="0" border="0">
+
+<tr><td class="title" align="left" colspan="99" nowrap="nowrap">${relyingParty.entityId}</td></tr>
+## <tr><td class="subtitle" id="groupCn" align="left" colspan="2">${group.cn}</td></tr>
+
+<tr>
+ <td class="optionbar" align="left" colspan="99">
+    <b>Metadata</b>
+    &nbsp;|&nbsp;<a href="javascript:goTo('${root}${vers}/rp/attr?id=${relyingParty.entityId}&mdid=${relyingParty.metadataId}')" title="Show attributes release to the rp">Attributes</a>
+</tr>
+
+<tr>
+ <td class="optionbot" align="left" colspan="99">
+     View
+    #if ($showEditCrumb)
+     &nbsp;|&nbsp;<a href="javascript:goTo('${root}${vers}/rp?id=${relyingParty.entityId}&mdid=${relyingParty.metadataId}&view=edit')">Edit</a> 
+    #end
+ </td>
+</tr>
+
+
+ <tr><td height="10px" colspan="99"/></tr>
+
+    ## class codes borrowed from gws
+    <tr><td class="groupindenttitle" >General information</td></tr>
+     <tr><td class="groupindent">
+       <table >
+
+## entity id
+
+      <tr><td class="grouplabel">Entity Id</td>
+      </tr>
+      <tr><td class="groupitem" colspan="2" nowrap="nowrap">${relyingParty.entityId}</td><td/></tr>
+
+## Organization
+
+      #set ( $org = $relyingParty.organization )
+      <tr><td class="grouplabel">Organization</td>
+      </tr>
+
+     #if ( $org.name )
+     <tr>
+      <td class="groupitem" align="left" >Name:</td><td>$!org.name</td>
+     </tr>
+     #end
+
+     #if ( $org.displayName )
+     <tr>
+      <td class="groupitem" align="left">Display:</td><td nowrap="nowrap">$!org.displayName</td>
+     </tr>
+     #end
+     #if ( $org.url )
+     <tr>
+      <td class="groupitem" align="left">Url:</td><td nowrap="nowrap">$!org.url</td>
+     </tr>
+     #end
+
+## Contacts
+      <tr><td class="grouplabel">Contacts</td>
+      </tr>
+
+   #foreach ( $ct in $relyingParty.contactPersons )
+     <tr>
+      <td class="groupitem" align="left" >Type:</td><td class="rptext">$!ct.type</td>
+     </tr>
+     #if ( $ct.givenName || $ct.surName )
+     <tr>
+      <td class="groupitem" align="left" >Name:</td><td class="rptext">$!ct.givenName $!ct.surName</td>
+     </tr>
+     #end
+     #if ( $ct.company )
+     <tr>
+      <td class="groupitem" align="left" >Company:</td><td class="rptext">$!ct.company</td>
+     </tr>
+     #end
+     #if ( $ct.email )
+     <tr>
+      <td class="groupitem" align="left" >Email:</td><td class="rptext">$!ct.email</td>
+     </tr>
+     #end
+     #if ( $ct.phone )
+     <tr>
+      <td class="groupitem" align="left" >Phone:</td><td class="rptext">$!ct.phone</td>
+     </tr>
+     #end
+     <tr><td height="10"></td></tr>
+   #end
+
+  </table></td></tr>
+
+
+## Details
+
+     <tr><td class="groupindenttitle" >Metadata details</td>
+     </tr>
+<tr>
+ <td class="optionbot" align="left" colspan="99">
+     <span id="showDetail"><a href="javascript:toggleDetail()">Show</a></span>
+     <span id="hideDetail" ${hide} ><a href="javascript:toggleDetail()">Hide</a></span>
+ </td>
+</tr>
+
+     <tr><td class="groupindent" id="messyDetail" ${hide} >
+       <table >
+
+   ## ProtocolSupportEnumerations
+      <tr><td class="grouplabel">Protocols</td></tr>
+
+   #foreach ( $ps in $relyingParty.protocolSupportEnumerations )
+     <tr>
+      <td class="groupitem" colspan="2">$ps</td>
+     </tr>
+   #end
+
+   ## KeyInfo
+
+      <tr><td class="grouplabel">KeyInfo</td></tr>
+   #foreach ( $key in $relyingParty.keyDescriptors )
+      <tr>
+      <td class="groupitem" align="left">Name:</td>
+        <td>$!key.keyName</td>
+      </tr>
+#*
+      #if ( $key.use )
+      <tr><td class="rplabel" align="left" valign="top"></td>
+      <td class="rplabel" align="left">Use:</td>
+        <td class="rptext">$!key.use</td>
+      </tr>
+      #end
+ *#
+      #if ( $key.certificate )
+      <tr>
+      <td class="groupitem" align="left" valign="top">Cert:</td>
+         <td><div class="certbox">$key.certificate</div></td>
+      </tr>
+      #end
+   #end
+
+ 
+   ## Nameid
+
+      <tr><td class="grouplabel">NameId</td></tr>
+   #foreach ( $name in $relyingParty.nameIDFormats )
+     <tr>
+      <td class="groupitem" colspan="2">$name"</td>
+     </tr>
+   #end
+
+
+   ## ACS
+
+      <tr><td class="grouplabel" colspan="99" nowrap="nowrap">Assertion Consumer Service Locations</td></tr>
+   #foreach ( $acs in $relyingParty.assertionConsumerServices )
+     <tr>
+      <td class="groupitem" align="left" >$acs.index</td>
+             <td nowrap="nowrap">$acs.binding</td>
+     </tr>
+     <tr>
+      <td class="groupitem" align="left" ></td>
+             <td nowrap="nowrap"><tt>$acs.location</tt></td>
+     </tr>
+   #end
+
+
+   </table></td></tr>
+
+
+   <tr><td/><td colspan="99"><hr></td></tr>
+ 
+  </table>
+
+#pageMiddle
+
+
+##
+## ----- right side extra text ----
+##
+
+#pageMiddle
+
+<p height="100px">&nbsp;</p>
+
+
+<table class="helptext" cellpadding="4px">
+<tr><th align="left" colspan="2">Service Provider</td></tr>
+<tr class="cleanDetail"><td width="10px"/><td valign="top">Shown is a summary of the
+  Service Provider's metadata.  Click <i>Show</i> to see the details. 
+   </td></tr>
+#if ( $showEditRP )
+<tr><td width="10px"/><td valign="top">Click <b>Edit this entity</b> 
+  to edit this entry.
+   </td></tr>
+#end
+</table>
+
+
+#pageEnd
+
+##
+## ----- end -----
+##
+
+## error and status messages
+<div id="requestStatusDiv" class="notice">&nbsp;
+</div>
+<div class="status">$!{status}
+</div>
+

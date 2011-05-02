@@ -1,0 +1,281 @@
+#* ========================================================================
+ * Copyright (c) 2011 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ *#
+
+##
+## Template for rp attributes edit display 
+##
+
+#parse ( "crumbs.vm" )
+
+<script>
+v_sectionType = 'rpattr';
+
+
+function showAttribute(id) {
+   tr = document.getElementById('tr_all_' + id);
+   if (tr.style.display=='none') {
+      tr.style.display = '';
+      document.getElementById('v_all_' + id).checked = true;
+      document.getElementById('label_' + id).className = 'boldlink';
+   }
+}
+
+function checkAll(id) {
+   if (document.getElementById('v_all_' + id).checked) {
+      for (i=0;i<99;i++) {
+         tr = document.getElementById('tr_v_' + i + '_' + id);
+         if (tr==null) break;
+         tr.style.display = 'none';
+      }
+   } else {
+      for (i=0;i<99;i++) {
+         tr = document.getElementById('tr_v_' + i + '_' + id);
+         if (tr.style.display=='none') {
+            tr.style.display = '';
+            break;
+         }
+      }
+      
+   }
+}
+   
+function showNext(i, id) {
+   n = i+1;
+   document.getElementById('tr_v_' + n + '_' + id).style.display = '';
+}
+
+## define a submit function for each editable group
+
+// make a response for an attribute
+function attributeItem (id) {
+   option = document.getElementById('k_' + id).value.trim();
+   all = document.getElementById('v_all_' + id).checked;
+
+   if (all) return '<AttributeRule attributeID="' + id + '" action="replace"><PermitValueRule xsi:type="basic:ANY"/></AttributeRule>';
+
+   nv = 0;
+   txt = '<PermitValueRule xsi:type="basic:OR">';
+   for (i=0;i<99;i++) {
+      ele = document.getElementById('v_' + i + '_' + id);
+      if (ele==null) break;
+      v = ele.value.trim();
+      if (v!='') {
+         txt = txt + '<basic:Rule xsi:type="basic:AttributeValueString" value="' + v + '"/>';
+         nv += 1;
+      }
+   }
+   if (nv>0) {
+       txt = txt + '</PermitValueRule>'
+       return '<AttributeRule attributeID="' + id + '" action="replace">' + txt + '</AttributeRule>';
+   }
+
+   if (option=='send') return '<AttributeRule attributeID="' + id + '" action="remove"/>';
+   return '';
+}
+
+   
+#foreach ( $group in $filterPolicyGroups )
+  #set ( $policy = $group.getFilterPolicy($relyingPartyId) )
+    function submitPolicy_${group.id} () {
+       xml = '<FilterPolicyModification><AttributeFilterPolicy policyId="${group.id}" entityId="$relyingPartyId">';
+       xml = xml + '<PolicyRequirementRule xsi:type="basic:AttributeRequesterString" value="${relyingPartyId}" />'
+       #foreach ( $attr in $attributes )
+         xml = xml + attributeItem('${attr.id}');
+       #end 
+       xml = xml + '</AttributeFilterPolicy></FilterPolicyModification>';
+       action = '${root}${vers}/rp/attr?id=${relyingPartyId}&policyId=${group.id}&xsrf=${xsrf}';
+       finalAction = '${root}${vers}/rp/attr?id=${relyingPartyId}';
+       doRequest('PUT', action, xml, '$!{etag}');
+    }
+#end  ## group
+
+
+
+</script>
+
+
+##
+## ----- Left side content -----
+##
+
+#pageStart
+
+<table cellpadding="0" cellspacing="0" border="0">
+
+<tr><td class="title" align="left" colspan="99">${relyingParty.entityId}</td></tr>
+## <tr><td class="subtitle" id="groupCn" align="left" colspan="2">${group.cn}</td></tr>
+
+<tr>
+ <td class="optionbar" align="left" colspan="99">
+    <a href="javascript:goTo('${root}${vers}/rp/?id=${relyingParty.entityId}')" title="Show metadata for the service provider">Metadata</a>
+    &nbsp;|&nbsp;Attributes
+</tr>
+
+<tr>
+ <td class="optionbot" align="left" colspan="99">
+     <a href="javascript:goTo('${root}${vers}/rp/attr?id=${relyingParty.entityId}')">View</a>
+     &nbsp;|&nbsp;Edit
+ </td>
+</tr>
+
+
+ <tr><td height="10px" colspan="99"/></tr>
+
+  #foreach ( $group in $filterPolicyGroups )
+    <tr><td class="groupindenttitle" >Attributes from "$group.description"</td>
+    </tr>
+
+      <tr><td class="groupindent">
+       <table >
+    
+   #if ( $group.editable )
+     #set ( $policy = false )
+     #set ( $policy = $group.getFilterPolicy($relyingPartyId) )
+     #foreach ( $attr in $attributes )
+       #set ($did = false)
+       #set ($act = $disable)
+       #if ($filterPolicyManager.userCanEdit($attr, $remoteUser)) #set ($act='') #end
+       #if ($policy)
+         #foreach ( $pattr in $policy.attributeRules )
+          #if ($attr.id==$pattr.id) 
+            #set ($did=true)
+            <tr><td class="grouplabel"><span class="boldlink">
+                <a href="javascript:return(true)" title="${attr.description}">$!{attr.id}</a></span></td>
+                <input type="hidden" id="k_$!{attr.id}" value="send"/>
+            </tr>
+            #foreach ( $value in $pattr.valueRules )
+              <tr><td class="groupitem" colspan="2"><input type="checkbox" id="v_all_$!{attr.id}" onClick="checkAll('$!{attr.id}')"
+                 #if ( $value.type == "basic:ANY" ) $checked #end $act/>all values</td><td/></tr>
+                 #set ($count=0)
+                 #foreach ( $rule in $value.rules )
+                   <tr id="tr_v_${count}_$!{attr.id}"><td class="groupitem" colspan="2">
+                        <input type="text" size="50" maxlength="200" id="v_${count}_$!{attr.id}" value="${rule.value}" $act/></td></tr>
+                   #set ($count = $count + 1)
+                 #end
+                 #set ($h="")
+                 #if ( $value.type == "basic:ANY" ) #set ($h=$hide) #end
+                 #foreach ( $i in [ $count .. 10 ] )
+                   <tr $h id="tr_v_${i}_$!{attr.id}"><td class="groupitem" colspan="2">
+                       <input type="text" size="50" maxlength="200" id="v_${i}_$!{attr.id}"
+                            value="" onClick="showNext(${i}, '$!{attr.id}')"/></td></tr>
+                   #set ($h = $hide)
+                 #end
+            #end ## value
+          #end ## if attrs equal
+         #end ## pattr
+        #end  ## if policy
+         #if (!$did)
+            <tr><td class="grouplabel"><span class="dimlink" id="label_$!{attr.id}">
+               #if ($act=='')
+                <a href="javascript:showAttribute('$!{attr.id}')" title="${attr.description}">$!{attr.id}</a>
+               #else
+                $!{attr.id}
+               #end
+                </span></td>
+                <input type="hidden" id="k_$!{attr.id}" value="ignore"/>
+            </tr>
+              <tr $hide id="tr_all_$!{attr.id}"><td class="groupitem" colspan="2">
+                       <input type="checkbox" id="v_all_$!{attr.id}" onClick="checkAll('$!{attr.id}')"/>all values</td><td/></tr>
+                 #foreach ($count in [0 .. 10] )
+                 <tr $hide id="tr_v_${count}_$!{attr.id}"><td class="groupitem" colspan="2">
+                       <input type="text" size="50" maxlength="100" id="v_${count}_$!{attr.id}"
+                          value="" onClick="showNext($count, '$!{attr.id}')"/></td></tr>
+                 #end
+         #end
+     #end ## attr
+     <tr><td><input type="button" class="btn" name="button" value="Save changes" onClick="submitPolicy_${group.id}();"/></td></tr>
+
+
+   #else  ## editable
+
+     #set ( $policy = $group.getFilterPolicy($relyingPartyId) )
+     #if ( $policy )
+       #foreach ( $attribute in $policy.attributeRules )
+        <tr><td class="grouplabel">$!{attribute.id}</td>
+        </tr>
+        #foreach ( $value in $attribute.valueRules )
+          #if ( $value.type == "basic:ANY" )
+          <tr><td class="groupitem" colspan="2">All values</td><td/></tr>
+          #else
+           #foreach ( $rule in $value.rules )
+             <tr><td class="groupitem" colspan="2">${rule.value}</td><td/></tr>
+           #end
+          #end
+        #end ## value
+       #end ## attrs
+      #end ## if policy
+
+   #end  ## editable
+
+   </table></td></tr>
+
+ #end  ## groups
+
+   <tr><td/><td colspan="99"><hr></td></tr>
+ 
+  </table>
+
+
+#pageMiddle
+
+##
+## ----- right side extra text ----
+##
+
+
+<p height="100px">&nbsp;</p>
+
+
+<table class="helptext" cellpadding="4px">
+<tr><th align="left" colspan="2">Attributes</td></tr>
+<tr><td width="10px"/><td valign="top">This page shows the attributes that are released to this service provider.
+   </td></tr>
+<tr class="cleanDetail"><td width="10px"/><td valign="top">Shown is a summary of the
+  Service Provider's metadata.  Click <i>Show details</i> to see the details
+   of these metadata.
+   </td></tr>
+<tr class="cleanDetail"><td></td><td>
+<ul>
+   <li><b>UW core filter policies</b>
+    <p>These are non-editable attribute policies, generally applicable to all "*.uw.edu" or
+"*.washington.edu" providers.
+    </p>
+   <li><b>UW ad-hoc filter policies</b>
+    <p>These are policies directed to specific service providers.</p>
+</ul>
+
+#if ( $showEditRP )
+<tr><td width="10px"/><td valign="top">Click <b>Edit this entity</b>
+  to edit this entry.
+   </td></tr>
+#end
+
+</table>
+
+
+#pageEnd
+
+##
+## ----- end -----
+##
+
+## error and status messages
+<div id="requestStatusDiv" class="notice">&nbsp;
+</div>
+<div class="status">$!{status}
+</div>
+

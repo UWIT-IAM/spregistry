@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding= "UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+<!--
+      <appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+            <layout class="org.apache.log4j.PatternLayout">
+                  <param name="ConversionPattern" value="%d %p [%c] - &lt;%m&gt;%n"/>
+            </layout>
+      </appender>
+ -->
+
+      <appender name="logfile" class="org.apache.log4j.DailyRollingFileAppender">
+
+            <param name="File" value="/logs/sp-registry/event.log"/>
+            <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+            <param name="Append" value="true"/>
+            <layout class="org.apache.log4j.PatternLayout">
+                  <param name="ConversionPattern" value="%d %p [%c] - %m%n"/>
+            </layout>
+      </appender>
+
+      <logger name="edu.washington">
+            <level value="DEBUG"/>
+            <appender-ref ref="logfile"/>
+      </logger>
+
+      <root>
+            <priority value="warn"/>
+            <appender-ref ref="logfile"/>
+      </root>
+
+</log4j:configuration>

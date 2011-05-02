@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:aop="http://www.springframework.org/schema/aop"
+         xmlns:tx="http://www.springframework.org/schema/tx"
+         xsi:schemaLocation="http://www.springframework.org/schema/beans 
+           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+           http://www.springframework.org/schema/aop 
+           http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx 
+           http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+
+
+    <bean id="sprpManager" init-method="init" class="edu.washington.registry.rp.XMLRelyingPartyManager">
+        <property name="metadataSources">
+          <list>
+            <props>
+              <prop key="id">IC</prop>
+              <prop key="description">InCommon</prop>
+              <prop key="uri">file:/data/local/sp-registry/InCommon-metadata.xml</prop>
+              <prop key="editable">false</prop>
+              <prop key="refresh">600</prop>
+            </props>
+            <props>
+              <prop key="id">UWfixed</prop>
+              <prop key="description">UW fixed non-federation peers</prop>
+              <prop key="uri">file:/data/local/sp-registry/UW-base-metadata.xml</prop>
+              <prop key="editable">false</prop>
+            </props>
+            <props>
+              <prop key="id">UW</prop>
+              <prop key="description">UW non-federation peers</prop>
+              <prop key="uri">file:/data/local/sp-registry/UW-rp-metadata.xml</prop>
+              <prop key="editable">true</prop>
+              <prop key="tempUri">file:/data/local/sp-registry/tmp-rp-uw.xml</prop>
+            </props>
+          </list>
+        </property>
+    </bean>
+
+    <bean id="spfpManager" init-method="init" class="edu.washington.registry.filter.XMLFilterPolicyManager">
+        <property name="groupManager" ref="groupManager" />
+        <property name="policyGroupSources">
+          <list>
+            <props>
+              <prop key="id">UWcore</prop>
+              <prop key="description">UW core filter policies</prop>
+              <prop key="uri">file:/data/local/sp-registry/core-filter.xml</prop>
+              <prop key="editable">false</prop>
+            </props>
+            <props>
+              <prop key="id">UW</prop>
+              <prop key="description">UW ad-hoc filter policies</prop>
+              <prop key="uri">file:/data/local/sp-registry/rp-filter.xml</prop>
+              <prop key="editable">true</prop>
+              <prop key="tempUri">file:/data/local/sp-registry/tmp-filter-uw.xml</prop>
+            </props>
+          </list>
+        </property>
+        <property name="attributeUri" value="file:/data/local/sp-registry/attribute.xml" />
+        <property name="tempUri" value="file:/data/local/sp-registry/filter-policy.xml.tmp" />
+    </bean>
+
+    <bean id="groupManager" init-method="init" class="edu.washington.registry.util.GWSGroupManager">
+        <property name="urlBase" value="https://iam-ws.u.washington.edu:7443/group_sws/v1/group/" />
+        <property name="certFile" value="/data/local/etc/urizen2.crt" />
+        <property name="keyFile" value="/data/local/etc/urizen2.key" />
+        <property name="caFile" value="/data/local/etc/uwca.crt" />
+        <property name="memberXPath" value="//*[@class='member']" />
+    </bean>
+
+</beans>
