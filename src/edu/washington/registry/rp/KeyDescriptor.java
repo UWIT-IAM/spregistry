@@ -52,6 +52,7 @@ public class KeyDescriptor implements Serializable  {
     public KeyDescriptor (Element ele) throws RelyingPartyException {
 
        use = ele.getAttribute("use");
+       if (use==null) use = "";
 
        Element ki = XMLHelper.getElementByName(ele, "KeyInfo");
        keyName = null;
@@ -77,31 +78,9 @@ public class KeyDescriptor implements Serializable  {
     }
 
 
-/**
-    public Element toDOM(Document doc) {
-        Element kd = doc.createElement("KeyDescriptor");
-    // for now, drop the key use
-    //     if (use!=null) kd.setAttribute("use", use);
-        Element ki = doc.createElement("ds:KeyInfo");
-        if (keyName != null) {
-           Element e = doc.createElement("ds:KeyName");
-           e.appendChild(doc.createTextNode(keyName));
-           ki.appendChild(e);
-        }
-        if (certificate != null) {
-           Element e = doc.createElement("ds:X509Data");
-           Element c = doc.createElement("ds:X509Certificate");
-           c.appendChild(doc.createTextNode(certificate));
-           e.appendChild(c);
-           ki.appendChild(e);
-        }
-        kd.appendChild(ki);
-       return kd;
-    }
- **/
-
     public void writeXml(BufferedWriter xout) throws IOException {
-       xout.write("   <KeyDescriptor>\n");
+       if (use.length()>0) xout.write("   <KeyDescriptor use=\"" + use + "\">\n");
+       else xout.write("   <KeyDescriptor>\n");
        xout.write("    <ds:KeyInfo xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\">\n");
        if (keyName!=null) xout.write("     <ds:KeyName>" + keyName + "</ds:KeyName>\n");
        if (certificate!=null) xout.write("     <ds:X509Data><ds:X509Certificate>" + certificate + "</ds:X509Certificate></ds:X509Data>\n");
@@ -111,6 +90,7 @@ public class KeyDescriptor implements Serializable  {
 
     // check for duplicate descriptor (ignore 'use')
     public boolean isDuplicate(KeyDescriptor test) {
+       if (test.getUse()!=null && !use.equals(test.getUse())) return false;
        if (keyName!=null && (test.getKeyName()==null || !test.getKeyName().equals(keyName))) return false;
        if (keyName==null && test.getKeyName()!=null) return false;
        if (certificate!=null && (test.getCertificate()==null || !test.getCertificate().equals(certificate))) return false;
@@ -120,6 +100,7 @@ public class KeyDescriptor implements Serializable  {
 
     public void setUse(String v) {
        use = v;
+       if (use==null) use = "";
     }
     public String getUse() {
        return (use);

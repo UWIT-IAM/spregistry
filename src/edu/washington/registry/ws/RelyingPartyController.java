@@ -97,7 +97,8 @@ public class RelyingPartyController {
     private static String loginCookie;
     private static String logoutUrl;
 
-    private static String mailTo = "fox@washington.edu";
+    private static String mailTo = "pubcookie@u.washington.edu";
+    private static String requestMailTo = "iam-support@u.washington.edu";
 
     // sessions
     private String standardLoginPath = "/login";
@@ -833,15 +834,15 @@ public class RelyingPartyController {
         }
         if (doc!=null) {
            List<Element> attrs = XMLHelper.getElementsByName(doc.getDocumentElement(), "Attribute");
-           StringBuffer txt = new StringBuffer("User '" + session.remoteUser + "' requests these attributes for '" + id + "'.\n");
+           StringBuffer txt = new StringBuffer("User '" + session.remoteUser + "' requests these attributes for '" + id + "'.\n\n");
            for (int i=0; i<attrs.size(); i++) txt.append("   " + attrs.get(i).getAttribute("id") + "\n");
            Element mele = XMLHelper.getElementByName(doc.getDocumentElement(), "Message");
            if (mele!=null) txt.append("\nReason for this:\n\n" + mele.getTextContent() + "\n\n"); 
 
 
            SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
-   /* production to RT system
-           msg.setTo("iam-support@u.washington.edu");
+   /* production to RT system */
+           msg.setTo(requestMailTo);
            msg.setSubject("Requesting attributes for " + id);
            msg.setText("//requestor: " + session.remoteUser + "@washington.edu\n\n" + txt.toString());
            try{
@@ -849,8 +850,8 @@ public class RelyingPartyController {
            } catch(MailException ex) {
                log.error("sending mail: " + ex.getMessage());            
            }
-    */
 
+   /** testing
            msg.setTo(session.remoteUser + "@washington.edu");
            msg.setSubject("Requesting attributes for " + id);
            msg.setText("this is the message that would have been sent to RT\n\n" + txt.toString());
@@ -859,6 +860,7 @@ public class RelyingPartyController {
            } catch(MailException ex) {
                log.error("sending mail: " + ex.getMessage());            
            }
+     **/
 
         }
         response.setStatus(status);
@@ -940,6 +942,9 @@ public class RelyingPartyController {
 
     public void setMailTo(String v) {
         mailTo = v;
+    }
+    public void setRequestMailTo(String v) {
+        requestMailTo = v;
     }
 
     public void setStandardLoginSec(long v) {

@@ -33,6 +33,8 @@ public final class Ownership {
 
     private static final Logger log = LoggerFactory.getLogger(Ownership.class);
 
+    private static String dnsApp = "/data/local/bin/domain-owners.pl";
+
     private Ownership() {}
 
     /**
@@ -44,8 +46,6 @@ public final class Ownership {
 
     public static boolean isDomainOwner(String id, String entity) {
 
-       // should be a group
-       if (id.equals("fox")) return true;
 
        // maybe strip junk form entity
        String domain = entity;
@@ -56,16 +56,19 @@ public final class Ownership {
        i = domain.indexOf(":");
        if (i>0) domain = domain.substring(0,i);
 
+       log.debug("looking for owner (" + id + ") in " + domain);
+
        try {
-          String cmd = "/data/local/src/netact/test -u " + id + " " + domain;
+          String cmd =  dnsApp + " " + domain;
           Runtime rt = Runtime.getRuntime();
           Process pc = rt.exec(cmd);
           InputStreamReader isr = new InputStreamReader( pc.getInputStream() );
           BufferedReader br = new BufferedReader(isr);
           String line;
           while ((line = br.readLine()) != null) {
-            log.debug("netact says: " + line);
-            if (line.startsWith("OK")) return true;
+             log.debug("netact says: " + line);
+             if (line.equals("NONE")) return false;
+             if (line.equals(id)) return true;
           }
        } catch (IOException e) {
           log.debug("netact error: " + e); 

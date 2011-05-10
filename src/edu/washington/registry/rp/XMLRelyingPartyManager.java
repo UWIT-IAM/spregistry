@@ -173,6 +173,8 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
            throw new RelyingPartyException("SAXException: " + e);
        } catch (IOException e) {
            throw new RelyingPartyException("IOException: " + e);
+       } catch (Exception e) {
+           throw new RelyingPartyException("Exception: " + e);
        }
        return rp;
     }

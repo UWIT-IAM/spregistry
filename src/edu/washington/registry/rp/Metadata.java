@@ -65,7 +65,7 @@ public class Metadata {
       "    xmlns:xml=\"http://www.w3.org/XML/1998/namespace\"\n" +
       "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
     private String xmlEnd = "</EntitiesDescriptor>";
-    private String xmlNotice = "\n  <!-- This is a binary, created by sp-registry -->\n\n";
+    private String xmlNotice = "\n  <!-- DO NOT EDIT: This is a binary, created by sp-registry -->\n\n";
 
     class MetadataReloader implements Runnable {
         
@@ -100,9 +100,7 @@ public class Metadata {
                  }
               }
               try {
-                 for (int z=0;z<refreshInterval;z++) {
-                    Thread.sleep(1000);
-                 }
+                 Thread.sleep(refreshInterval * 1000);
               } catch (InterruptedException e) {
                  log.info("sleep interrupted");
                  break;
@@ -247,6 +245,7 @@ public class Metadata {
          for (int i=0; i<relyingParties.size();i++) {
             RelyingParty rp = relyingParties.get(i);
             rp.writeXml(xout);
+            xout.write("\n");
          }
 
          // write trailer

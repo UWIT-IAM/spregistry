@@ -153,7 +153,7 @@ public class AttributeFilterPolicy implements Serializable  {
        xout.write(" <AttributeFilterPolicy id=\"" + pid + "\">\n" + 
          "  <PolicyRequirementRule xsi:type=\"basic:AttributeRequesterString\" value=\"" + entityId + "\"/>\n");
        for (int i=0; i<attributeRules.size(); i++) attributeRules.get(i).writeXml(xout);
-       xout.write(" </AttributeFilterPolicy>\n");
+       xout.write(" </AttributeFilterPolicy>\n\n");
     }
 
     public void setEntityId(String v) {

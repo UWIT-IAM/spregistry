@@ -73,7 +73,7 @@ public class FilterPolicyGroup {
       "    urn:mace:shibboleth:2.0:afp:mf:saml classpath:/schema/shibboleth-2.0-afp-mf-saml.xsd\">\n";
 
    private String xmlEnd = "</AttributeFilterPolicyGroup>";
-   private String xmlNotice = "\n  <!-- This is a binary, created by sp-registry -->\n\n";
+   private String xmlNotice = "\n  <!-- DO NOT EDIT: This is a binary, created by sp-registry -->\n\n";
 
    public FilterPolicyGroup(Properties prop) throws FilterPolicyException {
        id = prop.getProperty("id");

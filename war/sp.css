@@ -367,19 +367,20 @@ img {border: none;}
 
 .infobox {
         position:absolute;
-        margin: 1px;
-        top: 70px;
+        margin: 2px;
+        top: 80px;
         right: 80px;
         display: none;
         padding: 4px 4px 4px 4px;
         font-size:80%;
-        color: #202020;
-        background-color: #eeeeee;
-        border-color: #808080;
-        border-width: 3px 3px 3px 3px;
-        border-style: outset;
+        color: #000000;
+        background-color: #faf0e6;
+        border-color: #004000;
+        border-width: 5px 5px 5px 5px;
+        border-style: ridge;
         overflow: auto;
            }
+        
 .infoboxt {
        padding: 4px 2px 0px 2px;
        border-width: 0px 0px 1px 0px; border-style: solid;

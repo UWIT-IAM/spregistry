@@ -74,8 +74,9 @@ function attributeItem (id) {
       if (ele==null) break;
       v = ele.value.trim();
       if (v!='') {
-         txt = txt + '<basic:Rule xsi:type="basic:AttributeValueString" value="' + v + '"/>';
-         nv += 1;
+        if (document.getElementById('x_' + i + '_' + id).checked) txt = txt + '<basic:Rule xsi:type="basic:AttributeValueRegex" regex="' + v + '"/>';
+        else txt = txt + '<basic:Rule xsi:type="basic:AttributeValueString" value="' + v + '"/>';
+        nv += 1;
       }
    }
    if (nv>0) {
@@ -163,7 +164,8 @@ function attributeItem (id) {
                  #set ($count=0)
                  #foreach ( $rule in $value.rules )
                    <tr id="tr_v_${count}_$!{attr.id}"><td class="groupitem" colspan="2">
-                        <input type="text" size="50" maxlength="200" id="v_${count}_$!{attr.id}" value="${rule.value}" $act/></td></tr>
+                        <input type="text" size="50" maxlength="200" id="v_${count}_$!{attr.id}" value="${rule.value}" $act/>&nbsp;
+                           <input type="checkbox" id="x_${count}_$!{attr.id}" #if ($rule.regex) $checked #end>regex</td></tr>
                    #set ($count = $count + 1)
                  #end
                  #set ($h="")
@@ -171,7 +173,8 @@ function attributeItem (id) {
                  #foreach ( $i in [ $count .. 10 ] )
                    <tr $h id="tr_v_${i}_$!{attr.id}"><td class="groupitem" colspan="2">
                        <input type="text" size="50" maxlength="200" id="v_${i}_$!{attr.id}"
-                            value="" onClick="showNext(${i}, '$!{attr.id}')"/></td></tr>
+                            value="" onClick="showNext(${i}, '$!{attr.id}')"/>&nbsp;
+                            <input type="checkbox" id="x_${i}_$!{attr.id}">regex</td></tr>
                    #set ($h = $hide)
                  #end
             #end ## value
@@ -193,10 +196,15 @@ function attributeItem (id) {
                  #foreach ($count in [0 .. 10] )
                  <tr $hide id="tr_v_${count}_$!{attr.id}"><td class="groupitem" colspan="2">
                        <input type="text" size="50" maxlength="100" id="v_${count}_$!{attr.id}"
-                          value="" onClick="showNext($count, '$!{attr.id}')"/></td></tr>
+                          value="" onClick="showNext($count, '$!{attr.id}')"/>&nbsp;
+                          <input type="checkbox" id="x_${count}_$!{attr.id}">regex</td></tr>
                  #end
          #end
      #end ## attr
+     <tr><td height="10" colspan="99"><hr></td></tr>
+     <tr><td colspan="99">Please allow a couple of hours for our IdP to acquire
+        the changes to this service provider's attribute release policy.
+       </td></tr>
      <tr><td><input type="button" class="btn" name="button" value="Save changes" onClick="submitPolicy_${group.id}();"/></td></tr>
 
 

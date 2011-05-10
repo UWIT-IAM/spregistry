@@ -56,6 +56,9 @@ public class RelyingParty implements Serializable  {
     private List<AssertionConsumerService> assertionConsumerServices;
     private Organization organization;
     private List<ContactPerson> contactPersons;
+
+    private String authnRequestsSigned;
+    private List<ManageNameIDService> manageNameIDServices;
       
 
     // initialize
@@ -68,6 +71,7 @@ public class RelyingParty implements Serializable  {
        assertionConsumerServices = new Vector();
        organization = null;
        contactPersons = new Vector();
+       manageNameIDServices = new Vector();
     }
 
     // create from document element
@@ -94,6 +98,8 @@ public class RelyingParty implements Serializable  {
            // log.info("rp ele: " + name);
 
            if (XMLHelper.matches(name,"SPSSODescriptor")) {
+              authnRequestsSigned = ele.getAttribute("AuthnRequestsSigned");
+              if (authnRequestsSigned==null) authnRequestsSigned = "";
               protocolSupportEnumerationsUnsplit = e1.getAttribute("protocolSupportEnumeration");
               protocolSupportEnumerations = Arrays.asList(protocolSupportEnumerationsUnsplit.split(" "));
               for (int j=0; j<protocolSupportEnumerations.size(); j++) {
@@ -122,6 +128,7 @@ public class RelyingParty implements Serializable  {
                  }
                  if (XMLHelper.matches(name2,"NameIDFormat")) nameIDFormats.add(e2.getTextContent());
                  if (XMLHelper.matches(name2,"AssertionConsumerService")) assertionConsumerServices.add(new AssertionConsumerService(e2));
+                 if (XMLHelper.matches(name2,"ManageNameIDService")) manageNameIDServices.add(new ManageNameIDService(e2));
               }
            }
            if (XMLHelper.matches(name,"Organization")) organization = new Organization(e1);
@@ -150,37 +157,11 @@ public class RelyingParty implements Serializable  {
        contactPersons.add(new ContactPerson("administrative"));
     }
 
-/**
-    public Element toDOM(Document doc) {
-        Element ed = doc.createElement("EntityDescriptor");
-        ed.setAttribute("entityID", entityId);
-        Element ssod = doc.createElement("SPSSODescriptor");
-        ssod.setAttribute("protocolSupportEnumeration", protocolSupportEnumerationsUnsplit);
-        for (int i=0; i<keyDescriptors.size(); i++) {
-           ssod.appendChild(keyDescriptors.get(i).toDOM(doc));
-        }
-        for (int i=0; i<nameIDFormats.size(); i++) {
-           Element e = doc.createElement("NameIDFormat");
-           e.appendChild(doc.createTextNode(nameIDFormats.get(i)));
-           ssod.appendChild(e);
-        }
-        for (int i=0; i<assertionConsumerServices.size(); i++) {
-           ssod.appendChild(assertionConsumerServices.get(i).toDOM(doc));
-        }
-        ed.appendChild(ssod);
-
-        ed.appendChild(organization.toDOM(doc));
-
-        for (int i=0; i<contactPersons.size(); i++) {
-           ed.appendChild(contactPersons.get(i).toDOM(doc));
-        }
-       return ed;
-    }
- **/
-
     public void writeXml(BufferedWriter xout) throws IOException {
        xout.write(" <EntityDescriptor entityID=\"" + entityId + "\">\n");
-       xout.write("  <SPSSODescriptor protocolSupportEnumeration=\"" + protocolSupportEnumerationsUnsplit + "\">\n");
+       String ars = "";
+       if (authnRequestsSigned.length()>0) ars = " AuthnRequestsSigned=\"" + authnRequestsSigned + "\"";
+       xout.write("  <SPSSODescriptor " + ars + " protocolSupportEnumeration=\"" + protocolSupportEnumerationsUnsplit + "\">\n");
 
        for (int i=0; i<keyDescriptors.size(); i++) {
           keyDescriptors.get(i).writeXml(xout);
@@ -189,7 +170,12 @@ public class RelyingParty implements Serializable  {
        for (int i=0; i<nameIDFormats.size(); i++) {
           xout.write("   <NameIDFormat>" + nameIDFormats.get(i) + "</NameIDFormat>\n");
        }
-       
+
+/***  don't know if this goes before or after the nameidformats
+       for (int i=0; i<manageNameIDServices.size(); i++) {
+          manageNameIDServices.get(i).writeXml(xout);
+       }
+ ***/
        for (int i=0; i<assertionConsumerServices.size(); i++) {
           assertionConsumerServices.get(i).writeXml(xout);
        }

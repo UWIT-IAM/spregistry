@@ -59,13 +59,14 @@
           </list>
         </property>
         <property name="attributeUri" value="file:/data/local/sp-registry/attribute.xml" />
+        <property name="attributeRefresh" value="600" />
         <property name="tempUri" value="file:/data/local/sp-registry/filter-policy.xml.tmp" />
     </bean>
 
     <bean id="groupManager" init-method="init" class="edu.washington.registry.util.GWSGroupManager">
         <property name="urlBase" value="https://iam-ws.u.washington.edu:7443/group_sws/v1/group/" />
-        <property name="certFile" value="/data/local/etc/urizen2.crt" />
-        <property name="keyFile" value="/data/local/etc/urizen2.key" />
+        <property name="certFile" value="/data/local/etc/urizen3.crt" />
+        <property name="keyFile" value="/data/local/etc/urizen3.key" />
         <property name="caFile" value="/data/local/etc/uwca.crt" />
         <property name="memberXPath" value="//*[@class='member']" />
     </bean>

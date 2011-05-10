@@ -73,12 +73,10 @@ function toggleText(id) {
 
 #pageMiddle
 
-
 ##
 ## ----- right side extra text ----
 ##
 
-#pageMiddle
 
 <p height="100px">&nbsp;</p>
 

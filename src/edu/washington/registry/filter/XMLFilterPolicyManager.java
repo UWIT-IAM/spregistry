@@ -24,6 +24,8 @@ import java.util.Properties;
 import java.io.File;
 import java.net.URI;
 import java.io.IOException;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 
 import org.w3c.dom.Node;
 import org.w3c.dom.Document;
@@ -41,8 +43,6 @@ import org.xml.sax.SAXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
 import edu.washington.registry.util.XMLHelper;
 import edu.washington.registry.util.GroupManager;
 import edu.washington.registry.exception.FilterPolicyException;
@@ -53,12 +53,14 @@ import edu.washington.registry.exception.NoPermissionException;
 public class XMLFilterPolicyManager implements FilterPolicyManager {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private final ReentrantReadWriteLock locker = new ReentrantReadWriteLock();
 
     private List<FilterPolicyGroup> filterPolicyGroups;
     private GroupManager groupManager;
 
     private List<Attribute> attributes;
     private String attributeUri;
+    private int attributeRefresh = 0;  // seconds
 
     private List<Properties> policyGroupSources;
     private String tempUri = "file:/tmp/fp.xml";
@@ -193,6 +195,49 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        }
     }
 
+    class AttributeReloader implements Runnable {
+        
+        private long modifyTime = 0;
+
+        public void run() {
+           log.debug("attr reloader running: interval = " + attributeRefresh);
+
+           // loop on checking the source
+           String sourceName = attributeUri.replaceFirst("file:","");
+
+           while (true) {
+              log.debug("reloader checking...");
+              File f = new File(sourceName);
+              if (modifyTime==0) {
+                 modifyTime = f.lastModified();
+                 log.debug("init " + f.getName() + ": last mod = " + modifyTime);
+              } else {
+                 if (f.lastModified()>modifyTime) {
+                    // reload the attributes
+                    log.debug("reload starting for " + attributeUri);
+                    locker.writeLock().lock();
+                    try {
+                       loadAttributes();
+                    } catch (Exception e) {
+                       log.error("reload errro: " + e);
+                    }
+                    locker.writeLock().unlock();
+                    modifyTime = f.lastModified();
+                    log.debug("reload completed, time now " + modifyTime);
+                 }
+              }
+              try {
+                 Thread.sleep(attributeRefresh * 1000);
+              } catch (InterruptedException e) {
+                 log.info("sleep interrupted");
+                 break;
+              }
+           }
+        }
+
+    }
+
+
     private void loadPolicyGroups() {
        filterPolicyGroups = new Vector();
        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -243,6 +288,10 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        tempUri = v;
     }
 
+    public void setAttributeRefresh(int i) {
+       attributeRefresh = i;
+    }
+
     public void setGroupManager(GroupManager v) {
        groupManager = v;
     }
@@ -250,6 +299,13 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
     public void init() {
        loadAttributes();
        loadPolicyGroups();
+
+       // start attribute list refresher
+       if (attributeRefresh>0) {
+          Thread reloader = new Thread(new AttributeReloader());
+          reloader.start();
+       }
+       
     }
 
 }

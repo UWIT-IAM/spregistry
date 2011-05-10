@@ -57,6 +57,8 @@ public class Rule implements Serializable  {
 
        if (type.equals("basic:AttributeValueString")) {
           value = ele.getAttribute("value");
+       } else if (type.equals("basic:AttributeValueRegex")) {
+          value = ele.getAttribute("regex");
        } else {
           throw new FilterPolicyException("unknown rule requirement rules not editable");
        }
@@ -70,7 +72,9 @@ public class Rule implements Serializable  {
     }
 
     public void writeXml(BufferedWriter xout) throws IOException {
-       xout.write("     <basic:Rule xsi:type=\"basic:AttributeValueString\" value=\"" + value + "\"/>\n");
+       String valueStr = "value";
+       if (type.equals("basic:AttributeValueRegex")) valueStr = "regex";
+       xout.write("     <basic:Rule xsi:type=\"" + type + "\" " + valueStr + "=\"" + value + "\"/>\n");
     }
 
     public void setType(String v) {
@@ -87,5 +91,11 @@ public class Rule implements Serializable  {
        return (value);
     }
 
+    public boolean isString() {
+       return type.equals("basic:AttributeValueString");
+    }
+    public boolean isRegex() {
+       return type.equals("basic:AttributeValueRegex");
+    }
 }
 

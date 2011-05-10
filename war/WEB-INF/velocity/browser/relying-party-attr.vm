@@ -65,9 +65,10 @@ function submitAttributeRequest() {
 <div class="infobox" name="popin" id="arDiv">
 <form action="javascript:submitAttributeRequest()">
 <table cellpadding="2" width="100%">
- <tr><td align="left">Attribute request</td>
+ <tr><th align="left">Attribute request</th>
        <td align="right"><a href="javascript:hidePopin(null, 'arDiv')"/><img src="/close.png" alt="close"/></a></td>
  </tr>
+ <tr><td colspan="2"><hr/></td></tr>
  <tr><td>Check the attributes you need; uncheck those you no longer need.
 <br>
  In the text area explain your need for the checked attributes
@@ -143,6 +144,7 @@ function submitAttributeRequest() {
  <td class="optionbot" align="left" colspan="99">
      View
 #if ($caneditsomething)
+     <script>v_canEdit=true;</script>
      &nbsp;|&nbsp;<a href="javascript:goTo('${root}${vers}/rp/attr?id=${relyingParty.entityId}&view=edit')">Edit</a>
 #end
 #if ( $domainOwner )
@@ -168,10 +170,10 @@ function submitAttributeRequest() {
         </tr>
         #foreach ( $value in $attribute.valueRules )
           #if ( $value.type == "basic:ANY" )
-          <tr><td class="groupitem" colspan="2">All values</td><td/></tr>
+          <tr><td class="groupitem" colspan="2">All values</td></tr>
           #else
            #foreach ( $rule in $value.rules )
-             <tr><td class="groupitem" colspan="2">${rule.value}</td><td/></tr>
+             <tr><td class="groupitem" colspan="2">#if ($rule.regex)<span class="subtitle">(regex)</span>#end ${rule.value}</td></tr>
            #end
           #end
         #end ## value

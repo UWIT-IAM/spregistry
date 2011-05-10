@@ -61,10 +61,18 @@ public class ValueRule implements Serializable  {
        permit = pf;
 
        // add value as first rule
-       value = ele.getAttribute("value");
-       if (value.length()>0) {
-           log.debug("adding value as rule: " + value);
-           rules.add(new Rule(type, value));
+       if (type.equals("basic:AttributeValueString")) {
+          value = ele.getAttribute("value");
+          if (value.length()>0) {
+              log.debug("adding value as rule: " + value);
+              rules.add(new Rule(type, value));
+          }
+       } else if (type.equals("basic:AttributeValueRegex")) {
+          value = ele.getAttribute("regex");
+          if (value.length()>0) {
+              log.debug("adding value as rule: " + value);
+              rules.add(new Rule(type, value));
+          }
        }
 
        NodeList nl1 = ele.getChildNodes();
@@ -105,7 +113,9 @@ public class ValueRule implements Serializable  {
        if (rules.size()==0) {
           xout.write("    <" + pd + " xsi:type=\"" + type + "\"/>\n");
        } else if (rules.size()==1) {
-          xout.write("    <" + pd + " xsi:type=\"" + rules.get(0).getType() + "\" value=\"" + rules.get(0).getValue() + "\"/>\n");
+          String valueStr = "value";
+          if (rules.get(0).getType().equals("basic:AttributeValueRegex")) valueStr = "regex";
+          xout.write("    <" + pd + " xsi:type=\"" + rules.get(0).getType() + "\" " + valueStr + "=\"" + rules.get(0).getValue() + "\"/>\n");
        } else {
           xout.write("    <" + pd + " xsi:type=\"" + type + "\">\n");
           for (int i=0; i<rules.size(); i++) rules.get(i).writeXml(xout);
