@@ -47,7 +47,7 @@ public final class Ownership {
     public static boolean isDomainOwner(String id, String entity) {
 
 
-       // maybe strip junk form entity
+       // maybe strip junk from entity
        String domain = entity;
        if (domain.startsWith("http://")) domain = domain.substring(7);
        if (domain.startsWith("https://")) domain = domain.substring(8);

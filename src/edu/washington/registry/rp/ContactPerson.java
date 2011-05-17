@@ -85,39 +85,6 @@ public class ContactPerson implements Serializable  {
     }
 
 
-/**
-    public Element toDOM(Document doc) {
-        Element cp = doc.createElement("ContactPerson");
-        cp.setAttribute("contactType", type);
-        if (company != null) {
-           Element e = doc.createElement("Company");
-           e.appendChild(doc.createTextNode(company));
-           cp.appendChild(e);
-        }
-        if (givenName != null) {
-           Element e = doc.createElement("GivenName");
-           e.appendChild(doc.createTextNode(givenName));
-           cp.appendChild(e);
-        }
-        if (surName != null) {
-           Element e = doc.createElement("SurName");
-           e.appendChild(doc.createTextNode(surName));
-           cp.appendChild(e);
-        }
-        if (email != null) {
-           Element e = doc.createElement("EmailAddress");
-           e.appendChild(doc.createTextNode(email));
-           cp.appendChild(e);
-        }
-        if (phone != null) {
-           Element e = doc.createElement("TelephoneNumber");
-           e.appendChild(doc.createTextNode(phone));
-           cp.appendChild(e);
-        }
-       return cp;
-    }
-**/
-
     public void writeXml(BufferedWriter xout) throws IOException {
        xout.write("  <ContactPerson contactType=\"" + type + "\">\n");
        if (company != null) xout.write("   <Company>" + company + "</Company>\n");
@@ -163,5 +130,11 @@ public class ContactPerson implements Serializable  {
        return (email);
     }
 
+    public void setPhone(String v) {
+       phone = v;
+    }
+    public String getPhone() {
+       return (phone);
+    }
 }
 

@@ -43,7 +43,7 @@ spEnt.prototype.getDesc = function() {
   return this.description;
 };
 spEnt.prototype.contains = function(str) {
-  if (this.entityId.indexOf(str)>=0) return true;
+  if (this.entityId.toLowerCase().search(str.toLowerCase())>=0) return true;
   return false;
 };
 
@@ -103,7 +103,7 @@ function localOnLoad() {
 
 <tr> <td class="title" align="left" colspan="3">Find service providers</td> </tr>
 
-<form id="rpsearch" type="GET" action="${root}${vers}/search">
+<form id="rpsearch" type="GET" action="javascript:return(true)">
 <tr><td class="grouplabel" colspan="99">Search filter</td></tr>
 <tr>
 <td class="groupitem"><input type="checkbox" id="selectic" value="IC"  $checked  onClick="doFilter()" />InCommon service providers</td>

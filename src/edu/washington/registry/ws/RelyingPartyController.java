@@ -560,17 +560,15 @@ public class RelyingPartyController {
             session.pageTitle = "New service provider at " + dns;
             session.pageType = "relying-party-edit";
             newEntity = true;
-        }
 
-        if (dupOpt) {
+        } else if (dupOpt) {
             rp = rpManager.genRelyingPartyByCopy(dns, dupId);
             if (rp!=null) byLookup = true;
             id = rp.getEntityId();
             session.pageType = "relying-party-edit";
             newEntity = true;
-        }
 
-        if (newOpt) {
+        } else if (newOpt || lookupOpt) {       // also catches lookup w/o dns
             session.pageType = "relying-party-new";
             newEntity = true;
         }
