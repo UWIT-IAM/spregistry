@@ -226,7 +226,7 @@ function deleteRP() {
 #end
 #if ( $metadataByDefault )
   <tr><td class="warn">Your Service Provider did not respond to a request for metadata. 
-These are default values for a Shibboleth 2.x Service Provider.  The will very likely need to be edited.</td></tr>
+These are default values for a Shibboleth 2.x Service Provider.  They will very likely need to be edited.</td></tr>
 #end
 
 <tr>
@@ -533,7 +533,7 @@ your service provider's changed metadata.
   Service Provider's metadata.
    </td></tr>
 <tr class="cleanDetail"><td width="10px"/><td valign="top">Shown is a summary of the
-  Service Provider's metadata.  Click <i>Show messy details</i> to see the details
+  Service Provider's metadata.  Click <i>Show</i> to see the details
    of these metadata.
    </td></tr>
 <tr><td width="10px"/><td valign="top">Clear an entry to delete it.
