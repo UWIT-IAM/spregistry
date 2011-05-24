@@ -43,6 +43,7 @@ import org.xml.sax.SAXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.washington.registry.ws.RelyingPartyController;
 import edu.washington.registry.util.XMLHelper;
 import edu.washington.registry.util.GroupManager;
 import edu.washington.registry.exception.FilterPolicyException;
@@ -190,9 +191,11 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
           }
        }
 
+/**
        for (int i=0; i<attributes.size(); i++) {
-           groupManager.getGroup(attributes.get(i).getAuthorizingGroup());
+           RelyingPartyController.getGroupManager().getGroup(attributes.get(i).getAuthorizingGroup());
        }
+ **/
     }
 
     class AttributeReloader implements Runnable {
@@ -265,7 +268,7 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
      
     // can user edit
     public boolean userCanEdit(Attribute attribute, String user) {
-       if (groupManager.isMember(attribute.getAuthorizingGroup(), user)) return true;
+       if (RelyingPartyController.getGroupManager().isMember(attribute.getAuthorizingGroup(), user)) return true;
        return false;
     }
 
@@ -292,9 +295,11 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        attributeRefresh = i;
     }
 
+/**
     public void setGroupManager(GroupManager v) {
        groupManager = v;
     }
+ **/
 
     public void init() {
        loadAttributes();

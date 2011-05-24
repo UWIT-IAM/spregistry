@@ -40,6 +40,10 @@
 <span id="requestStatusDiv" class="notice"></span>
      </td>
 
+ <td align="center" class="crumblogout" valign="bottom" nowrap="nowrap">
+     <a class="" href="${root}${vers}/logout/">Log Out</a></td>
+
+
     </tr></table>
  </td></tr>
 </table>

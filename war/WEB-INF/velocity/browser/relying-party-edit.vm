@@ -200,9 +200,16 @@ function deleteRP() {
    if (entityId=='') return;
    if (!confirm('Permanently delete the Service Provider: ' + entityId + '?')) return;
 
-   finalAction = '${root}${vers}/rp';
+   finalAction = showDeletedGroup;
    doRequest('DELETE', '${root}${vers}/rp?id=' + entityId + '&mdid=UW&xsrf=${xsrf}', '', null);
 }
+
+function showDeletedGroup()
+{
+   page=document.getElementById('PageContent');
+   page.innerHTML = '<p>Service provider ${relyingParty.entityId} deleted.</p>';
+}
+
 
 </script>
 

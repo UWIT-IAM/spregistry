@@ -50,8 +50,9 @@ import javax.servlet.http.Cookie;
 import edu.washington.registry.rp.RelyingParty;
 import edu.washington.registry.rp.RelyingPartyManager;
 import edu.washington.registry.rp.Metadata;
-import edu.washington.registry.util.Ownership;
 import edu.washington.registry.util.XMLHelper;
+import edu.washington.registry.util.GroupManager;
+import edu.washington.registry.util.OwnerManager;
 
 import edu.washington.registry.filter.FilterPolicyManager;
 import edu.washington.registry.filter.AttributeFilterPolicy;
@@ -80,6 +81,8 @@ public class RelyingPartyController {
 
     private FilterPolicyManager filterPolicyManager;
     private RelyingPartyManager rpManager;
+    private static GroupManager groupManager;
+    private static OwnerManager ownerManager;
 
     private MailSender mailSender;
     private SimpleMailMessage templateMessage;
@@ -511,7 +514,7 @@ public class RelyingPartyController {
                }
             }
             session.pageTitle = rp.getEntityId();
-            if (rp.getEditable() && Ownership.isDomainOwner(session.remoteUser, id)) {
+            if (rp.getEditable() && ownerManager.isDomainOwner(session.remoteUser, id)) {
                 if (editOpt) {
                     log.debug("sending edit page");
                     session.pageType = "relying-party-edit";
@@ -528,7 +531,7 @@ public class RelyingPartyController {
         boolean byLookup = false;
         boolean byDefault = false;
         if (lookupOpt && dns!=null && dns.length()>0) {
-            if (!Ownership.isDomainOwner(session.remoteUser, dns)) {
+            if (!ownerManager.isDomainOwner(session.remoteUser, dns)) {
                 response.setStatus(401);
                 session.pageType = "relying-party-new";
                 session.pageTitle = "New Service provider";
@@ -608,7 +611,7 @@ public class RelyingPartyController {
 
         ModelAndView mv = emptyMV("OK dokey");
 
-        if (!Ownership.isDomainOwner(session.remoteUser, id)) {
+        if (!ownerManager.isDomainOwner(session.remoteUser, id)) {
             status = 401;
             mv.addObject("alert", "You are not an owner of that entity.");
         }
@@ -673,7 +676,7 @@ public class RelyingPartyController {
 
         ModelAndView mv = emptyMV("OK dokey delete rp");
 
-        if (!Ownership.isDomainOwner(session.remoteUser, id)) {
+        if (!ownerManager.isDomainOwner(session.remoteUser, id)) {
             status = 401;
             mv.addObject("alert", "You are not the owner.");
         } else {
@@ -731,7 +734,7 @@ public class RelyingPartyController {
         mv.addObject("filterPolicyGroups", filterPolicyGroups);
         mv.addObject("filterPolicyManager", filterPolicyManager);
         mv.addObject("remoteUser", session.remoteUser);
-        if (Ownership.isDomainOwner(session.remoteUser, id)) mv.addObject("domainOwner",true);
+        if (ownerManager.isDomainOwner(session.remoteUser, id)) mv.addObject("domainOwner",true);
         mv.addObject("attributes", attributes);
         return (mv); 
     }
@@ -815,7 +818,7 @@ public class RelyingPartyController {
 
         ModelAndView mv = emptyMV("OK dokey");
 
-        if (!Ownership.isDomainOwner(session.remoteUser, id)) {
+        if (!ownerManager.isDomainOwner(session.remoteUser, id)) {
             status = 401;
             mv.addObject("alert", "You are not an owner of that entity.");
         }
@@ -900,6 +903,20 @@ public class RelyingPartyController {
 
     public void setFilterPolicyManager(FilterPolicyManager m) {
         filterPolicyManager = m;
+    }
+
+    public void setGroupManager(GroupManager m) {
+        groupManager = m;
+    }
+    public static GroupManager getGroupManager() {
+        return groupManager;
+    }
+
+    public void setOwnerManager(OwnerManager m) {
+        ownerManager = m;
+    }
+    public static OwnerManager getOwnerManager() {
+        return ownerManager;
     }
 
     /* utility */

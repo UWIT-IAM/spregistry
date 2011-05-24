@@ -159,6 +159,6 @@ function localOnLoad() {
 ## error and status messages
 <div id="requestStatusDiv" class="notice">&nbsp;
 </div>
-<div class="status">${status}
+<div class="status">$!{status}
 </div>
 

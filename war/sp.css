@@ -141,6 +141,18 @@ img {border: none;}
         font-size:90%;
         text-decoration: none }
 
+
+.crumblogout {color: #6b0000;
+        border-width: 0px 4px 2px 0px; border-style: groove;
+        padding:3px 4px 2px 0px;
+        font-family: helvetica, arial, sans-serif;
+        font-size:90%;
+        text-decoration: none }
+.crumblogout A:link    { color: #6b0000 ; text-decoration: none}
+.crumblogout A:visited { color: #6b0000 ; text-decoration: none}
+.crumblogout A:active  { color: #6b0000 ; text-decoration: none}
+
+
 .crumbtop { color: #304040;
        border-width: 2px 0px 0px 0px; border-style: groove; 
        font-family: helvetica, arial, sans-serif;

@@ -40,6 +40,7 @@
     </bean>
 
     <bean id="spfpManager" init-method="init" class="edu.washington.registry.filter.XMLFilterPolicyManager">
+        <property name="groupManager" ref="groupManager" />
         <property name="policyGroupSources">
           <list>
             <props>
@@ -64,14 +65,10 @@
 
     <bean id="groupManager" init-method="init" class="edu.washington.registry.util.GWSGroupManager">
         <property name="urlBase" value="https://iam-ws.u.washington.edu:7443/group_sws/v1/group/" />
-        <property name="certFile" value="/data/local/etc/urizen2.crt" />
-        <property name="keyFile" value="/data/local/etc/urizen2.key" />
+        <property name="certFile" value="/data/local/etc/urizen3.crt" />
+        <property name="keyFile" value="/data/local/etc/urizen3.key" />
         <property name="caFile" value="/data/local/etc/uwca.crt" />
         <property name="memberXPath" value="//*[@class='member']" />
-    </bean>
-
-    <bean id="ownerManager" init-method="init" class="edu.washington.registry.util.DNSOwnerManager">
-        <property name="ownerGroupBase" value="u_weblogin_dns-owners" />
     </bean>
 
 </beans>

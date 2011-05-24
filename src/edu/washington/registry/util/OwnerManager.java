@@ -21,26 +21,21 @@ package edu.washington.registry.util;
 import java.util.List;
 import java.util.Vector;
 
-public interface GroupManager {
+public interface OwnerManager {
 
-    class GMGroup {
-        public String name;
-        public List<String> members;
+    class DomainOwner {
+        public String domain;
+        public List<String> owners;
         public long mtime;
-        public GMGroup(String n) {
-           name = n;
-           members = new Vector();
+        public DomainOwner(String n) {
+           domain = n;
+           owners = new Vector();
            mtime = 0;
         }
     }
 
-    // add this group to our list
-    // public void getGroup(String name);
-    
-    // test membership
-    public boolean isMember(String groupName, String user);
+    public boolean isDomainOwner(String id, String entity);
 
     public void init();
 
 }
-

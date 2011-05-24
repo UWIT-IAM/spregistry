@@ -23,6 +23,7 @@ import java.io.InputStream;
 
 import java.util.List;
 import java.util.Vector;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.HttpClient;
@@ -65,6 +66,7 @@ import edu.washington.registry.util.XMLHelper;
 public class GWSGroupManager implements GroupManager  {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private final ReentrantReadWriteLock locker = new ReentrantReadWriteLock();
     
     // GWS connection params
     private String urlBase = "https://iam-ws.u.washington.edu:7443/";
@@ -76,36 +78,46 @@ public class GWSGroupManager implements GroupManager  {
     private boolean initialized = false;
     private DocumentBuilder documentBuilder;
     XPathExpression memberXpathExpression;
+    private long refresh = 600;  // seconds
 
     private List<GMGroup> groups;
 
-
     // add this group to our list
-    public void getGroup(String name) {
+    private GMGroup getGroup(String name) {
        log.debug("getGroup for " + name);
-       if (name==null || name.length()==0) return;
+       if (name==null || name.length()==0) return null;
+       locker.readLock().lock();
        for (int i=0;i<groups.size();i++) {
-          if (groups.get(i).name.equals(name)) return;
+          if (groups.get(i).name.equals(name)) {
+             GMGroup grp = groups.get(i);
+             locker.readLock().unlock();
+             if ( (grp.mtime + refresh) < (System.currentTimeMillis()/1000) ) {
+                log.debug("group " + name + " needs member refresh");
+                getMembers(grp);
+             }
+             return grp;
+          }
        }
+       locker.readLock().unlock();
        GMGroup group = new GMGroup(name);
        getMembers(group);
+       locker.writeLock().lock();
        groups.add(group);
+       locker.writeLock().unlock();
+       return group;
     }
 
     // test membership
     public boolean isMember(String groupName, String user) {
-       for (int i=0;i<groups.size();i++) {
-          GMGroup grp = groups.get(i);
-          if (grp.name.equals(groupName)) {
-             for (int j=0;j<grp.members.size();j++) if (grp.members.get(j).equals(user)) return true;
-             return false;
-          }
+       GMGroup grp = getGroup(groupName);
+       if (grp!=null) {
+          for (int j=0;j<grp.members.size();j++) if (grp.members.get(j).equals(user)) return true;
        }
        return false;
     }
     
     private void getMembers(GMGroup group) {
-       group.members = new Vector();
+       List<String> members = new Vector();
        log.debug("gettting members for " + group.name);
        DefaultHttpClient httpclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
        try {
@@ -133,23 +145,17 @@ public class GWSGroupManager implements GroupManager  {
           for (int j = 0; j < nodes.getLength(); j++) {
               String mbr = (String)nodes.item(j).getTextContent();
               log.debug("add mbr " + mbr);
-              group.members.add(mbr);
+              members.add(mbr);
           }
 
-/**
+          group.members = members;
 
-          List<Element> list =  XMLHelper.getElementsByClass(doc.getDocumentElement(), "member");
-          log.debug("found " + list.size() + " members"); 
-          for (int i=0; i<list.size(); i++) {
-             Element ele = list.get(i);
-             // try {
-                group.members.add(ele.getTextContent());
-             // }
-          }
- **/
        } catch (Exception e) {
           log.error("exception " + e);
        }
+
+       group.mtime = System.currentTimeMillis() / 1000;
+
     }
 
     // initialize
