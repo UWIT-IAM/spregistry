@@ -335,7 +335,7 @@ public class RelyingPartyController {
            log.debug("login: ck = ...;" + remoteUser + ";" + dbl + ";" + methodKey + ";" + modtime/1000);
            String enc = RPCrypt.encode(Double.toString(modtime)+ ";" + remoteUser + ";" + dbl + ";" + methodKey + ";" + modtime/1000);
            log.debug("login: enc = " + enc);
-           Cookie c = new Cookie("sprcookie", enc);
+           Cookie c = new Cookie(loginCookie, enc);
            c.setSecure(true);
            c.setPath("/");
            response.addCookie(c);
@@ -406,7 +406,7 @@ public class RelyingPartyController {
         log.info("/ view");
         log.info(".. path=" + request.getPathInfo());
 
-        session.pageTitle = "rp home";
+        session.pageTitle = "SP registry home";
         session.pageType = "home";
 
         ModelAndView mv = basicModelAndView(session);
