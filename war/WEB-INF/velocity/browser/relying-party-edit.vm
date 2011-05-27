@@ -244,10 +244,12 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
 
 <tr>
  <td class="optionbot" align="left" colspan="99">
+    #if ( ! $newEntity )
      <a href="javascript:goTo('${root}${vers}/rp?id=${relyingParty.entityId}&mdid=${relyingParty.metadataId}')">View</a>
      &nbsp;&nbsp;Edit
-    #if ( ! $newEntity )
      &nbsp;&nbsp;<a href="javascript:deleteRP()">Delete</a>
+    #else
+     New
     #end
  </td>
 </tr>
@@ -263,9 +265,13 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
 ## entity id
 
       <tr><td class="grouplabel">Entity Id</td>
-      </tr>
-      <tr><td class="groupitem" colspan="2">${relyingParty.entityId}</td><td/></tr>
-       <input type="hidden" id="entityid" value="${relyingParty.entityId}"/>
+      <td>
+    #if ( ! $newEntity )
+       <input type="hidden" id="entityid" value="${relyingParty.entityId}"/>${relyingParty.entityId}
+    #else
+       <input type="text" size="50" id="entityid" value="$!{relyingParty.entityId}"/>
+    #end
+      <td/></tr>
 
  
 ## Organization
@@ -378,14 +384,16 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
 
      <tr><td class="groupindenttitle" >Metadata details</td>
      </tr>
+#if ( ! $newEntity )
 <tr>
  <td class="optionbot" align="left" colspan="99">
      <span id="showDetail"><a href="javascript:toggleDetail()">Show</a></span>
      <span id="hideDetail" ${hide} ><a href="javascript:toggleDetail()">Hide</a></span>
  </td>
 </tr>
+#end
 
-     <tr><td class="groupindent" id="messyDetail" ${hide} >
+     <tr><td class="groupindent" id="messyDetail" #if (!$newEntity ) ${hide} #end >
        <table >
 
 
@@ -535,7 +543,8 @@ your service provider's changed metadata.
 
 
 <table class="helptext" cellpadding="4px">
-<tr><th align="left" colspan="2">Service Provider</td></tr>
+<tr><th align="left" colspan="2">Service Provider Metadata</td></tr>
+#if ( ! $newEntity )
 <tr class="messyDetail" ${hide}><td width="10px"/><td valign="top">Shown are the details of the
   Service Provider's metadata.
    </td></tr>
@@ -545,8 +554,17 @@ your service provider's changed metadata.
    </td></tr>
 <tr><td width="10px"/><td valign="top">Clear an entry to delete it.
    </td></tr>
+#else
+<tr><td width="10px"/><td valign="top">Your entity id must begin with
+<br/><b>https://<i>your_dns_name</i>/</b>
+   </td></tr>
+<tr><td width="10px"/><td valign="top">If you enter a previously registered entity id, the new
+information will replace the existing information.
+   </td></tr>
+
 <tr><td width="10px"/><td valign="top">Click on the <b>+</b> to add additional entries.
    </td></tr>
+#end
 </table>
 
 

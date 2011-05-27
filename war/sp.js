@@ -99,7 +99,7 @@ function handleRequestResponse()
             if ( typeof finalAction == 'function' ) finalAction();
             else window.location = finalAction;
          } else {
-              alert(request.responseText);
+              // alert(request.responseText);
             if (finalErrorElement!=null) {
                finalErrorElement.innerHTML = request.responseText;
                finalErrorElement.style.display = '';

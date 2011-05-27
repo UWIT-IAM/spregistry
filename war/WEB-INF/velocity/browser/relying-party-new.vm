@@ -19,7 +19,6 @@
 ## Templates for new rp register page 
 ##
 
-
 #parse ( "crumbs.vm" )
 
 ##
@@ -36,31 +35,36 @@
 ## ----- Main policy list page -----
 ##
 
-
-<h3>Shibboleth Service Provider Registry</h3>
+<p class="title">Register a new service provider</p>
 
 #if ( $errmsg )
 <div class="err">$errmsg</div>
 #end
+<p class="notice">
+You must be the registered owner of the DNS name of your service provider.
+</p>
+<hr/>
+<p/>
+<h3>Let us retrieve your SP's metadata</h3>
+<p>
+If your SP is configured to show its metadata, the default configuration for most Shibboleth installations,
+we can retrieve most of the information we need.
+</p>
 
 Enter the DNS name of your Service Provider.
 
-<p>
+<p/>
 <form type="GET" action="$root$vers/rp">
 <input type="hidden" name="view" value="lookup">
 <input id="dns" type="text" width="40" name="dns" value="">
 
-<p>
+<p/>
 <ul>
-<p>
+<p/>
 <li>
 Add the port number to the domain if your service uses a nonstandard port, e.g. <tt>example.com:9443</tt>
 </li>
-<p>
-<li>
-You must be the registered owner of the DNS name of your SP.
-</li>
-<p>
+<p/>
 <li>
 The registry will attempt to retrieve metadata from your SP itself,
 from the standard metadata endpoint, /Shibboleth.sso/Metadata.
@@ -68,19 +72,30 @@ Make sure that address is public.  There are no private data in your
 SP's metadata, so there is normally no reason to restrict 
 access to this endpoint.
 </li>
-<p>
-<li>
-If that retrieval fails the registry will generate default values
-for much of your SP's metadata.  It assumes you are registering 
-a Shibboleth 2.x SP.
-</li>
 </ul>
 <p>
 
 <input class="chooserbutton" type="submit" name="doit" value="Lookup">
 </form>
 
+<p/>
+<hr/>
+<p/>
+or
+<p/>
+<h3>Enter your SP's metadata manually</h3>
+<p>
 
+If online metadata is not available you may enter it manually.
+ 
+<p/>
+<form type="GET" action="$root$vers/rp">
+<input type="hidden" name="view" value="manual">
+<input class="chooserbutton" type="submit" name="doit" value="Do it manually">
+</form>
+
+<p/>
+<hr/>
 
 ##
 ## ----- right side extra text ----
@@ -99,6 +114,14 @@ a Shibboleth 2.x SP.
 <tr><td width="10px"/><td valign="top" colspan="2">Metadata retrieved from your 
    SP is generally complete in its technical details, but does not have
    contact information.  You will supply that.
+   </td></tr>
+
+<tr><th align="left" colspan="99">DNS ownership</td></tr>
+<tr><td width="10px"/><td valign="top" colspan="2">
+   In order for us to register your service provide you must be known to us
+   as the responsible person for your service provider's host.
+   Contact <a href="mailto:netops@uw.edu">Network Operations</a> if you feel you should be 
+   the owner of a domain.
    </td></tr>
 
 </table>

@@ -481,12 +481,14 @@ public class RelyingPartyController {
         boolean dupOpt = false;
         boolean refreshOpt = false;
         boolean newOpt = false;
+        boolean manOpt = false;
         if (view==null) view = "";
         if (view.equals("edit")) editOpt = true;
         if (view.equals("lookup")) lookupOpt = true;
         if (view.equals("dup") && dupId!=null) dupOpt = true;
         if (view.equals("refresh")) refreshOpt = true;
         if (view.equals("new")) newOpt = true;
+        if (view.equals("manual")) manOpt = true;
 
         boolean newEntity = false;
         boolean showEditCrumb = false;
@@ -544,8 +546,12 @@ public class RelyingPartyController {
                rp = rpManager.genRelyingPartyByLookup(dns);
                byLookup = true;
             } catch (RelyingPartyException e) {
-               rp = rpManager.genRelyingPartyByDefault(dns);
-               byDefault = true;
+                response.setStatus(401);
+                session.pageType = "relying-party-new";
+                session.pageTitle = "New Service provider";
+                ModelAndView mv = basicModelAndView(session);
+                mv.addObject("errmsg", "Metadata could not be retrieved from " + cleanString(dns));
+                return mv;
             }
     
             id = rp.getEntityId();
@@ -555,7 +561,7 @@ public class RelyingPartyController {
                session.pageType = "relying-party-new";
                session.pageTitle = "New Service provider";
                ModelAndView mv = basicModelAndView(session);
-               mv.addObject("errmsg", "An entity already exists for " + cleanString(dns));
+               mv.addObject("errmsg", "The retrieved entity is already registered.");
                return mv;
             } catch (RelyingPartyException e) {
                // no action, this is expected
@@ -571,7 +577,11 @@ public class RelyingPartyController {
             session.pageType = "relying-party-edit";
             newEntity = true;
 
-        } else if (newOpt || lookupOpt) {       // also catches lookup w/o dns
+        } else if (manOpt) {       // manual entry
+            session.pageType = "relying-party-edit";
+            newEntity = true;
+
+        } else if (newOpt || lookupOpt) {       // catches lookup w/o dns
             session.pageType = "relying-party-new";
             newEntity = true;
         }
@@ -588,7 +598,6 @@ public class RelyingPartyController {
         mv.addObject("relyingParty", rp);
         return (mv); 
     }
-
 
     // update an rp
     @RequestMapping(value="/rp", method=RequestMethod.PUT)
@@ -611,20 +620,30 @@ public class RelyingPartyController {
 
         ModelAndView mv = emptyMV("OK dokey");
 
+        if (!(id.startsWith("https://")||id.startsWith("http://"))) {
+            status = 400;
+            mv.addObject("alert", "Not a vaild entity id.");
+            response.setStatus(status);
+            return mv;
+        }
         if (!ownerManager.isDomainOwner(session.remoteUser, id)) {
             status = 401;
             mv.addObject("alert", "You are not an owner of that entity.");
+            response.setStatus(status);
+            return mv;
         }
 
         Document doc = null;
         try {
-           DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-           DocumentBuilder builder = builderFactory.newDocumentBuilder();
-           doc = builder.parse (in);
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            doc = builder.parse (in);
         } catch (Exception e) {
-           log.info("parse error: " + e);
-           status = 400;
-           mv.addObject("alert", "The posted document was not valid:\n" + e);
+            log.info("parse error: " + e);
+            status = 400;
+            mv.addObject("alert", "The posted document was not valid:\n" + e);
+            response.setStatus(status);
+            return mv;
         }
         if (doc!=null) {
            try {
