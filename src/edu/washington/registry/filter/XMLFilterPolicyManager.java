@@ -66,6 +66,8 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
     private List<Properties> policyGroupSources;
     private String tempUri = "file:/tmp/fp.xml";
 
+    Thread reloader = null;
+
     public List<AttributeFilterPolicy> getFilterPolicies(String rpid) {
        log.debug("looking for fps for " + rpid);
        List<AttributeFilterPolicy> list = new Vector();
@@ -198,7 +200,7 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
  **/
     }
 
-    class AttributeReloader implements Runnable {
+    class AttributeReloader extends Thread {
         
         private long modifyTime = 0;
 
@@ -230,6 +232,10 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
                  }
               }
               try {
+                 if (isInterrupted()) {
+                    log.info("interrupted during processing");
+                    break;
+                 }
                  Thread.sleep(attributeRefresh * 1000);
               } catch (InterruptedException e) {
                  log.info("sleep interrupted");
@@ -307,10 +313,14 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
 
        // start attribute list refresher
        if (attributeRefresh>0) {
-          Thread reloader = new Thread(new AttributeReloader());
+          reloader = new Thread(new AttributeReloader());
           reloader.start();
        }
        
+    }
+
+    public void cleanup() {
+        if (reloader != null) reloader.interrupt();
     }
 
 }

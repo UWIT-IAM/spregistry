@@ -78,6 +78,11 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
     public void init() {
        loadMetadata();
     }
+    public void cleanup() {
+       for (int i=0;i<metadata.size();i++) {
+          metadata.get(i).cleanup();
+       }
+    }
 
     // get selected list of rps
     public List<RelyingParty> getRelyingParties(String sel, String mdid) {

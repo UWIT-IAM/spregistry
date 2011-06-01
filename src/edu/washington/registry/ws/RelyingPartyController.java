@@ -105,6 +105,7 @@ public class RelyingPartyController {
 
     // sessions
     private String standardLoginPath = "/login";
+    private String standardDSLoginPath = "/dslogin";
     private String secureLoginPath = "/securelogin";
     private long standardLoginSec = 9*60*60;  // 9 hour session lifetime
     private long secureLoginSec = 1*60*60;  // 1 hour session lifetime
@@ -113,7 +114,6 @@ public class RelyingPartyController {
 
     // key for crypt ops
     private static String cryptKey;
-
 
     class RPSession {
        private String viewType;
@@ -131,11 +131,13 @@ public class RelyingPartyController {
        private String remoteAddr;
        private String loginMethod;
        private boolean authn2;
+       private boolean isUWLogin;
     }
 
     private RPSession processRequestInfo(HttpServletRequest request, HttpServletResponse response) {
         RPSession session = new RPSession();
         session.authn2 = false;
+        session.isUWLogin = false;
 
         log.info("RP new session =============== path=" + request.getPathInfo());
 
@@ -156,6 +158,7 @@ public class RelyingPartyController {
                   log.debug("login time = " + cookieData[4]);
                   long cSec = new Long(cookieData[4]);
                   long nSec = new Date().getTime()/1000;
+                  if (cookieData[1].indexOf("@")<0) session.isUWLogin = true;  // klugey way to know UW people
                   if (nSec<(cSec+standardLoginSec)) {
                      if ((nSec>(cSec+secureLoginSec)) && session.authn2) {
                         log.debug("secure expired");
@@ -218,7 +221,8 @@ public class RelyingPartyController {
         /* send missing remoteUser to login */
 
         if (session.remoteUser==null) {
-           sendToLogin(request, response, standardLoginPath);
+           if (session.isUWLogin) sendToLogin(request, response, standardLoginPath);
+           else sendToLogin(request, response, standardDSLoginPath);
            return null;
         }
 
@@ -357,6 +361,11 @@ public class RelyingPartyController {
 
     @RequestMapping(value="/login/**", method=RequestMethod.GET)
     public ModelAndView basicLoginPage(HttpServletRequest request, HttpServletResponse response) {
+        return loginPage(request, response, 1);
+    }
+
+    @RequestMapping(value="/dslogin/**", method=RequestMethod.GET)
+    public ModelAndView dsLoginPage(HttpServletRequest request, HttpServletResponse response) {
         return loginPage(request, response, 1);
     }
 

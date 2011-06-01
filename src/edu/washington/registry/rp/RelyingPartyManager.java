@@ -33,4 +33,7 @@ public interface RelyingPartyManager extends Serializable {
 
    public List<Metadata> getMetadata();
 
+   public void init();
+   public void cleanup();
+
 }

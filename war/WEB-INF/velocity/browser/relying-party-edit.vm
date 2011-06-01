@@ -28,7 +28,8 @@ var entityId;
 function showMoreFields(name, id) {
    // show the first set of hidden ones
    for (e=0; e<20; e++) {
-     list = document.getElementsByName(name + e);
+     var enam = name + e;
+     list = document.getElementsByName(enam);
      if (list.length==0) break;
      if (list[0].style.display == '') continue;
      for (i=0; i<list.length; i++) {

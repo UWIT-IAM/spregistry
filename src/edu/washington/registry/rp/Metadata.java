@@ -57,6 +57,8 @@ public class Metadata {
    private int refreshInterval = 0;
    private List<RelyingParty> relyingParties;
 
+   Thread reloader = null;
+
     private String xmlStart = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
       "<EntitiesDescriptor Name=\"urn:washington.edu:rpedit\"\n" +
       "    xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\"\n" +
@@ -67,7 +69,7 @@ public class Metadata {
     private String xmlEnd = "</EntitiesDescriptor>";
     private String xmlNotice = "\n  <!-- DO NOT EDIT: This is a binary, created by sp-registry -->\n\n";
 
-    class MetadataReloader implements Runnable {
+    class MetadataReloader extends Thread {
         
         private long modifyTime = 0;
 
@@ -100,6 +102,10 @@ public class Metadata {
                  }
               }
               try {
+                 if (isInterrupted()) {
+                    log.info("interrupted during processing");
+                    break;
+                 }
                  Thread.sleep(refreshInterval * 1000);
               } catch (InterruptedException e) {
                  log.info("sleep interrupted");
@@ -130,7 +136,7 @@ public class Metadata {
        loadMetadata();
 
        if (refreshInterval>0) {
-          Thread reloader = new Thread(new MetadataReloader());
+          reloader = new Thread(new MetadataReloader());
           reloader.start();
        }
    }
@@ -298,6 +304,10 @@ public class Metadata {
        return tempUri;
     }
 
+    public void cleanup() {
+       log.info("Metadata got signal to cleanup");
+       if (reloader!=null) reloader.interrupt();
+    }
 
 }
 
