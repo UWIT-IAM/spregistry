@@ -24,12 +24,22 @@ v_sectionType = 'rp';
 
 var entityId;
 
+// pseudo getbyname that works with ie
+function getElementsByIdname(base) {
+   var list = [];
+   var i = 0;
+   while (document.getElementById(base + '_' + i)) {
+      list.push(document.getElementById(base + '_' + i++));
+   }
+   return list;
+}
+
 // show some inputs
 function showMoreFields(name, id) {
    // show the first set of hidden ones
    for (e=0; e<20; e++) {
      var enam = name + e;
-     list = document.getElementsByName(enam);
+     list = getElementsByIdname(name+e);
      if (list.length==0) break;
      if (list[0].style.display == '') continue;
      for (i=0; i<list.length; i++) {
@@ -283,13 +293,13 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
       </tr>
 
    #if ( $org )
-     <tr name="org0">
+     <tr id="org0_0">
       <td class="groupitem" align="left" >Name:</td><td><input type="text" size="50" id="orgn_0" value="$!org.name" /></td>
      </tr>
-     <tr name="org0">
+     <tr id="org0_1">
       <td class="groupitem" align="left" >Display:</td><td><input type="text" size="50" id="orgd_0" value="$!org.displayName" /></td>
      </tr>
-     <tr name="org0">
+     <tr id="org0_2">
       <td class="groupitem" align="left" >Url:</td><td><input type="text" size="50" id="orgu_0" value="$!org.url" /></td>
      </tr>
      #set ( $count = $count + 1)
@@ -297,13 +307,13 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
 
    ## Org only once?
    #if ( $count == 0 )
-     <tr name="org0">
+     <tr id="org0_0">
       <td class="groupitem" align="left" >Name:</td><td><input type="text" size="50" id="orgn_0" value="" /></td>
      </tr>
-     <tr name="org0">
+     <tr id="org0_1">
       <td class="groupitem" align="left" >Display:</td><td><input type="text" size="50" id="orgd_0" value="" /></td>
      </tr>
-     <tr name="org0">
+     <tr id="org0_2">
       <td class="groupitem" align="left" >Url:</td><td><input type="text" size="50" id="orgu_0" value="" /></td>
      </tr>
    #end
@@ -314,7 +324,7 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
       </tr>
    #set ( $count = 0 )
    #foreach ( $ct in $relyingParty.contactPersons )
-     <tr name="ct${count}">
+     <tr id="ct${count}_0">
       <td class="groupitem" align="left" >Type:</td><td>
        <select id="ctt_${count}">
        #foreach ( $t in ["","technical","support","administrative","billing","other"] )
@@ -327,18 +337,13 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
        </select>
      </td>
      </tr>
-     <tr name="ct${count}">
+     <tr id="ct${count}_1">
       <td class="groupitem" align="left" >Name:</td><td><input type="text" size="50" id="ctgn_${count}" value="$!ct.givenName" /></td>
      </tr>
-#*
-     <tr name="ct${count}">
-      <td class="groupitem" align="left" >Surname:</td><td><input type="text" size="50" id="ctsn_${count}" value="$!ct.surName" /></td>
-     </tr>
-*#
-     <tr name="ct${count}">
+     <tr id="ct${count}_2">
       <td class="groupitem" align="left" >Email:</td><td><input type="text" size="50" id="cte_${count}" value="$!ct.email" /></td>
      </tr>
-     <tr name="ct${count}">
+     <tr id="ct${count}_3">
       <td class="groupitem" align="left" >Phone:</td><td><input type="text" size="50" id="ctp_${count}" value="$!ct.phone" /></td>
      </tr>
      <tr><td/><td colspan="99" height="5"></td></tr>
@@ -346,7 +351,7 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
    #end
  
    #foreach ( $i in [ $count .. 4 ] )
-     <tr name="ct${i}" #if ( $i > 1 ) ${hide} #end >
+     <tr id="ct${i}_0" #if ( $i > 1 ) ${hide} #end >
       <td class="groupitem" align="left" >Type:</td><td>
        <select id="ctt_${i}">
        #foreach ( $t in ["","technical","support","administrative","billing","other"] )
@@ -359,18 +364,13 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
        </select>
      </td>
      </tr>
-     <tr name="ct${i}" #if ( $i > 1 ) ${hide} #end >
+     <tr id="ct${i}_1" #if ( $i > 1 ) ${hide} #end >
       <td class="groupitem" align="left" >Name:</td><td><input type="text" size="50" id="ctgn_${i}" value="" /></td>
      </tr>
-#*
-     <tr name="ct${i}" #if ( $i > 1 ) ${hide} #end >
-      <td class="groupitem" align="left" >Surname:</td><td><input type="text" size="50" id="ctsn_${i}" value="$!ct.surName" /></td>
-     </tr>
- *#
-     <tr name="ct${i}" #if ( $i > 1 ) ${hide} #end >
+     <tr id="ct${i}_2" #if ( $i > 1 ) ${hide} #end >
       <td class="groupitem" align="left" >Email:</td><td><input type="text" size="50" id="cte_${i}" value="" /></td>
      </tr>
-     <tr name="ct${i}" #if ( $i > 1 ) ${hide} #end >
+     <tr id="ct${i}_3" #if ( $i > 1 ) ${hide} #end >
       <td class="groupitem" align="left" >Phone:</td><td><input type="text" size="50" id="ctp_${i}" value="" /></td>
      </tr>
      #set ( $label = "" )
@@ -404,14 +404,14 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
       </tr>
    #set ( $count = 0 )
    #foreach ( $ps in $relyingParty.protocolSupportEnumerations )
-     <tr name="pse${count}">
+     <tr id="pse${count}_0">
       <td class="groupitem"</td><td><input type="text" size="40" name="pse_data" id="pse_${count}" value="$ps" /></td>
      </tr>
      #set ( $count = $count + 1)
    #end
 
    #foreach ( $i in [ $count .. 4 ] )
-     <tr name="pse${i}" ${hide}>
+     <tr id="pse${i}_0" ${hide}>
       <td class="groupitem"></td><td><input type="text" size="40" name="pse" id="pse_${i}" value="" /></td>
      </tr>
    #end
@@ -423,22 +423,12 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
       </tr>
    #set ( $count = 0 )
    #foreach ( $key in $relyingParty.keyDescriptors )
-      <tr name="ki${count}">
+      <tr id="ki${count}_0">
       <td class="groupitem" align="left">Name:</td>
         <td><input type="text" size="40" name="keyName_${count}" id="kn_${count}" value="$!key.keyName" /></td>
       </tr>
 
-#*
-      <tr name="ki${count}"><td class="groupitem" align="left" valign="top"></td>
-      <td class="groupitem" align="left" valign="top">Use:</td>
-       <select id="keyUse_${count}">
-         <option value="" #if ( !$key.use ) $selected #end ></option>
-         <option value="signing" #if ( $key.use == 'signing' ) $selected #end >signing</option>
-         <option value="encryption" #if ( $key.use == 'encryption' ) $selected #end >encryption</option>
-       </select>
- *#
-
-      <tr name="ki${count}">
+      <tr id="ki${count}_1">
       <td class="groupitem" align="left" valign="top">Cert:</td>
          <td class="certbox"><textarea cols="64" rows="5" name="keyCert_${count}" id="kc_${count}">$!key.certificate</textarea></td>
       </tr>
@@ -447,11 +437,11 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
 
    #foreach ( $i in [ $count .. 3 ] )
    
-      <tr name="ki${i}" ${hide}>
+      <tr id="ki${i}_0" ${hide}>
       <td class="groupitem" align="left">Name:</td>
         <td><input type="text" size="40" name="keyName_${i}" id="kn_${i}" value="" /></td>
       </tr>
-      <tr name="ki${i}" ${hide}>
+      <tr id="ki${i}_1" ${hide}>
       <td class="groupitem" align="left" valign="top">Cert:</td>
          <td class="certbox"><textarea cols="64" rows="10" name="keyCert_${i}" id="kc_${i}"></textarea></td>
       </tr>
@@ -466,14 +456,14 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
       </tr>
    #set ( $count = 0 )
    #foreach ( $name in $relyingParty.nameIDFormats )
-     <tr name="ni${count}">
+     <tr id="ni${count}_0">
       <td class="groupitem"><td><input type="text" size="40" name="nameId_${count}" id="ni_${count}" value="$name" /></td>
      </tr>
      #set ( $count = $count + 1)
    #end
 
    #foreach ( $i in [ $count .. 4 ] )
-     <tr name="ni${i}" ${hide}>
+     <tr id="ni${i}_0" ${hide}>
       <td class="groupitem"><td><input type="text" size="40" name="nameId_${xtra}" id="ni_${i}" value="" /></td>
      </tr>
    #end
@@ -484,11 +474,11 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
       </tr>
    #set ( $count = 0 )
    #foreach ( $acs in $relyingParty.assertionConsumerServices )
-     <tr name="acs${count}">
+     <tr id="acs${count}_0">
       <td class="groupitem" align="right" ><input type="text" size="2" id="acsi_${count}" value="$acs.index"/></td>
              <td nowrap="nowrap"><input type="text" size="50" id="acsb_${count}" value="$acs.binding" /></td>
      </tr>
-     <tr name="acs${count}">
+     <tr id="acs${count}_1">
       <td class="groupitem" align="left" ></td>
              <td nowrap="nowrap"><input type="text" size="50" id="acsl_${count}" value="$acs.location" /></td>
      </tr>
@@ -497,11 +487,11 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
    #end
 
    #foreach ( $i in [ $count .. 49 ] )
-     <tr name="acs${i}" ${hide}>
+     <tr id="acs${i}_0" ${hide}>
       <td class="groupitem" align="right" ><input type="text" size="2" id="acsi_${i}" value=""/></td>
              <td nowrap="nowrap"><input type="text" size="50" id="acsb_${i}" value="" /></td>
      </tr>
-     <tr name="acs${i}" ${hide}><td></td>
+     <tr id="acs${i}_1" ${hide}><td></td>
              <td nowrap="nowrap"><input type="text" size="50" id="acsl_${i}" value="" /></td>
      </tr>
    #end

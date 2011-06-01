@@ -996,6 +996,17 @@ public class RelyingPartyController {
     public void setSecureLoginSec(long v) {
         secureLoginSec = v;
     }
+
+    public void setStandardLoginPath(String v) {
+        standardLoginPath = v;
+    }
+    public void setSecureLoginPath(String v) {
+        secureLoginPath = v;
+    }
+    public void setStandardDSLoginPath(String v) {
+        standardDSLoginPath = v;
+    }
+
     /* See if extra login suggested.
      */
 /**
