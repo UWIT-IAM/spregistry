@@ -110,8 +110,9 @@ public class RelyingPartyController {
     private long standardLoginSec = 9*60*60;  // 9 hour session lifetime
     private long secureLoginSec = 1*60*60;  // 1 hour session lifetime
 
-
-
+    private String myEntityId = null;
+    private String eppnName = "eppn";  // env var name of user eppn
+    
     // key for crypt ops
     private static String cryptKey;
 
@@ -333,11 +334,11 @@ public class RelyingPartyController {
        log.debug("method = " + method + ", key = " + methodKey);
 
        // we need some shib attrs
-       String remoteUser = request.getAttribute("eppn");
-       String provider = request.getAttribute("Shib_Identity_Provider");
-       log.debug("eppn=" + remoteUser + " rus=" + request.getRemoteUser() + " prov=" + provider + " m=" + method + " k=" + methodKey);
+       String remoteUser = (String)request.getAttribute(eppnName);
+       String provider = (String)request.getAttribute("Shib-Identity-Provider");
+       log.debug("eppn("+eppnName+")=" + remoteUser + " rus=" + request.getRemoteUser() + " prov=" + provider + " m=" + method + " k=" + methodKey);
 
-       if (remoteUser!=null) {
+       if (remoteUser!=null && !remoteUser.equals("fox@washington.edu")) {
            if (remoteUser.endsWith("@washington.edu")) {
               remoteUser = remoteUser.substring(0, remoteUser.lastIndexOf("@washington.edu"));
               log.info("dropped @washington.edu to get id = " + remoteUser);
@@ -366,11 +367,15 @@ public class RelyingPartyController {
            }
        } else {
            // send login failed message
-           ModelAndView mv = new ModelAndView(browser/nologin");
+           ModelAndView mv = new ModelAndView("browser/page");
+           mv.addObject("root", browserRootPath);
+           mv.addObject("vers", request.getServletPath());
+           mv.addObject("pageType", "browser/nologin");
+           mv.addObject("myEntityId", myEntityId);
            mv.addObject("provider", provider);
-           if (provider!=null) mv.addObject("relyingParty", rpManager.getRelyingPartyById(provider));
            return mv;
        }
+       return emptyMV();
     }
 
     @RequestMapping(value="/login/**", method=RequestMethod.GET)
@@ -1020,6 +1025,14 @@ public class RelyingPartyController {
     public void setStandardDSLoginPath(String v) {
         standardDSLoginPath = v;
     }
+
+    public void setMyEntityId(String v) {
+        myEntityId = v;
+    }
+    public void setEppnName(String v) {
+        eppnName = v;
+    }
+
 
     /* See if extra login suggested.
      */
