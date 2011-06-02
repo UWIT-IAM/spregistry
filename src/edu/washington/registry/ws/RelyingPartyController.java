@@ -371,6 +371,7 @@ public class RelyingPartyController {
            mv.addObject("root", browserRootPath);
            mv.addObject("vers", request.getServletPath());
            mv.addObject("pageType", "browser/nologin");
+           mv.addObject("pageTitle", "login failed");
            mv.addObject("myEntityId", myEntityId);
            mv.addObject("provider", provider);
            return mv;

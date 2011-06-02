@@ -48,7 +48,7 @@ v_canEdit = false;
   <td align="center" class="bannernote">${bannerText}</td>
   #end
   <td align="right">
-     <span class="bannernote">Service Provider Registry</span>
+     <span class="bannernote">|&nbsp;<span class="banneruser">$!{remote_user}</span>&nbsp;|&nbsp;Service Provider Registry</span>
   </td>
 </tr>
 </table>
