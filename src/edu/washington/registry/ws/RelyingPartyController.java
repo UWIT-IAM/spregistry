@@ -132,6 +132,8 @@ public class RelyingPartyController {
        private String loginMethod;
        private boolean authn2;
        private boolean isUWLogin;
+       private String userIdProvider;
+       private String userDisplayName;
     }
 
     private RPSession processRequestInfo(HttpServletRequest request, HttpServletResponse response) {
@@ -185,10 +187,12 @@ public class RelyingPartyController {
            session.viewType = "browser";
            session.isBrowser = true;
            session.rootPath = browserRootPath;
+/** already done
            if (session.remoteUser.endsWith("@washington.edu")) {
               session.remoteUser = session.remoteUser.substring(0, session.remoteUser.lastIndexOf("@washington.edu"));
               // log.info("dropped @washington.edu to get id = " + session.remoteUser);
            }
+ **/
 
         } else {
            // maybe is cert client
@@ -324,12 +328,16 @@ public class RelyingPartyController {
      */
 
     private ModelAndView loginPage(HttpServletRequest request, HttpServletResponse response, int method) {
-        String remoteUser = request.getRemoteUser();
-        String methodKey = "P";
-        if (method==2) methodKey = "2";
-        log.debug("method = " + method + ", key = " + methodKey);
+       String methodKey = "P";
+       if (method==2) methodKey = "2";
+       log.debug("method = " + method + ", key = " + methodKey);
 
-        if (remoteUser!=null) {
+       // we need some shib attrs
+       String remoteUser = request.getAttribute("eppn");
+       String provider = request.getAttribute("Shib_Identity_Provider");
+       log.debug("eppn=" + remoteUser + " rus=" + request.getRemoteUser() + " prov=" + provider + " m=" + method + " k=" + methodKey);
+
+       if (remoteUser!=null) {
            if (remoteUser.endsWith("@washington.edu")) {
               remoteUser = remoteUser.substring(0, remoteUser.lastIndexOf("@washington.edu"));
               log.info("dropped @washington.edu to get id = " + remoteUser);
@@ -354,9 +362,15 @@ public class RelyingPartyController {
               response.sendRedirect(red);
            } catch (IOException e) {
               log.error("redirect: " + e);
+              return emptyMV("redirect error");
            }
+       } else {
+           // send login failed message
+           ModelAndView mv = new ModelAndView(browser/nologin");
+           mv.addObject("provider", provider);
+           if (provider!=null) mv.addObject("relyingParty", rpManager.getRelyingPartyById(provider));
+           return mv;
        }
-       return emptyMV("config error");
     }
 
     @RequestMapping(value="/login/**", method=RequestMethod.GET)
