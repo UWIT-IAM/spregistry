@@ -893,7 +893,7 @@ public class RelyingPartyController {
    /* production to RT system */
            msg.setTo(requestMailTo);
            msg.setSubject("Requesting attributes for " + id);
-           msg.setText("//requestor: " + session.remoteUser + "@washington.edu\n\n" + txt.toString());
+           msg.setText("//proxy\n//requestor: " + session.remoteUser + "@washington.edu\n\n" + txt.toString());
            try{
                this.mailSender.send(msg);
            } catch(MailException ex) {
