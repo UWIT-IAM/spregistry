@@ -33,8 +33,8 @@
       <a class="" href="${root}${vers}/rp?view=new">New service provider</a>
         &nbsp;|&nbsp;
       <a class="" href="${root}${vers}/rps">Service providers</a>
-        &nbsp;|&nbsp;
-      <a class="" href="${root}${vers}/attr">Attributes</a>
+##        &nbsp;|&nbsp;
+##      <a class="" href="${root}${vers}/attr">Attributes</a>
 
         &nbsp;|&nbsp;
 <span id="requestStatusDiv" class="notice"></span>

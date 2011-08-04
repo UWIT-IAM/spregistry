@@ -97,14 +97,15 @@ v_canEdit = false;
 <br/>
 <a href="mailto:help@uw.edu">Contact us</a>
 <br/>
-&copy; 2008-2011, University of Washington
+## &copy; 2008-2011, University of Washington
+<a href="http://www.washington.edu/online/privacy/">PRIVACY</a>&nbsp;|&nbsp;<a href="http://www.washington.edu/online/terms/">TERMS</a>
 </td>
 <td align="right" class="footright" valign="top">
 Identity and Access Management
 <br/>
 Service Provider Registry 1.0.2
 <br/>
-Revision 06/02/2011
+Revision 08/04/2011
 </td>
 </tr>
 </table>

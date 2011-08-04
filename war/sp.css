@@ -504,9 +504,9 @@ Input.lbtn {font-size: 60%; padding: 1px; background-color: #F0F0F0; }
 
 
 
-A:link    { text-decoration: underline; color: #551a8b }
-A:visited    { text-decoration: underline; color: #551a8b }
-A:active    { text-decoration: underline; color: #551a8b }
+A:link    { text-decoration: none; color: #551a8b }
+A:visited    { text-decoration: none; color: #551a8b }
+A:active    { text-decoration: none; color: #551a8b }
 
 .indent  { margin-left:3em; margin-right:3em }
 
@@ -534,6 +534,9 @@ A:active    { text-decoration: underline; color: #551a8b }
        font-family: helvetica, arial, sans-serif;
        font-size:80%;
        }
+.footright A:link    { text-decoration: underline; color: #551a8b}
+.footright A:visited    { text-decoration: underline; color: #551a8b}
+.footright A:active    { text-decoration: underline; color: #551a8b}
 
 .footrightfont {
        font-family: helvetica, arial, sans-serif;

@@ -156,6 +156,9 @@ function submitAttributeRequest() {
 
  <tr><td height="10px" colspan="99"/></tr>
 
+    <tr><td class="groupindenttitle" >Description of attributes</td></tr>
+     <tr><td class="groupindent">See the IAM wiki <a href="https://wiki.cac.washington.edu/x/QUioAQ">Guide to Attributes</a>.</td></tr>
+ 
   #foreach ( $group in $filterPolicyGroups )
     <tr><td class="groupindenttitle" >Attributes released by $group.description</td></tr>
      <tr><td class="groupindent">
