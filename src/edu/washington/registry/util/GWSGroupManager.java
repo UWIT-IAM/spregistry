@@ -124,7 +124,7 @@ public class GWSGroupManager implements GroupManager  {
 
           log.debug(" url is " + urlBase + group.name + "/member");
 
-          HttpGet httpget = new HttpGet(urlBase + group.name + "/member");
+          HttpGet httpget = new HttpGet(urlBase + group.name + "/effective_member");
 
           HttpResponse response = httpclient.execute(httpget);
           HttpEntity entity = response.getEntity();
