@@ -214,6 +214,7 @@ function attributeItem (id) {
 
    #else  ## editable
 
+     #set ( $policy = false )
      #set ( $policy = $group.getFilterPolicy($relyingPartyId) )
      #if ( $policy )
        #foreach ( $attribute in $policy.attributeRules )
