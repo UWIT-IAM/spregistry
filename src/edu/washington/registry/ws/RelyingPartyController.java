@@ -562,6 +562,15 @@ public class RelyingPartyController {
         boolean byLookup = false;
         boolean byDefault = false;
         if (lookupOpt && dns!=null && dns.length()>0) {
+
+            // maybe strip junk from dns
+            if (dns.startsWith("http://")) dns = dns.substring(7);
+            if (dns.startsWith("https://")) dns = dns.substring(8);
+            int i = dns.indexOf("/");
+            if (i>0) dns = dns.substring(0,i);
+            i = dns.indexOf(":");
+            if (i>0) dns = dns.substring(0,i);
+
             if (!ownerManager.isDomainOwner(session.remoteUser, dns)) {
                 response.setStatus(401);
                 session.pageType = "relying-party-new";

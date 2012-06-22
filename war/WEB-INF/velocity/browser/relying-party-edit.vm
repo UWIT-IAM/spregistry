@@ -509,11 +509,11 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
 ## submitter
 
 #if ( $newEntity )
-<span>Your submission will be processed automatically.  Please allow a couple of hours for our IdP to acquire
+<span>Your submission will be processed automatically.  Please allow a 40 minutes for our IdP to acquire
 your new service provider's metadata. 
 </span>
 #else
-<span>Your submission will be processed automatically.  Please allow a couple of hours for our IdP to acquire
+<span>Your submission will be processed automatically.  Please allow a 40 minutes for our IdP to acquire
 your service provider's changed metadata. 
 </span>
 #end

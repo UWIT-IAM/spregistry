@@ -206,7 +206,7 @@ function attributeItem (id) {
          #end
      #end ## attr
      <tr><td height="10" colspan="99"><hr></td></tr>
-     <tr><td colspan="99">Please allow a couple of hours for our IdP to acquire
+     <tr><td colspan="99">Please allow 40 minutes for our IdP to acquire
         the changes to this service provider's attribute release policy.
        </td></tr>
      <tr><td><input type="button" class="btn" name="button" value="Save changes" onClick="submitPolicy_${group.id}();"/></td></tr>
