@@ -1,5 +1,5 @@
 #* ========================================================================
- * Copyright (c) 2010-2011 The University of Washington
+ * Copyright (c) 2009-2011 The University of Washington
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,102 +15,289 @@
  * ========================================================================
  *#
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
-  "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"> 
-
-## shib sp registration (main page)
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
- <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
- <link rel="stylesheet" type="text/css" href="${root}/sp.css"/>
- <script rel="script" type="text/javascript" src="${root}/sp.js"></script>
- <title>${pageTitle}</title>
-</head>
-
-<body onLoad="rpOnLoad()" id="documentbody">
-
-<script>
-v_root='$root';
-v_vers='$vers';
-v_remoteUser='$remote_user';
-v_entityId = '$!{relyingParty.entityId}'
-v_mdId = '$!{relyingParty.metadataId}'
-v_canEdit = false;
-</script>
-
-## banner
-
-<table class="banner" border="0" width="100%">
-<tr padding="0">
-  <td align="left"><img src="/uofw-small.gif"/></td>
-  #if ( $bannerText )
-  <td align="center" class="bannernote">${bannerText}</td>
-  #end
-  <td align="right">
-     <span class="bannernote">|&nbsp;<span class="banneruser">$!{remote_user}</span>&nbsp;|&nbsp;Service Provider Registry</span>
-  </td>
-</tr>
-</table>
-
+## sp registry webservice (main page)
 
 ## common definitions
-
 #set ( $selected = 'selected="selected"' )
 #set ( $checked = 'checked="checked"' )
 #set ( $hide = 'style="display:none"' )
 #set ( $disable = 'disabled="disabled"' )
 #set ( $nowrap = 'nowrap="nowrap"' )
 
-#macro ( pageStart )
-<div id="PageContent">
-<table cellpadding="3" >
-<tr>
-<td valign="top" height="400" width="10"> </td>
-<td valign="top" align="left">
-#end
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+ <title>${title}</title>
 
-#macro ( pageMiddle )
-</td>
-<td width="20"></td>
-<td valign="top" align="left" width="35%">
-#end
+  <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/claro/claro.css"/>
+  <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/resources/dojo.css"/>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/dojo.xd.js" djConfig="parseOnLoad: true"></script>
+  <link rel="stylesheet" type="text/css" href="/iam.css"/>
+  <!-- <script type="text/javascript" src="/iam.js"></script> -->
 
-#macro ( pageEnd )
-</td></tr></table>
+  <script type="text/javascript">
+     dojo.require("dijit.form.Button");
+     dojo.require("dijit.MenuBar");
+     dojo.require("dijit.Menu");
+     dojo.require("dijit.MenuItem");
+     dojo.require("dijit.PopupMenuBarItem");
+     dojo.require("dijit.Dialog");
+     dojo.require("dijit.layout.ContentPane");
+     dojo.require("dijit.form.CheckBox");
+     dojo.require("dijit.layout.BorderContainer");
+     dojo.require("dijit.form.TextBox");
+     dojo.require("dijit.layout.TabContainer");
+     dojo.require("dijit.form.FilteringSelect");
+     dojo.require("dijit.form.Textarea");
+     dojo.require("dijit.form.SimpleTextarea");
+  </script>
+
+
+<script>
+v_root='$root';
+v_vers='$vers';
+v_remoteUser='$remote_user';
+
+
+v_sp = '$!{sp.cn}';
+</script>
+</head>
+
+<body class="claro" id="documentbody">
+
+## banner popups and menus
+
+<div id="userPrefsDialog" dojoType="dijit.Dialog" title="Preferences" 
+      href="${root}${vers}/ajax/prefs" $hide>
 </div>
+
+<div id="about" dojoType="dijit.Dialog" title="About" $hide>
+   Identity and Access Management
+<br/>
+Service Provider Registry 1.x.x
+<br/>
+Revision 09/30/2011
+</div>
+
+## page
+
+<div dojoType="dijit.layout.BorderContainer"  gutters="false" liveSplitters="true" style="width: 100%; height: 100%">
+
+## banner
+<div id="banner" dojoType="dijit.layout.ContentPane" region="top" splitter="false">
+  <div class="container">
+    <span id="logo"><a href="http:/www.uw.edu/" title="University of Washington"><img src="/UWw.gif" alt="UW" /></a></span>
+    <span id="title">Service Provider Registry</span>
+    <ul id="navigation">
+
+        <li>$!{notice}</li>
+        <li>
+        <div dojoType="dijit.form.DropDownButton">
+            <span>
+                $remote_user
+            </span>
+           <div data-dojo-type="dijit.Menu" id="userMenu" $hide>
+               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){
+                       dijit.byId('userPrefsDialog').refresh();
+                       dijit.byId('userPrefsDialog').show();
+                     }">
+                Preferences
+               </div>
+               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){document.location='${root}${vers}/logout/';}">
+                Logout
+               </div>
+           </div>
+        </div>
+        </li>
+        </li>
+        <div dojoType="dijit.form.DropDownButton">
+            <span>
+                Help
+            </span>
+           <div data-dojo-type="dijit.Menu" id="helpMenu">
+               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpByContext').show();}">
+                Context help
+               </div>
+               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpAbout').show();}">
+                About the registry
+               </div>
+           </div>
+        </div>
+        </li>
+    </ul>
+    <ul id="subbanner">
+   <li class="sublist">
+      Search
+       <input id="simplesearch" dojoType="dijit.form.TextBox" />
+   </li>
+   <li class="sublist">
+       <button id="myButton" dojoType="dijit.form.Button" type="button" class="subButton">
+         My SPs
+         <script type="dojo/method" event="onClick" args="evt">
+            
+         </script>
+        </button>
+      </li>
+    </ul>
+   <li class="sublist">
+       <button id="newButton" dojoType="dijit.form.Button" type="button" class="subButton">
+         New SP 
+         <script type="dojo/method" event="onClick" args="evt">
+            dijit.byId('newSearchDialog').show();
+         </script>
+        </button>
+      </li>
+    </ul>
+  </div>
+
+</div>  ## banner containe
+
+
+#set ( $stripeAlt = '' )
+#macro ( hideToggleStripe )
+#if ( $stripeAlt=='' )
+  #set ($stripeAlt='alt')
+#else
+  #set ($stripeAlt='')
+#end
 #end
 
+#macro ( toggleStripe )
+$stripeAlt
+#hideToggleStripe
+#end
 
-## content
+## menu functions
+<script>
 
-#parse( "${pageType}.vm" )
+var selectedSP;
+function showSP(sp) {
+  var url = '${root}${vers}/sp/' + sp + '?innerview=yes';
+  dijit.byId('spDisplay').set('href', url);
+}
+function showSelectedSP() {
+  dijit.byId('searchResult').resize();
+  var url = '${root}${vers}/sp/' + selectedSP + '?innerview=yes';
+  dijit.byId('spDisplay').set('href', url);
+}
+
+function showSelected() {
+  dijit.byId('special').textbox.select();
+}
+
+## rp list functions
+v_sectionType = 'rps';
+
+var sps = [];
+var nsp = 0;
+
+## load sp list into arrays
+function spEnt(md, ent, desc) {
+  this.metadataId = md;
+  this.entityId = ent;
+  this.description = desc;
+}
+spEnt.prototype.getMd = function() {
+  return this.metadataId;
+};
+spEnt.prototype.getId = function() {
+  return this.entityId;
+};
+spEnt.prototype.getDesc = function() {
+  return this.description;
+};
+spEnt.prototype.contains = function(str) {
+  if (this.entityId.toLowerCase().search(str.toLowerCase())>=0) return true;
+  return false;
+};
+
+
+#foreach ($rp in $relyingParties )
+ sps[nsp++] = new spEnt('$rp.metadataId', '$rp.entityId', '$!{rp.organization.OrganizationName}');
+#end
+
+function doRpClick(i) {
+  window.location = "$root$vers/rp?id=" + sps[i].getId() + "&mdid=" + sps[i].getMd();
+}
+
+function doLookup() {
+   dns = document.getElementById('newDns').value.trim();
+   window.location = "$root$vers/rp/rp?opt=lookup&dns=" + dns;
+}
+
+// fill out the list according to filter settings
+function filterSpList(name) {
+
+  var htm = '<table cellpadding="0" cellspacing="2" border="0">';
+  for (i=0; i<nsp; i++) {
+    if ((name.length>0) && !sps[i].contains(name)) continue;
+
+    htm = htm + '<tr class="rpreference"><td class="rpmdid" align="left">' + sps[i].getMd().substring(0,2) + '</td>';
+    htm = htm + '<td class="rpid" align="left">';
+    htm = htm + '<a href="javascript:showSP(i);">' + sps[i].getId() + '</a>';
+    htm = htm + '</td></tr>';
+  }
+
+ htm += '</table>';
+ dijit.byId('searchResult').set('href', htm);
+}
+
+
+// 'enter' submits a form
+
+function checkSimpleSearch(e)
+{
+  if (!e) e = window.event;
+  if (e.keyCode==13) filterSpList( dijit.byId('simplesearch').attr('value'));
+}
+
+
+dojo.addOnLoad(function() {
+  dojo.connect(dijit.byId('simplesearch'), 'onKeyUp', checkSimpleSearch);
+});
+
+</script>
+
+
+<div id="leftside" dojoType="dijit.layout.ContentPane" style="width:30%"  region="left" splitter="true">
+
+  <div id="searchContainer" dojoType="dijit.layout.ContentPane" style="overflow-y:auto; overflow-x:hidden" >
+
+  <div dojoType="dijit.layout.ContentPane"  >
+    Service Providers
+  </div>
+
+  <div class="searchresult" id="searchResult" dojoType="dijit.layout.ContentPane" >
+  </div>
+
+  </div>
+</div>
+
+ <div id="groupDisplay" dojoType="dijit.layout.ContentPane" region="center" splitter="true" >
+     Explore sps by domain, or search by name.
+ </div>
 
 
 ## footer
 
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-<tr>
-<td class="footleft" width="53" height="37"><a href="http://www.washington.edu/"><img src="/UWw.gif" alt="UW Logo"/></a></td>
-<td align="left" class="footright">
-<a href="http://www.washington.edu/uwit/">UW Information Technology</a>
-<br/>
-<a href="mailto:help@uw.edu">Contact us</a>
-<br/>
-## &copy; 2008-2011, University of Washington
-<a href="http://www.washington.edu/online/privacy/">PRIVACY</a>&nbsp;|&nbsp;<a href="http://www.washington.edu/online/terms/">TERMS</a>
-</td>
-<td align="right" class="footright" valign="top">
-Identity and Access Management
-<br/>
-Service Provider Registry 1.0.2
-<br/>
-Revision 03/12/2012
-</td>
-</tr>
-</table>
+<div id="footer" dojoType="dijit.layout.ContentPane">
+    <span id="footlogo"><a href="http:/www.uw.edu/" title="University of Washington"><img src="/uofw-small.gif" alt="UW" /></a></span>
+    <span id="footcenter">
+    <ul id="navigation">
+        <li><a href="mailto:help@uw.edu">CONTACT US</a></li>
+        <li><a href="http://www.washington.edu/online/privacy/">PRIVACY</a></li>
+        <li><a href="http://www.washington.edu/online/terms/">TERMS</a></li>
+    </ul>
+    </span>
+    <span id="footright">
+    <ul id="navigation">
+        <li>UW Information Technology</li>
+    </ul>
+    </span>
+</div>
 
-
+</div>
+</div>
 </body>
 </html>
 
