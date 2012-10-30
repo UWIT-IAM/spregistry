@@ -69,7 +69,13 @@ public class DNSOwnerManager implements OwnerManager {
        DomainOwner dom = getDomainOwner(domain);
        for (i=0; i<dom.owners.size(); i++ ) if (dom.owners.get(i).equals(id)) return true;
        log.debug("not yet");
-       if (RelyingPartyController.getGroupManager().isMember(ownerGroupBase + "_" + domain, id)) return true;
+       int p = domain.indexOf(".");
+       while (p>0) {
+          if (RelyingPartyController.getGroupManager().isMember(ownerGroupBase + "_" + domain, id)) return true;
+          domain = domain.replaceFirst("[^\\.]+\\.", "");
+          log.debug("maybe: " + domain);
+          p = domain.indexOf("."); 
+       }
        log.debug("nope");
        return false;
     }

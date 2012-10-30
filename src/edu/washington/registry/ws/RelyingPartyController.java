@@ -594,7 +594,7 @@ public class RelyingPartyController {
     
             id = rp.getEntityId();
             try {
-               rpManager.getRelyingPartyById(id);
+               rpManager.getRelyingPartyById(id, "UW");
                response.setStatus(200);
                session.pageType = "relying-party-new";
                session.pageTitle = "New Service provider";
