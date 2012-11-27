@@ -1,5 +1,5 @@
 #* ========================================================================
- * Copyright (c) 2009-2011 The University of Washington
+ * Copyright (c) 2009-2013 The University of Washington
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,53 +17,66 @@
 
 ## sp registry webservice (main page)
 
-## common definitions
-#set ( $selected = 'selected="selected"' )
-#set ( $checked = 'checked="checked"' )
-#set ( $hide = 'style="display:none"' )
-#set ( $disable = 'disabled="disabled"' )
-#set ( $nowrap = 'nowrap="nowrap"' )
+#parse ( 'definitions.vm' )
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
- <title>${title}</title>
+ <title>SP Registry</title>
 
-  <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dijit/themes/claro/claro.css"/>
-  <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/resources/dojo.css"/>
-  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/dojo/1.6/dojo/dojo.xd.js" djConfig="parseOnLoad: true"></script>
-  <link rel="stylesheet" type="text/css" href="/iam.css"/>
-  <!-- <script type="text/javascript" src="/iam.js"></script> -->
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojo/dojo.js" data-dojo-config="async: true"></script>
+  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dijit/themes/tundra/tundra.css"/>
+  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojo/resources/dojo.css"/>
 
-  <script type="text/javascript">
-     dojo.require("dijit.form.Button");
-     dojo.require("dijit.MenuBar");
-     dojo.require("dijit.Menu");
-     dojo.require("dijit.MenuItem");
-     dojo.require("dijit.PopupMenuBarItem");
-     dojo.require("dijit.Dialog");
-     dojo.require("dijit.layout.ContentPane");
-     dojo.require("dijit.form.CheckBox");
-     dojo.require("dijit.layout.BorderContainer");
-     dojo.require("dijit.form.TextBox");
-     dojo.require("dijit.layout.TabContainer");
-     dojo.require("dijit.form.FilteringSelect");
-     dojo.require("dijit.form.Textarea");
-     dojo.require("dijit.form.SimpleTextarea");
-  </script>
+<link rel="stylesheet" type="text/css" href="/gws.css"/>
+
+  <!--[if IE]>
+    <link rel="stylesheet" type="text/css" href="/iam-ie.css" />
+  <![endif]-->
+
+<script type="text/javascript" src="/sr.js"></script>
+
+<script>
+    require(["dojo/dom",
+     "dojo/parser",
+     "dijit/MenuBar",
+     "dijit/Menu",
+     "dijit/MenuItem",
+     "dijit/Dialog",
+     "dijit/TooltipDialog",
+     "dijit/PopupMenuBarItem",
+     "dijit/form/Button",
+     "dijit/form/RadioButton",
+     "dijit/form/DropDownButton",
+     "dijit/form/CheckBox",
+     "dijit/form/TextBox",
+     "dijit/form/Textarea",
+     "dijit/form/Select",
+     "dijit/form/SimpleTextarea",
+     "dijit/layout/ContentPane",
+     "dijit/layout/TabContainer",
+     "dijit/layout/BorderContainer",
+     "dojo/domReady!"], function(dom,parser) {
+       parser.parse();
+       onLoad();
+ });
+
+</script>
 
 
 <script>
 v_root='$root';
 v_vers='$vers';
 v_remoteUser='$remote_user';
+v_xsrf = '${xsrf}';
 
 
-v_sp = '$!{sp.cn}';
+require(["dojo/_base/Deferred", "dojo/_base/xhr", "dojo/_base/array", "dojo/dom-construct", "dojo/dom", "dojo/domReady!"]);
+
 </script>
 </head>
 
-<body class="claro" id="documentbody">
+<body class="tundra" id="documentbody">
 
 ## banner popups and menus
 
@@ -71,23 +84,69 @@ v_sp = '$!{sp.cn}';
       href="${root}${vers}/ajax/prefs" $hide>
 </div>
 
-<div id="about" dojoType="dijit.Dialog" title="About" $hide>
+<div id="helpAbout" dojoType="dijit.Dialog" title="About" $hide>
    Identity and Access Management
 <br/>
-Service Provider Registry 1.x.x
+Service Provider Registry 2.0.0
 <br/>
-Revision 09/30/2011
+Revision 11/07/2012
 </div>
 
-## page
+<div id="helpServiceProviders" dojoType="dijit.Dialog" title="Service Providers" $hide>
+  The Service Provider list shows all service providers (SP) known to the UW
+identity provider service (IdP).
+<p>
+<ul>
+<li>Those prefaced by '<tt>IC</tt>' are members of the InCommon federation. 
+<li>Those prefaced by '<tt>UW</tt>' are local, UW members. 
+</ul>
+<p>
+Use the "filter list" area to find a particular service provider.
+</div>
 
-<div dojoType="dijit.layout.BorderContainer"  gutters="false" liveSplitters="true" style="width: 100%; height: 100%">
+
+<div id="helpGateway" dojoType="dijit.Dialog" title="SAML Gateways" $hide>
+  The UW supports a Social/SAML gateway. 
+<p>
+To your SAML service provider (a shibboleth SP, for example) the gateway 
+looks like any other SAML identity provider.  You configure it accordingly.
+<p>
+When you send a user to the gateway IdP, the gateway redirects them to
+the social identity provider (Google is supported at present) for login.
+Authentication information from Google is translated by the gateway
+into a SAML assertion, which is returned to your SP in the normal way.
+<p>
+So, in effect,
+<p>
+<ul>
+<li>To your SP this looks like a SAML login.</li>
+<li>To the user it looks like a Google login</li>
+</ul>
+</div>
+
+<div id="helpDNS" dojoType="dijit.Dialog" title="DNS 'ownership'" $hide>
+   You must be registered with UW's Network Operations as a registered contact for your DNS name.
+   For more information, see 
+   <a href="https://wiki.cac.washington.edu/x/eRcrAQ">Managing DNS Names For Infrastructure Services Access</a>.
+</div>
+
+
+## page
+## loader flash
+<div id="theflash" dojoType="dijit.layout.ContentPane" style="width: 100%; height:100%">
+<div style="width: 100%; height:50%">
+</div>
+<div align="center"><img src="/circle_loader.gif">
+</div>
+</div>
+
+
+<div id="thepage" dojoType="dijit.layout.BorderContainer"  gutters="false" liveSplitters="true" style="width: 100%; height: 100%">
 
 ## banner
-<div id="banner" dojoType="dijit.layout.ContentPane" region="top" splitter="false">
-  <div class="container">
-    <span id="logo"><a href="http:/www.uw.edu/" title="University of Washington"><img src="/UWw.gif" alt="UW" /></a></span>
-    <span id="title">Service Provider Registry</span>
+<div id="banner" class="container" dojoType="dijit.layout.ContentPane" region="top" splitter="false">
+    <span id="logo"><a href="javascript:showHomePanel()" title="University of Washington"><img src="/UWw.gif" alt="UW" /></a></span>
+    <span id="title"><a href="javascript:showHomePanel()">Service Provider Registry</a></span>
     <ul id="navigation">
 
         <li>$!{notice}</li>
@@ -97,12 +156,14 @@ Revision 09/30/2011
                 $remote_user
             </span>
            <div data-dojo-type="dijit.Menu" id="userMenu" $hide>
+#*
                <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){
                        dijit.byId('userPrefsDialog').refresh();
                        dijit.byId('userPrefsDialog').show();
                      }">
                 Preferences
                </div>
+*#
                <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){document.location='${root}${vers}/logout/';}">
                 Logout
                </div>
@@ -115,8 +176,14 @@ Revision 09/30/2011
                 Help
             </span>
            <div data-dojo-type="dijit.Menu" id="helpMenu">
-               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpByContext').show();}">
-                Context help
+               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpServiceProviders').show();}">
+                Service Providers
+               </div>
+               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpGateway').show();}">
+                Gateways
+               </div>
+               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpDNS').show();}">
+                DNS ownership
                </div>
                <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpAbout').show();}">
                 About the registry
@@ -125,122 +192,60 @@ Revision 09/30/2011
         </div>
         </li>
     </ul>
-    <ul id="subbanner">
-   <li class="sublist">
-      Search
-       <input id="simplesearch" dojoType="dijit.form.TextBox" />
-   </li>
-   <li class="sublist">
-       <button id="myButton" dojoType="dijit.form.Button" type="button" class="subButton">
-         My SPs
-         <script type="dojo/method" event="onClick" args="evt">
-            
-         </script>
-        </button>
-      </li>
-    </ul>
-   <li class="sublist">
-       <button id="newButton" dojoType="dijit.form.Button" type="button" class="subButton">
-         New SP 
-         <script type="dojo/method" event="onClick" args="evt">
-            dijit.byId('newSearchDialog').show();
-         </script>
-        </button>
-      </li>
-    </ul>
-  </div>
 
 </div>  ## banner containe
 
-
-#set ( $stripeAlt = '' )
-#macro ( hideToggleStripe )
-#if ( $stripeAlt=='' )
-  #set ($stripeAlt='alt')
-#else
-  #set ($stripeAlt='')
-#end
-#end
-
-#macro ( toggleStripe )
-$stripeAlt
-#hideToggleStripe
-#end
-
-## menu functions
 <script>
 
-var selectedSP;
-function showSP(sp) {
-  var url = '${root}${vers}/sp/' + sp + '?innerview=yes';
-  dijit.byId('spDisplay').set('href', url);
-}
-function showSelectedSP() {
-  dijit.byId('searchResult').resize();
-  var url = '${root}${vers}/sp/' + selectedSP + '?innerview=yes';
-  dijit.byId('spDisplay').set('href', url);
-}
+  function onLoad() {
+require(["dojo/dom", "dijit/registry", "dojo/domReady!"], function(dom, registry) {
 
-function showSelected() {
-  dijit.byId('special').textbox.select();
-}
+// drop the flash and show the page
+   dom.byId('theflash').style.display = 'none';
+   dom.byId('thepage').style.display = '';
+   dom.byId('thepage').style.width = '100%';
+   dom.byId('thepage').style.height = '100%';
+   registry.byId('thepage').layout();
+   registry.byId('thepage').resize();
 
-## rp list functions
-v_sectionType = 'rps';
+  // start with SP list
+  loadSpList();
+  showHashGroup();
 
-var sps = [];
-var nsp = 0;
-
-## load sp list into arrays
-function spEnt(md, ent, desc) {
-  this.metadataId = md;
-  this.entityId = ent;
-  this.description = desc;
-}
-spEnt.prototype.getMd = function() {
-  return this.metadataId;
-};
-spEnt.prototype.getId = function() {
-  return this.entityId;
-};
-spEnt.prototype.getDesc = function() {
-  return this.description;
-};
-spEnt.prototype.contains = function(str) {
-  if (this.entityId.toLowerCase().search(str.toLowerCase())>=0) return true;
-  return false;
-};
-
-
-#foreach ($rp in $relyingParties )
- sps[nsp++] = new spEnt('$rp.metadataId', '$rp.entityId', '$!{rp.organization.OrganizationName}');
-#end
-
-function doRpClick(i) {
-  window.location = "$root$vers/rp?id=" + sps[i].getId() + "&mdid=" + sps[i].getMd();
+});
 }
 
-function doLookup() {
-   dns = document.getElementById('newDns').value.trim();
-   window.location = "$root$vers/rp/rp?opt=lookup&dns=" + dns;
-}
+</script>
 
-// fill out the list according to filter settings
-function filterSpList(name) {
 
-  var htm = '<table cellpadding="0" cellspacing="2" border="0">';
-  for (i=0; i<nsp; i++) {
-    if ((name.length>0) && !sps[i].contains(name)) continue;
 
-    htm = htm + '<tr class="rpreference"><td class="rpmdid" align="left">' + sps[i].getMd().substring(0,2) + '</td>';
-    htm = htm + '<td class="rpid" align="left">';
-    htm = htm + '<a href="javascript:showSP(i);">' + sps[i].getId() + '</a>';
-    htm = htm + '</td></tr>';
-  }
+<div id="groupsDisplay" dojoType="dijit.layout.ContentPane" region="left" splitter="true" minSize="100">
 
- htm += '</table>';
- dijit.byId('searchResult').set('href', htm);
-}
+ <div id="groupsPane" dojoType="dijit.layout.ContentPane" style="overflow:hidden" >
+
+  <div id="groupsTitlebar">
+    <div class="groupsLeft">
+       <span id="myGroupsTitle">Service Providers</span>
+    </div>
+    <div class="groupsRight">
+       <span><a href="javascript:showNewGroupPanel()">New</a></span>
+    </div>
+  </div>
+
+  <div id="groupsSubtitlebar">
+     <div class="groupsRight">
+      filter list <input id="filterSpList" style="background-color:#ffffff;" dojoType="dijit.form.TextBox" onKeyUp="showSpList()" />
+     </div>
+  </div>
+
+ <div class="groupList" id="myGroupsPanel" dojoType="dijit.layout.ContentPane"
+         onLoad="adjustMGPaneSize()"  style="overflow:auto">
+     <i>fetching SP list</i>
+  </div>
+
+ </div>
+</div>
+
 
 
 // 'enter' submits a form
@@ -259,26 +264,25 @@ dojo.addOnLoad(function() {
 </script>
 
 
-<div id="leftside" dojoType="dijit.layout.ContentPane" style="width:30%"  region="left" splitter="true">
+## right side
 
-  <div id="searchContainer" dojoType="dijit.layout.ContentPane" style="overflow-y:auto; overflow-x:hidden" >
-
-  <div dojoType="dijit.layout.ContentPane"  >
-    Service Providers
-  </div>
-
-  <div class="searchresult" id="searchResult" dojoType="dijit.layout.ContentPane" >
-  </div>
-
-  </div>
+<div id="groupDisplay" dojoType="dijit.layout.ContentPane" region="center" splitter="true" style="margin-top:6px;overflow:hidden;display:none" >
+   <div id="groupPanel" dojoType="dijit.layout.ContentPane" >
+   </div>
+</div>
+<div id="homeDisplay" dojoType="dijit.layout.ContentPane"  region="center" splitter="true" style="margin-top:6px;overflow:auto;" >
+#parse ( 'browser/home.vm' )
+ </div>
+<div id="newDisplay" dojoType="dijit.layout.ContentPane" region="center" splitter="true" style="margin-top:6px;overflow:hidden;display:none" >
+#parse ( 'browser/new.vm' )
 </div>
 
- <div id="groupDisplay" dojoType="dijit.layout.ContentPane" region="center" splitter="true" >
-     Explore sps by domain, or search by name.
- </div>
+
 
 
 ## footer
+
+<div dojoType="dijit.layout.ContentPane" region="bottom" splitter="false">
 
 <div id="footer" dojoType="dijit.layout.ContentPane">
     <span id="footlogo"><a href="http:/www.uw.edu/" title="University of Washington"><img src="/uofw-small.gif" alt="UW" /></a></span>

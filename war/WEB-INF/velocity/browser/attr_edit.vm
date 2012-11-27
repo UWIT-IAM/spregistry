@@ -1,5 +1,5 @@
 #* ========================================================================
- * Copyright (c) 2011 The University of Washington
+ * Copyright (c) 2012 The University of Washington
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,7 @@
  * ========================================================================
  *#
 
-##
-## Template for rp attributes edit display 
-##
-
-#parse ( "crumbs.vm" )
+#parse ( 'definitions.vm' )
 
 <script>
 v_sectionType = 'rpattr';
@@ -88,6 +84,13 @@ function attributeItem (id) {
    return '';
 }
 
+function postSaveAttrs() {
+   var url = v_root + v_vers + '/rp/?id=' + rpId + '&mdid=UW';
+   dijit.byId('groupDisplay').set('errorMessage', v_loadErrorMessage);
+   dijit.byId('groupDisplay').set('href', url);
+   document.body.style.cursor = 'default';
+}
+
    
 #foreach ( $group in $filterPolicyGroups )
   #set ( $policy = $group.getFilterPolicy($relyingPartyId) )
@@ -99,76 +102,57 @@ function attributeItem (id) {
        #end 
        xml = xml + '</AttributeFilterPolicy></FilterPolicyModification>';
        action = '${root}${vers}/rp/attr?id=${relyingPartyId}&policyId=${group.id}&xsrf=${xsrf}';
-       finalAction = '${root}${vers}/rp/attr?id=${relyingPartyId}';
-       doRequest('PUT', action, xml, '$!{etag}');
+       doRequest('PUT', action, xml, '', postSaveAttrs);
     }
 #end  ## group
-
 
 
 </script>
 
 
-##
-## ----- Left side content -----
-##
+<div id="attrEditPane" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;display:none" >
 
-#pageStart
+  <div id="attrEditLinks" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false">
+  <ul>
+  <li class="sublist" ><a href="javascript:handleAttrViewBtn()">View</a></li>
+  <li class="sublist" ><a href="javascript:handleAttrReqBtn()">Request</a></li>
+  </ul>
+  </div>
 
-<table cellpadding="0" cellspacing="0" border="0">
+<table class="iamtable">
 
-<tr><td class="title" align="left" colspan="99">${relyingParty.entityId}</td></tr>
-## <tr><td class="subtitle" id="groupCn" align="left" colspan="2">${group.cn}</td></tr>
+    <tr><td class="label">Entity Id</td>
+         <td colspan="2">${relyingParty.entityId}</td></tr>
 
-<tr>
- <td class="optionbar" align="left" colspan="99">
-    <a href="javascript:goTo('${root}${vers}/rp/?id=${relyingParty.entityId}')" title="Show metadata for the service provider">Metadata</a>
-    &nbsp;|&nbsp;Attributes
-</tr>
-
-<tr>
- <td class="optionbot" align="left" colspan="99">
-     <a href="javascript:goTo('${root}${vers}/rp/attr?id=${relyingParty.entityId}')">View</a>
-     &nbsp;|&nbsp;Edit
- </td>
-</tr>
-
-
- <tr><td height="10px" colspan="99"/></tr>
-
-    <tr><td class="groupindenttitle" >Description of attributes</td></tr>
-     <tr><td class="groupindent" height="10"></td></tr>
-     <tr><td class="groupindent">See the IAM wiki's <a href="https://wiki.cac.washington.edu/x/QUioAQ">Guide to Attributes</a>.</td></tr>
+    <tr><th colspan="9">Description of attributes</th></tr>
+     <tr><td class="label">See the IAM wiki's <a href="https://wiki.cac.washington.edu/x/QUioAQ">Guide to Attributes</a>.</td></tr>
 
   #foreach ( $group in $filterPolicyGroups )
-    <tr><td class="groupindenttitle" >Attributes from "$group.description"</td>
-    </tr>
+    <tr><th colspan="9">Attributes from by $group.description</th></tr>
+     <tr><td colspan="3">
+       <table class="iamtable" >
 
-      <tr><td class="groupindent">
-       <table >
     
    #if ( $group.editable )
      #set ( $policy = false )
      #set ( $policy = $group.getFilterPolicy($relyingPartyId) )
      #foreach ( $attr in $attributes )
        #set ($did = false)
-       #set ($act = $disable)
-       #if ($filterPolicyManager.userCanEdit($attr, $remoteUser)) #set ($act='') #end
        #if ($policy)
          #foreach ( $pattr in $policy.attributeRules )
           #if ($attr.id==$pattr.id) 
             #set ($did=true)
-            <tr><td class="grouplabel"><span class="boldlink">
+            <tr><td class="label"><span class="boldlink">
                 <a href="javascript:return(true)" title="${attr.description}">$!{attr.id}</a></span></td>
-                <input type="hidden" id="k_$!{attr.id}" value="send"/>
             </tr>
+                <input type="hidden" id="k_$!{attr.id}" value="send"/>
             #foreach ( $value in $pattr.valueRules )
-              <tr><td class="groupitem" colspan="2"><input type="checkbox" id="v_all_$!{attr.id}" onClick="checkAll('$!{attr.id}')"
-                 #if ( $value.type == "basic:ANY" ) $checked #end $act/>all values</td><td/></tr>
+              <tr><td></td><td><input type="checkbox" id="v_all_$!{attr.id}" onClick="checkAll('$!{attr.id}')"
+                 #if ( $value.type == "basic:ANY" ) $checked #end />all values</td></tr>
                  #set ($count=0)
                  #foreach ( $rule in $value.rules )
-                   <tr id="tr_v_${count}_$!{attr.id}"><td class="groupitem" colspan="2">
-                        <input type="text" size="50" maxlength="200" id="v_${count}_$!{attr.id}" value="${rule.value}" $act/>&nbsp;
+                   <tr id="tr_v_${count}_$!{attr.id}"><td></td><td>
+                        <input type="text" size="50" maxlength="200" id="v_${count}_$!{attr.id}" value="${rule.value}" />&nbsp;
                            <input type="checkbox" id="x_${count}_$!{attr.id}" #if ($rule.regex) $checked #end>regex</td></tr>
                    #set ($count = $count + 1)
                  #end
@@ -187,11 +171,7 @@ function attributeItem (id) {
         #end  ## if policy
          #if (!$did)
             <tr><td class="grouplabel"><span class="dimlink" id="label_$!{attr.id}">
-               #if ($act=='')
                 <a href="javascript:showAttribute('$!{attr.id}')" title="${attr.description}">$!{attr.id}</a>
-               #else
-                $!{attr.id}
-               #end
                 </span></td>
                 <input type="hidden" id="k_$!{attr.id}" value="ignore"/>
             </tr>
@@ -218,14 +198,19 @@ function attributeItem (id) {
      #set ( $policy = $group.getFilterPolicy($relyingPartyId) )
      #if ( $policy )
        #foreach ( $attribute in $policy.attributeRules )
-        <tr><td class="grouplabel">$!{attribute.id}</td>
-        </tr>
+        <tr><td class="label">$!{attribute.id}</td>
         #foreach ( $value in $attribute.valueRules )
           #if ( $value.type == "basic:ANY" )
-          <tr><td class="groupitem" colspan="2">All values</td><td/></tr>
+          <td class="groupitem" colspan="2">All values</td><td/></tr>
           #else
+           #set ($c=0)
            #foreach ( $rule in $value.rules )
-             <tr><td class="groupitem" colspan="2">${rule.value}</td><td/></tr>
+             #if ($c>0)
+               <tr><td></td>
+             #else
+               <td>#if ($rule.regex)<span class="subtitle">(regex)</span>#end ${rule.value}</td></tr>
+             #end
+             #set ($c = $c + 1)
            #end
           #end
         #end ## value
@@ -238,57 +223,13 @@ function attributeItem (id) {
 
  #end  ## groups
 
-   <tr><td/><td colspan="99"><hr></td></tr>
- 
   </table>
 
 
-#pageMiddle
-
-##
-## ----- right side extra text ----
-##
-
-
-<p height="100px">&nbsp;</p>
-
-
-<table class="helptext" cellpadding="4px">
-<tr><th align="left" colspan="2">Attributes</td></tr>
-<tr><td width="10px"/><td valign="top">This page shows the attributes that are released to this service provider.
-   </td></tr>
-<tr class="cleanDetail"><td width="10px"/><td valign="top">Shown is a summary of the
-  Service Provider's metadata.  Click <i>Show details</i> to see the details
-   of these metadata.
-   </td></tr>
-<tr class="cleanDetail"><td></td><td>
-<ul>
-   <li><b>UW core filter policies</b>
-    <p>These are non-editable attribute policies, generally applicable to all "*.uw.edu" or
-"*.washington.edu" providers.
-    </p>
-   <li><b>UW ad-hoc filter policies</b>
-    <p>These are policies directed to specific service providers.</p>
-</ul>
-
-#if ( $showEditRP )
-<tr><td width="10px"/><td valign="top">Click <b>Edit this entity</b>
-  to edit this entry.
-   </td></tr>
-#end
-
-</table>
-
-
-#pageEnd
-
-##
-## ----- end -----
-##
-
 ## error and status messages
-<div id="requestStatusDiv" class="notice">&nbsp;
+<div id="requestStatusDiv" class="notice" $hide>&nbsp;
 </div>
 <div class="status">$!{status}
 </div>
 
+</div>

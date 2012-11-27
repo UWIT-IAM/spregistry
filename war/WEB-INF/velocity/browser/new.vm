@@ -1,0 +1,58 @@
+#* ========================================================================
+ * Copyright (c) 2012 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ *#
+
+##
+## new rp
+##
+
+<script>
+v_sectionType = 'rp';
+
+v_xsrf = '${xsrf}';
+
+</script>
+
+
+
+<h3>Let us retrieve your SP's metadata.</h3>
+<p>
+If your SP is configured to show its metadata, the default configuration for most Shibboleth installations, we can retrieve most of the information we need.
+Enter the DNS name of your Service Provider.
+
+<p>
+<input dojoType="dijit.form.TextBox" size="60" id="new_dns" value="" />
+<input id="newidButton" type="button" name="lookup" value="Lookup metadata" onClick="lookupSp()" />
+<p>
+<ul>
+<li>You must be the registered owner of the DNS name of your service provider. </li>
+<li>Add the port number to the domain if your service uses a nonstandard port, e.g. <tt>example.com:9443</tt></li>
+<li>The registry will attempt to retrieve metadata from your SP itself, from the standard metadata endpoint, /Shibboleth.sso/Metadata. Make sure that address is public. There are no private data in your SP's metadata, so there is normally no reason to restrict access to this endpoint. </li>
+</ul>
+<p>
+
+
+<p>
+or
+<hr style="height:2px">
+
+<h3>Enter your SP's metadata manually</h3>
+<p>
+If online metadata is not available you may enter it manually. 
+<p>
+<input id="manidButton" type="button" name="lookup" value="Do it the hard way" onClick="nolookupSp()" />
+
+

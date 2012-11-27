@@ -19,7 +19,7 @@
 ## Template for registry home page 
 ##
 
-#parse ( "crumbs.vm" )
+## #parse ( "crumbs.vm" )
 
 ##
 ## ----- Left side content -----
@@ -89,8 +89,8 @@ through this local registry.</td></tr>
 </div>
 
 ## error and status messages
-<div id="requestStatusDiv" class="notice">&nbsp;
-</div>
+## <div id="requestStatusDiv" class="notice">&nbsp;
+## </div>
 <div class="status">$!{status}
 </div>
 
