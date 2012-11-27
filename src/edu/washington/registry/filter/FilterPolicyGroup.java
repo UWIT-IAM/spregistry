@@ -15,7 +15,7 @@
  * ========================================================================
  */
 
-package edu.washington.registry.filter;
+package edu.washington.iam.registry.filter;
 
 import java.util.Properties;
 import java.util.List;
@@ -46,8 +46,8 @@ import org.xml.sax.SAXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.washington.registry.util.XMLHelper;
-import edu.washington.registry.exception.FilterPolicyException;;
+import edu.washington.iam.tools.XMLHelper;
+import edu.washington.iam.registry.exception.FilterPolicyException;;
 
 public class FilterPolicyGroup {
 

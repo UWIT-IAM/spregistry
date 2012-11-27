@@ -15,7 +15,7 @@
  * ========================================================================
  */
 
-package edu.washington.registry.rp;
+package edu.washington.iam.registry.rp;
 
 import java.util.List;
 import java.util.Vector;
@@ -41,8 +41,8 @@ import org.xml.sax.SAXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.washington.registry.util.XMLHelper;
-import edu.washington.registry.exception.RelyingPartyException;
+import edu.washington.iam.tools.XMLHelper;
+import edu.washington.iam.registry.exception.RelyingPartyException;
 
 public class Metadata {
  

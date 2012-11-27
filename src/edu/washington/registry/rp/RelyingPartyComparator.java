@@ -1,4 +1,4 @@
-package edu.washington.registry.rp;
+package edu.washington.iam.registry.rp;
 
 import java.util.Comparator;
 

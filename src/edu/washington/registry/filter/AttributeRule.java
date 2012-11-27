@@ -16,7 +16,7 @@
  */
 
 
-package edu.washington.registry.filter;
+package edu.washington.iam.registry.filter;
 
 import java.io.Serializable;
 import java.io.BufferedWriter;
@@ -35,9 +35,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 
-import edu.washington.registry.util.XMLHelper;
+import edu.washington.iam.tools.XMLHelper;
 
-import edu.washington.registry.exception.FilterPolicyException;
+import edu.washington.iam.registry.exception.FilterPolicyException;
 
 public class AttributeRule implements Serializable  {
 

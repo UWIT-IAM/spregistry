@@ -15,7 +15,7 @@
  * ========================================================================
  */
 
-package edu.washington.registry.rp;
+package edu.washington.iam.registry.rp;
 
 import java.util.List;
 import java.util.Vector;
@@ -58,8 +58,8 @@ import javax.net.ssl.HostnameVerifier;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import edu.washington.registry.util.XMLHelper;
-import edu.washington.registry.exception.RelyingPartyException;
+import edu.washington.iam.tools.XMLHelper;
+import edu.washington.iam.registry.exception.RelyingPartyException;
 
 public class XMLRelyingPartyManager implements RelyingPartyManager {
 

@@ -17,7 +17,7 @@
 
 /* crypt utils */
 
-package edu.washington.registry.ws;
+package edu.washington.iam.registry.ws;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

@@ -16,7 +16,7 @@
  */
 
 
-package edu.washington.registry.rp;
+package edu.washington.iam.registry.rp;
 
 import java.io.Serializable;
 import java.io.BufferedWriter;
@@ -34,7 +34,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import edu.washington.registry.exception.RelyingPartyException;
+import edu.washington.iam.registry.exception.RelyingPartyException;
 
 public class ManageNameIDService implements Serializable  {
 

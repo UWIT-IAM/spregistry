@@ -15,7 +15,7 @@
  * ========================================================================
  */
 
-package edu.washington.registry.filter;
+package edu.washington.iam.registry.filter;
 
 import java.io.Serializable;
 import java.util.List;
@@ -26,9 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-import edu.washington.registry.exception.FilterPolicyException;
-import edu.washington.registry.exception.AttributeNotFoundException;
-import edu.washington.registry.exception.NoPermissionException;
+import edu.washington.iam.registry.exception.FilterPolicyException;
+import edu.washington.iam.registry.exception.AttributeNotFoundException;
+import edu.washington.iam.registry.exception.NoPermissionException;
 
 public interface FilterPolicyManager extends Serializable {
 

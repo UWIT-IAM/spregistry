@@ -15,7 +15,7 @@
  * ========================================================================
  */
 
-package edu.washington.registry.exception;
+package edu.washington.iam.registry.exception;
 
 public class FilterPolicyException extends Exception {
   public FilterPolicyException() {

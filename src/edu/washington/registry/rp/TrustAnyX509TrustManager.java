@@ -16,7 +16,7 @@
  */
 
 
-package edu.washington.registry.rp;
+package edu.washington.iam.registry.rp;
 
 import java.security.cert.X509Certificate;
 import javax.net.ssl.X509TrustManager;

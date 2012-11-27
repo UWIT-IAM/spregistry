@@ -15,7 +15,7 @@
  * ========================================================================
  */
 
-package edu.washington.registry.filter;
+package edu.washington.iam.registry.filter;
 
 import java.util.List;
 import java.util.Vector;
@@ -43,13 +43,12 @@ import org.xml.sax.SAXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import edu.washington.registry.ws.RelyingPartyController;
-import edu.washington.registry.util.XMLHelper;
-import edu.washington.registry.util.GroupManager;
-import edu.washington.registry.exception.FilterPolicyException;
-import edu.washington.registry.exception.AttributeException;
-import edu.washington.registry.exception.AttributeNotFoundException;
-import edu.washington.registry.exception.NoPermissionException;
+import edu.washington.iam.registry.ws.RelyingPartyController;
+import edu.washington.iam.tools.XMLHelper;
+import edu.washington.iam.registry.exception.FilterPolicyException;
+import edu.washington.iam.registry.exception.AttributeException;
+import edu.washington.iam.registry.exception.AttributeNotFoundException;
+import edu.washington.iam.registry.exception.NoPermissionException;
 
 public class XMLFilterPolicyManager implements FilterPolicyManager {
 
@@ -57,7 +56,6 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
     private final ReentrantReadWriteLock locker = new ReentrantReadWriteLock();
 
     private List<FilterPolicyGroup> filterPolicyGroups;
-    private GroupManager groupManager;
 
     private List<Attribute> attributes;
     private String attributeUri;
@@ -90,9 +88,7 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
     public List<Attribute> getAttributes(String user) {
        List<Attribute> ret = new Vector();
        log.debug("getting editable attributes for " + user);
-       for (int i=0; i<attributes.size(); i++) {
-          if (userCanEdit(attributes.get(i), user)) ret.add(attributes.get(i));
-       }
+       for (int i=0; i<attributes.size(); i++) ret.add(attributes.get(i));
        log.debug("from " + attributes.size() + ", found " + ret.size());
        return ret;
     }
@@ -132,7 +128,6 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
              String attributeId = attrEle.getAttribute("attributeID");
              String act = attrEle.getAttribute("action");
              Attribute attribute = getAttribute(attributeId);
-             if (!userCanEdit(attribute, remoteUser)) throw new NoPermissionException();
 
              log.debug(".." + act + " " + attributeId);
 
@@ -149,7 +144,6 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
     public void addAttributeRule(String policyGroupId, String entityId, String attributeId, String type, String value, String remoteUser)
            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
        Attribute attribute = getAttribute(attributeId);
-       if (!userCanEdit(attribute, remoteUser)) throw new NoPermissionException();
        FilterPolicyGroup pg = getPolicyGroup(policyGroupId);
        pg.addAttribute(entityId, attributeId, type, value);
     }
@@ -157,7 +151,6 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
     public void removeAttributeRule(String pgid, String entityId, String attributeId, String type, String value, String remoteUser)
          throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
        Attribute attribute = getAttribute(attributeId);
-       if (!userCanEdit(attribute, remoteUser)) throw new NoPermissionException();
        FilterPolicyGroup pg = getPolicyGroup(pgid);
        pg.removeAttribute(entityId, attributeId, type, value);
     }
@@ -272,12 +265,6 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        throw new AttributeNotFoundException();
     }
      
-    // can user edit
-    public boolean userCanEdit(Attribute attribute, String user) {
-       if (RelyingPartyController.getGroupManager().isMember(attribute.getAuthorizingGroup(), user)) return true;
-       return false;
-    }
-
     public void setPolicyGroupSources(List<Properties> v) {
        policyGroupSources = v;
     }
