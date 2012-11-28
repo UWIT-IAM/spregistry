@@ -2,10 +2,10 @@
 
 
   <appender name="SP_LOGS" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <File>/logs/sp-registry/process.log</File>
+        <File>/logs/spreg/process.log</File>
 
          <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>/logs/sp-registry/process-%d{yyyy-MM-dd}.log</FileNamePattern>
+            <FileNamePattern>/logs/spreg/process-%d{yyyy-MM-dd}.log</FileNamePattern>
          </rollingPolicy>
 
        <layout class="ch.qos.logback.classic.PatternLayout">
