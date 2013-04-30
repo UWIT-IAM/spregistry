@@ -35,6 +35,9 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 
 import edu.washington.iam.tools.XMLHelper;
+import edu.washington.iam.tools.IamCertificate;
+import edu.washington.iam.tools.IamCertificateHelper;
+import edu.washington.iam.tools.IamCertificateException;
 
 import edu.washington.iam.registry.exception.RelyingPartyException;
 
@@ -47,6 +50,9 @@ public class KeyDescriptor implements Serializable  {
     private String use;
     private String keyName;
     private String certificate;
+
+    // expanded cert (not written to the xml files)
+    private IamCertificate cert;
       
     // create from document element  (KeyDescriptor)
     public KeyDescriptor (Element ele) throws RelyingPartyException {
@@ -67,7 +73,15 @@ public class KeyDescriptor implements Serializable  {
         if (kn!=null) keyName = kn.getTextContent();
         if (x5!=null) {
             Element crt = XMLHelper.getElementByName(x5, "X509Certificate");
-            if (crt!=null) setCertificate(crt.getTextContent());
+            if (crt!=null) {
+               try {
+                  String pem = crt.getTextContent();
+                  cert = new IamCertificate(pem);
+                  setCertificate(pem);
+               } catch (IamCertificateException e) {
+                  throw new RelyingPartyException(e.getMessage());
+               }
+            }
         }
     }
 
@@ -118,6 +132,9 @@ public class KeyDescriptor implements Serializable  {
     }
     public String getCertificate() {
        return (certificate);
+    }
+    public IamCertificate getCert() {
+       return (cert);
     }
 
 }

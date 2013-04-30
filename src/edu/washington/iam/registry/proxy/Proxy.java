@@ -1,5 +1,5 @@
 /* ========================================================================
- * Copyright (c) 2012 The University of Washington
+ * Copyright (c) 2012-2013 The University of Washington
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +44,7 @@ public class Proxy implements Serializable  {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private String entityId;
-    private String idp;
-    private String clientId;
-    private String clientSecret;
+    private List<ProxyIdp> idps;
 
     private String safePy(String in) {
        return in.replaceAll("\"","\\\"");
@@ -56,20 +54,33 @@ public class Proxy implements Serializable  {
     public Proxy (Element ele) throws ProxyException {
 
        entityId = ele.getAttribute("entityId");
-       idp = ele.getAttribute("idp");
-       clientId = ele.getAttribute("clientId");
-       clientSecret = ele.getAttribute("clientSecret");
-       log.debug("create from doc: " + clientId);
+       idps = new Vector();
+       NodeList nl1 = ele.getChildNodes();
+       for (int i=0; i<nl1.getLength(); i++) {
+           if (nl1.item(i).getNodeType()!=Node.ELEMENT_NODE) continue;
+           Element e1 = (Element)nl1.item(i);
+           String name = e1.getNodeName();
+           if (XMLHelper.matches(name,"ProxyIdp")) {
+              idps.add(new ProxyIdp(e1));
+           }
+       }
+       log.debug("create from doc: " + entityId);
     }
 
     // write xml doc
     public void writeXml(BufferedWriter xout) throws IOException {
-       xout.write("<Proxy entityId=\"" + entityId + "\" idp=\"" + idp + "\" clientId=\"" + clientId + "\" clientSecret=\"" + clientSecret + "\"/>\n");
+       if (idps.size()==0) return;
+       xout.write("<Proxy entityId=\"" + entityId + "\">\n");
+       for (int i=0; i<idps.size(); i++) idps.get(i).writeXml(xout);
+       xout.write("</Proxy>\n");
     }
 
     // write py doc
     public void writePy(BufferedWriter xout) throws IOException {
-       xout.write("\"" + entityId + "\": {\n \"Google\": {\"key\": \"" + safePy(clientId) + "\", \"secret\": \"" + safePy(clientSecret) + "\"},\n },\n");
+       if (idps.size()==0) return;
+       xout.write("\"" + entityId + "\": {\n");
+       for (int i=0; i<idps.size(); i++) idps.get(i).writePy(xout);
+       xout.write(" },\n");
     }
 
     public void setEntityId(String v) {
@@ -78,24 +89,15 @@ public class Proxy implements Serializable  {
     public String getEntityId() {
        return (entityId);
     }
-    public void setIdp(String v) {
-       idp = v;
+    public void setProxyIdps(List<ProxyIdp> v) {
+       idps = v;
     }
-    public String getIdp() {
-       return (idp);
+    public List<ProxyIdp> getProxyIdps() {
+       return (idps);
     }
-    public void setClientId(String v) {
-       clientId = v;
+    public ProxyIdp getProxyIdp(String idp) {
+       for (int i=0; i<idps.size(); i++) if (idps.get(i).getIdp().equals(idp)) return idps.get(i);
+       return null;
     }
-    public String getClientId() {
-       return (clientId);
-    }
-    public void setClientSecret(String v) {
-       clientSecret = v;
-    }
-    public String getClientSecret() {
-       return (clientSecret);
-    }
-
 }
 

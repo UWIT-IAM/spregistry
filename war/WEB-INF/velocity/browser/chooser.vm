@@ -28,13 +28,15 @@
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dijit/themes/tundra/tundra.css"/>
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojo/resources/dojo.css"/>
 
-<link rel="stylesheet" type="text/css" href="/gws.css"/>
+<link rel="stylesheet" type="text/css" href="/iam.css"/>
 
   <!--[if IE]>
     <link rel="stylesheet" type="text/css" href="/iam-ie.css" />
   <![endif]-->
 
-<script type="text/javascript" src="/sr.js"></script>
+<script type="text/javascript" src="/js/iam-dojo.js"></script>
+<script type="text/javascript" src="/sp_static/sp.js"></script>
+
 
 <script>
     require(["dojo/dom",
@@ -71,7 +73,7 @@ v_remoteUser='$remote_user';
 v_xsrf = '${xsrf}';
 
 
-require(["dojo/_base/Deferred", "dojo/_base/xhr", "dojo/_base/array", "dojo/dom-construct", "dojo/dom", "dojo/domReady!"]);
+### require(["dojo/_base/Deferred", "dojo/_base/xhr", "dojo/_base/array", "dojo/dom-construct", "dojo/dom", "dojo/domReady!"]);
 
 function redirectToLogin(path) {
    var url = '$root' + '$vers' + path + '$pathextra';
@@ -145,9 +147,9 @@ etc.
                 Help
             </span>
            <div data-dojo-type="dijit.Menu" id="helpMenu">
-               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpLogin').show();}">
-                Log in
-               </div>
+               ## <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpLogin').show();}">
+               ##  Log in
+               ## </div>
                <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpAbout').show();}">
                 About the registry
                </div>
@@ -178,12 +180,12 @@ etc.
 
 
 
-<div id="groupsDisplay" dojoType="dijit.layout.ContentPane" region="left" splitter="true" minSize="100">
+<div id="leftsideIndex" dojoType="dijit.layout.ContentPane" region="left" splitter="true" minSize="100">
 
- <div id="groupsPane" dojoType="dijit.layout.ContentPane" style="overflow:hidden" >
+ <div id="indexPanel" dojoType="dijit.layout.ContentPane" style="overflow:hidden" >
 
-  <div id="groupsTitlebar">
-    <div class="groupsLeft">
+  <div id="indexTitlebar">
+    <div class="indexLeft">
        <span id="myGroupsTitle">Please login</span>
     </div>
   </div>

@@ -22,19 +22,46 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
- <title>SP Registry</title>
+ <title>Service Provider Registry</title>
 
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojo/dojo.js" data-dojo-config="async: true"></script>
-  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dijit/themes/tundra/tundra.css"/>
-  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.7.2/dojo/resources/dojo.css"/>
+<script>
+dojoConfig = {
+   "async": true,
+   "parseOnLoad": false,
+   "isDebug": true,
+   packages: [{
+      name: "iam",
+      location: "/js"
+   }]
+};
+</script>
 
-<link rel="stylesheet" type="text/css" href="/gws.css"/>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/dojo.js" data-dojo-config="async: true"></script>
+  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/resources/dojo.css"/>
+  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/tundra/tundra.css"/>
 
-  <!--[if IE]>
-    <link rel="stylesheet" type="text/css" href="/iam-ie.css" />
-  <![endif]-->
+<link rel="stylesheet" type="text/css" href="/css/iam-dojo.css"/>
 
-<script type="text/javascript" src="/sr.js"></script>
+## add ie7 css if needed
+<script>
+    require(["dojo/query",
+     "dojo/dom-construct",
+     "dojo/NodeList-manipulate"], function(query, dom) {
+         var ie=document.documentMode;
+         if (typeof ie != 'undefined' && ie<8) {
+            var link = dom.create("link", {
+                  type  : "text/css",
+                  rel   : "stylesheet",
+                  href  : '/css/iam-ie.css'
+               });
+            console.log('adding css for ie7');
+            query("head").append(link);
+         }
+    });
+</script>
+
+<script type="text/javascript" src="/js/iam-dojo.js"></script>
+<script type="text/javascript" src="/sp_static/sp.js"></script>
 
 <script>
     require(["dojo/dom",
@@ -48,7 +75,6 @@
      "dijit/form/Button",
      "dijit/form/RadioButton",
      "dijit/form/DropDownButton",
-     "dijit/form/CheckBox",
      "dijit/form/TextBox",
      "dijit/form/Textarea",
      "dijit/form/Select",
@@ -56,11 +82,11 @@
      "dijit/layout/ContentPane",
      "dijit/layout/TabContainer",
      "dijit/layout/BorderContainer",
+     "iam/Dialog",
      "dojo/domReady!"], function(dom,parser) {
        parser.parse();
        onLoad();
  });
-
 </script>
 
 
@@ -69,10 +95,6 @@ v_root='$root';
 v_vers='$vers';
 v_remoteUser='$remote_user';
 v_xsrf = '${xsrf}';
-
-
-require(["dojo/_base/Deferred", "dojo/_base/xhr", "dojo/_base/array", "dojo/dom-construct", "dojo/dom", "dojo/domReady!"]);
-
 </script>
 </head>
 
@@ -80,33 +102,35 @@ require(["dojo/_base/Deferred", "dojo/_base/xhr", "dojo/_base/array", "dojo/dom-
 
 ## banner popups and menus
 
-<div id="userPrefsDialog" dojoType="dijit.Dialog" title="Preferences" 
-      href="${root}${vers}/ajax/prefs" $hide>
+
+<div id="helpTimeout" data-dojo-type="iam/Dialog" title="Time's up"
+    data-dojo-props="submitLabel:'Refresh', submitAction:'location.reload()'"
+    $hide>
+   Your session with the Service Provider Registry has expired.  Please refresh the page to continue working.
+##    <button id="okTimeoutRefresh" dojoType="dijit.form.Button" type="button" class="subButton" onClick="location.reload()">
+##      Refresh
+##    </button>
 </div>
 
-<div id="helpAbout" dojoType="dijit.Dialog" title="About" $hide>
+<div id="helpAbout" data-dojo-type="iam/Dialog" title="About" $hide>
    Identity and Access Management
 <br/>
 Service Provider Registry 2.0.0
 <br/>
-Revision 11/07/2012
+Revision 04/19/2013
 </div>
 
-<div id="helpServiceProviders" dojoType="dijit.Dialog" title="Service Providers" $hide>
+<div id="helpServiceProviders" data-dojo-type="iam/Dialog" title="Service Providers" $hide>
   The Service Provider list shows all service providers (SP) known to the UW
-identity provider service (IdP).
+identity provider service (IdP).  Hover over a service provider to see which federation 
+it belongs to.
 <p>
-<ul>
-<li>Those prefaced by '<tt>IC</tt>' are members of the InCommon federation. 
-<li>Those prefaced by '<tt>UW</tt>' are local, UW members. 
-</ul>
-<p>
-Use the "filter list" area to find a particular service provider.
+Use the "Search" area to find a particular service provider.
 </div>
 
 
-<div id="helpGateway" dojoType="dijit.Dialog" title="SAML Gateways" $hide>
-  The UW supports a Social/SAML gateway. 
+<div id="helpGateway" data-dojo-type="iam/Dialog" title="SAML Gateways" $hide>
+  The UW is experimenting with a Social to SAML gateway. 
 <p>
 To your SAML service provider (a shibboleth SP, for example) the gateway 
 looks like any other SAML identity provider.  You configure it accordingly.
@@ -119,21 +143,35 @@ into a SAML assertion, which is returned to your SP in the normal way.
 So, in effect,
 <p>
 <ul>
-<li>To your SP this looks like a SAML login.</li>
-<li>To the user it looks like a Google login</li>
+<li>To your user it looks like a Google login, but</li>
+<li>to your SP this looks like a SAML login.</li>
 </ul>
+<p>
+See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gateway</a> for more information.
 </div>
 
-<div id="helpDNS" dojoType="dijit.Dialog" title="DNS 'ownership'" $hide>
+<div id="helpDNS" data-dojo-type="iam/Dialog" title="DNS 'ownership'" $hide>
    You must be registered with UW's Network Operations as a registered contact for your DNS name.
    For more information, see 
    <a href="https://wiki.cac.washington.edu/x/eRcrAQ">Managing DNS Names For Infrastructure Services Access</a>.
 </div>
 
+#*
+<div id="okDialog" data-dojo-type="dijit.Dialog" title="" style="display:none;" >
+<div id="okDialog_content">
+<span id="okDialogMessage"></span>
+    <button id="okDialogClose" dojoType="dijit.form.Button" type="button" class="subButton" onClick="iam_hideTheDialog('okDialog')">
+      Close
+    </button>
+</div>
+</div>
+ *#
+
+#parse ( "browser/new.vm" )
 
 ## page
 ## loader flash
-<div id="theflash" dojoType="dijit.layout.ContentPane" style="width: 100%; height:100%">
+<div id="theflash" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height:100%">
 <div style="width: 100%; height:50%">
 </div>
 <div align="center"><img src="/circle_loader.gif">
@@ -141,17 +179,17 @@ So, in effect,
 </div>
 
 
-<div id="thepage" dojoType="dijit.layout.BorderContainer"  gutters="false" liveSplitters="true" style="width: 100%; height: 100%">
+<div id="thepage" data-dojo-type="dijit.layout.BorderContainer"  gutters="false" liveSplitters="true" style="width: 100%; height: 100%">
 
 ## banner
-<div id="banner" class="container" dojoType="dijit.layout.ContentPane" region="top" splitter="false">
+<div id="banner" class="container" data-dojo-type="dijit.layout.ContentPane" region="top" splitter="false">
     <span id="logo"><a href="javascript:showHomePanel()" title="University of Washington"><img src="/UWw.gif" alt="UW" /></a></span>
     <span id="title"><a href="javascript:showHomePanel()">Service Provider Registry</a></span>
     <ul id="navigation">
 
         <li>$!{notice}</li>
         <li>
-        <div dojoType="dijit.form.DropDownButton">
+        <div data-dojo-type="dijit.form.DropDownButton">
             <span>
                 $remote_user
             </span>
@@ -171,7 +209,7 @@ So, in effect,
         </div>
         </li>
         </li>
-        <div dojoType="dijit.form.DropDownButton">
+        <div data-dojo-type="dijit.form.DropDownButton">
             <span>
                 Help
             </span>
@@ -194,53 +232,58 @@ So, in effect,
     </ul>
 
 </div>  ## banner containe
+## <div id="messageArea" data-dojo-type="dijit.layout.ContentPane" region="top" splitter="false" style="height:15px"></div>
 
+## show the page when the dom is ready
 <script>
-
   function onLoad() {
-require(["dojo/dom", "dijit/registry", "dojo/domReady!"], function(dom, registry) {
+    require(["dojo/dom", "dijit/registry", "dojo/on", "dojo/domReady!"], function(dom, registry, on) {
 
-// drop the flash and show the page
-   dom.byId('theflash').style.display = 'none';
-   dom.byId('thepage').style.display = '';
-   dom.byId('thepage').style.width = '100%';
-   dom.byId('thepage').style.height = '100%';
-   registry.byId('thepage').layout();
-   registry.byId('thepage').resize();
+      // drop the flash and show the page
+         dom.byId('theflash').style.display = 'none';
+         dom.byId('thepage').style.display = '';
+         dom.byId('thepage').style.width = '100%';
+         dom.byId('thepage').style.height = '100%';
+         // registry.byId('thepage').layout();
+         // registry.byId('thepage').resize();
 
-  // start with SP list
-  loadSpList();
-  showHashGroup();
-
-});
+      // start with SP list
+      loadSpList();
+      // dojo.connect(dojo.global, "onhashchange", iam_hashHandler);
+      // dojo.connect(dijit.byId('filterSpList'), 'onkeypress', checkSpFilter);
+      on(dom.byId('filterSpList'), 'keyup', checkSpFilter);
+      #if ($timeLeft)
+      to_interval = setInterval(function(){dijitRegistry.byId('helpTimeout').show();clearInterval(to_interval);}, ${timeLeft}000);
+      console.log('session timeout in  ${timeLeft}000 ms');
+      #end
+  });
 }
-
 </script>
 
 
 
-<div id="groupsDisplay" dojoType="dijit.layout.ContentPane" region="left" splitter="true" minSize="100">
+<div id="leftsideIndex" data-dojo-type="dijit.layout.ContentPane" region="left" splitter="true" minSize="100">
 
- <div id="groupsPane" dojoType="dijit.layout.ContentPane" style="overflow:hidden" >
+ <div id="indexPanel" data-dojo-type="dijit.layout.ContentPane" style="overflow:hidden" >
 
-  <div id="groupsTitlebar">
-    <div class="groupsLeft">
+  <div id="indexTitlebar">
+    <div class="indexLeft">
        <span id="myGroupsTitle">Service Providers</span>
     </div>
-    <div class="groupsRight">
-       <span><a href="javascript:showNewGroupPanel()">New</a></span>
+    <div class="indexRight">
+       <span><a href="javascript:dijit.byId('metaNewDialog').show()">Add&nbsp;new</a></span>
     </div>
   </div>
 
-  <div id="groupsSubtitlebar">
+  <div id="indexSubtitlebar">
      <div class="groupsRight">
-      filter list <input id="filterSpList" style="background-color:#ffffff;" dojoType="dijit.form.TextBox" onKeyUp="showSpList()" />
+      Search <input id="filterSpList" style="background-color:#ffffff;" data-dojo-type="dijit.form.TextBox" />
      </div>
   </div>
 
- <div class="groupList" id="myGroupsPanel" dojoType="dijit.layout.ContentPane"
-         onLoad="adjustMGPaneSize()"  style="overflow:auto">
-     <i>fetching SP list</i>
+ <div class="indexList" id="spIndexPane" data-dojo-type="dijit.layout.ContentPane"
+         onLoad="adjustSPIndexSize()"  style="overflow:auto">
+     <i>Retriving the list of service providers</i>
   </div>
 
  </div>
@@ -248,43 +291,29 @@ require(["dojo/dom", "dijit/registry", "dojo/domReady!"], function(dom, registry
 
 
 
-// 'enter' submits a form
 
-function checkSimpleSearch(e)
-{
-  if (!e) e = window.event;
-  if (e.keyCode==13) filterSpList( dijit.byId('simplesearch').attr('value'));
-}
-
-
-dojo.addOnLoad(function() {
-  dojo.connect(dijit.byId('simplesearch'), 'onKeyUp', checkSimpleSearch);
-});
 
 </script>
 
 
 ## right side
 
-<div id="groupDisplay" dojoType="dijit.layout.ContentPane" region="center" splitter="true" style="margin-top:6px;overflow:hidden;display:none" >
-   <div id="groupPanel" dojoType="dijit.layout.ContentPane" >
+<div id="spDisplay" data-dojo-type="dijit.layout.ContentPane" region="center" splitter="true" style="margin-top:6px;overflow:hidden;display:none" >
+   <div id="spPane" data-dojo-type="dijit.layout.ContentPane" >
    </div>
 </div>
-<div id="homeDisplay" dojoType="dijit.layout.ContentPane"  region="center" splitter="true" style="margin-top:6px;overflow:auto;" >
+<div id="homeDisplay" data-dojo-type="dijit.layout.ContentPane"  region="center" splitter="true" style="margin-top:6px;overflow:auto;" >
 #parse ( 'browser/home.vm' )
  </div>
-<div id="newDisplay" dojoType="dijit.layout.ContentPane" region="center" splitter="true" style="margin-top:6px;overflow:hidden;display:none" >
-#parse ( 'browser/new.vm' )
-</div>
 
 
 
 
 ## footer
 
-<div dojoType="dijit.layout.ContentPane" region="bottom" splitter="false">
+<div data-dojo-type="dijit.layout.ContentPane" region="bottom" splitter="false">
 
-<div id="footer" dojoType="dijit.layout.ContentPane">
+<div id="footer" data-dojo-type="dijit.layout.ContentPane">
     <span id="footlogo"><a href="http:/www.uw.edu/" title="University of Washington"><img src="/uofw-small.gif" alt="UW" /></a></span>
     <span id="footcenter">
     <ul id="navigation">

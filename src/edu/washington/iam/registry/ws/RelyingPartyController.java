@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -85,9 +86,9 @@ public class RelyingPartyController {
 
     private final Logger log =  LoggerFactory.getLogger(getClass());
 
-    private FilterPolicyManager filterPolicyManager;
-    private RelyingPartyManager rpManager;
-    private ProxyManager proxyManager;
+    private static FilterPolicyManager filterPolicyManager;
+    private static RelyingPartyManager rpManager;
+    private static ProxyManager proxyManager;
 
     private static DNSVerifier dnsVerifier;
     private static GroupManager groupManager;
@@ -130,7 +131,8 @@ public class RelyingPartyController {
     private String incommonLoginPath = "/incommonlogin";
     private long standardLoginSec = 9*60*60;  // 9 hour session lifetime
     private long secureLoginSec = 1*60*60;  // 1 hour session lifetime
-    private String googleIdentityProvider = "https://idpgateway.u.washington.edu:7443/google_sso";
+    private String googleIdentityProvider = "https://idpgateway.u.washington.edu:7443/google";
+    private String spRegistryUrl = "https://iam-tools.u.washington.edu/sp-registry/";
 
     private String myEntityId = null;
     private String eppnName = "eppn";  // env var name of user eppn
@@ -159,6 +161,7 @@ public class RelyingPartyController {
        private String userIdProvider;
        private String userDisplayName;
        private ModelAndView mv;
+       private long timeLeft;
     }
 
     /* send user to login chooser page */ 
@@ -190,6 +193,7 @@ public class RelyingPartyController {
         RPSession session = new RPSession();
         session.isAdmin = false;
         session.isUWLogin = false;
+        String reloginPath = null;
 
         log.info("RP new session =============== path=" + request.getPathInfo());
 
@@ -211,7 +215,8 @@ public class RelyingPartyController {
                   long cSec = new Long(cookieData[4]);
                   long nSec = new Date().getTime()/1000;
                   if (cookieData[1].indexOf("@")<0) session.isUWLogin = true;  // klugey way to know UW people
-                  if (nSec<(cSec+standardLoginSec)) {
+                  session.timeLeft = (cSec+standardLoginSec) - nSec;
+                  if (session.timeLeft>0) {
                      if ((nSec>(cSec+secureLoginSec)) && session.authn2) {
                         log.debug("secure expired");
                         session.authn2 = false;
@@ -227,7 +232,13 @@ public class RelyingPartyController {
                         session.isAdmin = true;
                      }
                      break;
-                  } else log.debug("cookie expired for " + cookieData[1]);
+                  } else {
+                     log.debug("cookie expired for " + cookieData[1]);
+                     // remember where they logged in last
+                     if (session.isUWLogin) reloginPath = browserRootPath + request.getServletPath() + standardLoginPath;
+                     else if (cookieData[1].indexOf("gmail.com")>0) reloginPath = browserRootPath + request.getServletPath() + googleLoginPath;
+                     // let others choose
+                  }
                } else {
                   log.info("bogus cookie ignored");
                }
@@ -274,6 +285,15 @@ public class RelyingPartyController {
 
         if (session.remoteUser==null) {
            if (canLogin) {
+              if (reloginPath!=null) {
+                 log.debug("no user yet:  relogin at " + reloginPath);
+                  try {
+                     response.sendRedirect(reloginPath);
+                  } catch (IOException e) {
+                     log.error("redirect: " + e);
+                  }
+              }
+              log.debug("no user yet:  send to choose");
               session.mv = loginChooserMV(request, response);
               return session;
            }
@@ -347,6 +367,7 @@ public class RelyingPartyController {
         if (session.pageType != null) mv.addObject("pageType", view + "/" + session.pageType);
         mv.addObject("pageTitle", session.pageTitle);
         mv.addObject("xsrf", session.xsrfCode);
+        mv.addObject("timeLeft", session.timeLeft);
         return mv;
     }
     private ModelAndView basicModelAndView(RPSession session) {
@@ -538,7 +559,10 @@ public class RelyingPartyController {
             HttpServletRequest request, HttpServletResponse response) {
 
         RPSession session = processRequestInfo(request, response, false);
-        if (session==null) return (emptyMV());
+        if (session==null) {
+           response.setStatus(418);
+           return (emptyMV());
+        }
         if (session.mv!=null) return (session.mv);
 
         List<RelyingParty> relyingParties = null;
@@ -619,9 +643,11 @@ public class RelyingPartyController {
         List<FilterPolicyGroup> filterPolicyGroups = filterPolicyManager.getFilterPolicyGroups();
         List<Attribute> attributes = filterPolicyManager.getAttributes();
 
+        Proxy proxy = proxyManager.getProxy(id);
         // don't send proxy secret to non-admin
-        Proxy googleProxy = proxyManager.getProxy("google", id);
-        if (googleProxy!=null && !canEdit) googleProxy.setClientSecret("*****");
+        if (proxy!=null && !canEdit) {
+           for (int p=0; p<proxy.getProxyIdps().size(); p++) proxy.getProxyIdps().get(p).setClientSecret("");
+        }
 
         mv.addObject("canEdit", canEdit);
         mv.addObject("relyingParty", rp);
@@ -629,16 +655,18 @@ public class RelyingPartyController {
         mv.addObject("filterPolicyManager", filterPolicyManager);
         mv.addObject("attributes", attributes);
         mv.addObject("relyingPartyId", id);
-        mv.addObject("googleProxy", googleProxy);
+        mv.addObject("proxy", proxy);
         mv.addObject("isAdmin", session.isAdmin);
+        mv.addObject("dateFormatter", new SimpleDateFormat("yy/MM/dd"));
         return (mv); 
     }
 
     // new rp
     @RequestMapping(value="/new", method=RequestMethod.GET)
-    public ModelAndView getRelyingParty(@RequestParam(value="dns", required=true) String dns,
+    public ModelAndView getRelyingPartyNew(@RequestParam(value="dns", required=true) String dns,
             @RequestParam(value="mdid", required=false) String mdid,
             @RequestParam(value="view", required=false) String view,
+            @RequestParam(value="manid", required=false) String manid, // enter manual data for this entity
             HttpServletRequest request,
             HttpServletResponse response) {
 
@@ -648,7 +676,17 @@ public class RelyingPartyController {
 
         session.pageType = "rp";
         session.pageTitle = "New service provider";
-        log.debug("new sp request: " + dns);
+        if (manid==null) manid = "";
+        
+        if (manid.length()>0) {
+           log.debug("new sp manid: " + manid);
+           if (!manid.startsWith("https://")) return (emptyMV());
+           int p = manid.indexOf('/', 10);
+           if (p<0) dns = manid.substring(8);
+           else dns = manid.substring(8,p);
+        } else {
+           log.debug("new sp lookup request: " + dns);
+        }
         if (dns.length()==0) return (emptyMV());
 
         RelyingParty rp = null;
@@ -671,22 +709,27 @@ public class RelyingPartyController {
            return mv;
         }
 
-        try {
-           rp = rpManager.genRelyingPartyByLookup(dns);
-        } catch (RelyingPartyException e) {
-           return emptyMV("metadata not found");
+        mv.addObject("newEntity", true);
+        if (manid.length()>0) {
+           rp = rpManager.genRelyingPartyByName(manid, dns);
+           mv.addObject("relyingParty", rp);
+           mv.addObject("relyingPartyId", manid);
+           session.pageTitle = manid;
+        } else {
+           try {
+              rp = rpManager.genRelyingPartyByLookup(dns);
+              mv.addObject("relyingParty", rp);
+              mv.addObject("relyingPartyId", rp.getEntityId());
+              session.pageTitle = rp.getEntityId();
+           } catch (RelyingPartyException e) {
+              return emptyMV("metadata not found");
+           }
         }
-        session.pageTitle = rp.getEntityId();
 
         List<FilterPolicyGroup> filterPolicyGroups = filterPolicyManager.getFilterPolicyGroups();
         List<Attribute> attributes = filterPolicyManager.getAttributes();
-
-
-        mv.addObject("newEntity", true);
-        mv.addObject("relyingParty", rp);
         mv.addObject("filterPolicyGroups", filterPolicyGroups);
         mv.addObject("filterPolicyManager", filterPolicyManager);
-        mv.addObject("relyingPartyId", rp.getEntityId());
         return (mv); 
     }
 
@@ -797,8 +840,22 @@ public class RelyingPartyController {
                status = 401;
                mv.addObject("alert", "You are not the owner.");
            } else {
-              status = rpManager.deleteRelyingParty(id, mdid);
+              status = proxyManager.removeRelyingParty(id);
+              status = filterPolicyManager.removeRelyingParty(id, mdid);
+              status = rpManager.removeRelyingParty(id, mdid);
            }
+        } catch (NoPermissionException e) {
+           mv.addObject("alert", "No permission to delete the relying party\n" + e.getCause());
+           response.setStatus(403);
+           return mv;
+        } catch (AttributeNotFoundException e) {
+           mv.addObject("alert", "delete of filter policy failed:\n" + e.getCause());
+           response.setStatus(500);
+           return mv;
+        } catch (FilterPolicyException e) {
+           mv.addObject("alert", "delete of filter policy failed:\n" + e.getCause());
+           response.setStatus(500);
+           return mv;
         } catch (DNSVerifyException e) {
            mv.addObject("alert", "Could not verify ownership:\n" + e.getCause());
            response.setStatus(500);
@@ -882,10 +939,12 @@ public class RelyingPartyController {
         log.info("PUT update attrs for " + id + " in " + policyId);
         int status = 200;
 
+/**
        if (session.isBrowser && !(paramXsrf!=null && paramXsrf.equals(session.xsrfCode))) {
            log.info("got invalid xsrf=" + paramXsrf + ", expected+" + session.xsrfCode);
            return emptyMV("invalid session (xsrf)");
        }
+ **/
 
         ModelAndView mv = emptyMV("OK dokey");
 
@@ -975,25 +1034,32 @@ public class RelyingPartyController {
            mv.addObject("alert", "The posted document was not valid:\n" + e);
         }
         if (doc!=null) {
-           List<Element> attrs = XMLHelper.getElementsByName(doc.getDocumentElement(), "Attribute");
-           StringBuffer txt = new StringBuffer("User '" + session.remoteUser + "' requests these attributes for '" + id + "'.\n\n");
-           for (int i=0; i<attrs.size(); i++) txt.append("   " + attrs.get(i).getAttribute("id") + "\n");
-           Element mele = XMLHelper.getElementByName(doc.getDocumentElement(), "Message");
-           if (mele!=null) txt.append("\nReason for this:\n\n" + mele.getTextContent() + "\n\n"); 
-
+           StringBuffer txt = new StringBuffer("Entity Id: " + id + "\n");
+           txt.append("User:      " + session.remoteUser + "\n\nRequesting:\n");
+           List<Element> attrs = XMLHelper.getElementsByName(doc.getDocumentElement(), "Add");
+           log.debug(attrs.size() + " adds");
+           for (int i=0; i<attrs.size(); i++) txt.append("  Add new attribute: " + attrs.get(i).getAttribute("id") + "\n\n");
+           attrs = XMLHelper.getElementsByName(doc.getDocumentElement(), "Drop");
+           log.debug(attrs.size() + " drops");
+           for (int i=0; i<attrs.size(); i++) txt.append("  Drop existing attribute: " + attrs.get(i).getAttribute("id") + "\n\n");
+           Element mele = XMLHelper.getElementByName(doc.getDocumentElement(), "Comments");
+           if (mele!=null) txt.append("\nComment:\n\n" + mele.getTextContent() + "\n\n"); 
+           txt.append("Quick link:\n\n   " + spRegistryUrl + "#a" + id + "\n");
 
            SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
-   /* production to RT system */
+   /* production to RT system 
            msg.setTo(requestMailTo);
-           msg.setSubject("Requesting attributes for " + id);
+           msg.setSubject("IdP attribute request for " + id);
            msg.setText("//proxy\n//requestor: " + session.remoteUser + "@washington.edu\n\n" + txt.toString());
            try{
                this.mailSender.send(msg);
            } catch(MailException ex) {
                log.error("sending mail: " + ex.getMessage());            
+               status = 500;
            }
+      **/
 
-   /** testing
+   /** testing */
            msg.setTo(session.remoteUser + "@washington.edu");
            msg.setSubject("Requesting attributes for " + id);
            msg.setText("this is the message that would have been sent to RT\n\n" + txt.toString());
@@ -1001,8 +1067,9 @@ public class RelyingPartyController {
                this.mailSender.send(msg);
            } catch(MailException ex) {
                log.error("sending mail: " + ex.getMessage());            
+               status = 500;
            }
-     **/
+     /* **/
 
         }
         response.setStatus(status);
@@ -1099,7 +1166,7 @@ public class RelyingPartyController {
         msg.setTo(mailTo);
         String act = "updated";
         if (status==201) act = "created";
-        msg.setSubject("Service provider attributes " + act + " by " + session.remoteUser);
+        msg.setSubject("Service provider proxy info " + act + " by " + session.remoteUser);
         msg.setText( "User '" + session.remoteUser + "' " + act + " proxy info '" + id + "'.\nRequest status: " + status + "\n");
         try{
             this.mailSender.send(msg);
@@ -1187,7 +1254,13 @@ public class RelyingPartyController {
     public void setEppnName(String v) {
         eppnName = v;
     }
+    public void setSpRegistryUrl(String v) {
+        spRegistryUrl = v;
+    }
 
+    public static RelyingPartyManager getRelyingPartyManager() {
+       return rpManager;
+    }
 
 
     /* See if extra login suggested.

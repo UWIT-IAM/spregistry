@@ -15,221 +15,97 @@
  * ========================================================================
  *#
 
+## This edits only one editable policy
+## For more policies, use more of these
+
 #parse ( 'definitions.vm' )
 
-<script>
-v_sectionType = 'rpattr';
 
+#foreach ( $grp in $filterPolicyGroups )
+ #if ( $grp.editable )
+   #set ($group=$grp)
+   #set ($gid=$group.id)
+ #end
+#end
 
-function showAttribute(id) {
-   tr = document.getElementById('tr_all_' + id);
-   if (tr.style.display=='none') {
-      tr.style.display = '';
-      document.getElementById('v_all_' + id).checked = true;
-      document.getElementById('label_' + id).className = 'boldlink';
-   }
-}
-
-function checkAll(id) {
-   if (document.getElementById('v_all_' + id).checked) {
-      for (i=0;i<99;i++) {
-         tr = document.getElementById('tr_v_' + i + '_' + id);
-         if (tr==null) break;
-         tr.style.display = 'none';
-      }
-   } else {
-      for (i=0;i<99;i++) {
-         tr = document.getElementById('tr_v_' + i + '_' + id);
-         if (tr.style.display=='none') {
-            tr.style.display = '';
-            break;
-         }
-      }
-      
-   }
-}
-   
-function showNext(i, id) {
-   n = i+1;
-   document.getElementById('tr_v_' + n + '_' + id).style.display = '';
-}
-
-## define a submit function for each editable group
-
-// make a response for an attribute
-function attributeItem (id) {
-   option = document.getElementById('k_' + id).value.trim();
-   all = document.getElementById('v_all_' + id).checked;
-
-   if (all) return '<AttributeRule attributeID="' + id + '" action="replace"><PermitValueRule xsi:type="basic:ANY"/></AttributeRule>';
-
-   nv = 0;
-   txt = '<PermitValueRule xsi:type="basic:OR">';
-   for (i=0;i<99;i++) {
-      ele = document.getElementById('v_' + i + '_' + id);
-      if (ele==null) break;
-      v = ele.value.trim();
-      if (v!='') {
-        if (document.getElementById('x_' + i + '_' + id).checked) txt = txt + '<basic:Rule xsi:type="basic:AttributeValueRegex" regex="' + v + '"/>';
-        else txt = txt + '<basic:Rule xsi:type="basic:AttributeValueString" value="' + v + '"/>';
-        nv += 1;
-      }
-   }
-   if (nv>0) {
-       txt = txt + '</PermitValueRule>'
-       return '<AttributeRule attributeID="' + id + '" action="replace">' + txt + '</AttributeRule>';
-   }
-
-   if (option=='send') return '<AttributeRule attributeID="' + id + '" action="remove"/>';
-   return '';
-}
-
-function postSaveAttrs() {
-   var url = v_root + v_vers + '/rp/?id=' + rpId + '&mdid=UW';
-   dijit.byId('groupDisplay').set('errorMessage', v_loadErrorMessage);
-   dijit.byId('groupDisplay').set('href', url);
-   document.body.style.cursor = 'default';
-}
-
-   
-#foreach ( $group in $filterPolicyGroups )
-  #set ( $policy = $group.getFilterPolicy($relyingPartyId) )
-    function submitPolicy_${group.id} () {
-       xml = '<FilterPolicyModification><AttributeFilterPolicy policyId="${group.id}" entityId="$relyingPartyId">';
-       xml = xml + '<PolicyRequirementRule xsi:type="basic:AttributeRequesterString" value="${relyingPartyId}" />'
-       #foreach ( $attr in $attributes )
-         xml = xml + attributeItem('${attr.id}');
-       #end 
-       xml = xml + '</AttributeFilterPolicy></FilterPolicyModification>';
-       action = '${root}${vers}/rp/attr?id=${relyingPartyId}&policyId=${group.id}&xsrf=${xsrf}';
-       doRequest('PUT', action, xml, '', postSaveAttrs);
-    }
-#end  ## group
-
-
-</script>
-
-
-<div id="attrEditPane" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;display:none" >
-
-  <div id="attrEditLinks" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false">
-  <ul>
-  <li class="sublist" ><a href="javascript:handleAttrViewBtn()">View</a></li>
-  <li class="sublist" ><a href="javascript:handleAttrReqBtn()">Request</a></li>
-  </ul>
-  </div>
+<div id="attrEditDialog" dojoType="iam/Dialog" title="Edit attributes for ${relyingPartyId}" 
+    data-dojo-props="submitLabel:'Save changes', submitAction:'attr_saveAttrs(\'${gid}\', \'${relyingPartyId}\')', cancelLabel:'Cancel'"
+    $hide >
 
 <table class="iamtable">
 
-    <tr><td class="label">Entity Id</td>
-         <td colspan="2">${relyingParty.entityId}</td></tr>
-
     <tr><th colspan="9">Description of attributes</th></tr>
-     <tr><td class="label">See the IAM wiki's <a href="https://wiki.cac.washington.edu/x/QUioAQ">Guide to Attributes</a>.</td></tr>
+     <tr><td class="label" colspan="9">See the IAM wiki's <a href="https://wiki.cac.washington.edu/x/QUioAQ">Guide to Attributes</a>.</td></tr>
+     <tr><td colspan="9">Please allow 40 minutes for our IdP to acquire
+        the changes to this service provider's attribute release policy.
+       </td></tr>
 
-  #foreach ( $group in $filterPolicyGroups )
     <tr><th colspan="9">Attributes from by $group.description</th></tr>
      <tr><td colspan="3">
        <table class="iamtable" >
-
     
-   #if ( $group.editable )
      #set ( $policy = false )
      #set ( $policy = $group.getFilterPolicy($relyingPartyId) )
      #foreach ( $attr in $attributes )
-       #set ($did = false)
+       #set ($chk = '')
+       #set ($pattr = false )
+       ## see if policy exists for this sp and attr
        #if ($policy)
-         #foreach ( $pattr in $policy.attributeRules )
-          #if ($attr.id==$pattr.id) 
-            #set ($did=true)
-            <tr><td class="label"><span class="boldlink">
-                <a href="javascript:return(true)" title="${attr.description}">$!{attr.id}</a></span></td>
-            </tr>
-                <input type="hidden" id="k_$!{attr.id}" value="send"/>
-            #foreach ( $value in $pattr.valueRules )
-              <tr><td></td><td><input type="checkbox" id="v_all_$!{attr.id}" onClick="checkAll('$!{attr.id}')"
-                 #if ( $value.type == "basic:ANY" ) $checked #end />all values</td></tr>
-                 #set ($count=0)
-                 #foreach ( $rule in $value.rules )
-                   <tr id="tr_v_${count}_$!{attr.id}"><td></td><td>
-                        <input type="text" size="50" maxlength="200" id="v_${count}_$!{attr.id}" value="${rule.value}" />&nbsp;
-                           <input type="checkbox" id="x_${count}_$!{attr.id}" #if ($rule.regex) $checked #end>regex</td></tr>
-                   #set ($count = $count + 1)
-                 #end
-                 #set ($h="")
-                 #if ( $value.type == "basic:ANY" ) #set ($h=$hide) #end
-                 #foreach ( $i in [ $count .. 10 ] )
-                   <tr $h id="tr_v_${i}_$!{attr.id}"><td class="groupitem" colspan="2">
-                       <input type="text" size="50" maxlength="200" id="v_${i}_$!{attr.id}"
-                            value="" onClick="showNext(${i}, '$!{attr.id}')"/>&nbsp;
-                            <input type="checkbox" id="x_${i}_$!{attr.id}">regex</td></tr>
-                   #set ($h = $hide)
-                 #end
-            #end ## value
-          #end ## if attrs equal
-         #end ## pattr
-        #end  ## if policy
-         #if (!$did)
-            <tr><td class="grouplabel"><span class="dimlink" id="label_$!{attr.id}">
-                <a href="javascript:showAttribute('$!{attr.id}')" title="${attr.description}">$!{attr.id}</a>
-                </span></td>
-                <input type="hidden" id="k_$!{attr.id}" value="ignore"/>
-            </tr>
-              <tr $hide id="tr_all_$!{attr.id}"><td class="groupitem" colspan="2">
-                       <input type="checkbox" id="v_all_$!{attr.id}" onClick="checkAll('$!{attr.id}')"/>all values</td><td/></tr>
-                 #foreach ($count in [0 .. 10] )
-                 <tr $hide id="tr_v_${count}_$!{attr.id}"><td class="groupitem" colspan="2">
-                       <input type="text" size="50" maxlength="100" id="v_${count}_$!{attr.id}"
-                          value="" onClick="showNext($count, '$!{attr.id}')"/>&nbsp;
-                          <input type="checkbox" id="x_${count}_$!{attr.id}">regex</td></tr>
-                 #end
-         #end
-     #end ## attr
-     <tr><td height="10" colspan="99"><hr></td></tr>
-     <tr><td colspan="99">Please allow 40 minutes for our IdP to acquire
-        the changes to this service provider's attribute release policy.
-       </td></tr>
-     <tr><td><input type="button" class="btn" name="button" value="Save changes" onClick="submitPolicy_${group.id}();"/></td></tr>
-
-
-   #else  ## editable
-
-     #set ( $policy = false )
-     #set ( $policy = $group.getFilterPolicy($relyingPartyId) )
-     #if ( $policy )
-       #foreach ( $attribute in $policy.attributeRules )
-        <tr><td class="label">$!{attribute.id}</td>
-        #foreach ( $value in $attribute.valueRules )
-          #if ( $value.type == "basic:ANY" )
-          <td class="groupitem" colspan="2">All values</td><td/></tr>
-          #else
-           #set ($c=0)
-           #foreach ( $rule in $value.rules )
-             #if ($c>0)
-               <tr><td></td>
-             #else
-               <td>#if ($rule.regex)<span class="subtitle">(regex)</span>#end ${rule.value}</td></tr>
-             #end
-             #set ($c = $c + 1)
-           #end
+         #foreach ( $p in $policy.attributeRules )
+          #if ($attr.id==$p.id) 
+            #set ($chk = 'checked="checked"')
+            #set ($pattr = $p )
           #end
-        #end ## value
-       #end ## attrs
-      #end ## if policy
+         #end
+       #end
 
-   #end  ## editable
+       <tr><td class="label" width="40"><span data-dojo-type="dijit.form.CheckBox" $chk  value="${attr.id}" id="${gid}_attr_edit_chk_${attr.id}"
+              class="${gid}_attr_edit_chk" onClick="attr_checkAttr('$gid', '$!{attr.id}')"></span></td>
+           <td align="left">$!{attr.id}
+            <input id="${gid}_attr_edit_chk_${attr.id}_in" value="$chk" type="hidden"></input>
+            </td>
+       </tr>
+       
+       ## show any existing releases
+       #set ($count=0)
+       #set ($started = false)
+       #foreach ( $value in $pattr.valueRules )
+          #set( $started = true )
+          <tr id="${gid}_attr_edit_tr_all_${attr.id}">
+              <td></td><td><span data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_all_$!{attr.id}" onClick="attr_checkAll('$gid', '$!{attr.id}')"
+            #if ( $value.type == "basic:ANY" ) $checked #end></span>all values</td></tr>
+            #foreach ( $rule in $value.rules )
+              <tr id="${gid}_attr_edit_tr_v_${count}_$!{attr.id}"><td></td><td nowrap="nowrap">
+                  <span data-dojo-type="dijit.form.TextBox" 
+                          id="${gid}_attr_edit_v_${count}_$!{attr.id}" value="${rule.value}" style="width:400px"></span>
+                     <span data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_x_${count}_$!{attr.id}"
+                       #if ($rule.regex) $checked #end></span>regex</td></tr>
+              #set ($count = $count + 1)
+            #end ## value counts
+       #end
+       #if (!$started)
+          <tr id="${gid}_attr_edit_tr_all_${attr.id}" $hide>
+             <td></td><td><span data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_all_$!{attr.id}"
+                  onClick="attr_checkAll('$gid', '$!{attr.id}')"></span>all values</td></tr>
+       #end
+       #foreach ( $i in [ $count .. 10 ] )
+         <tr $hide id="${gid}_attr_edit_tr_v_${i}_$!{attr.id}"><td></td><td nowrap="nowrap">
+             <span data-dojo-type="dijit.form.TextBox" id="${gid}_attr_edit_v_${i}_$!{attr.id}" value="" style="width:400px"
+                  onClick="attr_showNext('$gid', ${i},'$!{attr.id}')"></span>
+                 <span data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_x_${i}_$!{attr.id}"></span>regex</td></tr>
+       #end  ## xtra counts
+     #end ## attr
+
 
    </table></td></tr>
-
- #end  ## groups
 
   </table>
 
 
 ## error and status messages
-<div id="requestStatusDiv" class="notice" $hide>&nbsp;
-</div>
-<div class="status">$!{status}
-</div>
+## <div id="requestStatusDiv" class="notice" $hide>&nbsp;
+## </div>
+## <div class="status">$!{status}
+## </div>
 
 </div>

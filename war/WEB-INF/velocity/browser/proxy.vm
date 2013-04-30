@@ -1,5 +1,5 @@
 #* ========================================================================
- * Copyright (c) 2012 The University of Washington
+ * Copyright (c) 2013 The University of Washington
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,47 @@
 ##
 ## proxy tab
 ##
+#if ($canEdit)
+#parse ( "browser/proxy_edit.vm" )
+#end
 
-<div id="proxyPane" dojoType="dijit.layout.ContentPane" title="Gateways" selected="false"
-   onClose="return(true)" onShow="adjustGroupPaneSize('proxyPane')">
-## <div id="proxyPane" dojoType="dijit.layout.ContentPane" onShow="adjustGroupPaneSize('proxyPane')">
+<div id="proxySpContainer" dojoType="dijit.layout.ContentPane" title="Gateways" selected="false" style="overflow:hidden"
+   onClose="return(true)" oLayout="false" >
+
+  <div id="proxySpActions" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false" >
+  <ul>
+  #if ($canEdit)
+  <li class="sublist" >Actions:</li>
+  <li class="sublist" ><a href="javascript:iam_showTheDialog('proxyEditDialog',['sp/proxylib'])">Edit</a></li>
+  #end
+  </ul>
+  </div>
+
+<div id="proxySpPane" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;" onShow="adjustSpPaneSize('attr')">
 
 
+#set ($google_status = 0 )
 
- #parse ( "browser/proxy_view.vm" )
- #parse ( "browser/proxy_edit.vm" )
+This registry allows you to configure access to UW's experimental social-to-saml gateway.
+<p>
+<table class="iamtable">
 
-## </div>
+    <tr><th colspan="3">SAML Gateways</th></tr>
+    <tr><td class="label">Entity Id</td>
+         <td colspan="2">${relyingParty.entityId}</td></tr>
 
+  #foreach ( $idp in $proxy.ProxyIdps )
+    <tr><th colspan="3">$idp.idp</th></tr>
+    <tr><td class="label">Client ID</td>
+     <td colspan="2" > $!{idp.clientId}</td></tr>
+  #end
+   
+ <tr><td height="100"></td></tr>
+
+
+</table>
+
+
+</div>
 </div> 
 

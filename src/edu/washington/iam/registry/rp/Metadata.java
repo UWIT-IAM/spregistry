@@ -303,6 +303,15 @@ public class Metadata {
     public String getTempUri() {
        return tempUri;
     }
+   public String getXmlStart() {
+      return (xmlStart);
+   }
+   public String getXmlEnd() {
+      return (xmlEnd);
+   }
+   public String getXmlNotice() {
+      return (xmlNotice);
+   }
 
     public void cleanup() {
        log.info("Metadata got signal to cleanup");

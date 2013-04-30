@@ -53,7 +53,7 @@ public class Rule implements Serializable  {
 
        type = ele.getAttribute("xsi:type");
        if (type==null) throw new FilterPolicyException("No type attribute");
-       log.debug("create from doc: " + type);
+       // log.debug("create from doc: " + type);
 
        if (type.equals("basic:AttributeValueString")) {
           value = ele.getAttribute("value");

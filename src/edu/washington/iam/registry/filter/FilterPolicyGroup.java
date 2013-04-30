@@ -48,6 +48,8 @@ import org.slf4j.LoggerFactory;
 
 import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.registry.exception.FilterPolicyException;;
+import edu.washington.iam.registry.rp.RelyingParty;
+
 
 public class FilterPolicyGroup {
 
@@ -120,6 +122,7 @@ public class FilterPolicyGroup {
                        // log.debug("have requirement rule");
                        String type = e1.getAttribute("xsi:type");
                        if (type.equals("basic:AttributeRequesterString")) addOrUpdatePolicy(e1, fpe);
+                       else if (type.equals("saml:AttributeRequesterEntityAttributeExactMatch")) addOrUpdateSamlPolicy(e1, fpe);
                        else if (type.equals("basic:OR")) {
                           // scan rules
                           NodeList nl2 = e1.getChildNodes();
@@ -150,40 +153,75 @@ public class FilterPolicyGroup {
        String value = rr.getAttribute("value");
        if (value.length()==0) value = rr.getAttribute("regex");
        AttributeFilterPolicy afp = getFilterPolicy(value);
-     try {
-       if (afp!=null) afp.addAttributeRules(ele, editable, id);
-       else filterPolicies.add(new AttributeFilterPolicy(type, value, ele, editable, id));
-      } catch (FilterPolicyException ex) {
-      log.error("load of attribute failed: " + ex);
-      }
-   }
+        try {
+           if (afp!=null) afp.addAttributeRules(ele, editable, id);
+           else filterPolicies.add(new AttributeFilterPolicy(type, value, ele, editable, id));
+        } catch (FilterPolicyException ex) {
+           log.error("load of attribute failed: " + ex);
+
+        }
+    }
+
+   private void addOrUpdateSamlPolicy(Element rr, Element ele) {
+
+       String type = rr.getAttribute("xsi:type");
+       String name = rr.getAttribute("attributeName");
+       if (!name.equals("http://macedir.org/entity-category")) {
+          log.error("saml policy not category");
+          return;
+       }
+       String value = rr.getAttribute("attributeValue");
+       AttributeFilterPolicy afp = getFilterPolicy(value);
+       try {
+           if (afp!=null) afp.addAttributeRules(ele, editable, id);
+           else filterPolicies.add(new AttributeFilterPolicy(type, value, ele, editable, id));
+       } catch (FilterPolicyException ex) {
+           log.error("load of attribute failed: " + ex);
+       }
+    }
 
    /*
     * find a policy for an entity.
     */
    public AttributeFilterPolicy getFilterPolicy(String rpid) {
-       log.debug("looking for fp for " + rpid + " in " + id);
+       // log.debug("looking for fp for " + rpid + " in " + id);
        for (int g=0; g<filterPolicies.size(); g++) {
            AttributeFilterPolicy fp = filterPolicies.get(g);
            if (fp.matches(rpid)) {
-              log.debug("  found: " + fp.getEntityId());
+              // log.debug("  found: " + fp.getEntityId());
               return fp;
            }
        }
        return null;
    }
 
+   public List<AttributeFilterPolicy> getFilterPolicies(RelyingParty rp) {
+      List<AttributeFilterPolicy> policies = new Vector();
+      // log.debug("looking for fps for " + rp.getEntityId() + " in " + id);
+      for (int g=0; g<filterPolicies.size(); g++) {
+         AttributeFilterPolicy fp = filterPolicies.get(g);
+         if (fp.matches(rp)) {
+            // log.debug("  found: " + fp.getEntityId());
+            policies.add(fp);
+         }
+      }
+      return policies;
+   }
    /*
     * remove a policy for an entity.
     */
-   public void removeFilterPolicy(String rpid) {
-      log.debug("removeing fp for " + rpid + " in " + id);
+   public int removeFilterPolicy(String rpid) {
+      log.debug("removing fp for " + rpid);
       for (int i=0; i<filterPolicies.size(); i++) {
          if (filterPolicies.get(i).getEntityId().equals(rpid)) {
             filterPolicies.remove(i);
             break;
          }
       }
+      if (writePolicyGroup()==0) return 200;
+      log.error("write policy failed: " + rpid);
+ 
+      return 500;
    }
 
    /* 

@@ -185,8 +185,8 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
     }
 
     // create RP with defaults
-    public RelyingParty genRelyingPartyByDefault(String dns) {
-         return new RelyingParty(dns);
+    public RelyingParty genRelyingPartyByName(String entityId, String dns) {
+         return new RelyingParty(entityId, dns);
     }
 
     public List<String> getRelyingPartyIds() {
@@ -243,7 +243,7 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
 
     /* delete relyingParty */
 
-    public int deleteRelyingParty(String id, String mdid) {
+    public int removeRelyingParty(String id, String mdid) {
 
        log.info("rp delete doc");
       

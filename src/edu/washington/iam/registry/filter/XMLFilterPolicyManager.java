@@ -141,6 +141,12 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        policyGroup.writePolicyGroup();
     }
 
+    public int removeRelyingParty(String entityId, String pgid)
+         throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
+       FilterPolicyGroup policyGroup = getPolicyGroup(pgid);
+       return policyGroup.removeFilterPolicy(entityId);
+    }
+
     public void addAttributeRule(String policyGroupId, String entityId, String attributeId, String type, String value, String remoteUser)
            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
        Attribute attribute = getAttribute(attributeId);

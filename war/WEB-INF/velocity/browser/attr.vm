@@ -1,5 +1,5 @@
 #* ========================================================================
- * Copyright (c) 2011 The University of Washington
+ * Copyright (c) 2011-2013 The University of Washington
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,88 @@
  * limitations under the License.
  * ========================================================================
  *#
-##
-## attrs tab
-##
 
-<div id="attrPane" dojoType="dijit.layout.ContentPane" title="Attributes" selected="false"
-   onClose="return(true)" onShow="adjustGroupPaneSize('attrPane')">
-## <div id="attrPane" dojoType="dijit.layout.ContentPane" onShow="adjustGroupPaneSize('attrPane')">
+#parse ( 'definitions.vm' )
 
- #parse ( "browser/attr_view.vm" )
- #parse ( "browser/attr_edit.vm" )
+#if ($isAdmin)
+#parse ( "browser/attr_edit.vm" )
+#end
+#if ($canEdit || $newEntity)
+#parse ( "browser/attr_req.vm" )
+#end
+
+<div id="attrSpContainer" dojoType="dijit.layout.ContentPane" title="Attributes" selected="false" style="overflow:hidden"
+   onClose="return(true)" doLayout="false" >
+
+  <div id="attrSpActions" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false" >
+  <ul>
+  #if ($canEdit || $newEntity)
+  <li class="sublist" ><a href="javascript:iam_showTheDialog('attrReqDialog',['sp/attrlib']);">Request_attributes</a></li>
+  #end
+  #if ($isAdmin)
+  <li class="sublist" ><a href="javascript:iam_showTheDialog('attrEditDialog',['sp/attrlib']);">Edit</a></li>
+  #end
+  </ul>
+  </div>
 
 
-## </div>
+<div id="attrSpPane" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;" onShow="adjustSpPaneSize('attr')" >
+
+<table class="iamtable">
+
+    <tr><th colspan="2">Entity Id</th></tr>
+     <tr><td colspan="3">
+       <table class="iamtable" >
+         <tr><td class="label" colspan="3">${relyingPartyId}</td></tr>
+       </table>
+     </tr>
+
+    <tr><th colspan="2">Description of attributes</th></tr>
+     <tr><td class="label">See the IAM wiki's <a href="https://wiki.cac.washington.edu/x/QUioAQ">Guide to Attributes</a>.</td></tr>
+ 
+  #foreach ( $group in $filterPolicyGroups )
+    <tr><th colspan="2">Attributes released by $group.description</th></tr>
+     <tr><td colspan="3">
+       <table class="iamtable" >
+
+## entity id
+     #foreach ( $policy in $group.getFilterPolicies($relyingParty) )
+
+       #foreach ( $attribute in $policy.attributeRules )
+        <tr><td class="label">$!{attribute.id}</td>
+        #foreach ( $value in $attribute.valueRules )
+          #if ( $value.type == "basic:ANY" )
+          <td>All values</td></tr>
+          #else
+           #set ($c=0)
+           #foreach ( $rule in $value.rules )
+             #if ($c>0)
+               <tr><td></td>
+             #else
+               <td>#if ($rule.regex)<span class="subtitle">(regex)</span>#end ${rule.value}</td></tr>
+             #end
+             #set ($c = $c + 1)
+           #end
+          #end
+        #end ## value
+       #end ## attrs
+   #end  ## policies
+
+   </table></td></tr>
+
+ #end  ## groups
+
+
+ </table>
+
+## error and status messages
+<div id="requestStatusDiv" class="notice" $hide>&nbsp; 
+</div>
+<div class="status">$!{status}
+</div>
+
+
+</div>
 
 </div>  
 

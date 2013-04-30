@@ -59,7 +59,8 @@ public class RelyingParty implements Serializable  {
 
     private String authnRequestsSigned;
     private List<ManageNameIDService> manageNameIDServices;
-      
+
+    private String entityCategory;
 
     // initialize
     private void localInit () {
@@ -95,7 +96,7 @@ public class RelyingParty implements Serializable  {
            if (nl1.item(i).getNodeType()!=Node.ELEMENT_NODE) continue;
            Element e1 = (Element)nl1.item(i);
            String name = e1.getNodeName();
-           // log.info("rp ele: " + name);
+           // log.debug("rp ele: " + name);
 
            if (XMLHelper.matches(name,"SPSSODescriptor")) {
               authnRequestsSigned = ele.getAttribute("AuthnRequestsSigned");
@@ -133,14 +134,48 @@ public class RelyingParty implements Serializable  {
            }
            if (XMLHelper.matches(name,"Organization")) organization = new Organization(e1);
            if (XMLHelper.matches(name,"ContactPerson")) contactPersons.add(new ContactPerson(e1));
+
+           // we're just looking for the category
+           if (XMLHelper.matches(name,"Extensions")) {
+              NodeList nl2 = e1.getChildNodes();
+              for (int j=0; j<nl2.getLength(); j++) {
+                 if (nl2.item(j).getNodeType()!=Node.ELEMENT_NODE) continue;
+                 Element e2 = (Element)nl2.item(j);
+                 String name2 = e2.getNodeName();
+                 log.debug("ext name2: " + name2);
+                 if (XMLHelper.matches(name2,"EntityAttributes")) {
+                    NodeList nl3 = e2.getChildNodes();
+                    for (int k=0; k<nl3.getLength(); k++) {
+                       if (nl3.item(k).getNodeType()!=Node.ELEMENT_NODE) continue;
+                       Element e3 = (Element)nl3.item(k);
+                       String name3 = e3.getNodeName();
+                       log.debug("ext name3: " + name3);
+                       if (XMLHelper.matches(name3,"Attribute")) {
+                          String aname = e3.getAttribute("Name");
+                          if (!aname.equals("http://macedir.org/entity-category")) continue;
+                          NodeList nl4 = e3.getChildNodes();
+                          for (int l=0; l<nl4.getLength(); l++) {
+                             if (nl4.item(l).getNodeType()!=Node.ELEMENT_NODE) continue;
+                             Element e4 = (Element)nl4.item(k);
+                             String name4 = e4.getNodeName();
+                             log.debug("ext name4: " + name4);
+                             if (!XMLHelper.matches(name4,"AttributeValue")) continue;
+                             entityCategory = e4.getTextContent();
+                             log.debug("cat: " + entityCategory);
+                          }
+                       }
+                    }
+                 }
+              }
+           }
        }
 
     }
 
     // create default rp
-    public RelyingParty (String dns) {
+    public RelyingParty (String id, String dns) {
        localInit();
-       entityId = "https://" + dns + "/shibboleth";
+       entityId = id;
        editable = true;
 
        protocolSupportEnumerationsUnsplit = "urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol";
@@ -252,6 +287,9 @@ public class RelyingParty implements Serializable  {
        return (contactPersons);
     }
 
+    public String getEntityCategory() {
+       return (entityCategory);
+    }
 
 }
 

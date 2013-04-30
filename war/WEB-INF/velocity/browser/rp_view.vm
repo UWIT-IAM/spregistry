@@ -18,6 +18,10 @@
 #parse ( 'definitions.vm' )
 
 
+## general info
+ <div id="groupInfoPanel" dojoType="dijit.layout.ContentPane" title="Metadata" selected="true"
+   doLayout="false" onShow="adjustGroupPaneSize('groupInfoPanel')" >
+
 <div id="groupViewPane" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;" >
 
   <div id="groupViewLinks" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false">
@@ -25,11 +29,7 @@
   #if ($canEdit && $relyingParty.editable)
   <li class="sublist" >Actions:</li>
   <li class="sublist" ><a href="javascript:handleGroupEditBtn()">Edit</a>
-##        <button id="geditbtn" dojoType="dijit.form.Button" type="button" class="subButton"
-##         onClick="handleGroupEditBtn()">
-##         Edit
-##        </button>
-   </li>
+  </li>
   #end
   </ul>
   </div>
@@ -57,109 +57,101 @@
 
     <tr><th colspan="3">Contacts</th></tr>
    #foreach ( $ct in $relyingParty.contactPersons )
-     <tr>
-      <td class="label">Type:</td><td colspan="2">$!ct.type</td>
-     </tr>
+      <tr><td class="label">$!ct.type</td>
+       <td colspan="2"><table>
      #if ( $ct.givenName || $ct.surName )
      <tr>
-      <td class="label">Name:</td><td colspan="2">$!ct.givenName $!ct.surName</td>
+      <td>$!ct.givenName $!ct.surName</td>
      </tr>
      #end
      #if ( $ct.company )
      <tr>
-      <td class="label">Company:</td><td colspan="2">$!ct.company</td>
+      <td colspan="2">$!ct.company</td>
      </tr>
      #end
      #if ( $ct.email )
      <tr>
-      <td class="label">Email:</td><td colspan="2">$!ct.email</td>
+      <td colspan="2">$!ct.email</td>
      </tr>
      #end
      #if ( $ct.phone )
      <tr>
-      <td class="label">Phone:</td><td colspan="2">$!ct.phone</td>
+      <td colspan="2">$!ct.phone</td>
      </tr>
      #end
+      </table></td></tr>
    #end
 
-
-    <tr><th colspan="3">Metadata details</th></tr>
+    <tr><th colspan="2">Metadata details</th>
+     <th align="right">
+         <span id="rpvshowDetail"><a href="javascript:showDetail('rpv')">Show</a></span>
+         <span id="rpvhideDetail" ${hide} ><a href="javascript:hideDetail('rpv')">Hide</a></span>
+     </th>
+    </tr>
          
+#*
 <tr>
  <td class="optionbot" align="left" colspan="99">
      <span id="rpvshowDetail"><a href="javascript:showDetail('rpv')">Show</a></span>
      <span id="rpvhideDetail" ${hide} ><a href="javascript:hideDetail('rpv')">Hide</a></span>
  </td>
 </tr>
+*#
    
-     <tr><td id="rpvmessyDetail" colspan="3" ${hide} >
-
-       <table >
+</table>
+<table class="iamtable" id="rpvmessyDetail" ${hide}>
 
    ## ProtocolSupportEnumerations
-      <tr><td class="grouplabel">Protocols</td></tr>
-   
+      <tr><td class="label">Protocols</td>
+      <td>
    #foreach ( $ps in $relyingParty.protocolSupportEnumerations )
-     <tr> 
-      <td class="groupitem" colspan="2">$ps</td>
-     </tr>
+      $ps <br>
    #end
+      </td></tr>
 
    ## KeyInfo
 
-      <tr><td class="grouplabel">KeyInfo</td></tr>
-   #foreach ( $key in $relyingParty.keyDescriptors )
-      <tr>
-      <td class="groupitem" align="left">Name:</td>
-        <td>$!key.keyName</td>
-      </tr>
-#*
-      #if ( $key.use )
-      <tr><td class="rplabel" align="left" valign="top"></td>
-      <td class="rplabel" align="left">Use:</td>
-        <td class="rptext">$!key.use</td>
-      </tr>
-      #end
- *#
-      #if ( $key.certificate )
-      <tr>
-      <td class="groupitem" align="left" valign="top">Cert:</td>
-         <td><div class="certbox">$key.certificate</div></td>
-      </tr>
-      #end
-   #end
+      <tr><td class="label">KeyInfo</td>
+        <td colspan="2"><table>
+       #foreach ( $key in $relyingParty.keyDescriptors )
+          <tr><td>Name:</td><td>$!key.keyName <td><tr>
+         #if ( $key.certificate )
+         <tr><td>Cert:</td>
+            <td><div class="certbox"><pre>$key.certificate</pre></div></td>
+         </tr>
+         #end
+         </table></td></tr>
+       #end
 
 
    ## Nameid
 
-      <tr><td class="grouplabel">NameId</td></tr>
+      <tr><td class="label">NameId</td></tr>
+       <td>
    #foreach ( $name in $relyingParty.nameIDFormats )
-     <tr>
-      <td class="groupitem" colspan="2">$name"</td>
-     </tr>
+      $name"<br>
    #end
+       </td></tr>
 
 
    ## ACS
 
-      <tr><td class="grouplabel" colspan="99" nowrap="nowrap">Assertion Consumer Service Locations</td></tr>
+      <tr><td class="label">ACS</td>
+         <td><table class="iamtable">
    #foreach ( $acs in $relyingParty.assertionConsumerServices )
      <tr>
-      <td class="groupitem" align="left" >$acs.index</td>
-             <td nowrap="nowrap">$acs.binding</td>
-     </tr>
-     <tr>
-      <td class="groupitem" align="left" ></td>
-             <td nowrap="nowrap"><tt>$acs.location</tt></td>
+      <td>$acs.index</td><td><table>
+          <tr><td nowrap="nowrap">$acs.binding</td> </tr>
+          <tr><td nowrap="nowrap"><tt>$acs.location</tt></td></tr>
+      </table></td>
      </tr>
    #end
-
-
-   </table></td></tr>
+      </table></td></tr>
 
 
 
 </table>
 
 
+</div>
 </div>

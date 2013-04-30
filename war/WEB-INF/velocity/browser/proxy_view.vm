@@ -36,14 +36,12 @@
     <tr><td class="label">Entity Id</td>
          <td colspan="2">${relyingParty.entityId}</td></tr>
 
-    <tr><th colspan="3">Google</th></tr>
-
-    ## <tr><td class="label">Gateway</td> <td colspan="2">#if ($googleProxy)configured  #else <i>no gateway configured</i> #end</td></tr>
+  #foreach ( $idp in $proxy.ProxyIdps )
+    <tr><th colspan="3">$idp.idp</th></tr>
     <tr><td class="label">Client ID</td>
-     <td colspan="2" id="proxyViewClientId"> #if ($googleProxy)$!{googleProxy.clientId}#else <i>no gateway configured</i> #end </td></tr>
-    ## <tr><td class="label">Client Secret</td><td colspan="2" id="proxyViewClientSecret" dojoType="dijit.layout.ContentPane">********</td></tr>
+     <td colspan="2" id="proxyViewClientId"> $!{idp.clientId}</td></tr>
+  #end
    
-
  <tr><td height="100"></td></tr>
 
 

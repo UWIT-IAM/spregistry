@@ -1,5 +1,5 @@
 #* ========================================================================
- * Copyright (c) 2009-2012 The University of Washington
+ * Copyright (c) 2009-2013 The University of Washington
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,16 @@
  *#
 
 ##
-## group detail
+## sp detail
 ##
 
 #parse ( 'definitions.vm' ) 
 
-#set ( $sectionType='rp' )
+#set ( $sectionType='sp' )
 
+<div id="spPanel" tabindex=-1 dojoType="dijit.layout.TabContainer" doLayout="false" style="overflow:hidden; width:100%" >
 
-<div id="groupPanel" dojoType="dijit.layout.TabContainer" style="width: 100%;" doLayout="false">
-
-## general info
- <div id="groupInfoPanel" dojoType="dijit.layout.ContentPane" title="Metadata" selected="true"
-   doLayout="false" onShow="adjustGroupPaneSize('groupInfoPanel')" >
-
- #parse ( "browser/rp_view.vm" )
- #parse ( "browser/rp_edit.vm" )
- </div>
+#parse ( "browser/meta.vm" )
 
 #parse ( "browser/attr.vm" )
 

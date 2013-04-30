@@ -1,5 +1,5 @@
 #* ========================================================================
- * Copyright (c) 2009-2012 The University of Washington
+ * Copyright (c) 2009-2013 The University of Washington
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ function showDeletedGroup()
 <table class="iamtable">
 
       <tr><td class="grouplabel">Entity Id</td>
-      <td>
+      <td align="left" colspan="3">
     #if ( ! $newEntity )
        <input type="hidden" id="entityid" value="${relyingParty.entityId}"/>${relyingParty.entityId}
     #else
@@ -107,36 +107,29 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
 
     ## class codes borrowed from gws
     <tr><th colspan="3">General information</th></tr>
-     <tr><td class="label">
-       <table class="iamtable" >
 
-## entity id
-
- 
 ## Organization
    #set ( $count = 0 )
 
       #set ( $org = $relyingParty.organization )
-      <tr><td class="grouplabel">Organization</td>
-      </tr>
 
    #if ( $org )
      <tr id="org0_0">
-      <td class="label"  >Name:</td><td><input dojoType="dijit.form.TextBox" size="50" id="orgn_0" value="$!org.name" /></td>
+      <td class="label">Name:</td><td><input dojoType="dijit.form.TextBox" size="50" id="orgn_0" value="$!org.name" /></td>
      </tr>
      <tr id="org0_1">
-      <td class="label"  >Display:</td><td><input dojoType="dijit.form.TextBox" size="50" id="orgd_0" value="$!org.displayName" /></td>
+      <td class="label">Display:</td><td><input dojoType="dijit.form.TextBox" size="50" id="orgd_0" value="$!org.displayName" /></td>
      </tr>
      <tr id="org0_2">
-      <td class="label"  >Url:</td><td><input dojoType="dijit.form.TextBox" size="50" id="orgu_0" value="$!org.url" /></td>
+      <td class="label">Url:</td><td><input dojoType="dijit.form.TextBox" size="50" id="orgu_0" value="$!org.url" /></td>
      </tr>
      #set ( $count = $count + 1)
    #end
 
  
  ## Contacts
-      <tr><td class="grouplabel">Contact persons</td>
-      </tr>
+      <tr><td class="label">Contacts</td>
+       <td><table>
    #set ( $count = 0 )
    #foreach ( $ct in $relyingParty.contactPersons )
      <tr id="ct${count}_0">
@@ -192,24 +185,20 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
    #end
    <tr id="ct_more"><td class="cleanlink" colspan="3"><a href="javascript:showMoreFields('ct', 'ct_more')">add contact person</a></td></tr>
 
+   </table></td></tr>
+
   </table></td></tr>
 
 
 ## Details
 
-     <tr><th colspan="3">Metadata details</th>
-     </tr>
-#if ( ! $newEntity )
-<tr>
- <td class="optionbot"  colspan="99">
+     <tr><th colspan="3">Metadata details</th><th>
      <span id="rpeshowDetail"><a href="javascript:showDetail('rpe')">Show</a></span>
      <span id="rpehideDetail" ${hide} ><a href="javascript:hideDetail('rpe')">Hide</a></span>
- </td>
-</tr>
-#end
+     </th></tr>
+  </table>
 
-     <tr><td class="label" id="rpemessyDetail" #if (!$newEntity ) ${hide} #end >
-       <table >
+       <table class="iamtable">
 
 
  ## ProtocolSupportEnumerations

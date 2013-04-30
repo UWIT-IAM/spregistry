@@ -37,6 +37,7 @@ import org.w3c.dom.Node;
 import edu.washington.iam.tools.XMLHelper;
 
 import edu.washington.iam.registry.exception.FilterPolicyException;
+import edu.washington.iam.registry.rp.RelyingParty;
 
 public class AttributeFilterPolicy implements Serializable  {
 
@@ -47,6 +48,7 @@ public class AttributeFilterPolicy implements Serializable  {
     private boolean editable;
     private List<AttributeRule> attributeRules;
     private String policyGroupId;
+    private boolean category;
 
     // create from document element ( partly parsed )
     public AttributeFilterPolicy (String type, String name, Element ele, boolean edit, String pgid) throws FilterPolicyException {
@@ -55,11 +57,13 @@ public class AttributeFilterPolicy implements Serializable  {
        attributeRules = new Vector();
        entityId = name;
        policyGroupId = pgid;
+       category = false;
        if (type.equals("basic:AttributeRequesterString")) regex = false;
        else if (type.equals("basic:AttributeRequesterRegex")) regex = true;
+       else if (type.equals("saml:AttributeRequesterEntityAttributeExactMatch")) category = true;
        else throw new FilterPolicyException("cant use type " + type);
 
-       log.debug("create filter policy for " + entityId + " regex? " + regex);
+       log.debug("create filter policy for " + entityId + " regex?" + regex + " cat?" + category );
        addAttributeRules(ele, edit, pgid);
     }
 
@@ -137,8 +141,16 @@ public class AttributeFilterPolicy implements Serializable  {
 
     // see if this policy applies to the rp
     public boolean matches(String rpid) {
+       // log.debug("string match: " + entityId + " = " + rpid );
        if (regex) return rpid.matches(entityId);
        return rpid.equals(entityId);
+    }
+
+    // see if this policy applies to the rp
+    public boolean matches(RelyingParty rp) {
+       // log.debug("policy match: " + entityId + " = " + rp.getEntityId());
+       if (category && rp.getEntityCategory()!=null) return rp.getEntityCategory().equals(entityId);
+       return matches(rp.getEntityId());
     }
 
     // write xml doc

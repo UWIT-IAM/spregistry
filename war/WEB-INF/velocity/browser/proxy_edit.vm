@@ -1,5 +1,5 @@
 #* ========================================================================
- * Copyright (c) 2012 The University of Washington
+ * Copyright (c) 2012-2013 The University of Washington
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,25 @@
  * ========================================================================
  *#
 ##
-## proxy edit tab
-##
 
 ## helpers
-<div id="googleGateHelp" dojoType="dijit.Dialog" title="Google gateway" $hide>
+<div id="googleGateHelp" dojoType="iam/Dialog" title="Google gateway" $hide>
 The Google gateway allows your SAML SP users to authenticate with their Google identities.
+<p>Your Client ID and Client Secret go into the Gateway form.
+<p>
+See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gateway</a> for more information.
+
+#**
 <ol>
 <li>Create a <a href="https://code.google.com/apis/console" target="googleApp">Google API Access account</a>.
  <ol>
   <li>Your Client ID and Client Secret go into the Gateway form</li>
-  <li>Add the Gateway's URL, <b><tt>https://urizen4.cac.washington.edu:7443/google</tt></b>, to your list of redirect URLs.</li>
+  <li>Add the Gateway's URL, <b><tt>https://idpgateway.u.washington.edu:7443/google</tt></b>, to your list of redirect URLs.</li>
  </ol>
-<li>Add the Gateway's <a href="https://urizen4.cac.washington.edu/gateway-metadata.xml" target="metadata">metadata</a> to your SP.</li>
+<li>Add the Gateway's <a href="https://idp.u.washington.edu/metadata/idp-gateway-metadata.xml" target="metadata">metadata</a> to your SP.</li>
 <p>
 <li>Configure a session initiator to invoke a Google gateway'd login. The target entity will be the Gateway's Google entity id,
-    <b><tt>https://urizen4.cac.washington.edu:7443/google_sso</b></tt>.  The initiator configuration element might look like this 
+    <b><tt>https://idpgateway.u.washington.edu:7443/google_sso</b></tt>.  The initiator configuration element might look like this 
    <a href="/gateway-example.html" target="example">example</a>.</li>
 <p>
 <li>Google's attributes map to SAML attributes as follows:
@@ -48,59 +51,110 @@ You also get an eduPersonTargetedID (urn:oid:1.3.6.1.4.1.5923.1.1.1.10), scoped 
 <p>
 <li>Activate the Google gateway by entering your google api's id and secret in this form.</li>
 </ol>
+**#
+
+</div>
+
+<div id="liveidGateHelp" dojoType="iam/Dialog" title="Google gateway" $hide>
+The LiveID gateway allows your SAML SP users to authenticate with their LiveID identities.
+
+<p>Activate the LiveID gateway by entering your liveid application's id and secret in the gateway form.
+<p>
+See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gateway</a> for more information.
+#**
+<ol>
+<li>Create a <a href="http://msdn.microsoft.com/en-us/live/default.aspx" target="liveidApp">LiveID Application</a>.
+ <ol>
+  <li>Your Client ID and Client secret go into the Gateway form on this SP registry site</li>
+  <li>Set the Redirect domain to our gateway: <b><tt>https://idpgateway.u.washington.edu:7443/liveid</tt></b></li>
+ </ol>
+<li>Add the Gateway's <a href="https://idp.u.washington.edu/metadata/idp-gateway-metadata.xml" target="metadata">metadata</a> to your SP.</li>
+<p>
+<li>Configure a session initiator to invoke a LiveID gateway'd login. The target entity will be the Gateway's LiveID entity id,
+    <b><tt>https://idpgateway.u.washington.edu:7443/liveid</b></tt>.  The initiator configuration element might look like this 
+   <a href="/gateway-example.html" target="example">example</a>.</li>
+<p>
+<li>LiveID's attributes map to SAML attributes as follows:
+  <br>
+  <table class="iamtable" cellpadding="3" border="1">
+    <tr><th>LiveiD name</th><th>SAML name</th><th>SAML urn</th></tr>
+    <tr><td>id</td><td>userid</td><td>urn:oid:0.9.2342.19200300.100.1.1</td></tr>
+    <tr><td>last_name</td><td>surname</td><td>urn:oid:2.5.4.4</td></tr>
+    <tr><td>first_name</td><td>givenname</td><td>urn:oid:2.5.4.42</td></tr>
+    <tr><td>name</td><td>displayName</td><td>urn:oid:2.16.840.1.113730.3.1.241</td></tr>
+  </table>
+You also get an eduPersonTargetedID (urn:oid:1.3.6.1.4.1.5923.1.1.1.10), scoped to the gateway idp.
+ </li>
+<p>
+<li>Activate the LiveID gateway by entering your liveid application's id and secret in the gateway form.</li>
+</ol>
+**#
 
 </div>
 
 
-<div id="proxyEditPane" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;display:none" >
-
-  <div id="proxyEditLinks" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false">
-  <ul>
-  <li class="sublist" ><a href="javascript:handleProxyViewBtn()">View</a></li>
-  </ul>
-  </div>
-
+<div id="proxyEditDialog" data-dojo-type="iam/Dialog" title="Edit proxy data for ${relyingPartyId}"
+    data-dojo-props="submitLabel:'Save changes', submitAction:'proxy_saveProxy(\'${relyingPartyId}\')', cancelLabel:'Cancel'"
+    ${hide}>
 
 #set ($google_status = 0 )
+#set ($liveid_status = 0 )
 
 <table class="iamtable">
 
     <tr><th colspan="3">SAML Gateways</th></tr>
     <tr><td class="label">Entity Id</td>
-         <td colspan="2">${relyingParty.entityId}</td></tr>
+         <td colspan="2">${relyingPartyId}</td></tr>
 
+## we actually support only a subset of possible proxies
+     #set ($google = $proxy.getProxyIdp("Google"))
+     #set ($liveid = $proxy.getProxyIdp("LiveID"))
 
     <tr><th colspan="3">Google</th>
-       <th style="text-align:right;"><a href="javascript:showDialog('googleGateHelp');">Help</a></th>
-
-#*
-    <tr><td class="label">Gateway</td>
-         <td colspan="2">
-             <input type="radio" dojoType="dijit.form.RadioButton" name="google_g" id="google_status_a" value="a"
-                    #if (${google_status}==1)${checked}#end />Active&nbsp;
-             <input type="radio" dojoType="dijit.form.RadioButton" name="google_g" id="google_status_i" value="i"
-                    #if (${google_status}==0)${checked}#end />Inactive&nbsp;
-         </td></tr>
- *#
+       <th style="text-align:right;"><a href="javascript:iam_showTheDialog('googleGateHelp',[])">Help</a></th>
 
     <tr><td class="label">Client ID</td>
-         <td colspan="2"><input id="google_cid" dojoType="dijit.form.TextBox" value="$!{googleProxy.clientId}"/></td></tr>
+         <td colspan="2"><input id="google_cid" dojoType="dijit.form.TextBox" size="40"
+           #if ( $google.clientId)
+            value="$google.clientId"
+           #else
+            value=""
+           #end
+          /></td></tr>
     <tr><td class="label">Client Secret</td>
-         <td colspan="2"><input id="google_cpw" dojoType="dijit.form.TextBox" value="$!{googleProxy.clientSecret}"/></td></tr>
-   
+         <td colspan="2"><input id="google_cpw" dojoType="dijit.form.TextBox" size="40"
+           #if ( $google.clientSecret)
+            value="$google.clientSecret"
+           #else
+            value=""
+           #end
+          /></td></tr>
+
 <tr><td colspan="99" height="20"></td><tr>
-<tr><td colspan="99" align="left">
-       <button id="spGateButton" dojoType="dijit.form.Button" type="button" class="subButton" onClick="saveProxy()">
-         Save changes
-        </button>
- </td></tr>
 
+    <tr><th colspan="3">LiveID</th>
+       <th style="text-align:right;"><a href="javascript:iam_showTheDialog('liveidGateHelp',[]);">Help</a></th>
 
-
+    <tr><td class="label">Client ID</td>
+         <td colspan="2"><input id="liveid_cid" dojoType="dijit.form.TextBox"
+          #if ( $liveid.clientId)
+            value="$liveid.clientId"
+           #else
+            value=""
+           #end
+          /></td></tr>
+ 
+    <tr><td class="label">Client Secret</td>
+         <td colspan="2"><input id="liveid_cpw" dojoType="dijit.form.TextBox"
+          #if ( $liveid.clientSecret)
+            value="$liveid.clientSecret"
+           #else
+            value=""
+           #end
+          /></td></tr>
+   
 
 </table>
-
-
 
 
 </div>

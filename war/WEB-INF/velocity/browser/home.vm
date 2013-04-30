@@ -43,14 +43,14 @@ must register for that service.
 <tr><td/><td/><td class="mainlink" align="left"><a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a></td></tr>
 <tr><td height="6" width="20"></td></tr>
 <tr><td/><td class="head" nowrap="nowrap" colspan="2">Existing service providers</td></tr>
-<tr><td/><td/><td align="left">The IdP knows about all service providers registered with 
- <a href="http://incommon.org/">InCommon</a>, and service providers registered manually 
-through this local registry.</td></tr>
-<tr><td/><td/><td class="mainlink" align="left"><a href="${root}${vers}/rps/?opt=old">View service providers</a></td></tr>
+<tr><td/><td/><td align="left">The list on the left shows all service providers known to the IdP, including those 
+registered with 
+ <a href="http://incommon.org/">InCommon</a> and those registered manually 
+through this registry service.</td></tr>
 <tr><td height="6" width="20"></td></tr>
 <tr><td/><td class="head" nowrap="nowrap" colspan="2">New registration</td></tr>
-<tr><td/><td/><td align="left">If you are the owner of a service providers's domain you can register that service provider with our IdP.  </td></tr>
-<tr><td/><td/><td class="mainlink" align="left"><a href="${root}${vers}/rp/?view=new">Register a service provider</a></td></tr>
+<tr><td/><td/><td align="left">If you are the owner of a service providers's domain you can register that service provider with our IdP. 
+Use the "Add new" link at the top of the service provider list.</td></tr>
 <tr><td height="6" width="20"></td></tr>
 
 </table>

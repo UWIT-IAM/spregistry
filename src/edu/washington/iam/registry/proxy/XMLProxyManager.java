@@ -52,6 +52,11 @@ import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.registry.exception.ProxyException;
 import edu.washington.iam.registry.exception.NoPermissionException;
 
+import edu.washington.iam.registry.rp.RelyingPartyManager;
+import edu.washington.iam.registry.rp.Metadata;
+import edu.washington.iam.registry.rp.RelyingParty;
+import edu.washington.iam.registry.exception.RelyingPartyException;
+
 public class XMLProxyManager implements ProxyManager {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -59,6 +64,7 @@ public class XMLProxyManager implements ProxyManager {
 
     private List<Proxy> proxys;
     private String proxyUri;
+    private String proxyMdUri;
     private String pyUri = "file:/data/local/etc/proxy/sp-secrets";
     private int proxyRefresh = 0;  // seconds
 
@@ -74,26 +80,28 @@ public class XMLProxyManager implements ProxyManager {
        return ret;
     }
 
-    public List<Proxy> getProxys(String rpid) {
-       log.debug("looking for proxys for " + rpid);
-       List<Proxy> ret = new Vector();
-       for (int p=0; p<proxys.size(); p++) {
-          Proxy px = proxys.get(p);
-          if (px.getEntityId().equals(rpid)) ret.add(px);
-       }
-       log.info("proxys search found " + ret.size());
-       return ret;
-    }
-
-    public Proxy getProxy(String idp, String rpid) {
+    public Proxy getProxy(String rpid) {
        log.debug("looking for proxy for " + rpid);
        for (int p=0; p<proxys.size(); p++) {
           Proxy px = proxys.get(p);
-          if (px.getIdp().equals(idp) && px.getEntityId().equals(rpid)) return (px);
+          if (px.getEntityId().equals(rpid)) return px;
        }
        return null;
     }
 
+    public int removeRelyingParty(String rpid) {
+       log.debug("looking to delete proxy for " + rpid);
+       for (int p=0; p<proxys.size(); p++) {
+          Proxy px = proxys.get(p);
+          if (px.getEntityId().equals(rpid)) {
+             proxys.remove(p);
+          }
+       }
+       // save changes
+       writeProxyFiles();
+
+       return 200;
+    }
 
     /*
      * Update proxy from an API PUT. 
@@ -101,27 +109,26 @@ public class XMLProxyManager implements ProxyManager {
     public void updateProxy(String id, Document doc, String remoteUser)
              throws ProxyException, NoPermissionException {
 
-       log.info("proxy update doc for " + id);
+       log.info("proxy update " + id);
 
        List<Element> eles = XMLHelper.getElementsByName(doc.getDocumentElement(), "Proxy");
-       if (eles.size()!=1) throw new ProxyException("invalid proxy xml");
-       Element pxe = eles.get(0);
-       String rpid = pxe.getAttribute("entityId");
-       String idp = pxe.getAttribute("idp");
-       String clientId = pxe.getAttribute("clientId");
-       String clientSecret = pxe.getAttribute("clientSecret");
-       
-       Proxy px = getProxy(idp, rpid);
-       if (px!=null) {
-          px.setClientId(clientId);
-          px.setClientSecret(clientSecret);
-       } else {
-          proxys.add(new Proxy(pxe));
-       }
+       if (eles.size()!=1) throw new ProxyException("proxy xml must contain one element");
 
-       // save the new doc
-       writeProxys();
-       writePyProxys();
+       Element pxe = eles.get(0);
+          Proxy newproxy = new Proxy(pxe);
+          if (!newproxy.getEntityId().equals(id)) throw new ProxyException("post doesn't match qs id");
+          // replace the entry 
+          boolean np = true;
+          for (int p=0; p<proxys.size(); p++) {
+             if (proxys.get(p).getEntityId().equals(id)) {
+                proxys.set(p, newproxy);
+                np = false;
+             }
+          }
+          if (np) proxys.add(newproxy);
+
+       // save the new docs
+       writeProxyFiles();
     }
 
     private void loadProxys() {
@@ -204,6 +211,7 @@ public class XMLProxyManager implements ProxyManager {
 
   public int writeProxys() {
 
+      log.debug("saving proxy xml");
       try {
          URI xUri = new URI(tempUri);
          File xfile = new File(xUri);
@@ -243,6 +251,7 @@ public class XMLProxyManager implements ProxyManager {
 
   public int writePyProxys() {
   
+      log.debug("saving proxy py");
       try {
          URI xUri = new URI(tempPyUri);
          File xfile = new File(xUri);
@@ -281,8 +290,59 @@ public class XMLProxyManager implements ProxyManager {
    }
 
 
+  public int writeProxyMd() {
+
+      log.debug("saving proxy md");
+      RelyingPartyManager rpManager = RelyingPartyController.getRelyingPartyManager();
+      List<Metadata> mds = rpManager.getMetadata();
+      try {
+         URI xUri = new URI(proxyMdUri);
+         File xfile = new File(xUri);
+         FileWriter xstream = new FileWriter(xfile);
+         BufferedWriter xout = new BufferedWriter(xstream);
+
+         // write header
+         xout.write(mds.get(0).getXmlStart());
+
+         // write policies
+         for (int i=0; i<proxys.size();i++) {
+            String pid = proxys.get(i).getEntityId();
+            log.debug("looking for " + pid);
+            for (int m=0; m<mds.size();m++) {
+               try {
+                  RelyingParty rp = mds.get(m).getRelyingPartyById(pid);
+                  log.debug("found in " + mds.get(m).getId());
+                  rp.writeXml(xout);
+               } catch (RelyingPartyException e) {
+               }
+            }
+         }
+   
+         // write trailer
+         xout.write(mds.get(0).getXmlEnd());
+         xout.close();
+      } catch (IOException e) {
+         log.error("write io error: " + e);
+         return 1;
+      } catch (URISyntaxException e) {
+         log.error("bad uri error: " + e);
+         return 1;
+      }
+
+      return 0;
+   }
+
+   private void writeProxyFiles() {
+       writeProxys();
+       writeProxyMd();
+       writePyProxys();
+   }
+       
     public void setProxyUri(String v) {
        proxyUri = v;
+    }
+    public void setProxyMdUri(String v) {
+       proxyMdUri = v;
     }
     public void setTempUri(String v) {
        tempUri = v;
