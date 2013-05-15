@@ -1,0 +1,104 @@
+#* ========================================================================
+ * Copyright (c) 2013 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ *#
+
+##
+## attr request
+##
+
+
+<script>
+function local_check_gws() {
+   ck = dijitRegistry.byId('attr_req_gws_groups').get('checked');
+   console.log('ck='+ck);
+   if (ck) iam_hideShow([],['attr_req_gws_text_tr']);
+   else iam_hideShow(['attr_req_gws_text_tr'],[]);
+}
+</script>
+
+<div id="attrReqDialog" data-dojo-type="iam/Dialog" title="Request attributes for ${relyingPartyId}"
+    data-dojo-props="submitLabel:'Submit request', submitAction:'attr_requestAttrs(\'${relyingPartyId}\')', cancelLabel:'Cancel'"
+    style="display:none;" >
+Check the attributes you need. Uncheck those you no longer need.
+
+<p>
+See the IAM wiki's <a href="https://wiki.cac.washington.edu/x/QUioAQ">Guide to Attributes</a>.
+
+<form action="">
+<table>
+
+#foreach ( $attr in $attributes )
+  ## we need to know if the attribute is already selected
+  #set ( $chk = '' )
+  #set ( $dis = '' )
+  #foreach ( $group in $filterPolicyGroups )
+     #foreach ( $policy in $group.getFilterPolicies($relyingParty) )
+       #foreach ( $attribute in $policy.attributeRules )
+        #if (${attr.id} == ${attribute.id})
+          #set ($chk=$checked)
+          #if (!$group.editable) #set ($dis = $disable) #end
+        #end
+       #end ## attrs
+   #end  ## policies
+  #end ## group
+
+  <tr><td nowrap="nowrap"><span data-dojo-type="dijit.form.CheckBox" id="attr_req_${attr.id}"
+         $chk $dis value="${attr.id}" 
+       #if ($attr.id == 'gws_groups') 
+        onChange="local_check_gws()"
+       #end
+         class="attr_req_chk"></span></td><td title="$!{attr.description}">${attr.id}
+        <input id="attr_req_${attr.id}_in" value="$chk" type="hidden"></input>
+        </td></tr>
+
+       #if ($attr.id == 'gws_groups') 
+         <tr id="attr_req_gws_text_tr" $hide ><td></td><td nowrap="nowrap">
+           Which groups?<br><textarea data-dojo-type="dijit.form.Textarea" id="attr_req_gws_text" rows="2" cols="40" ></textarea>
+          </td></tr>
+       #end
+
+#end
+<tr><td></td><td>Explain your need for the attributes.</td></tr>
+<tr><td></td><td>
+<textarea data-dojo-type="dijit.form.Textarea" id="attr_req_exptext" rows="10" cols="40" ></textarea>
+</td></tr>
+
+</table>
+#*
+<p>
+<table>
+<tr>
+   <td colspan="1" align="left">
+    <button id="attrReqButton" dojoType="dijit.form.Button" type="button" class="subButton"
+          onClick="javascript:attr_requestAttrs('${relyingPartyId}')">
+      Submit request
+    </button>
+   </td>
+   <td colspan="2" align="right">
+    <button id="attrReqCancel" dojoType="dijit.form.Button" type="button" class="subButton" onClick="iam_hideTheDialog('attrReqDialog')">
+      Cancel
+    </button>
+   </td>
+</tr>
+ <tr><td height="100"></td></tr>
+
+</table>
+*#
+</form>
+
+
+</div>
+
