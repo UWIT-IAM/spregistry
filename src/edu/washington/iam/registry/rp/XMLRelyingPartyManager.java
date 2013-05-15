@@ -234,8 +234,6 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
        if (!md.isEditable()) return 403;
 
        md.updateRelyingParty(indoc);
-
-       md.writeMetadata();
        return (status);
 
     }
@@ -251,9 +249,6 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
        if (!md.isEditable()) return 403;
 
        md.removeRelyingParty(id);
-
-       md.writeMetadata();
-
        return (200);
     }
 

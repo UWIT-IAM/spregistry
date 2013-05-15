@@ -28,12 +28,13 @@
   <ul>
   #if ($canEdit)
   <li class="sublist" >Actions:</li>
-  <li class="sublist" ><a href="javascript:iam_showTheDialog('proxyEditDialog',['sp/proxylib'])">Edit</a></li>
+  <li class="sublist" ><a tabindex="0" role="button" aria-label="edit gateway informations"
+       href="javascript:iam_showTheDialog('proxyEditDialog',['sp/proxylib'])"><span style="text-decoration: underline">E</span>dit</a></li>
   #end
   </ul>
   </div>
 
-<div id="proxySpPane" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;" onShow="adjustSpPaneSize('attr')">
+<div id="proxySpPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;" onShow="adjustSpPaneSize('attr')">
 
 
 #set ($google_status = 0 )

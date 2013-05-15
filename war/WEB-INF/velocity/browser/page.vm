@@ -112,7 +112,7 @@ v_xsrf = '${xsrf}';
 ##    </button>
 </div>
 
-<div id="helpAbout" data-dojo-type="iam/Dialog" title="About" $hide>
+<div id="helpAbout" data-dojo-type="iam/Dialog" title="About" $hide data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
    Identity and Access Management
 <br/>
 Service Provider Registry 2.0.0
@@ -183,8 +183,8 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 
 ## banner
 <div id="banner" class="container" data-dojo-type="dijit.layout.ContentPane" region="top" splitter="false">
-    <span id="logo"><a href="javascript:showHomePanel()" title="University of Washington"><img src="/UWw.gif" alt="UW" /></a></span>
-    <span id="title"><a href="javascript:showHomePanel()">Service Provider Registry</a></span>
+    <span id="logo"><a tabindex=-1 href="javascript:showHomePanel()" title="University of Washington"><img src="/UWw.gif" alt="UW" /></a></span>
+    <span id="title"><a tabindex=-1 href="javascript:showHomePanel()">Service Provider Registry</a></span>
     <ul id="navigation">
 
         <li>$!{notice}</li>
@@ -250,7 +250,7 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
       // start with SP list
       loadSpList();
       // dojo.connect(dojo.global, "onhashchange", iam_hashHandler);
-      // dojo.connect(dijit.byId('filterSpList'), 'onkeypress', checkSpFilter);
+      // dojo.connect(dijit.byId('filterSpList'), 'onkeyup', checkSpFilter);
       on(dom.byId('filterSpList'), 'keyup', checkSpFilter);
       #if ($timeLeft)
       to_interval = setInterval(function(){dijitRegistry.byId('helpTimeout').show();clearInterval(to_interval);}, ${timeLeft}000);
@@ -271,7 +271,7 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
        <span id="myGroupsTitle">Service Providers</span>
     </div>
     <div class="indexRight">
-       <span><a href="javascript:dijit.byId('metaNewDialog').show()">Add&nbsp;new</a></span>
+       <span><a tabindex=0 href="javascript:dijit.byId('metaNewDialog').show()">Add&nbsp;new</a></span>
     </div>
   </div>
 

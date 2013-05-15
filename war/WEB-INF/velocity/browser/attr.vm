@@ -30,16 +30,18 @@
   <div id="attrSpActions" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false" >
   <ul>
   #if ($canEdit || $newEntity)
-  <li class="sublist" ><a href="javascript:iam_showTheDialog('attrReqDialog',['sp/attrlib']);">Request_attributes</a></li>
+  <li class="sublist" ><a id="attrReqLink" tabindex="0" role="button" aria-label="request attributes" 
+       href="javascript:iam_showTheDialog('attrReqDialog',['sp/attrlib']);"><span style="text-decoration: underline">R</span>equest_attributes</a></li>
   #end
   #if ($isAdmin)
-  <li class="sublist" ><a href="javascript:iam_showTheDialog('attrEditDialog',['sp/attrlib']);">Edit</a></li>
+  <li class="sublist" ><a id="attrEditLink" tabindex="0" role="button" aria-label="edit attributes"
+       href="javascript:iam_showTheDialog('attrEditDialog',['sp/attrlib']);"><span style="text-decoration: underline">E</span>dit</a></li>
   #end
   </ul>
   </div>
 
 
-<div id="attrSpPane" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;" onShow="adjustSpPaneSize('attr')" >
+<div id="attrSpPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;" onShow="adjustSpPaneSize('attr')" >
 
 <table class="iamtable">
 

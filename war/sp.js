@@ -42,6 +42,10 @@ iam_set('rightSide', 'spDisplay');
 // hash change causes sp display (callback from iam tools)
 function hashHandler(tab, spid) {
    console.log('hash handler: tab=' + tab + ' sp=' + spid);
+   if (v_spLoading) {
+      console.log('load in progress. ignoring');
+      return;
+   }
    if (spid!=null) {
       // find the hash sp
       for (i=0; i<nsp; i++) {
@@ -71,27 +75,33 @@ function showSpPanel() {
 
 // SP display tools
 
+var spKeyListener = null;
+
 function checkSpTabKey(e) {
   console.log(e);
 }
 
 // after the sp page has loaded.  set the right tab
+function setSpTab() {
+   console.log('setSpTab: tab=' + v_currentSpTab);
+   var tab = null;
+   var tabid = 'metaSpContainer';
+   if (v_currentSpTab == 'a') tabid = 'attrSpContainer';
+   else if (v_currentSpTab == 'p') tabid = 'proxySpContainer';
+   tab = dijitRegistry.byId(tabid);
+   console.log('tab: ' + tab);
+   if (tab!=null) dijitRegistry.byId('spPanel').selectChild(tab);
+   tabnode = dojo.byId('spPanel_tablist_' + tabid);
+   if (tabnode!=null) tabnode.focus();
+   else console.log('no tabnod? ' + tabid);
+   v_spLoading = false;
+}
+
+// after the sp page has loaded.  setup watchers and etc
 function postLoadSp() {
    console.log('postload: tab=' + v_currentSpTab);
-   var tab = null;
-   if (v_currentSpTab == 'm') tab = dijitRegistry.byId('metaSpContainer');
-   else if (v_currentSpTab == 'a') tab = dijitRegistry.byId('attrSpContainer');
-   else if (v_currentSpTab == 'p') tab = dijitRegistry.byId('proxySpContainer');
-   console.log('tab: ' + tab);
+
    var sp = dijitRegistry.byId('spPanel');
-   if (sp==null) {
-        console.log('no spPanel');
-        return;
-   }
-   sp.focus();
-   if (tab!=null) dijitRegistry.byId('spPanel').selectChild(tab);
-   v_spLoading = false;
-   // watch tab selections
    sp.watch('selectedChildWidget',
       function(name, otab, ntab) {
          console.log("tab now ", ntab.id);
@@ -100,23 +110,46 @@ function postLoadSp() {
          iam_hashSetCurrent(tab, null);
       });
    // newSpKeyUp = dojo.connect(dijitRegistry.byId('spDisplay'), 'onKeyUp', checkSpTabKey);
+   if (spKeyListener!=null) spKeyListener.remove();
    require(["dojo/on"], function(on){
-     on(dojoDom.byId("spDisplay"), "keyup", function(e){
-       console.log(e.keyCode);
+     spKeyListener = on(dojoDom.byId("spDisplay"), "keypress", function(e){
+       console.log(e.charOrCode + ' - ' +  e.charCode + ' ' + e.keyCode);
+       switch (e.charCode) {
+          case 69: // E
+          case 101:
+             if (v_currentSpTab=='m') iam_showTheDialog('metaEditDialog');
+             else if (v_currentSpTab=='a') iam_showTheDialog('attrEditDialog');
+             else if (v_currentSpTab=='p') iam_showTheDialog('proxyEditDialog');
+             break;
+          case 68: // D
+          case 100:
+             if (v_currentSpTab=='m') iam_showTheDialog('metaDeleteDialog');
+             break;
+          case 82: // R
+          case 114:
+             if (v_currentSpTab=='a') iam_showTheDialog('attrReqDialog');
+             break;
+       }
      });
    });
 
+   setSpTab();
+
 }
+
 
 // show an sp by index
 
 function showSp(i, tab) {
    console.log('showsp, i='+i+' current=' + currentSp);
-   v_currentSpTab = tab;
    if (currentSp==null || currentSp.id!=spList[i].id) {
       currentSp = spList[i];
+      v_currentSpTab = tab;
       showCurrentSp();
-   } else postLoadSp();  // possibly set tab
+   } else if (tab!=v_currentSpTab) {
+      v_currentSpTab = tab;
+      setSpTab();
+   }
 }
 
 // new sp 
@@ -176,6 +209,7 @@ function setSearchOut(i) {
 // 'enter' select the one on top
 var curselsp = (-1);
 function checkSpFilter(e) {
+  console.log(e);
   if (curselsp>=0) {
      if (e.keyCode==13) {  // enter
         showSp(curselsp, 'm');
@@ -213,7 +247,7 @@ function showSpList(e) {
   
   curselsp = (-1);
   nsp = spList.length;
-  console.log(nsp + ' service providers');
+  // console.log(nsp + ' service providers');
   var txsp = dijitRegistry.byId('filterSpList').get('value');
  
   var htm = '';

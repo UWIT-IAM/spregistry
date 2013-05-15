@@ -61,6 +61,7 @@ public class FilterPolicyGroup {
    private Document doc;
    private boolean editable;
    private String uri;
+   private String sourceName;
    private String tempUri;
    private List<AttributeFilterPolicy> filterPolicies;
 
@@ -77,20 +78,50 @@ public class FilterPolicyGroup {
    private String xmlEnd = "</AttributeFilterPolicyGroup>";
    private String xmlNotice = "\n  <!-- DO NOT EDIT: This is a binary, created by sp-registry -->\n\n";
 
+    private long modifyTime = 0;
+
+    public void refreshPolicyIfNeeded() {
+       log.debug("fp reloader checking...");
+       File f = new File(sourceName);
+       if (modifyTime==0) {
+          modifyTime = f.lastModified();
+          log.debug("init " + f.getName() + ": last mod = " + modifyTime);
+       } else {
+          if (f.lastModified()>modifyTime) {
+             log.debug("reloading ploicy for " + id + " from  " + uri);
+             locker.writeLock().lock();
+             try {
+                filterPolicies = new Vector();
+                loadPolicyGroup();
+             } catch (Exception e) {
+                log.error("reload errro: " + e);
+             }
+             locker.writeLock().unlock();
+             modifyTime = f.lastModified();
+             log.debug("reload completed, time now " + modifyTime);
+          }
+       }
+    }
+
    public FilterPolicyGroup(Properties prop) throws FilterPolicyException {
        id = prop.getProperty("id");
        description = prop.getProperty("description");
        uri = prop.getProperty("uri");
+       sourceName = uri.replaceFirst("file:","");
        tempUri = prop.getProperty("tempUri");
        String e = prop.getProperty("editable");
        if (e.equalsIgnoreCase("true")) editable = true;
        else editable = false;
        filterPolicies = new Vector();
+       loadPolicyGroup();
+   }
        
        /* 
         * Load policies.  This code allows us to input more complex documents
         * than we produce. e.g. multiple requirement rules, split requirement rules.
         */
+   private void loadPolicyGroup() throws FilterPolicyException {
+       log.info("load policy group for " + id + " from " + uri);
        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
        builderFactory.setNamespaceAware(true);
 
@@ -210,8 +241,11 @@ public class FilterPolicyGroup {
    /*
     * remove a policy for an entity.
     */
-   public int removeFilterPolicy(String rpid) {
+   public int removeFilterPolicy(String rpid) 
+         throws FilterPolicyException {
       log.debug("removing fp for " + rpid);
+      if (!editable) throw new FilterPolicyException("not editable");
+      refreshPolicyIfNeeded();
       for (int i=0; i<filterPolicies.size(); i++) {
          if (filterPolicies.get(i).getEntityId().equals(rpid)) {
             filterPolicies.remove(i);
@@ -230,6 +264,7 @@ public class FilterPolicyGroup {
    public void addAttribute(String entityId, String attributeId, String type, String value) 
          throws FilterPolicyException {
       if (!editable) throw new FilterPolicyException("not editable");
+      refreshPolicyIfNeeded();
       AttributeFilterPolicy afp = getFilterPolicy(entityId);
       if (afp==null) throw new FilterPolicyException("not found");
       afp.addAttribute(attributeId, type, value);
@@ -241,6 +276,7 @@ public class FilterPolicyGroup {
    public void removeAttribute(String entityId, String attributeId, String type, String value) 
          throws FilterPolicyException {
       if (!editable) throw new FilterPolicyException("not editable");
+      refreshPolicyIfNeeded();
       AttributeFilterPolicy afp = getFilterPolicy(entityId);
       if (afp==null) throw new FilterPolicyException("not found");
       afp.removeAttribute(attributeId, type, value);

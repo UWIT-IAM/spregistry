@@ -106,6 +106,7 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        if (policyGroup==null) throw new FilterPolicyException("policy group not found");
        if (!policyGroup.isEditable()) throw new FilterPolicyException("policy group not editable");
        
+       policyGroup.refreshPolicyIfNeeded();
        // process each policy ( will be only one requirement rule )
        List<Element> pols = XMLHelper.getElementsByName(doc.getDocumentElement(), "AttributeFilterPolicy");
        for (int i=0; i<pols.size(); i++) {

@@ -53,6 +53,7 @@ public class Metadata {
    private String description;
    private boolean editable;
    private String uri;
+   private String sourceName;
    private String tempUri;
    private int refreshInterval = 0;
    private List<RelyingParty> relyingParties;
@@ -69,38 +70,42 @@ public class Metadata {
     private String xmlEnd = "</EntitiesDescriptor>";
     private String xmlNotice = "\n  <!-- DO NOT EDIT: This is a binary, created by sp-registry -->\n\n";
 
+    private long modifyTime = 0;
+
+    private void refreshMetadataIfNeeded() {
+       log.debug("reloader checking...");
+       File f = new File(sourceName);
+       if (modifyTime==0) {
+          modifyTime = f.lastModified();
+          log.debug("init " + f.getName() + ": last mod = " + modifyTime);
+       } else {
+          if (f.lastModified()>modifyTime) {
+             // reload the metadata
+             log.debug("reloading metadata for " + id + " from  " + uri);
+             locker.writeLock().lock();
+             try {
+                relyingParties = new Vector();
+                loadMetadata();
+             } catch (Exception e) {
+                log.error("reload errro: " + e);
+             }
+             locker.writeLock().unlock();
+             modifyTime = f.lastModified();
+             log.debug("reload completed, time now " + modifyTime);
+          }
+       }
+    }
+
     class MetadataReloader extends Thread {
         
-        private long modifyTime = 0;
 
         public void run() {
            log.debug("reloader running: interval = " + refreshInterval);
            
            // loop on checking the source
-           String sourceName = uri.replaceFirst("file:","");
 
            while (true) {
-              log.debug("reloader checking...");
-              File f = new File(sourceName);
-              if (modifyTime==0) {
-                 modifyTime = f.lastModified();
-                 log.debug("init " + f.getName() + ": last mod = " + modifyTime);
-              } else {
-                 if (f.lastModified()>modifyTime) {
-                    // reload the metadata
-                    log.debug("reload starting for " + uri);
-                    locker.writeLock().lock();
-                    try {
-                       relyingParties = new Vector();
-                       loadMetadata();
-                    } catch (Exception e) {
-                       log.error("reload errro: " + e);
-                    }
-                    locker.writeLock().unlock();
-                    modifyTime = f.lastModified();
-                    log.debug("reload completed, time now " + modifyTime);
-                 }
-              }
+              refreshMetadataIfNeeded();
               try {
                  if (isInterrupted()) {
                     log.info("interrupted during processing");
@@ -122,6 +127,7 @@ public class Metadata {
        id = prop.getProperty("id");
        description = prop.getProperty("description");
        uri = prop.getProperty("uri");
+       sourceName = uri.replaceFirst("file:","");
        tempUri = prop.getProperty("tempUri");
        String v = prop.getProperty("editable");
        if (v.equalsIgnoreCase("true")) editable = true;
@@ -176,6 +182,7 @@ public class Metadata {
       if (!editable) throw new RelyingPartyException("not editable");
       RelyingParty rp = new RelyingParty(doc.getDocumentElement(), this);
 
+      refreshMetadataIfNeeded();
       locker.readLock().lock();
       // remove any existing one
       for (int i=0; i<relyingParties.size(); i++) {
@@ -189,11 +196,13 @@ public class Metadata {
       // add the new
       relyingParties.add(rp);
       locker.readLock().unlock();
+      writeMetadata();
    }
 
    // remove a single rp 
    public void removeRelyingParty(String id) {
       if (!editable) return;
+      refreshMetadataIfNeeded();
       locker.readLock().lock();
       for (int i=0; i<relyingParties.size(); i++) {
          RelyingParty r = relyingParties.get(i);
@@ -203,6 +212,7 @@ public class Metadata {
          }
       }
       locker.readLock().unlock();
+      writeMetadata();
    }
 
    // get rp by id
