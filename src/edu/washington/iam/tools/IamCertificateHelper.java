@@ -159,20 +159,20 @@ public final class IamCertificateHelper {
          X509Certificate x509 = (X509Certificate)pRd.readObject();
 
          if (x509==null) {
-            log.debug("bad cert");
+            log.info("bad cert");
             throw new IamCertificateException("invalid cert PEM");
          }
          cert.issued = x509.getNotBefore();
          cert.expires = x509.getNotAfter();
-         log.debug("pem expires = " + cert.expires);
+         // log.debug("pem expires = " + cert.expires);
 
          X500Principal prin = x509.getIssuerX500Principal();
          cert.issuerDn = prin.toString();
-         log.debug("issuer = " + cert.issuerDn);
+         // log.debug("issuer = " + cert.issuerDn);
 
          prin = x509.getSubjectX500Principal();
          cert.dn = prin.toString();
-         log.debug("principal = " + cert.dn);
+         // log.debug("principal = " + cert.dn);
 
          // see if we've got alt names (in extensions)
 
@@ -180,12 +180,12 @@ public final class IamCertificateHelper {
             Collection<List<?>> ans = x509.getSubjectAlternativeNames();
    
             if (ans!=null) {
-               log.debug("ans size = " + ans.size());
+               // log.debug("ans size = " + ans.size());
                Iterator it = ans.iterator();
                while (it.hasNext()) {
                   List an = (List)it.next();
                   if (an.size()==2) {
-                     log.debug("an0="+an.get(0).toString() + " an1=" + an.get(1).toString());
+                     // log.debug("an0="+an.get(0).toString() + " an1=" + an.get(1).toString());
                      if (an.get(0) instanceof Integer && an.get(1) instanceof String ) {
                         cert.names.add((String)an.get(1));
                      }
@@ -194,7 +194,7 @@ public final class IamCertificateHelper {
             }
             if (cert.cn.equals("") && cert.names.size()>0) cert.cn = cert.names.get(0);
          } catch (CertificateParsingException e) {
-           log.debug("parse error on alt names: " + e);
+           log.info("parse error on alt names: " + e);
          }
  
             
@@ -220,10 +220,10 @@ public final class IamCertificateHelper {
          return 1;
 
       } catch (IOException e) {
-        log.debug("ioerror: " + e);
+        log.info("ioerror: " + e);
         throw new IamCertificateException("invalid cert: ioerror");
       } catch (Exception ex) {
-        log.debug("excp: " + ex);
+        log.info("excp: " + ex);
         throw new IamCertificateException("invalid cert: excep");
       }
    }
