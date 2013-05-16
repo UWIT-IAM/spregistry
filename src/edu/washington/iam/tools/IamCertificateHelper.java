@@ -42,6 +42,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.cert.X509Certificate;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.CertificateParsingException;
 import javax.security.auth.x500.X500Principal;
 
 
@@ -163,34 +164,39 @@ public final class IamCertificateHelper {
          }
          cert.issued = x509.getNotBefore();
          cert.expires = x509.getNotAfter();
-         // log.debug("pem expires = " + cert.expires);
+         log.debug("pem expires = " + cert.expires);
 
          X500Principal prin = x509.getIssuerX500Principal();
          cert.issuerDn = prin.toString();
-         // log.debug("issuer = " + cert.issuerDn);
+         log.debug("issuer = " + cert.issuerDn);
 
          prin = x509.getSubjectX500Principal();
          cert.dn = prin.toString();
-         // log.debug("principal = " + cert.dn);
+         log.debug("principal = " + cert.dn);
 
          // see if we've got alt names (in extensions)
 
-         Collection<List<?>> ans = x509.getSubjectAlternativeNames();
-
-         if (ans!=null) {
-            // log.debug("ans size = " + ans.size());
-            Iterator it = ans.iterator();
-            while (it.hasNext()) {
-               List an = (List)it.next();
-               if (an.size()==2) {
-                  // log.debug("an0="+an.get(0).toString() + " an1=" + an.get(1).toString());
-                  if (an.get(0) instanceof Integer && an.get(1) instanceof String ) {
-                     cert.names.add((String)an.get(1));
+         try {
+            Collection<List<?>> ans = x509.getSubjectAlternativeNames();
+   
+            if (ans!=null) {
+               log.debug("ans size = " + ans.size());
+               Iterator it = ans.iterator();
+               while (it.hasNext()) {
+                  List an = (List)it.next();
+                  if (an.size()==2) {
+                     log.debug("an0="+an.get(0).toString() + " an1=" + an.get(1).toString());
+                     if (an.get(0) instanceof Integer && an.get(1) instanceof String ) {
+                        cert.names.add((String)an.get(1));
+                     }
                   }
                }
             }
+            if (cert.cn.equals("") && cert.names.size()>0) cert.cn = cert.names.get(0);
+         } catch (CertificateParsingException e) {
+           log.debug("parse error on alt names: " + e);
          }
-         if (cert.cn.equals("") && cert.names.size()>0) cert.cn = cert.names.get(0);
+ 
             
          // check for expired
 /***
