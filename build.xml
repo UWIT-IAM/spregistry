@@ -6,7 +6,7 @@
     <property name="src.dir" value="src"/>
     <property name="web.dir" value="war"/>
     <property name="build.dir" value="${web.dir}/WEB-INF/classes"/>
-    <property name="name" value="sp-registry"/>
+    <property name="name" value="spreg"/>
 
     <path id="master-classpath">
         <fileset dir="${web.dir}/WEB-INF/lib">

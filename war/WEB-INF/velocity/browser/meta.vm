@@ -132,10 +132,10 @@
 
    ## Nameid
 
-      <tr><td class="label">NameId</td></tr>
+      <tr><td class="label">NameId</td>
        <td>
    #foreach ( $name in $relyingParty.nameIDFormats )
-      $name"<br>
+      $name<br>
    #end
        </td></tr>
 
