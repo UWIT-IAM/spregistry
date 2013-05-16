@@ -64,6 +64,7 @@ public class XMLProxyManager implements ProxyManager {
 
     private List<Proxy> proxys;
     private String proxyUri;
+    private String sourceName;
     private String proxyMdUri;
     private String pyUri = "file:/data/local/etc/proxy/sp-secrets";
     private int proxyRefresh = 0;  // seconds
@@ -73,6 +74,56 @@ public class XMLProxyManager implements ProxyManager {
     private String tempPyUri = "file:/tmp/sp-proxy.py";
 
     Thread reloader = null;
+
+    private long modifyTime = 0;
+
+    public void refreshProxyIfNeeded() {
+       log.debug("prox reloader checking...");
+       File f = new File(sourceName);
+       if (f.lastModified()>modifyTime) {
+          log.debug("reloading proxys from  " + proxyUri);
+          locker.writeLock().lock();
+          try {
+             loadProxys();
+          } catch (Exception e) {
+             log.error("reload errro: " + e);
+          }
+          locker.writeLock().unlock();
+          log.debug("reload completed, time now " + modifyTime);
+       }
+    }
+
+    private void loadProxys() {
+       DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+       builderFactory.setNamespaceAware(false);
+       Document doc;
+       proxys = new Vector();
+
+       try {
+          DocumentBuilder builder = builderFactory.newDocumentBuilder();
+          doc = builder.parse (proxyUri);
+       } catch (Exception e) {
+          log.error("parse issue: " + e);
+          return;
+       }
+
+       // update the timestamp
+       File f = new File(sourceName);
+       modifyTime = f.lastModified();
+       log.debug("filter load " + f.getName() + ": time = " + modifyTime);
+
+       List<Element> list = XMLHelper.getElementsByName(doc.getDocumentElement(), "Proxy");
+       log.info("found " + list.size());
+
+       for (int i=0; i<list.size(); i++) {
+          Element pxe = list.get(i);
+          try {
+             proxys.add(new Proxy(pxe));
+          } catch (ProxyException e) {
+             log.error("load of element failed: " + e);
+          }
+       }
+    }
 
     public List<Proxy> getProxys() {
        List<Proxy> ret = new Vector();
@@ -91,6 +142,7 @@ public class XMLProxyManager implements ProxyManager {
 
     public int removeRelyingParty(String rpid) {
        log.debug("looking to delete proxy for " + rpid);
+       refreshProxyIfNeeded();
        for (int p=0; p<proxys.size(); p++) {
           Proxy px = proxys.get(p);
           if (px.getEntityId().equals(rpid)) {
@@ -114,6 +166,7 @@ public class XMLProxyManager implements ProxyManager {
        List<Element> eles = XMLHelper.getElementsByName(doc.getDocumentElement(), "Proxy");
        if (eles.size()!=1) throw new ProxyException("proxy xml must contain one element");
 
+       refreshProxyIfNeeded();
        Element pxe = eles.get(0);
           Proxy newproxy = new Proxy(pxe);
           if (!newproxy.getEntityId().equals(id)) throw new ProxyException("post doesn't match qs id");
@@ -131,65 +184,13 @@ public class XMLProxyManager implements ProxyManager {
        writeProxyFiles();
     }
 
-    private void loadProxys() {
-       proxys = new Vector();
-       DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-       builderFactory.setNamespaceAware(false);
-       Document doc;
-
-       try {
-          DocumentBuilder builder = builderFactory.newDocumentBuilder();
-          doc = builder.parse (proxyUri);
-       } catch (Exception e) {
-          log.error("parse issue: " + e);
-          return;
-       }
-
-       List<Element> list = XMLHelper.getElementsByName(doc.getDocumentElement(), "Proxy");
-       log.info("found " + list.size());
-
-       for (int i=0; i<list.size(); i++) {
-          Element pxe = list.get(i);
-          try {
-             proxys.add(new Proxy(pxe));
-          } catch (ProxyException e) {
-             log.error("load of element failed: " + e);
-          }
-       }
-    }
-
-/***
     class ProxyReloader extends Thread {
         
-        private long modifyTime = 0;
-
         public void run() {
            log.debug("proxy reloader running: interval = " + proxyRefresh);
 
-           // loop on checking the source
-           String sourceName = proxyUri.replaceFirst("file:","");
-
            while (true) {
-              log.debug("reloader checking...");
-              File f = new File(sourceName);
-              if (modifyTime==0) {
-                 modifyTime = f.lastModified();
-                 log.debug("init " + f.getName() + ": last mod = " + modifyTime);
-              } else {
-                 if (f.lastModified()>modifyTime) {
-                    // reload the proxys
-                    log.debug("reload starting for " + proxyUri);
-                    locker.writeLock().lock();
-                    try {
-                       loadProxys();
-                    } catch (Exception e) {
-                       log.error("reload errro: " + e);
-                    }
-                    locker.writeLock().unlock();
-                    modifyTime = f.lastModified();
-                    log.debug("reload completed, time now " + modifyTime);
-                 }
-              }
+              refreshProxyIfNeeded();
               try {
                  if (isInterrupted()) {
                     log.info("interrupted during processing");
@@ -204,7 +205,6 @@ public class XMLProxyManager implements ProxyManager {
         }
 
     }
-**/
 
   static String xmlStart = "<Proxies>\n";
   static String xmlEnd = "</Proxies>\n";
@@ -340,6 +340,7 @@ public class XMLProxyManager implements ProxyManager {
        
     public void setProxyUri(String v) {
        proxyUri = v;
+       sourceName = proxyUri.replaceFirst("file:","");
     }
     public void setProxyMdUri(String v) {
        proxyMdUri = v;
@@ -361,13 +362,11 @@ public class XMLProxyManager implements ProxyManager {
     public void init() {
        loadProxys();
 
-/**
        // start proxy list refresher
        if (proxyRefresh>0) {
           reloader = new Thread(new ProxyReloader());
           reloader.start();
        }
-**/
        
     }
 

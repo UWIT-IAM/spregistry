@@ -1,5 +1,5 @@
 /* ========================================================================
- * Copyright (c) 2010-2011 The University of Washington
+ * Copyright (c) 2010-2013 The University of Washington
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,30 +75,23 @@ public class Metadata {
     private void refreshMetadataIfNeeded() {
        log.debug("reloader checking...");
        File f = new File(sourceName);
-       if (modifyTime==0) {
-          modifyTime = f.lastModified();
-          log.debug("init " + f.getName() + ": last mod = " + modifyTime);
-       } else {
-          if (f.lastModified()>modifyTime) {
-             // reload the metadata
-             log.debug("reloading metadata for " + id + " from  " + uri);
-             locker.writeLock().lock();
-             try {
-                relyingParties = new Vector();
-                loadMetadata();
-             } catch (Exception e) {
-                log.error("reload errro: " + e);
-             }
-             locker.writeLock().unlock();
-             modifyTime = f.lastModified();
-             log.debug("reload completed, time now " + modifyTime);
+       if (f.lastModified()>modifyTime) {
+          // reload the metadata
+          log.debug("reloading metadata for " + id + " from  " + uri);
+          locker.writeLock().lock();
+          try {
+             loadMetadata();
+          } catch (Exception e) {
+             log.error("reload errro: " + e);
           }
+          locker.writeLock().unlock();
+          log.debug("reload completed, time now " + modifyTime);
        }
     }
 
+    // thread to sometimes reload the metadata
     class MetadataReloader extends Thread {
         
-
         public void run() {
            log.debug("reloader running: interval = " + refreshInterval);
            
@@ -138,7 +131,6 @@ public class Metadata {
        } catch (NumberFormatException e) {
           log.error("invalid refresh arg " + v);
        }
-       relyingParties = new Vector();
        loadMetadata();
 
        if (refreshInterval>0) {
@@ -150,6 +142,7 @@ public class Metadata {
    // load metadata from the url
    private void loadMetadata() throws RelyingPartyException {
       log.info("load relyingParties for " + id + " from " + uri);
+      relyingParties = new Vector();
       Document doc;
       try {
          DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -160,6 +153,11 @@ public class Metadata {
          log.error("parse issue: " + e);
          throw new RelyingPartyException("bad xml");
        }
+       
+       // update the timestamp
+       File f = new File(sourceName);
+       modifyTime = f.lastModified();
+       log.debug("rp load " + f.getName() + ": time = " + modifyTime);
 
        List<Element> list = XMLHelper.getElementsByName(doc.getDocumentElement(), "EntityDescriptor");
        log.info("found " + list.size());

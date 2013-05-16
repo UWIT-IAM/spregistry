@@ -59,12 +59,14 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
 
     private List<Attribute> attributes;
     private String attributeUri;
+    private String attributeSourceName;
     private int attributeRefresh = 0;  // seconds
 
     private List<Properties> policyGroupSources;
     private String tempUri = "file:/tmp/fp.xml";
 
     Thread reloader = null;
+    private long modifyTime = 0; // for the attrs
 
     public List<AttributeFilterPolicy> getFilterPolicies(String rpid) {
        log.debug("looking for fps for " + rpid);
@@ -180,6 +182,10 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
           log.error("parse issue: " + e);
           return;
        }
+       // update the timestamp
+       File f = new File(attributeSourceName);
+       modifyTime = f.lastModified();
+       log.debug("attr load " + f.getName() + ": time = " + modifyTime);
 
        List<Element> list = XMLHelper.getElementsByName(doc.getDocumentElement(), "Attribute");
        log.info("found " + list.size());
@@ -193,43 +199,28 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
           }
        }
 
-/**
-       for (int i=0; i<attributes.size(); i++) {
-           RelyingPartyController.getGroupManager().getGroup(attributes.get(i).getAuthorizingGroup());
-       }
- **/
     }
 
+    // attribute reloader
     class AttributeReloader extends Thread {
         
-        private long modifyTime = 0;
-
         public void run() {
            log.debug("attr reloader running: interval = " + attributeRefresh);
 
-           // loop on checking the source
-           String sourceName = attributeUri.replaceFirst("file:","");
-
            while (true) {
               log.debug("reloader checking...");
-              File f = new File(sourceName);
-              if (modifyTime==0) {
-                 modifyTime = f.lastModified();
-                 log.debug("init " + f.getName() + ": last mod = " + modifyTime);
-              } else {
-                 if (f.lastModified()>modifyTime) {
-                    // reload the attributes
-                    log.debug("reload starting for " + attributeUri);
-                    locker.writeLock().lock();
-                    try {
-                       loadAttributes();
-                    } catch (Exception e) {
-                       log.error("reload errro: " + e);
-                    }
-                    locker.writeLock().unlock();
-                    modifyTime = f.lastModified();
-                    log.debug("reload completed, time now " + modifyTime);
+              File f = new File(attributeSourceName);
+              if (f.lastModified()>modifyTime) {
+                 // reload the attributes
+                 log.debug("reload starting for " + attributeUri);
+                 locker.writeLock().lock();
+                 try {
+                    loadAttributes();
+                 } catch (Exception e) {
+                    log.error("reload errro: " + e);
                  }
+                 locker.writeLock().unlock();
+                 log.debug("reload completed, time now " + modifyTime);
               }
               try {
                  if (isInterrupted()) {
@@ -286,6 +277,7 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
 
     public void setAttributeUri(String v) {
        attributeUri = v;
+       attributeSourceName = attributeUri.replaceFirst("file:","");
     }
     public void setTempUri(String v) {
        tempUri = v;

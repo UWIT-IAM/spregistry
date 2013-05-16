@@ -63,6 +63,7 @@ public class FilterPolicyGroup {
    private String uri;
    private String sourceName;
    private String tempUri;
+   private int refreshInterval = 0;
    private List<AttributeFilterPolicy> filterPolicies;
 
    private String xmlStart = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
@@ -78,29 +79,49 @@ public class FilterPolicyGroup {
    private String xmlEnd = "</AttributeFilterPolicyGroup>";
    private String xmlNotice = "\n  <!-- DO NOT EDIT: This is a binary, created by sp-registry -->\n\n";
 
-    private long modifyTime = 0;
+   private long modifyTime = 0;
+
+   Thread reloader = null;
+
 
     public void refreshPolicyIfNeeded() {
        log.debug("fp reloader checking...");
        File f = new File(sourceName);
-       if (modifyTime==0) {
-          modifyTime = f.lastModified();
-          log.debug("init " + f.getName() + ": last mod = " + modifyTime);
-       } else {
-          if (f.lastModified()>modifyTime) {
-             log.debug("reloading ploicy for " + id + " from  " + uri);
-             locker.writeLock().lock();
-             try {
-                filterPolicies = new Vector();
-                loadPolicyGroup();
-             } catch (Exception e) {
-                log.error("reload errro: " + e);
-             }
-             locker.writeLock().unlock();
-             modifyTime = f.lastModified();
-             log.debug("reload completed, time now " + modifyTime);
+       if (f.lastModified()>modifyTime) {
+          log.debug("reloading policy for " + id + " from  " + uri);
+          locker.writeLock().lock();
+          try {
+             loadPolicyGroup();
+          } catch (Exception e) {
+             log.error("reload errro: " + e);
           }
+          locker.writeLock().unlock();
+          log.debug("reload completed, time now " + modifyTime);
        }
+    }
+
+    // thread to sometimes reload the policies
+    class PolicyReloader extends Thread {
+
+        public void run() {
+           log.debug("policy reloader running: interval = " + refreshInterval);
+           
+           // loop on checking the source
+   
+           while (true) {
+              refreshPolicyIfNeeded();
+              try {
+                 if (isInterrupted()) {
+                    log.info("interrupted during processing");
+                    break;
+                 } 
+                 Thread.sleep(refreshInterval * 1000);
+              } catch (InterruptedException e) {
+                 log.info("sleep interrupted");
+                 break;
+              }
+           }
+        }  
     }
 
    public FilterPolicyGroup(Properties prop) throws FilterPolicyException {
@@ -109,21 +130,32 @@ public class FilterPolicyGroup {
        uri = prop.getProperty("uri");
        sourceName = uri.replaceFirst("file:","");
        tempUri = prop.getProperty("tempUri");
-       String e = prop.getProperty("editable");
-       if (e.equalsIgnoreCase("true")) editable = true;
+       String v = prop.getProperty("editable");
+       if (v.equalsIgnoreCase("true")) editable = true;
        else editable = false;
-       filterPolicies = new Vector();
+       v = prop.getProperty("refresh");
+       try {
+          if (v!=null) refreshInterval = Integer.parseInt(v); // seconds
+       } catch (NumberFormatException e) {
+          log.error("invalid refresh arg " + v);
+       }
        loadPolicyGroup();
+       if (refreshInterval>0) {
+          reloader = new Thread(new PolicyReloader());
+          reloader.start();
+       }
+
    }
        
-       /* 
-        * Load policies.  This code allows us to input more complex documents
-        * than we produce. e.g. multiple requirement rules, split requirement rules.
-        */
+   /* 
+    * Load policies.  This code allows us to input more complex documents
+    * than we produce. e.g. multiple requirement rules, split requirement rules.
+    */
    private void loadPolicyGroup() throws FilterPolicyException {
        log.info("load policy group for " + id + " from " + uri);
        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
        builderFactory.setNamespaceAware(true);
+       filterPolicies = new Vector();
 
        if (uri!=null) {
           try {
@@ -134,46 +166,47 @@ public class FilterPolicyGroup {
              throw new FilterPolicyException("parse error");
           }
 
+         // update the timestamp
+         File f = new File(sourceName);
+         modifyTime = f.lastModified();
+         log.debug("filter load " + f.getName() + ": time = " + modifyTime);
+
+
           List<Element> list = XMLHelper.getElementsByName(doc.getDocumentElement(), "AttributeFilterPolicy");
           log.info("found " + list.size());
 
           for (int i=0; i<list.size(); i++) {
              Element fpe = list.get(i);
-             // try {
-                String afpid = fpe.getAttribute("id");
-                // scan requirement rules
-                NodeList nl1 = fpe.getChildNodes();
-                for (int j=0; j<nl1.getLength(); j++) {
-                    if (nl1.item(j).getNodeType()!=Node.ELEMENT_NODE) continue;
-                    Element e1 = (Element)nl1.item(j);
-                    String name = e1.getNodeName();
-                    // log.info("rp ele: " + name);
-         
-                    if (XMLHelper.matches(name,"PolicyRequirementRule")) {
-                       // log.debug("have requirement rule");
-                       String type = e1.getAttribute("xsi:type");
-                       if (type.equals("basic:AttributeRequesterString")) addOrUpdatePolicy(e1, fpe);
-                       else if (type.equals("saml:AttributeRequesterEntityAttributeExactMatch")) addOrUpdateSamlPolicy(e1, fpe);
-                       else if (type.equals("basic:OR")) {
-                          // scan rules
-                          NodeList nl2 = e1.getChildNodes();
-                          for (int k=0; k<nl2.getLength(); k++) {
-                              if (nl2.item(k).getNodeType()!=Node.ELEMENT_NODE) continue;
-                              Element e2 = (Element)nl2.item(k);
-                              name = e2.getNodeName();
-                              // log.info("rp ele: " + name);
-                
-                              if (XMLHelper.matches(name,"Rule")) {
-                                 addOrUpdatePolicy(e2, fpe);
-                              }
+             String afpid = fpe.getAttribute("id");
+             // scan requirement rules
+             NodeList nl1 = fpe.getChildNodes();
+             for (int j=0; j<nl1.getLength(); j++) {
+                if (nl1.item(j).getNodeType()!=Node.ELEMENT_NODE) continue;
+                Element e1 = (Element)nl1.item(j);
+                String name = e1.getNodeName();
+                // log.info("rp ele: " + name);
+     
+                if (XMLHelper.matches(name,"PolicyRequirementRule")) {
+                   // log.debug("have requirement rule");
+                   String type = e1.getAttribute("xsi:type");
+                   if (type.equals("basic:AttributeRequesterString")) addOrUpdatePolicy(e1, fpe);
+                   else if (type.equals("saml:AttributeRequesterEntityAttributeExactMatch")) addOrUpdateSamlPolicy(e1, fpe);
+                   else if (type.equals("basic:OR")) {
+                      // scan rules
+                      NodeList nl2 = e1.getChildNodes();
+                      for (int k=0; k<nl2.getLength(); k++) {
+                          if (nl2.item(k).getNodeType()!=Node.ELEMENT_NODE) continue;
+                          Element e2 = (Element)nl2.item(k);
+                          name = e2.getNodeName();
+                          // log.info("rp ele: " + name);
+            
+                          if (XMLHelper.matches(name,"Rule")) {
+                             addOrUpdatePolicy(e2, fpe);
                           }
-
-                       }
-                    }
+                      }
+                   }
                 }
-             // } catch (FilterPolicyException ex) {
-                // log.error("load of element failed: " + ex);
-             // }
+             }
           }
        }
    }
