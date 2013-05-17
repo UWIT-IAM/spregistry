@@ -107,9 +107,6 @@ v_xsrf = '${xsrf}';
     data-dojo-props="submitLabel:'Refresh', submitAction:'location.reload()'"
     $hide>
    Your session with the Service Provider Registry has expired.  Please refresh the page to continue working.
-##    <button id="okTimeoutRefresh" dojoType="dijit.form.Button" type="button" class="subButton" onClick="location.reload()">
-##      Refresh
-##    </button>
 </div>
 
 <div id="helpAbout" data-dojo-type="iam/Dialog" title="About" $hide data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
@@ -117,15 +114,44 @@ v_xsrf = '${xsrf}';
 <br/>
 Service Provider Registry 2.0.0
 <br/>
-Revision 04/19/2013
+Revision 05/17/2013
 </div>
 
 <div id="helpServiceProviders" data-dojo-type="iam/Dialog" title="Service Providers" $hide>
-  The Service Provider list shows all service providers (SP) known to the UW
-identity provider service (IdP).  Hover over a service provider to see which federation 
-it belongs to.
+The Service Provider list shows all service providers (SP) known to the UW
+identity provider service (IdP).   These are from InCommon metadata and local metadata.
 <p>
 Use the "Search" area to find a particular service provider.
+<p>
+Use the "Add new" link to add a service provider to the registry.
+We will attempt to retrieve your SP's metadata from a Metadata endpoint.
+(That may only work with a shibboleth SP).
+</div>
+
+
+<div id="helpMetadata" data-dojo-type="iam/Dialog" title="Metadata" $hide>
+Metadata for InCommon service providers is provided by InCommon and cannot
+be edited here.
+<p>
+You may edit metadata for ad-hoc service providers if you are an owner of
+the SP's domain.
+Most of the metadata detail, protocols, keyinfo, etc. are provided by your SP's
+Metadata endpoint.  You have to provide the name, descriptions, and contacts.
+<p>
+</div>
+
+<div id="helpAttributes" data-dojo-type="iam/Dialog" title="Attributes" $hide>
+Atributes are released to your SP through one or more policies.
+<p>
+<ul>
+<li>Core policies apply to all *.washington.edu and *.uw.edu service providers.</li>
+<li>Ad-hoc policies apply to individual service providers.</li>
+<li>RandS policies apply to InCommon identified 'Research and Scholarship' service providers.</li>
+</ul>
+<p>
+If you are the owner of the service provider you may request attributes to 
+be released to it.  Please explain why you need each attribute.  If you are requesting
+group memberships you <b>must</b> specify which groups you want.
 </div>
 
 
@@ -216,6 +242,12 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
            <div data-dojo-type="dijit.Menu" id="helpMenu">
                <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpServiceProviders').show();}">
                 Service Providers
+               </div>
+               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpMetadata').show();}">
+                Metadata
+               </div>
+               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpAttributes').show();}">
+                Attributes
                </div>
                <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpGateway').show();}">
                 Gateways

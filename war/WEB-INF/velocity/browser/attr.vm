@@ -29,6 +29,7 @@
 
   <div id="attrSpActions" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false" >
   <ul>
+  <li class="sublist" >Actions:</li>
   #if ($canEdit || $newEntity)
   <li class="sublist" ><a id="attrReqLink" tabindex="0" role="button" aria-label="request attributes" 
        href="javascript:iam_showTheDialog('attrReqDialog',['sp/attrlib']);"><span style="text-decoration: underline">R</span>equest_attributes</a></li>
