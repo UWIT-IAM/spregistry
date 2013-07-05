@@ -114,7 +114,7 @@ v_xsrf = '${xsrf}';
 <br/>
 Service Provider Registry 2.0.0
 <br/>
-Revision 05/17/2013
+Revision 6/7/2013
 </div>
 
 <div id="helpServiceProviders" data-dojo-type="iam/Dialog" title="Service Providers" $hide>
@@ -209,8 +209,8 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 
 ## banner
 <div id="banner" class="container" data-dojo-type="dijit.layout.ContentPane" region="top" splitter="false">
-    <span id="logo"><a tabindex=-1 href="javascript:showHomePanel()" title="University of Washington"><img src="/UWw.gif" alt="UW" /></a></span>
-    <span id="title"><a tabindex=-1 href="javascript:showHomePanel()">Service Provider Registry</a></span>
+    <span id="logo"><a tabindex=-1 href="javascript:showHomePage()" title="University of Washington"><img src="/UWw.gif" alt="UW" /></a></span>
+    <span id="title"><a tabindex=-1 href="javascript:showHomePage()">Service Provider Registry</a></span>
     <ul id="navigation">
 
         <li>$!{notice}</li>

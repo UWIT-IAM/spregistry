@@ -602,6 +602,13 @@ function convertToList(str)
 //   Attribute functions
 //
 
+function local_check_gws() {
+   ck = dijitRegistry.byId('attr_req_gws_groups').get('checked');
+   console.log('ck='+ck);
+   if (ck) iam_hideShow([],['attr_req_gws_text_tr']);
+   else iam_hideShow(['attr_req_gws_text_tr'],[]);
+}
+
 var _okmsg;
 
 function _postReqAttrs() {
@@ -612,8 +619,9 @@ function _postReqAttrs() {
 // submit the request
 attr_requestAttrs = function(entityId) {
 
-   _okmsg = '';
-   gws_text = '';
+   var _okmsg = '';
+   var gws_text = '';
+   var grps = dijitRegistry.byId('attr_req_gws_text').get('value').trim();
    alist = dojoQuery('.attr_req_chk');
    xml = '<Attributes>';
    for (a=0; a<alist.length; a++) {
@@ -624,10 +632,16 @@ attr_requestAttrs = function(entityId) {
      inn = dojoDom.byId(w.get('id') + '_in');
      console.log(aid + ' in value ' + inn.value);
      if (w.get('checked')) {
-        if (inn.value=='') {
+        if (inn.value=='' || (aid=='gws_groups' && grps!='')) {
            xml += '<Add id="' + aid + '"/>';
            _okmsg += '<li>Adding: ' + aid + '</li>';
-           if (aid=='gws_groups') gws_text = '\n\nGroups: ' + dijitRegistry.byId('attr_req_gws_text').get('value');
+           if (aid=='gws_groups') {
+              if (grps=='') {
+                 iam_showTheNotice('Please identify the groups you need.');
+                 return;
+              }
+              gws_text = '\n\nGroups: ' + grps;
+           }
         }
      } else {
         if (inn.value!='') {
@@ -636,7 +650,10 @@ attr_requestAttrs = function(entityId) {
         }
      }
    }
-   if (_okmsg=='') return;
+   if (_okmsg=='') {
+      iam_showTheNotice('There are no changes to request.');
+      return;
+   }
    _okmsg = 'Request submitted<p><ul>' + _okmsg + '</ul>';
    msg = dijitRegistry.byId('attr_req_exptext').get('value').trim();
    if (msg=='') {

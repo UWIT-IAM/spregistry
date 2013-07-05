@@ -1047,7 +1047,7 @@ public class RelyingPartyController {
            txt.append("Quick link:\n\n   " + spRegistryUrl + "#a" + id + "\n");
 
            SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
-   /* production to RT system 
+   /* production to RT system */
            msg.setTo(requestMailTo);
            msg.setSubject("IdP attribute request for " + id);
            msg.setText("//proxy\n//requestor: " + session.remoteUser + "@washington.edu\n\n" + txt.toString());
@@ -1057,19 +1057,6 @@ public class RelyingPartyController {
                log.error("sending mail: " + ex.getMessage());            
                status = 500;
            }
-      **/
-
-   /** testing */
-           msg.setTo(session.remoteUser + "@washington.edu");
-           msg.setSubject("Requesting attributes for " + id);
-           msg.setText("this is the message that would have been sent to RT\n\n" + txt.toString());
-           try{
-               this.mailSender.send(msg);
-           } catch(MailException ex) {
-               log.error("sending mail: " + ex.getMessage());            
-               status = 500;
-           }
-     /* **/
 
         }
         response.setStatus(status);

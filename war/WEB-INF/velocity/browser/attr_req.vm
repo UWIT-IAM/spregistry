@@ -20,15 +20,6 @@
 ##
 
 
-<script>
-function local_check_gws() {
-   ck = dijitRegistry.byId('attr_req_gws_groups').get('checked');
-   console.log('ck='+ck);
-   if (ck) iam_hideShow([],['attr_req_gws_text_tr']);
-   else iam_hideShow(['attr_req_gws_text_tr'],[]);
-}
-</script>
-
 <div id="attrReqDialog" data-dojo-type="iam/Dialog" title="Request attributes for ${relyingPartyId}"
     data-dojo-props="submitLabel:'Submit request', submitAction:'attr_requestAttrs(\'${relyingPartyId}\')', cancelLabel:'Cancel'"
     style="display:none;" >
