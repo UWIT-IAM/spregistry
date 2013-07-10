@@ -30,9 +30,25 @@
 
 <link rel="stylesheet" type="text/css" href="/css/iam-dojo.css"/>
 
-  <!--[if IE]>
-    <link rel="stylesheet" type="text/css" href="/iam-ie.css" />
-  <![endif]-->
+## add ie7 css if needed
+<script>
+    require(["dojo/query",
+     "dojo/dom-construct",
+     "dojo/NodeList-manipulate"], function(query, dom) {
+         var ie=document.documentMode;
+         if (typeof ie != 'undefined' && ie<8) {
+            var link = dom.create("link", {
+                  type  : "text/css",
+                  rel   : "stylesheet",
+                  href  : '/css/iam-ie.css'
+               });
+            console.log('adding css for ie7');
+            query("head").append(link);
+         }
+    });
+</script>
+
+
 
 <script type="text/javascript" src="/js/iam-dojo.js"></script>
 <script type="text/javascript" src="/sp_static/sp.js"></script>
@@ -120,7 +136,7 @@ etc.
 <div id="banner" class="container" dojoType="dijit.layout.ContentPane" region="top" splitter="false">
     <span id="logo"><a href="javascript:showHomePanel()" title="University of Washington"><img src="/UWw.gif" alt="UW" /></a></span>
     <span id="title"><a href="javascript:showHomePanel()">Service Provider Registry</a></span>
-    <ul id="navigation">
+    <ul id="ident">
 
         <li>$!{notice}</li>
         <li>
@@ -191,8 +207,8 @@ etc.
   </div>
 
 
-  <div class="groupList" id="myGroupsPanel" dojoType="dijit.layout.ContentPane"
-         onLoad="adjustMGPaneSize()"  style="overflow:auto">
+  <div class="indexList" id="myGroupsPanel" dojoType="dijit.layout.ContentPane"
+         onLoad="adjustMGPaneSize()"  style="overflow:auto; background-color:#ffffff;">
 
    The Service Provider Registry needs to know who you are before you can continue.
   <hr/>
@@ -214,8 +230,22 @@ etc.
 ## right side
 
 <div id="homeDisplay" dojoType="dijit.layout.ContentPane"  region="center" splitter="true" style="margin-top:6px;overflow:auto;" >
-#set ($vm = "${pagetype}.vm")
-#parse ( $vm )
+
+The Service Provider Registry maintains information on SAML service providers (SP) that use the University's Shibboleth Identity Provider (IdP).
+<p>
+Registration is divided into three sections:
+<p>
+<ul>
+<li><b>Metadata</b> is predefined if your SP is registered with InCommon.  Otherwise you may enter and edit it here.</li>
+<p>
+<li><b>Attributes</b> may be requested for your SP.  University SPs (domains ending with washington.edu or uw.edu) automatically 
+receive a basic set of attibutes.</li>
+<p>
+<li><b>Social Gateways</b> (experimental) may be configured for your SP.  This may allow your users to identify themselves 
+with Google or LiveID logins.
+</ol>
+<p>
+
 
  </div>
 

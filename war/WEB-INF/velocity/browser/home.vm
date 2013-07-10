@@ -26,71 +26,34 @@
 ##
 
 <div id="PageContent">
-<table cellpadding="3" >
-<tr>
-<td valign="top" height="400" width="10"> </td>
-<td valign="top" align="left">
 
-
-<table cellpadding="8" border="0">
-
-<tr><td height="6" width="20"></td></tr>
-<tr><td/><td class="head" nowrap="nowrap" colspan="2">About the registry</td></tr>
-<tr><td/><td height="6" width="20"></td><td align="left">
+<h4>About the registry</h4>
+<div class="indentLeft">
+<p>
 All Service Providers (SP) wishing to authenticate users via the University of Washington's Shibboleth Identity Provider (IdP)
 must register for that service.  
-</td></tr>
-<tr><td/><td/><td class="mainlink" align="left"><a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a></td></tr>
-<tr><td height="6" width="20"></td></tr>
-<tr><td/><td class="head" nowrap="nowrap" colspan="2">Existing service providers</td></tr>
-<tr><td/><td/><td align="left">The list on the left shows all service providers known to the IdP, including those 
-registered with 
- <a href="http://incommon.org/">InCommon</a> and those registered manually 
-through this registry service.</td></tr>
-<tr><td height="6" width="20"></td></tr>
-<tr><td/><td class="head" nowrap="nowrap" colspan="2">New registration</td></tr>
-<tr><td/><td/><td align="left">If you are the owner of a service providers's domain you can register that service provider with our IdP. 
-Use the "Add new" link at the top of the service provider list.</td></tr>
-<tr><td height="6" width="20"></td></tr>
-
-</table>
-
-
-
-
-
-##
-## ----- right side extra text ----
-##
-
-</td>
-
-<td width="20"></td>
-<td valign="top" align="left" width="35%">
-
-<p height="100px">&nbsp;</p>
-
-
-<table class="helptext" cellpadding="4px">
-<tr><th align="left" colspan="2"></td></tr>
-<tr><td width="10px"/><td valign="top">
-   </td></tr>
-</table>
-
-
-
-##
-## ----- end -----
-##
-
-</td></tr></table>
-
-
+<p>
+<a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a>
 </div>
 
-## error and status messages
-## <div id="requestStatusDiv" class="notice">&nbsp;
-## </div>
-<div class="status">$!{status}
+<h4>Existing service providers</h4>
+<div class="indentLeft">
+<p>
+The list on the left shows all service providers known to the University's IdP, including those 
+registered with <a href="http://incommon.org/">InCommon</a> and those registered manually 
+through this registry service.
+<p>
+Type part of an SP's entity id in the search window to filter the list.
+</div>
+
+<h4>New registration</h4>
+<div class="indentLeft">
+<p>
+If you are the owner of a service providers's domain you can register that service provider with our IdP. 
+Use the "New SP" link at the top of the service provider list.
+</div>
+
+
+<div class="status">$!{status}</div>
 </div>
 

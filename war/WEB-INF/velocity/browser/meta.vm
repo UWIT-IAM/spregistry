@@ -146,10 +146,10 @@
          <td><table class="iamtable">
    #foreach ( $acs in $relyingParty.assertionConsumerServices )
      <tr>
-      <td>$acs.index</td><td><table>
-          <tr><td nowrap="nowrap">$acs.binding</td> </tr>
-          <tr><td nowrap="nowrap"><tt>$acs.location</tt></td></tr>
-      </table></td>
+      <td>$acs.index</td><td nowrap="nowrap">
+          $acs.binding
+          <tt>$acs.location
+      </td>
      </tr>
    #end
       </table></td></tr>

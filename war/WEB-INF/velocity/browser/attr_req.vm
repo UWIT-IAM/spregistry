@@ -19,11 +19,10 @@
 ## attr request
 ##
 
-
 <div id="attrReqDialog" data-dojo-type="iam/Dialog" title="Request attributes for ${relyingPartyId}"
     data-dojo-props="submitLabel:'Submit request', submitAction:'attr_requestAttrs(\'${relyingPartyId}\')', cancelLabel:'Cancel'"
     style="display:none;" >
-Check the attributes you need. Uncheck those you no longer need.
+Check the attributes you need. Uncheck those you no longer want.
 
 <p>
 See the IAM wiki's <a href="https://wiki.cac.washington.edu/x/QUioAQ">Guide to Attributes</a>.
@@ -35,59 +34,53 @@ See the IAM wiki's <a href="https://wiki.cac.washington.edu/x/QUioAQ">Guide to A
   ## we need to know if the attribute is already selected
   #set ( $chk = '' )
   #set ( $dis = '' )
+  #set ( $grps='')
   #foreach ( $group in $filterPolicyGroups )
      #foreach ( $policy in $group.getFilterPolicies($relyingParty) )
        #foreach ( $attribute in $policy.attributeRules )
         #if (${attr.id} == ${attribute.id})
           #set ($chk=$checked)
           #if (!$group.editable) #set ($dis = $disable) #end
+          #if ($attr.id == 'gws_groups')
+            #set ( $nl='')
+            #foreach ( $r in ${attribute.valueRules} )
+              #foreach ( $v in ${r.rules} )
+                 #set ($grps = $grps + $nl + ${v.getValue().replaceFirst("urn:mace:washington.edu:groups:","")} )
+#set ($nl='
+')
+              #end
+            #end
+          #end
         #end
        #end ## attrs
    #end  ## policies
   #end ## group
 
-  <tr><td nowrap="nowrap"><span data-dojo-type="dijit.form.CheckBox" id="attr_req_${attr.id}"
+  <tr><td nowrap="nowrap"><input data-dojo-type="dijit.form.CheckBox" id="attr_req_${attr.id}"
          $chk $dis value="${attr.id}" 
        #if ($attr.id == 'gws_groups') 
         onChange="local_check_gws()"
        #end
-         class="attr_req_chk"></span></td><td title="$!{attr.description}">${attr.id}
-        <input id="attr_req_${attr.id}_in" value="$chk" type="hidden"></input>
+         class="attr_req_chk" aria-label="${attr.id}"/></td><td><label for="attr_req_${attr.id}" title="$!{attr.description}" >${attr.id}</label>
+        <input id="attr_req_${attr.id}_in" value="$chk" type="hidden" aria-hidden="true"></input>
         </td></tr>
 
        #if ($attr.id == 'gws_groups') 
-         <tr id="attr_req_gws_text_tr" $hide ><td></td><td nowrap="nowrap">
-           Which groups?<br><textarea data-dojo-type="dijit.form.Textarea" id="attr_req_gws_text" rows="2" cols="40" ></textarea>
+         <tr id="attr_req_gws_text_tr" #if ($grps!='')#else $hide #end><td></td><td nowrap="nowrap">
+           <span aria-hidden="true">Which groups?</span><br>
+             <textarea style="font-size:smaller" data-dojo-type="dijit.form.Textarea"
+                  id="attr_req_gws_text" rows="2" cols="40" aria-label="Which groups?">$grps</textarea>
+             <textarea data-dojo-type="dijit.form.Textarea" id="attr_req_gws_text_in" $hide>$grps</textarea>
           </td></tr>
        #end
 
 #end
-<tr><td></td><td>Explain your need for the attributes.</td></tr>
+<tr><td></td><td id="attr_reason" aria-hidden="true">Explain your need for the attributes.</td></tr>
 <tr><td></td><td>
-<textarea data-dojo-type="dijit.form.Textarea" id="attr_req_exptext" rows="10" cols="40" ></textarea>
+<textarea data-dojo-type="dijit.form.Textarea" id="attr_req_exptext" rows="10" cols="60" aria-labelledby="attr_reason"></textarea>
 </td></tr>
 
 </table>
-#*
-<p>
-<table>
-<tr>
-   <td colspan="1" align="left">
-    <button id="attrReqButton" dojoType="dijit.form.Button" type="button" class="subButton"
-          onClick="javascript:attr_requestAttrs('${relyingPartyId}')">
-      Submit request
-    </button>
-   </td>
-   <td colspan="2" align="right">
-    <button id="attrReqCancel" dojoType="dijit.form.Button" type="button" class="subButton" onClick="iam_hideTheDialog('attrReqDialog')">
-      Cancel
-    </button>
-   </td>
-</tr>
- <tr><td height="100"></td></tr>
-
-</table>
-*#
 </form>
 
 

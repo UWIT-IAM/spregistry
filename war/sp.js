@@ -16,7 +16,7 @@
  */
 
 // sp-registry javascript
-// vers: 04/28/2013
+// vers: 07/05/2013
 
 // common vars
 var v_root = '/sp-registry';
@@ -196,12 +196,12 @@ function showCurrentSp() {
 
 function setSearchOver(i) {
   require(["dojo/dom-class"], function(domClass){
-    domClass.add('spitem' + i, 'groupitemhover');
+    domClass.add('spitem' + i, 'listitemhover');
   });
 }
 function setSearchOut(i) {
   require(["dojo/dom-class"], function(domClass){
-    domClass.remove('spitem' + i, 'groupitemhover');
+    domClass.remove('spitem' + i, 'listitemhover');
   });
 }
 
@@ -257,9 +257,9 @@ function showSpList(e) {
     if (spList[i].meta.substring(0,2)=='UW') ttl = 'UW federation';
    
     if (curselsp<0) {
-       cls = ' class="groupitem groupitemhover" '
+       cls = ' class="listitem listitemhover" '
        curselsp = i;
-    } else cls = ' class="groupitem" '
+    } else cls = ' class="listitem zzzzzzzz" '
     htm = htm + 
         '<span id="spitem' + i + '"' +  cls +
         'onMouseDown="showSp(\'' + i + '\',\'m\')" ' +
@@ -632,16 +632,20 @@ attr_requestAttrs = function(entityId) {
      inn = dojoDom.byId(w.get('id') + '_in');
      console.log(aid + ' in value ' + inn.value);
      if (w.get('checked')) {
-        if (inn.value=='' || (aid=='gws_groups' && grps!='')) {
+        if (aid=='gws_groups') {
+           if (grps=='') {
+              iam_showTheNotice('Please identify the groups you need.');
+              return;
+           }
+           var grpsin = dijitRegistry.byId('attr_req_gws_text_in').get('value').trim();
+           if (grps==grpsin) continue;
            xml += '<Add id="' + aid + '"/>';
            _okmsg += '<li>Adding: ' + aid + '</li>';
-           if (aid=='gws_groups') {
-              if (grps=='') {
-                 iam_showTheNotice('Please identify the groups you need.');
-                 return;
-              }
-              gws_text = '\n\nGroups: ' + grps;
-           }
+           gws_text = '\n\nGroups requested:\n' + grps;
+           if (grpsin!='') gws_text += '\nPrevious groups:\n' + grpsin;
+        } else if (inn.value=='') {
+           xml += '<Add id="' + aid + '"/>';
+           _okmsg += '<li>Adding: ' + aid + '</li>';
         }
      } else {
         if (inn.value!='') {

@@ -123,7 +123,7 @@ identity provider service (IdP).   These are from InCommon metadata and local me
 <p>
 Use the "Search" area to find a particular service provider.
 <p>
-Use the "Add new" link to add a service provider to the registry.
+Use the "New SP" link to add a service provider to the registry.
 We will attempt to retrieve your SP's metadata from a Metadata endpoint.
 (That may only work with a shibboleth SP).
 </div>
@@ -200,7 +200,7 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 <div id="theflash" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height:100%">
 <div style="width: 100%; height:50%">
 </div>
-<div align="center"><img src="/circle_loader.gif">
+<div align="center"><img src="/img/circle_loader.gif">
 </div>
 </div>
 
@@ -209,9 +209,9 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 
 ## banner
 <div id="banner" class="container" data-dojo-type="dijit.layout.ContentPane" region="top" splitter="false">
-    <span id="logo"><a tabindex=-1 href="javascript:showHomePage()" title="University of Washington"><img src="/UWw.gif" alt="UW" /></a></span>
+    <span id="logo"><a tabindex=-1 href="javascript:showHomePage()" title="University of Washington"><img src="/img/UWw.gif" alt="UW" /></a></span>
     <span id="title"><a tabindex=-1 href="javascript:showHomePage()">Service Provider Registry</a></span>
-    <ul id="navigation">
+    <ul id="ident">
 
         <li>$!{notice}</li>
         <li>
@@ -272,17 +272,13 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
     require(["dojo/dom", "dijit/registry", "dojo/on", "dojo/domReady!"], function(dom, registry, on) {
 
       // drop the flash and show the page
-         dom.byId('theflash').style.display = 'none';
-         dom.byId('thepage').style.display = '';
-         dom.byId('thepage').style.width = '100%';
-         dom.byId('thepage').style.height = '100%';
-         // registry.byId('thepage').layout();
-         // registry.byId('thepage').resize();
+      dom.byId('theflash').style.display = 'none';
+      dom.byId('thepage').style.display = '';
+      dom.byId('thepage').style.width = '100%';
+      dom.byId('thepage').style.height = '100%';
 
       // start with SP list
       loadSpList();
-      // dojo.connect(dojo.global, "onhashchange", iam_hashHandler);
-      // dojo.connect(dijit.byId('filterSpList'), 'onkeyup', checkSpFilter);
       on(dom.byId('filterSpList'), 'keyup', checkSpFilter);
       #if ($timeLeft)
       to_interval = setInterval(function(){dijitRegistry.byId('helpTimeout').show();clearInterval(to_interval);}, ${timeLeft}000);
@@ -299,23 +295,27 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
  <div id="indexPanel" data-dojo-type="dijit.layout.ContentPane" style="overflow:hidden" >
 
   <div id="indexTitlebar">
-    <div class="indexLeft">
-       <span id="myGroupsTitle">Service Providers</span>
-    </div>
-    <div class="indexRight">
-       <span><a tabindex=0 href="javascript:dijit.byId('metaNewDialog').show()">Add&nbsp;new</a></span>
-    </div>
+    ## <div class="indexLeft">
+       <span role="presentation">Service Providers</span>
+##       <span style="float:right; margin-top:3px; padding-right:12px">
+##           <a role="button" tabindex="0" aria-label="Define a new service provider" 
+##            href="javascript:dijit.byId('metaNewDialog').show()">New&nbsp;SP</a></span>
+    ## </div>
   </div>
 
   <div id="indexSubtitlebar">
-     <div class="groupsRight">
-      Search <input id="filterSpList" style="background-color:#ffffff;" data-dojo-type="dijit.form.TextBox" />
+     <div style="width:100%">
+      <span aria-hidden="true">Search </span><input id="filterSpList" style="width:40%;" data-dojo-type="dijit.form.TextBox" 
+          aria-label="Search for an SP. Enter part of it's entity id." />
+          <span class="subRight">
+           <a role="button" tabindex="0" aria-label="Define a new service provider"
+            href="javascript:dijit.byId('metaNewDialog').show()" title="Define a new SP">New SP</a></span>
      </div>
   </div>
 
- <div class="indexList" id="spIndexPane" data-dojo-type="dijit.layout.ContentPane"
+ <div class="spList" id="spIndexPane" data-dojo-type="dijit.layout.ContentPane"
          onLoad="adjustSPIndexSize()"  style="overflow:auto">
-     <i>Retriving the list of service providers</i>
+     <i role="presentation">Retriving the list of service providers</i>
   </div>
 
  </div>
@@ -346,7 +346,7 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 <div data-dojo-type="dijit.layout.ContentPane" region="bottom" splitter="false">
 
 <div id="footer" data-dojo-type="dijit.layout.ContentPane">
-    <span id="footlogo"><a href="http:/www.uw.edu/" title="University of Washington"><img src="/uofw-small.gif" alt="UW" /></a></span>
+    <span id="footlogo"><a href="http:/www.uw.edu/" title="University of Washington"><img src="/img/uofw-small.gif" alt="UW" /></a></span>
     <span id="footcenter">
     <ul id="navigation">
         <li><a href="mailto:help@uw.edu">CONTACT US</a></li>
