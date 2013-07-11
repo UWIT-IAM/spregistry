@@ -28,7 +28,7 @@
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/tundra/tundra.css"/>
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/resources/dojo.css"/>
 
-<link rel="stylesheet" type="text/css" href="/css/iam-dojo.css"/>
+<link rel="stylesheet" type="text/css" href="/css/iam-dojo-1.css"/>
 
 ## add ie7 css if needed
 <script>
@@ -103,20 +103,13 @@ function redirectToLogin(path) {
 
 ## banner popups and menus
 
-<div id="helpAbout" dojoType="dijit.Dialog" title="About" $hide>
+<div id="helpAbout" dojoType="dijit.Dialog" title="About" $hide
+  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
    Identity and Access Management
 <br/>
 Service Provider Registry 2.0.0
 <br/>
-Revision 11/19/2012
-</div>
-
-<div id="helpLogin" dojoType="dijit.Dialog" title="Log in" $hide>
-etc.
-<p>
-<ul>
-</ul>
-<p>
+Revision 7/11/2013
 </div>
 
 
@@ -195,7 +188,6 @@ etc.
 </script>
 
 
-
 <div id="leftsideIndex" dojoType="dijit.layout.ContentPane" region="left" splitter="true" minSize="100">
 
  <div id="indexPanel" dojoType="dijit.layout.ContentPane" style="overflow:hidden" >
@@ -210,6 +202,7 @@ etc.
   <div class="indexList" id="myGroupsPanel" dojoType="dijit.layout.ContentPane"
          onLoad="adjustMGPaneSize()"  style="overflow:auto; background-color:#ffffff;">
 
+#*
    The Service Provider Registry needs to know who you are before you can continue.
   <hr/>
 
@@ -220,6 +213,7 @@ etc.
        <p>If you login with an InCommon affiliate, such as another university, your ePPN
      will be your login identity.
 
+*#
   </div>
 
  </div>
@@ -233,21 +227,26 @@ etc.
 
 The Service Provider Registry maintains information on SAML service providers (SP) that use the University's Shibboleth Identity Provider (IdP).
 <p>
-Registration is divided into three sections:
+
+<p>
+ <h3>Login is needed</h3>
+<p>
+   The Service Provider Registry needs to know who you are before you can continue.
+Use the menu in the upper right to choose a login method.
+
 <p>
 <ul>
-<li><b>Metadata</b> is predefined if your SP is registered with InCommon.  Otherwise you may enter and edit it here.</li>
+<li>People with UW NetIDs should choose <b>UW NetID</b>.</li>
 <p>
-<li><b>Attributes</b> may be requested for your SP.  University SPs (domains ending with washington.edu or uw.edu) automatically 
-receive a basic set of attibutes.</li>
+<li>If you log in with your Google account your Google gmail account</li>
+     will be your login identity.
 <p>
-<li><b>Social Gateways</b> (experimental) may be configured for your SP.  This may allow your users to identify themselves 
-with Google or LiveID logins.
-</ol>
+<li>If you login with an InCommon affiliate, such as another university, your ePPN
+     will be your login identity.</li>
+
 <p>
 
-
- </div>
+</div>
 
 
 

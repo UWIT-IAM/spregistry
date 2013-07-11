@@ -40,7 +40,7 @@ dojoConfig = {
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/resources/dojo.css"/>
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/tundra/tundra.css"/>
 
-<link rel="stylesheet" type="text/css" href="/css/iam-dojo.css"/>
+<link rel="stylesheet" type="text/css" href="/css/iam-dojo-1.css"/>
 
 ## add ie7 css if needed
 <script>
@@ -106,7 +106,7 @@ v_xsrf = '${xsrf}';
 <div id="helpTimeout" data-dojo-type="iam/Dialog" title="Time's up"
     data-dojo-props="submitLabel:'Refresh', submitAction:'location.reload()'"
     $hide>
-   Your session with the Service Provider Registry has expired.  Please refresh the page to continue working.
+   Your session with the Service Provider Registry has expired.<p>Please refresh the page to continue working.
 </div>
 
 <div id="helpAbout" data-dojo-type="iam/Dialog" title="About" $hide data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
@@ -114,33 +114,45 @@ v_xsrf = '${xsrf}';
 <br/>
 Service Provider Registry 2.0.0
 <br/>
-Revision 6/7/2013
+Revision 7/11/2013
 </div>
 
-<div id="helpServiceProviders" data-dojo-type="iam/Dialog" title="Service Providers" $hide>
-The Service Provider list shows all service providers (SP) known to the UW
-identity provider service (IdP).   These are from InCommon metadata and local metadata.
+<div id="helpServiceProviders" data-dojo-type="iam/Dialog" title="Service Providers" $hide
+  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
+The Service Provider list shows all service providers (SP) known to the University's
+identity provider (IdP).   These include InCommon federated providers and locally registered providers.
 <p>
-Use the "Search" area to find a particular service provider.
+Use the "Filter" to find a particular service provider.
 <p>
-Use the "New SP" link to add a service provider to the registry.
-We will attempt to retrieve your SP's metadata from a Metadata endpoint.
-(That may only work with a shibboleth SP).
+</div>
+
+<div id="helpNewServiceProvider" data-dojo-type="iam/Dialog" title="Register a New Service Provider" $hide
+  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
+Use the "Register a new SP" link to register a new service provider with the registry.
+<p>
+Your entity id <em>must</em> be of the form: <tt>http<i>[s]</i>://<i>domain_name[:port]</i>/<i>...</i></tt>.
+For example: <tt>https://spud.uw.edu/Shibboleth</tt>.
+You must be the registered owner of the SP's domain.
+<p>
+We will attempt to retrieve your SP's metadata from the Shibboleth default Metadata endpoint.
+If that fails you may have to enter your metadata manually.
 </div>
 
 
-<div id="helpMetadata" data-dojo-type="iam/Dialog" title="Metadata" $hide>
+<div id="helpMetadata" data-dojo-type="iam/Dialog" title="Metadata" $hide
+  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
 Metadata for InCommon service providers is provided by InCommon and cannot
 be edited here.
 <p>
-You may edit metadata for ad-hoc service providers if you are an owner of
-the SP's domain.
+You may edit metadata for locally registered service providers if you are an owner of
+the provider's domain&mdash;as it appears in the entity id.
 Most of the metadata detail, protocols, keyinfo, etc. are provided by your SP's
 Metadata endpoint.  You have to provide the name, descriptions, and contacts.
 <p>
 </div>
 
-<div id="helpAttributes" data-dojo-type="iam/Dialog" title="Attributes" $hide>
+<div id="helpAttributes" data-dojo-type="iam/Dialog" title="Attributes" $hide
+  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
 Atributes are released to your SP through one or more policies.
 <p>
 <ul>
@@ -155,7 +167,8 @@ group memberships you <b>must</b> specify which groups you want.
 </div>
 
 
-<div id="helpGateway" data-dojo-type="iam/Dialog" title="SAML Gateways" $hide>
+<div id="helpGateway" data-dojo-type="iam/Dialog" title="SAML Gateways" $hide
+  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
   The UW is experimenting with a Social to SAML gateway. 
 <p>
 To your SAML service provider (a shibboleth SP, for example) the gateway 
@@ -176,22 +189,13 @@ So, in effect,
 See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gateway</a> for more information.
 </div>
 
-<div id="helpDNS" data-dojo-type="iam/Dialog" title="DNS 'ownership'" $hide>
+<div id="helpDNS" data-dojo-type="iam/Dialog" title="DNS 'ownership'" $hide
+  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
    You must be registered with UW's Network Operations as a registered contact for your DNS name.
    For more information, see 
    <a href="https://wiki.cac.washington.edu/x/eRcrAQ">Managing DNS Names For Infrastructure Services Access</a>.
 </div>
 
-#*
-<div id="okDialog" data-dojo-type="dijit.Dialog" title="" style="display:none;" >
-<div id="okDialog_content">
-<span id="okDialogMessage"></span>
-    <button id="okDialogClose" dojoType="dijit.form.Button" type="button" class="subButton" onClick="iam_hideTheDialog('okDialog')">
-      Close
-    </button>
-</div>
-</div>
- *#
 
 #parse ( "browser/new.vm" )
 
@@ -243,6 +247,9 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
                <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpServiceProviders').show();}">
                 Service Providers
                </div>
+               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpNewServiceProvider').show();}">
+                Register new provider
+               </div>
                <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpMetadata').show();}">
                 Metadata
                </div>
@@ -262,6 +269,14 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
         </div>
         </li>
     </ul>
+
+   <ul id="navigate">
+       <li>|</li>
+       <li><a role="button" tabindex="0" href="javascript:iam_showTheDialog('metaNewDialog')"
+            title="Register a new service provider">Register a new SP</a></li>
+       <li>|</li>
+   </ul>
+
 
 </div>  ## banner containe
 ## <div id="messageArea" data-dojo-type="dijit.layout.ContentPane" region="top" splitter="false" style="height:15px"></div>
@@ -305,11 +320,11 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 
   <div id="indexSubtitlebar">
      <div style="width:100%">
-      <span aria-hidden="true">Search </span><input id="filterSpList" style="width:40%;" data-dojo-type="dijit.form.TextBox" 
+      <span aria-hidden="true">Filter </span><input id="filterSpList"  data-dojo-type="dijit.form.TextBox" 
           aria-label="Search for an SP. Enter part of it's entity id." />
-          <span class="subRight">
-           <a role="button" tabindex="0" aria-label="Define a new service provider"
-            href="javascript:dijit.byId('metaNewDialog').show()" title="Define a new SP">New SP</a></span>
+##          <span class="subRight">
+##           <a role="button" tabindex="0" aria-label="Define a new service provider"
+##            href="javascript:dijit.byId('metaNewDialog').show()" title="Define a new SP">New SP</a></span>
      </div>
   </div>
 

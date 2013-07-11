@@ -118,7 +118,7 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
 
  ## ProtocolSupportEnumerations
 
-      <tr><td class="grouplabel">Protocols</td>
+      <tr><td class="label">Protocols</td>
       </tr>
    #set ( $count = 0 )
    #foreach ( $ps in $relyingParty.protocolSupportEnumerations )
@@ -137,7 +137,7 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
  
    ## KeyInfo
 
-      <tr><td class="grouplabel">KeyInfo</td>
+      <tr><td class="label">KeyInfo</td>
       </tr>
    #set ( $count = 0 )
    #foreach ( $key in $relyingParty.keyDescriptors )
@@ -170,7 +170,7 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
  
    ## Nameid
 
-      <tr><td class="grouplabel">NameID</td>
+      <tr><td class="label">NameID</td>
       </tr>
    #set ( $count = 0 )
    #foreach ( $name in $relyingParty.nameIDFormats )
@@ -188,7 +188,7 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
      <tr id="ni_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('ni', 'ni_more')">+</a></td></tr>
  
    ## ACS
-      <tr><td class="grouplabel" colspan="99">ACS</td>
+      <tr><td class="label" colspan="99">ACS</td>
       </tr>
    #set ( $count = 0 )
    #foreach ( $acs in $relyingParty.assertionConsumerServices )

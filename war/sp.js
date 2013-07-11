@@ -188,6 +188,7 @@ function showCurrentSp() {
 
    var url = v_root + v_vers + '/rp?id=' + currentSp.id + '&mdid=' + currentSp.meta + '&view=inner';
    dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);
+   dijitRegistry.byId('spDisplay').set('loadingMessage', 'Loading ' + currentSp.id + ' . . .' );
    dijitRegistry.byId('spDisplay').set('href', url);
    dijitRegistry.byId('spDisplay').set('onLoad', postLoadSp);
    showSpPanel();
@@ -250,6 +251,19 @@ function showSpList(e) {
   // console.log(nsp + ' service providers');
   var txsp = dijitRegistry.byId('filterSpList').get('value');
  
+  // count how many
+  var ndsp = 0;
+  var dc = 'dim0';
+  for (i=0; i<nsp; i++) {
+    if ((txsp.length>0) && spList[i].id.indexOf(txsp)<0) continue;
+    ndsp += 1;
+    if (ndsp==5) dc = 'dim1';
+    if (ndsp==10) dc = 'dim2';
+    if (ndsp==15) dc = 'dim3';
+    if (ndsp==20) dc = 'dim4';
+  }
+  console.log('list size = ' + ndsp);
+
   var htm = '';
   for (i=0; i<nsp; i++) {
     if ((txsp.length>0) && spList[i].id.indexOf(txsp)<0) continue;
@@ -257,9 +271,9 @@ function showSpList(e) {
     if (spList[i].meta.substring(0,2)=='UW') ttl = 'UW federation';
    
     if (curselsp<0) {
-       cls = ' class="listitem listitemhover" '
+       cls = ' class="listitem listitemhover ' + dc + '" '
        curselsp = i;
-    } else cls = ' class="listitem zzzzzzzz" '
+    } else cls = ' class="listitem ' + dc + '" '
     htm = htm + 
         '<span id="spitem' + i + '"' +  cls +
         'onMouseDown="showSp(\'' + i + '\',\'m\')" ' +
@@ -269,7 +283,7 @@ function showSpList(e) {
      '</span><br>';
   }
  
- dijitRegistry.byId('spIndexPane').set('content',htm);
+  dijitRegistry.byId('spIndexPane').set('content',htm);
 }
 
 // load the sp list
@@ -619,7 +633,7 @@ function _postReqAttrs() {
 // submit the request
 attr_requestAttrs = function(entityId) {
 
-   var _okmsg = '';
+   _okmsg = '';
    var gws_text = '';
    var grps = dijitRegistry.byId('attr_req_gws_text').get('value').trim();
    alist = dojoQuery('.attr_req_chk');

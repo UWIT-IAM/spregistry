@@ -77,29 +77,21 @@
 
     <tr><th colspan="3">Contacts</th></tr>
    #foreach ( $ct in $relyingParty.contactPersons )
-      <tr><td class="label">$!ct.type</td>
-       <td colspan="2"><table>
+      <tr><td class="label" >$!ct.type</td>
+       <td>
      #if ( $ct.givenName || $ct.surName )
-     <tr>
-      <td>$!ct.givenName $!ct.surName</td>
-     </tr>
+      $!ct.givenName $!ct.surName<br>
      #end
      #if ( $ct.company )
-     <tr>
-      <td colspan="2">$!ct.company</td>
-     </tr>
+      $!ct.company<br>
      #end
      #if ( $ct.email )
-     <tr>
-      <td colspan="2">$!ct.email</td>
-     </tr>
+      $!ct.email<br>
      #end
      #if ( $ct.phone )
-     <tr>
-      <td colspan="2">$!ct.phone</td>
-     </tr>
+      $!ct.phone<br>
      #end
-      </table></td></tr>
+      </td></tr>
    #end
 
     <tr><th colspan="3">Metadata details</th></tr>
@@ -115,7 +107,7 @@
 
    ## KeyInfo
 
-      <tr><td class="label">KeyInfo</td>
+      <tr><td class="label" valign="top">KeyInfo</td>
         <td colspan="2"><table class="iamtable">
        #foreach ( $key in $relyingParty.keyDescriptors )
           <tr><td nowrap="nowrap">Key Name:</td><td>$!key.keyName <td><tr>

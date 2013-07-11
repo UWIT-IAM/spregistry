@@ -74,7 +74,7 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 
 <tr><td colspan="99" height="20"></td><tr>
 
-    <tr><th colspan="3">LiveID</th>
+    <tr><th colspan="2">LiveID</th>
        <th style="text-align:right;"><a href="javascript:iam_showTheDialog('liveidGateHelp',[]);">Help</a></th>
     </tr>
 
