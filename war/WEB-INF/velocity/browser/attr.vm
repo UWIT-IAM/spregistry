@@ -74,9 +74,8 @@
            #foreach ( $rule in $value.rules )
              #if ($c>0)
                <tr><td></td>
-             #else
-               <td>#if ($rule.regex)<span class="subtitle">(regex)</span>#end ${rule.value}</td></tr>
              #end
+             <td>#if ($rule.regex)<span class="subtitle">(regex)</span>#end ${rule.value}</td></tr>
              #set ($c = $c + 1)
            #end
           #end
