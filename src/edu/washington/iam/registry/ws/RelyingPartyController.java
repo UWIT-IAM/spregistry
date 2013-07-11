@@ -92,8 +92,10 @@ public class RelyingPartyController {
 
     private static DNSVerifier dnsVerifier;
     private static GroupManager groupManager;
-    private String adminGroupName = "u_cac_internal_act-as";
+    private String adminGroupName = "u_groups_act-as";
     private Group adminGroup = null;
+    private String proxyGroupName = "u_groups_sp-proxy";
+    private Group proxyGroup = null;
 
     public DNSVerifier getDnsVerifier() {
         return dnsVerifier;
@@ -162,6 +164,7 @@ public class RelyingPartyController {
        private String userDisplayName;
        private ModelAndView mv;
        private long timeLeft;
+       private boolean isProxy;
     }
 
     /* send user to login chooser page */ 
@@ -193,6 +196,7 @@ public class RelyingPartyController {
         RPSession session = new RPSession();
         session.isAdmin = false;
         session.isUWLogin = false;
+        session.isProxy = false;
         String reloginPath = null;
 
         log.info("RP new session =============== path=" + request.getPathInfo());
@@ -230,6 +234,10 @@ public class RelyingPartyController {
                      if (adminGroup.isMember(session.remoteUser)) {
                         log.debug("is admin");
                         session.isAdmin = true;
+                     }
+                     if (proxyGroup.isMember(session.remoteUser)) {
+                        log.debug("is proxy");
+                        session.isProxy = true;
                      }
                      break;
                   } else {
@@ -539,6 +547,8 @@ public class RelyingPartyController {
         session.pageType = "home";
 
         ModelAndView mv = basicModelAndView(session);
+        mv.addObject("isAdmin", session.isAdmin);
+        mv.addObject("isProxy", session.isProxy);
 
         return (mv);
     }
@@ -657,6 +667,7 @@ public class RelyingPartyController {
         mv.addObject("relyingPartyId", id);
         mv.addObject("proxy", proxy);
         mv.addObject("isAdmin", session.isAdmin);
+        mv.addObject("isProxy", session.isProxy);
         mv.addObject("dateFormatter", new SimpleDateFormat("yy/MM/dd"));
         return (mv); 
     }
@@ -1268,7 +1279,7 @@ public class RelyingPartyController {
        log.info("RelyingPartyController init");
        RPCrypt.init(cryptKey);
        adminGroup = groupManager.getGroup(adminGroupName);
-
+       proxyGroup = groupManager.getGroup(proxyGroupName);
     }
 
     // diagnostic

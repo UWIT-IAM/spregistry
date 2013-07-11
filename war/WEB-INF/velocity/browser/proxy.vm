@@ -39,7 +39,7 @@
 
 #set ($google_status = 0 )
 
-This registry allows you to configure access to UW's experimental social-to-saml gateway.
+This registry allows you to configure access to the social-to-saml authentication gateway.
 <p>
 <table class="iamtable">
 

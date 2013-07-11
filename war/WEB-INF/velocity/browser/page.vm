@@ -169,7 +169,7 @@ group memberships you <b>must</b> specify which groups you want.
 
 <div id="helpGateway" data-dojo-type="iam/Dialog" title="SAML Gateways" $hide
   data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
-  The UW is experimenting with a Social to SAML gateway. 
+  Identity and Access Management provides a Social to SAML authentication gateway. 
 <p>
 To your SAML service provider (a shibboleth SP, for example) the gateway 
 looks like any other SAML identity provider.  You configure it accordingly.
@@ -256,9 +256,11 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
                <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpAttributes').show();}">
                 Attributes
                </div>
+#if ($isProxy)
                <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpGateway').show();}">
                 Gateways
                </div>
+#end
                <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpDNS').show();}">
                 DNS ownership
                </div>

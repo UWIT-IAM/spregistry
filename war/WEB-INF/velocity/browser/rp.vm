@@ -29,6 +29,8 @@
 
 #parse ( "browser/attr.vm" )
 
+#if ($isProxy)
 #parse ( "browser/proxy.vm" )
+#end
 
 </div>
