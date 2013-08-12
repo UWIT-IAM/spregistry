@@ -202,7 +202,7 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 
         <li>$!{notice}</li>
         <li>
-            <span class="user"> $remote_user </span>
+            <span class="user">$remote_user</span>
                (<a href="javascript:document.location='${root}${vers}/logout/';">logout</a>)
         </li>
         <li>

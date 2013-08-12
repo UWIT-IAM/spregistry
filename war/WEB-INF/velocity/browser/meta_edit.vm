@@ -133,7 +133,7 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
       <td class="label"></td><td><input data-dojo-type="dijit.form.TextBox" name="pse" id="pse_${i}" value="" /></td>
      </tr>
    #end
-   <tr id="pse_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('pse', 'pse_more')">+</a></td></tr>
+   <tr id="pse_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('pse', 'pse_more')">add protocol</a></td></tr>
  
    ## KeyInfo
 
@@ -165,7 +165,7 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
       </tr>
 
    #end
-     <tr id="ki_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('ki', 'ki_more')">+</a></td></tr>
+     <tr id="ki_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('ki', 'ki_more')">add keyinfo</a></td></tr>
 
  
    ## Nameid
@@ -185,7 +185,7 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
       <td class="label"><td><input data-dojo-type="dijit.form.TextBox" name="nameId_${xtra}" id="ni_${i}" value="" /></td>
      </tr>
    #end
-     <tr id="ni_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('ni', 'ni_more')">+</a></td></tr>
+     <tr id="ni_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('ni', 'ni_more')">add nameid</a></td></tr>
  
    ## ACS
       <tr><td class="label" colspan="99">ACS</td>
@@ -213,7 +213,7 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
              <td nowrap="nowrap"><input data-dojo-type="dijit.form.TextBox" id="acsl_${i}" value="" /></td>
      </tr>
    #end
-     <tr id="acs_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('acs', 'acs_more')">+</a></td></tr>
+     <tr id="acs_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('acs', 'acs_more')">add acs</a></td></tr>
 
 </table></td></tr>
 
