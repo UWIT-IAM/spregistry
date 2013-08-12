@@ -32,13 +32,9 @@
     data-dojo-props="submitLabel:'Save changes', submitAction:'attr_saveAttrs(\'${gid}\', \'${relyingPartyId}\')', cancelLabel:'Cancel'"
     $hide >
 
+<p>Allow 40 minutes for our IdP to acquire the changes to this service provider's attribute release policy.
+<p>
 <table class="iamtable" role="presentation">
-
-    <tr><th colspan="9">Description of attributes</th></tr>
-     <tr><td class="label" colspan="9">See the IAM wiki's <a href="https://wiki.cac.washington.edu/x/QUioAQ">Guide to Attributes</a>.</td></tr>
-     <tr><td colspan="9">Please allow 40 minutes for our IdP to acquire
-        the changes to this service provider's attribute release policy.
-       </td></tr>
 
     <tr><th colspan="9">Attributes from by $group.description</th></tr>
      <tr><td colspan="3">

@@ -23,6 +23,8 @@
 
 #set ( $sectionType='sp' )
 
+<div id="spTitle"></div>
+
 <div id="spPanel" tabindex=-1 dojoType="dijit.layout.TabContainer" doLayout="false" style="overflow:hidden; width:100%" >
 
 #parse ( "browser/meta.vm" )

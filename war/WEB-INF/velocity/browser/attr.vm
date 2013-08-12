@@ -46,30 +46,16 @@
 
 <table class="iamtable">
 
-    <tr><th colspan="2">Entity Id</th></tr>
-     <tr><td colspan="3">
-       <table class="iamtable" >
-         <tr><td class="label" colspan="3">${relyingPartyId}</td></tr>
-       </table>
-     </tr>
-
-    <tr><th colspan="2">Description of attributes</th></tr>
-     <tr><td class="label">See the IAM wiki's <a href="https://wiki.cac.washington.edu/x/QUioAQ">Guide to Attributes</a>.</td></tr>
  
-  #foreach ( $group in $filterPolicyGroups )
-    <tr><th colspan="2">Attributes released by $group.description</th></tr>
-     <tr><td colspan="3">
-       <table class="iamtable" >
+  #foreach ( $attr in $attributes )
 
-## entity id
-     #foreach ( $policy in $group.getFilterPolicies($relyingParty) )
-
-       #foreach ( $attribute in $policy.attributeRules )
-        <tr><td class="label">$!{attribute.id}</td>
-        #foreach ( $value in $attribute.valueRules )
-          #if ( $value.type == "basic:ANY" )
+   #if ($attr.attributeFilterPolicy )
+      <tr><td class="label" title="$!{attr.description}">$!{attr.id}</td>
+      #set ($ar = $attr.attributeRule)
+      #foreach ( $value in $ar.valueRules )
+         #if ( $value.type == "basic:ANY" )
           <td>All values</td></tr>
-          #else
+         #else
            #set ($c=0)
            #foreach ( $rule in $value.rules )
              #if ($c>0)
@@ -78,14 +64,11 @@
              <td>#if ($rule.regex)<span class="subtitle">(regex)</span>#end ${rule.value}</td></tr>
              #set ($c = $c + 1)
            #end
-          #end
-        #end ## value
-       #end ## attrs
-   #end  ## policies
+         #end
+      #end ## value
+   #end  ## fpolicy
 
-   </table></td></tr>
-
- #end  ## groups
+ #end  ## attrs
 
 
  </table>

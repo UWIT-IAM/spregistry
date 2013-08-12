@@ -651,7 +651,7 @@ public class RelyingPartyController {
 
         log.info("returning rp id=" + id );
         List<FilterPolicyGroup> filterPolicyGroups = filterPolicyManager.getFilterPolicyGroups();
-        List<Attribute> attributes = filterPolicyManager.getAttributes();
+        List<Attribute> attributes = filterPolicyManager.getAttributes(id);
 
         Proxy proxy = proxyManager.getProxy(id);
         // don't send proxy secret to non-admin
@@ -674,10 +674,10 @@ public class RelyingPartyController {
 
     // new rp
     @RequestMapping(value="/new", method=RequestMethod.GET)
-    public ModelAndView getRelyingPartyNew(@RequestParam(value="dns", required=true) String dns,
+    public ModelAndView getRelyingPartyNew(@RequestParam(value="rpid", required=true) String rpid,
             @RequestParam(value="mdid", required=false) String mdid,
             @RequestParam(value="view", required=false) String view,
-            @RequestParam(value="manid", required=false) String manid, // enter manual data for this entity
+            @RequestParam(value="nolook", required=false) String nolook, // enter manual data for this entity
             HttpServletRequest request,
             HttpServletResponse response) {
 
@@ -687,17 +687,20 @@ public class RelyingPartyController {
 
         session.pageType = "rp";
         session.pageTitle = "New service provider";
-        if (manid==null) manid = "";
+        boolean lookup = true;
+        if (nolook!=null && nolook.startsWith("y")) lookup = false;
         
-        if (manid.length()>0) {
-           log.debug("new sp manid: " + manid);
-           if (!manid.startsWith("https://")) return (emptyMV());
-           int p = manid.indexOf('/', 10);
-           if (p<0) dns = manid.substring(8);
-           else dns = manid.substring(8,p);
-        } else {
-           log.debug("new sp lookup request: " + dns);
-        }
+        String dns = rpid;
+        if (rpid.startsWith("https://")) {
+           int p = dns.indexOf('/', 10);
+           if (p<0) dns = dns.substring(8);
+           else dns = dns.substring(8,p);
+        } else if (rpid.startsWith("http://")) {
+           int p = dns.indexOf('/', 10);
+           if (p<0) dns = dns.substring(7);
+           else dns = dns.substring(7,p);
+        } else lookup = true;
+
         if (dns.length()==0) return (emptyMV());
 
         RelyingParty rp = null;
@@ -710,35 +713,40 @@ public class RelyingPartyController {
            if (dnsVerifier.isOwner(dns, session.remoteUser, null)) {
               log.debug("user owns dns");
            } else {
-              mv.addObject("alert", "no permission");
-              response.setStatus(401);
-              return mv;
+              // response.setStatus(200);  // 403
+              return emptyMV("No permission for " + rpid);
            }
         } catch (DNSVerifyException e) {
-           mv.addObject("alert", "Could not verify ownership:\n" + e.getCause());
-           response.setStatus(500);
-           return mv;
+           // mv.addObject("alert", "Could not verify ownership:\n" + e.getCause());
+           // response.setStatus(500);
+           return emptyMV("Could not verify ownership:\n" + e.getCause());
         }
 
         mv.addObject("newEntity", true);
-        if (manid.length()>0) {
-           rp = rpManager.genRelyingPartyByName(manid, dns);
-           mv.addObject("relyingParty", rp);
-           mv.addObject("relyingPartyId", manid);
-           session.pageTitle = manid;
-        } else {
+
+        if (lookup) {
            try {
               rp = rpManager.genRelyingPartyByLookup(dns);
+              RelyingParty orp = rpManager.getRelyingPartyById(rp.getEntityId(), "UW");
+              if (orp!=null) rp = orp;
               mv.addObject("relyingParty", rp);
               mv.addObject("relyingPartyId", rp.getEntityId());
               session.pageTitle = rp.getEntityId();
            } catch (RelyingPartyException e) {
-              return emptyMV("metadata not found");
+              mv.addObject("rpnotfound", true);
+              log.debug("metadata not found for " + dns);
            }
+        }
+        if (rp==null) {
+           if (!rpid.startsWith("http")) return emptyMV(rpid + " did not respond with metadata");
+           rp = rpManager.genRelyingPartyByName(rpid, dns);
+           mv.addObject("relyingParty", rp);
+           mv.addObject("relyingPartyId", rpid);
+           session.pageTitle = rpid;
         }
 
         List<FilterPolicyGroup> filterPolicyGroups = filterPolicyManager.getFilterPolicyGroups();
-        List<Attribute> attributes = filterPolicyManager.getAttributes();
+        List<Attribute> attributes = filterPolicyManager.getAttributes(rp.getEntityId());
         mv.addObject("filterPolicyGroups", filterPolicyGroups);
         mv.addObject("filterPolicyManager", filterPolicyManager);
         return (mv); 

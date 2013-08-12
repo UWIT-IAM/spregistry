@@ -174,6 +174,9 @@ public class AttributeFilterPolicy implements Serializable  {
     public String getEntityId() {
        return (entityId);
     }
+    public String getPolicyGroupId() {
+       return (policyGroupId);
+    }
 
     public void setEditable(boolean v) {
        editable = v;

@@ -24,37 +24,29 @@
     style="display:none;" >
 Check the attributes you need. Uncheck those you no longer want.
 
-<p>
-See the IAM wiki's <a href="https://wiki.cac.washington.edu/x/QUioAQ">Guide to Attributes</a>.
-
 <form action="">
 <table>
 
 #foreach ( $attr in $attributes )
-  ## we need to know if the attribute is already selected
+  ## we need to know if the attribute is already selected or can be edited
   #set ( $chk = '' )
   #set ( $dis = '' )
   #set ( $grps='')
-  #foreach ( $group in $filterPolicyGroups )
-     #foreach ( $policy in $group.getFilterPolicies($relyingParty) )
-       #foreach ( $attribute in $policy.attributeRules )
-        #if (${attr.id} == ${attribute.id})
-          #set ($chk=$checked)
-          #if (!$group.editable) #set ($dis = $disable) #end
-          #if ($attr.id == 'gws_groups')
-            #set ( $nl='')
-            #foreach ( $r in ${attribute.valueRules} )
-              #foreach ( $v in ${r.rules} )
-                 #set ($grps = $grps + $nl + ${v.getValue().replaceFirst("urn:mace:washington.edu:groups:","")} )
+  #if (${attr.attributeFilterPolicy})
+    #set ($ar = $attr.attributeRule )
+    #set ($chk=$checked)
+    #if (!$attr.attributeFilterPolicy.editable) #set ($dis = $disable) #end
+    #if ($attr.id == 'gws_groups')
+        #set ( $nl='')
+        #foreach ( $r in ${ar.valueRules} )
+           #foreach ( $v in ${r.rules} )
+             #set ($grps = $grps + $nl + ${v.getValue().replaceFirst("urn:mace:washington.edu:groups:","")} )
 #set ($nl='
 ')
-              #end
-            #end
-          #end
-        #end
-       #end ## attrs
-   #end  ## policies
-  #end ## group
+           #end
+        #end ## vrules
+    #end  ## if
+  #end ## afp
 
   <tr><td nowrap="nowrap"><input data-dojo-type="dijit.form.CheckBox" id="attr_req_${attr.id}"
          $chk $dis value="${attr.id}" 
@@ -77,7 +69,7 @@ See the IAM wiki's <a href="https://wiki.cac.washington.edu/x/QUioAQ">Guide to A
 #end
 <tr><td></td><td id="attr_reason" aria-hidden="true">Explain your need for the attributes.</td></tr>
 <tr><td></td><td>
-<textarea data-dojo-type="dijit.form.Textarea" id="attr_req_exptext" rows="10" cols="60" aria-labelledby="attr_reason"></textarea>
+<textarea data-dojo-type="dijit.form.Textarea" id="attr_req_exptext" rows="10" cols="50" aria-labelledby="attr_reason"></textarea>
 </td></tr>
 
 </table>

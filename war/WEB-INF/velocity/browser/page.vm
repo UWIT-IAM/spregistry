@@ -40,7 +40,7 @@ dojoConfig = {
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/resources/dojo.css"/>
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/tundra/tundra.css"/>
 
-<link rel="stylesheet" type="text/css" href="/css/iam-dojo-1.css"/>
+<link rel="stylesheet" type="text/css" href="/css/iam-dojo-2.css"/>
 
 ## add ie7 css if needed
 <script>
@@ -106,7 +106,7 @@ v_xsrf = '${xsrf}';
 <div id="helpTimeout" data-dojo-type="iam/Dialog" title="Time's up"
     data-dojo-props="submitLabel:'Refresh', submitAction:'location.reload()'"
     $hide>
-   Your session with the Service Provider Registry has expired.<p>Please refresh the page to continue working.
+   <p align="center">Your session with the<br>Service Provider Registry<br>has expired.<p>Refresh the page to continue working.</p>
 </div>
 
 <div id="helpAbout" data-dojo-type="iam/Dialog" title="About" $hide data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
@@ -114,40 +114,17 @@ v_xsrf = '${xsrf}';
 <br/>
 Service Provider Registry 2.0.0
 <br/>
-Revision 7/11/2013
-</div>
-
-<div id="helpServiceProviders" data-dojo-type="iam/Dialog" title="Service Providers" $hide
-  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
-The Service Provider list shows all service providers (SP) known to the University's
-identity provider (IdP).   These include InCommon federated providers and locally registered providers.
-<p>
-Use the "Filter" to find a particular service provider.
-<p>
-</div>
-
-<div id="helpNewServiceProvider" data-dojo-type="iam/Dialog" title="Register a New Service Provider" $hide
-  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
-Use the "Register a new SP" link to register a new service provider with the registry.
-<p>
-Your entity id <em>must</em> be of the form: <tt>http<i>[s]</i>://<i>domain_name[:port]</i>/<i>...</i></tt>.
-For example: <tt>https://spud.uw.edu/Shibboleth</tt>.
-You must be the registered owner of the SP's domain.
-<p>
-We will attempt to retrieve your SP's metadata from the Shibboleth default Metadata endpoint.
-If that fails you may have to enter your metadata manually.
+Revision 8/08/2013
 </div>
 
 
-<div id="helpMetadata" data-dojo-type="iam/Dialog" title="Metadata" $hide
+<div id="helpMetadata" data-dojo-type="iam/Dialog" title="Automatic metadata lookup" $hide
   data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
-Metadata for InCommon service providers is provided by InCommon and cannot
-be edited here.
 <p>
-You may edit metadata for locally registered service providers if you are an owner of
-the provider's domain&mdash;as it appears in the entity id.
-Most of the metadata detail, protocols, keyinfo, etc. are provided by your SP's
-Metadata endpoint.  You have to provide the name, descriptions, and contacts.
+Many service providers, notably Shibboleth ones, provide a default Metadata 
+endpoints, which can provide
+most of the protocols, keyinfo, etc. need for registration.
+You have to provide the name, descriptions, and contacts.
 <p>
 </div>
 
@@ -197,8 +174,6 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 </div>
 
 
-#parse ( "browser/new.vm" )
-
 ## page
 ## loader flash
 <div id="theflash" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height:100%">
@@ -212,49 +187,32 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 <div id="thepage" data-dojo-type="dijit.layout.BorderContainer"  gutters="false" liveSplitters="true" style="width: 100%; height: 100%">
 
 ## banner
-<div id="banner" class="container" data-dojo-type="dijit.layout.ContentPane" region="top" splitter="false">
-    <span id="logo"><a tabindex=-1 href="javascript:showHomePage()" title="University of Washington"><img src="/img/UWw.gif" alt="UW" /></a></span>
+<div id="topbanner" data-dojo-type="dijit.layout.ContentPane" region="top" splitter="false">
+<span class="topleft"><a href="https://wiki.cac.washington.edu/x/lR4">IDENTITY AND ACCESS MANAGEMENT</a></span>
+<ul class="topright">
+ <li><a href="http://www.washington.edu/itconnect/">UW-IT</a></li>
+ <li>|</li>
+ <li><a href="http://www.washington.edu/">UW HOME</a></li>
+</ul>
+</div>
+<div id="banner" data-dojo-type="dijit.layout.ContentPane" region="top" splitter="false">
+    ## <span id="logo"><a tabindex=-1 href="javascript:showHomePage()" title="University of Washington"><img src="/img/UWw.gif" alt="UW" /></a></span>
     <span id="title"><a tabindex=-1 href="javascript:showHomePage()">Service Provider Registry</a></span>
     <ul id="ident">
 
         <li>$!{notice}</li>
         <li>
-        <div data-dojo-type="dijit.form.DropDownButton">
-            <span>
-                $remote_user
-            </span>
-           <div data-dojo-type="dijit.Menu" id="userMenu" $hide>
-#*
-               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){
-                       dijit.byId('userPrefsDialog').refresh();
-                       dijit.byId('userPrefsDialog').show();
-                     }">
-                Preferences
-               </div>
-*#
-               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){document.location='${root}${vers}/logout/';}">
-                Logout
-               </div>
-           </div>
-        </div>
+            <span class="user"> $remote_user </span>
+               (<a href="javascript:document.location='${root}${vers}/logout/';">logout</a>)
         </li>
-        </li>
+        <li>
         <div data-dojo-type="dijit.form.DropDownButton">
             <span>
                 Help
             </span>
            <div data-dojo-type="dijit.Menu" id="helpMenu">
-               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpServiceProviders').show();}">
-                Service Providers
-               </div>
-               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpNewServiceProvider').show();}">
-                Register new provider
-               </div>
                <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpMetadata').show();}">
-                Metadata
-               </div>
-               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpAttributes').show();}">
-                Attributes
+                Automatic metadata lookup
                </div>
 #if ($isProxy)
                <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpGateway').show();}">
@@ -272,16 +230,9 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
         </li>
     </ul>
 
-   <ul id="navigate">
-       <li>|</li>
-       <li><a role="button" tabindex="0" href="javascript:iam_showTheDialog('metaNewDialog')"
-            title="Register a new service provider">Register a new SP</a></li>
-       <li>|</li>
-   </ul>
-
 
 </div>  ## banner containe
-## <div id="messageArea" data-dojo-type="dijit.layout.ContentPane" region="top" splitter="false" style="height:15px"></div>
+
 
 ## show the page when the dom is ready
 <script>
@@ -297,6 +248,7 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
       // start with SP list
       loadSpList();
       on(dom.byId('filterSpList'), 'keyup', checkSpFilter);
+      on(dom.byId('newSp'), 'keyup', checkNewSp);
       #if ($timeLeft)
       to_interval = setInterval(function(){dijitRegistry.byId('helpTimeout').show();clearInterval(to_interval);}, ${timeLeft}000);
       console.log('session timeout in  ${timeLeft}000 ms');
@@ -309,45 +261,41 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 
 <div id="leftsideIndex" data-dojo-type="dijit.layout.ContentPane" region="left" splitter="true" minSize="100">
 
- <div id="indexPanel" data-dojo-type="dijit.layout.ContentPane" style="overflow:hidden" >
+<h2 style="display:none">Actions</h2>
 
-  <div id="indexTitlebar">
-    ## <div class="indexLeft">
-       <span role="presentation">Service Providers</span>
-##       <span style="float:right; margin-top:3px; padding-right:12px">
-##           <a role="button" tabindex="0" aria-label="Define a new service provider" 
-##            href="javascript:dijit.byId('metaNewDialog').show()">New&nbsp;SP</a></span>
-    ## </div>
-  </div>
+ <h3>Register a Service Provider</h3>
+##    <span class="help"><a href="javascript:meta_nolookupSp_help()">help</a></span>
+<p>
 
-  <div id="indexSubtitlebar">
-     <div style="width:100%">
-      <span aria-hidden="true">Filter </span><input id="filterSpList"  data-dojo-type="dijit.form.TextBox" 
-          aria-label="Search for an SP. Enter part of it's entity id." />
-##          <span class="subRight">
-##           <a role="button" tabindex="0" aria-label="Define a new service provider"
-##            href="javascript:dijit.byId('metaNewDialog').show()" title="Define a new SP">New SP</a></span>
-     </div>
-  </div>
+   Enter your SP's entityId
+    <input dojoType="dijit.form.TextBox" size="60" id="newSp" value="" />
+    <span style="float:left;font-size:smaller"><input data-dojo-type="dijit.form.CheckBox" id="newSpNolookup"</input>
+      <label for="newSpNolookup">Skip metadata lookup</label></span>
+   <a href="javascript:meta_lookupSp()" aria-role="button" style="float:right">Continue</a>
+<p>
+
+<hr>
+
+<p>
+ <h3>Update a Service Provider</h3>
+ <p>
+ <span aria-hidden="true">Enter part of your SP's entityId</span><input id="filterSpList"  data-dojo-type="dijit.form.TextBox" 
+         aria-label="Search for an SP. Enter part of it's entity id." />
 
  <div class="spList" id="spIndexPane" data-dojo-type="dijit.layout.ContentPane"
          onLoad="adjustSPIndexSize()"  style="overflow:auto">
      <i role="presentation">Retriving the list of service providers</i>
   </div>
 
- </div>
 </div>
 
 
 
 
 
-</script>
-
-
 ## right side
 
-<div id="spDisplay" data-dojo-type="dijit.layout.ContentPane" region="center" splitter="true" style="margin-top:6px;overflow:hidden;display:none" >
+<div id="spDisplay" data-dojo-type="dijit.layout.ContentPane" region="center" splitter="true" style="display:none" >
    <div id="spPane" data-dojo-type="dijit.layout.ContentPane" >
    </div>
 </div>
@@ -367,18 +315,22 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
     <span id="footcenter">
     <ul id="navigation">
         <li><a href="mailto:help@uw.edu">CONTACT US</a></li>
+        <li>|</li>
         <li><a href="http://www.washington.edu/online/privacy/">PRIVACY</a></li>
+        <li>|</li>
         <li><a href="http://www.washington.edu/online/terms/">TERMS</a></li>
     </ul>
     </span>
+#*
     <span id="footright">
     <ul id="navigation">
         <li>UW Information Technology</li>
     </ul>
     </span>
+*#
+</div>
 </div>
 
-</div>
 </div>
 </body>
 </html>

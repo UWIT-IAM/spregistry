@@ -101,6 +101,7 @@ function setSpTab() {
 function postLoadSp() {
    console.log('postload: tab=' + v_currentSpTab);
 
+   dojoDom.byId('spTitle').innerHTML = currentSp.id;
    var sp = dijitRegistry.byId('spPanel');
    sp.watch('selectedChildWidget',
       function(name, otab, ntab) {
@@ -204,6 +205,15 @@ function setSearchOut(i) {
   require(["dojo/dom-class"], function(domClass){
     domClass.remove('spitem' + i, 'listitemhover');
   });
+}
+
+// check the new sp entry for enter
+function checkNewSp(e) {
+  console.log(e);
+  if (e.keyCode==13) {  // enter
+     meta_lookupSp();
+     return;
+  }
 }
 
 // fill out the list according to filter settings
@@ -395,13 +405,15 @@ var newSpConnect = null;
       iam_showTheDialog('metaEditDialog',[]);
    }
 
-   function _lookupSp(dns, manid) {
-      // alert(dns);
+   function _lookupSp(rpid, nolook) {
       currentSp = '';
       v_spLoading = true;
       if (dijitRegistry.byId('spPane')!=null)  dijitRegistry.byId('spPane').destroyRecursive();
-      var url = v_root + v_vers + '/new?dns=' + dns + '&manid=' + manid;
+      var url = v_root + v_vers + '/new?rpid=' + rpid;
+      if (nolook) url += '&nolook=y';
+      console.log(url);
       dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);
+      dijitRegistry.byId('spDisplay').set('loadingMessage', 'Searching for ' + rpid + ' . . .' );
       dijitRegistry.byId('spDisplay').set('href', url);
       // dijitRegistry.byId('spDisplay').set('onLoad', postLoadNewSp);
       newSpConnect = dojo.connect(dijitRegistry.byId('spDisplay'), 'onLoad', postLoadNewSp);
@@ -411,26 +423,14 @@ var newSpConnect = null;
 
    // user gives us dns name to query
    meta_lookupSp = function() {
-      var dns = document.getElementById('new_dns').value.trim();
+      var dns = dijitRegistry.byId('newSp').get('value').trim();
       if (dns==null || dns=='') {
-         iam_showTheNotice('you must provide a dns name');
+         iam_showTheNotice('you must provide an entityid');
          return;
       }
-      iam_hideTheDialog('metaNewDialog');
-      return _lookupSp(dns, '');
+      var ck = dijitRegistry.byId('newSpNolookup').get('checked');
+      return _lookupSp(dns, ck);
    }  
-
-   // user gives us entityId for manual config
-   meta_nolookupSp = function() {
-      var ent = document.getElementById('new_entity').value.trim();
-      if (ent==null || ! ent.match(/^https:\/\/[a-z0-9\-]+\.[a-z0-9\-]+/)) {
-         iam_showTheNotice('You must provide a valid entity id.');
-         return;
-      }
-      iam_hideTheDialog('metaNewDialog');
-      return _lookupSp('', ent);
-   }  
-
 
 var nameRE = new RegExp("^[a-z][a-z0-9\.\_\-]+$");
 

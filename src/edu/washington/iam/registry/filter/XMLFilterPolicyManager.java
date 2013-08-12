@@ -87,11 +87,27 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        return list;
     }
 
-    public List<Attribute> getAttributes(String user) {
+    // returns list of all attributes, policy set where matches rp
+    public List<Attribute> getAttributes(String rpid) {
        List<Attribute> ret = new Vector();
-       log.debug("getting editable attributes for " + user);
-       for (int i=0; i<attributes.size(); i++) ret.add(attributes.get(i));
-       log.debug("from " + attributes.size() + ", found " + ret.size());
+       log.debug("getting editable attributes for " + rpid);
+       List<AttributeFilterPolicy> fps = getFilterPolicies(rpid);
+       int matches = 0;
+       for (int i=0; i<attributes.size(); i++) {
+          Attribute attr = attributes.get(i);
+          for (int p=0; p<fps.size(); p++) {
+             AttributeFilterPolicy afp = fps.get(p);
+             for (int a=0; a<afp.getAttributeRules().size(); a++) {
+                if (afp.getAttributeRules().get(a).getId().equals(attr.getId())) {
+                   attr.setAttributeFilterPolicy(afp);
+                   attr.setAttributeRule(afp.getAttributeRules().get(a));
+                   matches++;
+                }
+             }
+          }
+          ret.add(attr);
+       }
+       log.debug("from " + attributes.size() + ", found " + matches + " matches");
        return ret;
     }
 

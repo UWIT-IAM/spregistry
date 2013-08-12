@@ -48,6 +48,8 @@ public class Attribute implements Serializable  {
     private boolean hippa;
     private String authorizingGroup;
     private boolean editable = false;
+    AttributeFilterPolicy attributeFilterPolicy;
+    AttributeRule attributeRule;
 
     // create from document element
     public Attribute (Element ele) throws AttributeException {
@@ -78,6 +80,18 @@ public class Attribute implements Serializable  {
     }
     public String getAuthorizingGroup() {
        return authorizingGroup;
+    }
+    public AttributeFilterPolicy getAttributeFilterPolicy() {
+       return attributeFilterPolicy;
+    }
+    public void setAttributeFilterPolicy(AttributeFilterPolicy v) {
+       attributeFilterPolicy = v;
+    }
+    public AttributeRule getAttributeRule() {
+       return attributeRule;
+    }
+    public void setAttributeRule(AttributeRule v) {
+       attributeRule = v;
     }
 
     public void setEditable(boolean v) {

@@ -28,7 +28,7 @@
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/tundra/tundra.css"/>
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/resources/dojo.css"/>
 
-<link rel="stylesheet" type="text/css" href="/css/iam-dojo-1.css"/>
+<link rel="stylesheet" type="text/css" href="/css/iam-dojo-2.css"/>
 
 ## add ie7 css if needed
 <script>
@@ -126,9 +126,18 @@ Revision 7/11/2013
 <div id="thepage" dojoType="dijit.layout.BorderContainer"  gutters="false" liveSplitters="true" style="width: 100%; height: 100%">
 
 ## banner
-<div id="banner" class="container" dojoType="dijit.layout.ContentPane" region="top" splitter="false">
-    <span id="logo"><a href="javascript:showHomePanel()" title="University of Washington"><img src="/UWw.gif" alt="UW" /></a></span>
+<div id="topbanner" data-dojo-type="dijit.layout.ContentPane" region="top" splitter="false">
+<span class="topleft"><a href="https://wiki.cac.washington.edu/x/lR4">IDENTITY AND ACCESS MANAGEMENT</a></span>
+<ul class="topright">
+ <li><a href="http://www.washington.edu/itconnect/">UW-IT</a></li>
+ <li>|</li>
+ <li><a href="http://www.washington.edu/">UW HOME</a></li>
+</ul> 
+</div>
+<div id="banner" dojoType="dijit.layout.ContentPane" region="top" splitter="false">
+    ## <span id="logo"><a href="javascript:showHomePanel()" title="University of Washington"><img src="/UWw.gif" alt="UW" /></a></span>
     <span id="title"><a href="javascript:showHomePanel()">Service Provider Registry</a></span>
+#*
     <ul id="ident">
 
         <li>$!{notice}</li>
@@ -166,6 +175,7 @@ Revision 7/11/2013
         </div>
         </li>
     </ul>
+*#
 
 </div>  ## banner containe
 
@@ -188,6 +198,7 @@ Revision 7/11/2013
 </script>
 
 
+#*
 <div id="leftsideIndex" dojoType="dijit.layout.ContentPane" region="left" splitter="true" minSize="100">
 
  <div id="indexPanel" dojoType="dijit.layout.ContentPane" style="overflow:hidden" >
@@ -202,7 +213,6 @@ Revision 7/11/2013
   <div class="indexList" id="myGroupsPanel" dojoType="dijit.layout.ContentPane"
          onLoad="adjustMGPaneSize()"  style="overflow:auto; background-color:#ffffff;">
 
-#*
    The Service Provider Registry needs to know who you are before you can continue.
   <hr/>
 
@@ -213,38 +223,41 @@ Revision 7/11/2013
        <p>If you login with an InCommon affiliate, such as another university, your ePPN
      will be your login identity.
 
-*#
   </div>
 
  </div>
 </div>
 
+*#
 
 
 ## right side
 
 <div id="homeDisplay" dojoType="dijit.layout.ContentPane"  region="center" splitter="true" style="margin-top:6px;overflow:auto;" >
 
+
+<p>
 The Service Provider Registry maintains information on SAML service providers (SP) that use the University's Shibboleth Identity Provider (IdP).
 <p>
 
 <p>
- <h3>Login is needed</h3>
+ <h3>Please login</h3>
 <p>
-   The Service Provider Registry needs to know who you are before you can continue.
-Use the menu in the upper right to choose a login method.
 
-<p>
-<ul>
-<li>People with UW NetIDs should choose <b>UW NetID</b>.</li>
-<p>
-<li>If you log in with your Google account your Google gmail account</li>
-     will be your login identity.
-<p>
-<li>If you login with an InCommon affiliate, such as another university, your ePPN
-     will be your login identity.</li>
+<div class="loginform">
 
-<p>
+<dl>
+
+  <dt id="lognetid" aria-hidden="true"><a href="javascript:redirectToLogin('$uwloginpath');">UW NetID</a></dt>
+   <dd role="definition" aria-labelledby="lognetid">People with UW NetIDs should log in with them.</dd>
+
+  <dt id="loggmail" aria-hidden="true"><a href="javascript:redirectToLogin('$googleloginpath');">Gmail</a></dt>
+   <dd role="definition" aria-labelledby="loggmail">If you log in with your Google account your Google gmail account will be your login identity.</dd>
+
+  <dt id="logincommon" aria-hidden="true"><a href="javascript:redirectToLogin('$incommonloginpath');">InCommon</a></dt>
+   <dd role="definition" aria-labelledby="logincommon">If you login with an InCommon affiliate your ePPN will be your login identity.</dd>
+
+</dl>
 
 </div>
 

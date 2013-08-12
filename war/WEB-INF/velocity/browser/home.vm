@@ -27,16 +27,27 @@
 
 <div id="PageContent">
 
-<h4>About the registry</h4>
+<h2 style="display:none">About the registry</h2>
+<h3>About the registry</h4>
 <div class="indentLeft">
 <p>
 All Service Providers (SP) wishing to authenticate users via the University of Washington's Shibboleth Identity Provider (IdP)
 must register for that service.  
 <p>
-<a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a>
+<ul>
+<li><a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a></li>
+</ul>
 </div>
 
-<h4>Existing service providers</h4>
+<h4>Register a Service Provider</h4>
+<div class="indentLeft">
+<p>
+If you are the owner of a service providers's domain you can register that service provider with our IdP. 
+If your SP responds to the standard 'Metadata' endpoint you only hav eto enter its DNS address
+and we will query for the details.
+</div>
+
+<h4>Update a Service Provider</h4>
 <div class="indentLeft">
 <p>
 The list on the left shows all service providers known to the University's IdP, including those 
@@ -44,13 +55,6 @@ registered with <a href="http://incommon.org/">InCommon</a> and those registered
 through this registry service.
 <p>
 Type part of an SP's entity id in the search window to filter the list.
-</div>
-
-<h4>New registration</h4>
-<div class="indentLeft">
-<p>
-If you are the owner of a service providers's domain you can register that service provider with our IdP. 
-Use the "New SP" link at the top of the service provider list.
 </div>
 
 
