@@ -26,3 +26,4 @@
 #set ( $waitCursor = 'document.body.style.cursor="wait";' )
 #set ( $defaultCursor = 'document.body.style.cursor="default";' )
 
+#set ( $rstar = '<span class="rstar">*</span>' )

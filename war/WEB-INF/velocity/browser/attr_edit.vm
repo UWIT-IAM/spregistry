@@ -32,76 +32,79 @@
     data-dojo-props="submitLabel:'Save changes', submitAction:'attr_saveAttrs(\'${gid}\', \'${relyingPartyId}\')', cancelLabel:'Cancel'"
     $hide >
 
-<p>Allow 40 minutes for our IdP to acquire the changes to this service provider's attribute release policy.
-<p>
-<table class="iamtable" role="presentation">
+## <p>Allow 40 minutes for our IdP to acquire the changes to this service provider's attribute release policy.
+<h3>Attributes from by $group.description</h3>
+<form action="">
+<ul class="iamdu">
 
-    <tr><th colspan="9">Attributes from by $group.description</th></tr>
-     <tr><td colspan="3">
-       <table class="iamtable" >
-    
-     #set ( $policy = false )
-     #set ( $policy = $group.getFilterPolicy($relyingPartyId) )
-     #foreach ( $attr in $attributes )
-       #set ($chk = '')
-       #set ($pattr = false )
-       ## see if policy exists for this sp and attr
-       #if ($policy)
-         #foreach ( $p in $policy.attributeRules )
-          #if ($attr.id==$p.id) 
-            #set ($chk = 'checked="checked"')
-            #set ($pattr = $p )
-          #end
-         #end
+  #set ( $policy = false )
+  #set ( $policy = $group.getFilterPolicy($relyingPartyId) )
+  #foreach ( $attr in $attributes )
+    #set ($chk = '')
+    #set ($pattr = false )
+    ## see if policy exists for this sp and attr
+    #if ($policy)
+      #foreach ( $p in $policy.attributeRules )
+       #if ($attr.id==$p.id) 
+         #set ($chk = 'checked="checked"')
+         #set ($pattr = $p )
        #end
+      #end
+    #end
 
-       <tr><td class="label" colspan="4"><input data-dojo-type="dijit.form.CheckBox" $chk  value="${attr.id}" id="${gid}_attr_edit_chk_${attr.id}"
-              class="${gid}_attr_edit_chk" onClick="attr_checkAttr('$gid', '$!{attr.id}')"></input>
-           <label for="${gid}_attr_edit_chk_${attr.id}">$!{attr.id}</label>
-            <input tabindex="-1" id="${gid}_attr_edit_chk_${attr.id}_in" value="$chk" type="hidden"></input>
-            </td>
-       </tr>
-       
-       ## show any existing releases
-       #set ($count=0)
-       #set ($started = false)
-       #foreach ( $value in $pattr.valueRules )
-          #set( $started = true )
-          <tr id="${gid}_attr_edit_tr_all_${attr.id}">
-              <td></td><td><input data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_all_$!{attr.id}" onClick="attr_checkAll('$gid', '$!{attr.id}')"
-            #if ( $value.type == "basic:ANY" ) $checked #end></input><label for="${gid}_attr_edit_all_$!{attr.id}">all values</label></td></tr>
-            #foreach ( $rule in $value.rules )
-              <tr id="${gid}_attr_edit_tr_v_${count}_$!{attr.id}"><td></td><td nowrap="nowrap">
-                  <input data-dojo-type="dijit.form.TextBox" 
-                          id="${gid}_attr_edit_v_${count}_$!{attr.id}" value="${rule.value}" style="width:400px"></input>
-                     <input data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_x_${count}_$!{attr.id}"
-                       #if ($rule.regex) $checked #end></input><label for="${gid}_attr_edit_x_${count}_$!{attr.id}">regex</label></td></tr>
-              #set ($count = $count + 1)
-            #end ## value counts
-       #end
-       #if (!$started)
-          <tr id="${gid}_attr_edit_tr_all_${attr.id}" $hide>
-             <td></td><td><input data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_all_$!{attr.id}"
-                  onClick="attr_checkAll('$gid', '$!{attr.id}')"></input>all values</td></tr>
-       #end
-       #foreach ( $i in [ $count .. 10 ] )
-         <tr $hide id="${gid}_attr_edit_tr_v_${i}_$!{attr.id}"><td></td><td nowrap="nowrap">
-             <input data-dojo-type="dijit.form.TextBox" id="${gid}_attr_edit_v_${i}_$!{attr.id}" value="" style="width:400px"
-                  onClick="attr_showNext('$gid', ${i},'$!{attr.id}')"></input>
-                 <input data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_x_${i}_$!{attr.id}"></input>regex</td></tr>
-       #end  ## xtra counts
-     #end ## attr
+  <li>
+    <div class="dt dt2"><input data-dojo-type="dijit.form.CheckBox" $chk  value="${attr.id}" id="${gid}_attr_edit_chk_${attr.id}"
+           class="${gid}_attr_edit_chk" onClick="attr_checkAttr('$gid', '$!{attr.id}')"></input>
+    </div>
+    <div class="dd dd2"><label for="${gid}_attr_edit_chk_${attr.id}">$!{attr.id}</label>
+       <input tabindex="-1" id="${gid}_attr_edit_chk_${attr.id}_in" value="$chk" type="hidden"></input>
+    </div>
+      
+    ## show any existing releases
+    #set ($count=0)
+    #set ($started = false)
+    #foreach ( $value in $pattr.valueRules )
+       #set( $started = true )
+       <div id="${gid}_attr_edit_tr_all_${attr.id}">
+         <div class="dd dd2">
+           <div class="dt dt2"><input data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_all_$!{attr.id}"
+                     onClick="attr_checkAll('$gid', '$!{attr.id}')"
+              #if ( $value.type == "basic:ANY" ) $checked #end></input>
+           </div>
+           <div class="dd dd2"><label for="${gid}_attr_edit_all_$!{attr.id}">all values</label>
+           </div>
+         </div>
+       </div>
 
+       #foreach ( $rule in $value.rules )
+          <div class="dd dd2" id="${gid}_attr_edit_tr_v_${count}_$!{attr.id}">
+             <input data-dojo-type="dijit.form.TextBox" 
+                     id="${gid}_attr_edit_v_${count}_$!{attr.id}" value="${rule.value}" ></input>
+                <input data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_x_${count}_$!{attr.id}"
+                  #if ($rule.regex) $checked #end></input><label for="${gid}_attr_edit_x_${count}_$!{attr.id}">regex</label>
+          </div>
+          #set ($count = $count + 1)
+       #end ## value counts
+    #end
 
-   </table></td></tr>
+    #if (!$started)
+      <div id="${gid}_attr_edit_tr_all_${attr.id}" $hide>
+        <div class="dd dd2">
+             <div class="dt dt2"><input data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_all_$!{attr.id}"
+                  onClick="attr_checkAll('$gid', '$!{attr.id}')"></input>All values
+             </div>
+       </div>
+     </div>
+    #end
+    #foreach ( $i in [ $count .. 10 ] )
+       <div class="dd dd2" $hide id="${gid}_attr_edit_tr_v_${i}_$!{attr.id}"><td></td><td nowrap="nowrap">
+            <input data-dojo-type="dijit.form.TextBox" id="${gid}_attr_edit_v_${i}_$!{attr.id}" value="" 
+                 onClick="attr_showNext('$gid', ${i},'$!{attr.id}')"></input>
+            <input data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_x_${i}_$!{attr.id}"></input>regex
+       </div>
+    #end  ## xtra counts
+  </li>
+  #end ## attr
 
-  </table>
-
-
-## error and status messages
-## <div id="requestStatusDiv" class="notice" $hide>&nbsp;
-## </div>
-## <div class="status">$!{status}
-## </div>
-
+</ul>
 </div>

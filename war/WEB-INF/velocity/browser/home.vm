@@ -27,8 +27,7 @@
 
 <div id="PageContent">
 
-<h2 style="display:none">About the registry</h2>
-<h3>About the registry</h4>
+<h2>About the registry</h2>
 <div class="indentLeft">
 <p>
 All Service Providers (SP) wishing to authenticate users via the University of Washington's Shibboleth Identity Provider (IdP)
@@ -39,7 +38,7 @@ must register for that service.
 </ul>
 </div>
 
-<h4>Register a Service Provider</h4>
+<h3>Register a Service Provider</h3>
 <div class="indentLeft">
 <p>
 If you are the owner of a service providers's domain you can register that service provider with our IdP. 
@@ -47,12 +46,15 @@ If your SP responds to the standard 'Metadata' endpoint you only hav eto enter i
 and we will query for the details.
 </div>
 
-<h4>Update a Service Provider</h4>
+<h3>Update a Service Provider</h3>
 <div class="indentLeft">
 <p>
 The list on the left shows all service providers known to the University's IdP, including those 
-registered with <a href="http://incommon.org/">InCommon</a> and those registered manually 
-through this registry service.
+registered with the
+## <a href="http://incommon.org/">InCommon</a>
+InCommon federation
+and those registered manually 
+through this service.
 <p>
 Type part of an SP's entity id in the search window to filter the list.
 </div>

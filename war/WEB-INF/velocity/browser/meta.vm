@@ -24,61 +24,53 @@
 #set ( $editable = 1 )
 #end
 
-#if ($editable)
-#parse ( "browser/meta_edit.vm" )
-#end
-
 #set ( $void = $dateFormatter.applyPattern("MM/dd/yyyy") )
 
 ## metadata
 
 
 
+#set ($ahide = 'aria-hidden="true"')
 ## tab entry
 <div id="metaSpContainer" dojoType="dijit.layout.ContentPane" title="Metadata" selected="true" style="overflow:hidden"
    doLayout="false" >
-  <div id="metaSpActions" role="presentation" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false">
+
+  <div id="metaViewLinks" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false">
   <ul role="navigation">
   #if ($editable)
-  <li class="sublist" >Actions:</li>
+  ## <li class="sublist" >Actions:</li>
    <li class="sublist" > <a id="metaEditLink" role="button" tabindex="0" aria-label="Edit this information"
-          href="javascript:dijit.byId('metaEditDialog').show();"><span style="text-decoration: underline">E</span>dit</a>
+          href="javascript:dijit.byId('metaEditDialog').show();">Edit</a>
    </li>
   #if ( ! $newEntity )
    <li class="sublist" > <a id="metaDeleteLink" role="button" tabindex="0" aria-label="Delete this service provider"
-          href="javascript:iam_showTheDialog('metaDeleteDialog',[]);"><span style="text-decoration: underline">D</span>elete</a></li>
+          href="javascript:iam_showTheDialog('metaDeleteDialog',[]);">Delete</a></li>
   #end
   #end
   </ul>
   </div>
 
- <div id="metaSpPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;" onShow="adjustSpPaneSize('meta')" >
+ <div id="metaViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;"
+    onShow="adjustSpPaneSize('metaViewPane')" >
 
-<table class="iamtable">
+<h3 class="">Organization</h3>
 
-    <tr><th colspan="3">General information</th></tr>
-    <tr><td class="label">Id</td>
-         <td colspan="2">$relyingPartyId</td></tr>
-    
-    <tr><th colspan="3">Organization</th></tr>
+<ul class="iamdu">
     #set ( $org = $relyingParty.organization )
     #if ( $org.name )
-    <tr><td class="label">Name</td>
-         <td colspan="2">$org.name</td></tr>
+    <li><div class="dt" $ahide>Name</div><div class="dd" aria-label="Org Name">$org.name</div></li>
     #end
     #if ( $org.displayName )
-    <tr><td class="label">Display</td>
-         <td colspan="2">$org.displayName</td></tr>
+    <li><div class="dt" $ahide>Display </div><div class="dd" aria-label="Display name">$org.displayName</div></li>
     #end
     #if ( $org.url )
-    <tr><td class="label">url</td>
-         <td colspan="2">$org.url</td></tr>
+    <li><div class="dt" $ahide>url </div><div class="dd" aria-label="org url">$org.url</div></li>
     #end
 
-    <tr><th colspan="3">Contacts</th></tr>
    #foreach ( $ct in $relyingParty.contactPersons )
-      <tr><td class="label" >$!ct.type</td>
-       <td>
+    <li>
+      <div class="dt" $ahide >$!ct.type</div>
+       <div class="dd" aria-label="$!ct.type contact">
      #if ( $ct.givenName || $ct.surName )
       $!ct.givenName $!ct.surName<br>
      #end
@@ -91,67 +83,108 @@
      #if ( $ct.phone )
       $!ct.phone<br>
      #end
-      </td></tr>
+      </div>
+    </li>
    #end
+ </ul>
 
-    <tr><th colspan="3">Metadata details</th></tr>
-         
+<div role="heading" class="iamdlhdr">Metadata details</div>
    
+<ul class="iamdu" >
+
    ## ProtocolSupportEnumerations
-      <tr><td class="label">Protocols</td>
-      <td>
+      <li>
+      <div class="dt" $ahide>Protocols</div>
+      <div class="dd" aria-label="Protocols">
    #foreach ( $ps in $relyingParty.protocolSupportEnumerations )
       $ps <br>
    #end
-      </td></tr>
+      </div>
+     </li>
 
    ## KeyInfo
 
-      <tr><td class="label" valign="top">KeyInfo</td>
-        <td colspan="2"><table class="iamtable">
+        <li>
+      <div class="dt" $ahide valign="top">KeyInfo</div>
+        <div class="dd" aria-label="Keyinfo"><table class="iamtable" role="list">
        #foreach ( $key in $relyingParty.keyDescriptors )
-          <tr><td nowrap="nowrap">Key Name:</td><td>$!key.keyName <td><tr>
+          <tr role="listitem"><td nowrap="nowrap">Key Name:</td><td>$!key.keyName <td><tr>
          #if ( $key.cert )
-         <tr><td align="left">Subject:</td><td>$!{key.cert.dn}</td></tr>
-         <tr><td align="left">Issuer:</td><td>$!{key.cert.issuerDn}</td></tr>
-         <tr><td align="left">Issued:</td><td>$dateFormatter.format($key.cert.issued)</td></tr>
-         <tr><td align="left">Expires:</td><td>$dateFormatter.format($key.cert.expires)</td></tr>
+         <tr role="listitem"><td align="left">Subject:</td><td>$!{key.cert.dn}</td></tr>
+         <tr role="listitem"><td align="left">Issuer:</td><td>$!{key.cert.issuerDn}</td></tr>
+         <tr role="listitem"><td align="left">Issued:</td><td>$dateFormatter.format($key.cert.issued)</td></tr>
+         <tr role="listitem"><td align="left">Expires:</td><td>$dateFormatter.format($key.cert.expires)</td></tr>
          ### <tr><td align="left">PEM:</td><td><span class="certbox">$key.certificate</span></td></tr>
          #end
        #end
-         </table></td></tr>
+         </table></div>
+      </li>
 
 
    ## Nameid
 
-      <tr><td class="label">NameId</td>
-       <td>
-   #foreach ( $name in $relyingParty.nameIDFormats )
+      <li>
+      <div class="dt" $ahide>NameId</div>
+       <div class="dd" aria-label="name id">
+    #set ($nids=0)
+    #foreach ( $name in $relyingParty.nameIDFormats )
       $name<br>
+      #set ($nids=1)
+    #end
+   #if ($nids==0)
+      (<i>none specified</i>)
    #end
-       </td></tr>
+       </div>
+      </li>
 
 
    ## ACS
 
-      <tr><td class="label">ACS</td>
-         <td><table class="iamtable">
+    <li>
+      <div class="dt" $ahide>ACS</div>
+      <div class="dd" aria-label="ACS">
+       <table class="iamtable" role="list">
    #foreach ( $acs in $relyingParty.assertionConsumerServices )
-     <tr>
-      <td>$acs.index</td><td nowrap="nowrap">
-          $acs.binding
-          <tt>$acs.location
-      </td>
-     </tr>
+     <tr role="listitem"><td>$acs.index</td><td nowrap="nowrap">$acs.binding</td><tr>
+     <tr role="listitem"><td></td><td nowrap="nowrap"><tt>$acs.location</tt></td><tr>
    #end
-      </table></td></tr>
+      </table></div>
+     </li>
+#*
+      <dt>ACS</td>
+         <dd><dl class="iamdl2">
+   #foreach ( $acs in $relyingParty.assertionConsumerServices )
+      <dt>$acs.index</dt><dd>
+          $acs.binding
+          <br><tt>$acs.location</tt>
+      </dd>
+   #end
+      </dl></dd>
 
 
+*#
 
-</table>
+</du>
 
 
 </div>
+#if ($editable)
+#*
+  <div id="metaEditLinks" role="presentation" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false" style="display:none">
+  <ul role="navigation">
+  ## <li class="sublist" >Actions:</li>
+   <li class="sublist" > <a id="metaEditLink" role="button" tabindex="0" aria-label="Save changes"
+          href="javascript:saveRP('${relyingParty.entityId}');"><span style="text-decoration: underline">S</span>ave</a>
+   </li>
+   <li class="sublist" > <a id="metaEditLink" role="button" tabindex="0" aria-label="Cancel changes"
+          href="javascript:handleGroupViewBtn();"><span style="text-decoration: underline">C</span>ancel</a>
+   </li>
+  </ul>
+  </div>
+*#
+#parse ( "browser/meta_edit.vm" )
+#end
+
 </div>
 
 ## certificate PEM popup

@@ -35,8 +35,13 @@ var v_spLoading = false;
 var spList;
 var nsp = 0;
 var currentSp;  // the active sp or null
+var newSpId = '';
 
 iam_set('rightSide', 'spDisplay');
+
+function logger(){
+  console.log('logger');
+}
 
 
 // hash change causes sp display (callback from iam tools)
@@ -99,9 +104,11 @@ function setSpTab() {
 
 // after the sp page has loaded.  setup watchers and etc
 function postLoadSp() {
-   console.log('postload: tab=' + v_currentSpTab);
+   console.log('postLoad');
 
-   dojoDom.byId('spTitle').innerHTML = currentSp.id;
+   if (currentSp!=null) dojoDom.byId('spTitle').innerHTML = currentSp.id;
+   else dojoDom.byId('spTitle').innerHTML = newSpId;
+
    var sp = dijitRegistry.byId('spPanel');
    sp.watch('selectedChildWidget',
       function(name, otab, ntab) {
@@ -170,8 +177,8 @@ function lookupSp() {
    if (dijitRegistry.byId('spPane')!=null)  dijitRegistry.byId('spPane').destroyRecursive();
    var url = v_root + v_vers + '/new?dns=' + ndns + '&view=inner';
    dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);
-   dijitRegistry.byId('spDisplay').set('href', url);
    dijitRegistry.byId('spDisplay').set('onLoad', postLoadSp);
+   dijitRegistry.byId('spDisplay').set('href', url);
    showSpPanel();
    window.focus();
 }
@@ -190,10 +197,13 @@ function showCurrentSp() {
    var url = v_root + v_vers + '/rp?id=' + currentSp.id + '&mdid=' + currentSp.meta + '&view=inner';
    dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);
    dijitRegistry.byId('spDisplay').set('loadingMessage', 'Loading ' + currentSp.id + ' . . .' );
-   dijitRegistry.byId('spDisplay').set('href', url);
+console.log('showCurrentSp 1');
    dijitRegistry.byId('spDisplay').set('onLoad', postLoadSp);
+   dijitRegistry.byId('spDisplay').set('href', url);
+console.log('showCurrentSp 2');
    showSpPanel();
    window.focus();
+console.log('showCurrentSp end');
 }
 
 function setSearchOver(i) {
@@ -275,8 +285,14 @@ function showSpList(e) {
   console.log('list size = ' + ndsp);
 
   var htm = '';
+  ndsp = 0;
   for (i=0; i<nsp; i++) {
     if ((txsp.length>0) && spList[i].id.indexOf(txsp)<0) continue;
+    ndsp += 1;
+    if (ndsp>10) {
+       htm += '<span class="listitem dim4"><i>.&nbsp;.&nbsp;.&nbsp;more</i></span>';
+       break;
+    }
     ttl = 'InCommon federation';
     if (spList[i].meta.substring(0,2)=='UW') ttl = 'UW federation';
    
@@ -321,8 +337,47 @@ function loadSpList()
 
 /* panel sizing */
 
+// index and display panels have been sized
+
+function setPaneSizes() {
+   console.log('Set pane sizes.....');
+   var pHeight = dojo.position(dojo.byId('indexPanel'),true).h;
+   var h = pHeight - 120;
+
+   var dh = dojo.position(dojo.byId('displayPanel'),true).h;
+   var dw = dojo.position(dojo.byId('displayPanel'),true).w;
+   var idh = dh - 10;
+   var idw = dw - 10;
+   console.log('spDisp height:' + idh + ' width:' + idw);
+
+     dojo.style(dojo.byId('spDisplay'), {
+        height: idh + 'px',
+        width: idw + 'px',
+        top: '0px',
+        left: '0px'
+      });
+
+     dojo.style(dojo.byId('homeDisplay'), {
+        height: idh + 'px',
+        width: idw + 'px',
+        top: '0px',
+        left: '0px'
+      });
+
+/*
+     dojo.style(dojo.byId('newDisplay'), {
+        height: idh + 'px',
+        top: '0px',
+        left: '0px'
+      });
+ */
+
+
+}
+
 // my group size adjust
 function adjustSPIndexSize() {
+return 0;
    var pane = dojo.byId('spIndexPane');
    var pHeight = dojo.position(pane,true).h;
    var tHeight = dojo.position(dojo.byId('indexTitlebar'),true).h;
@@ -336,17 +391,14 @@ function adjustSPIndexSize() {
 }
 
 // group pane sizing
-function adjustSpPaneSize(type) {
-   var pane = dojo.byId(type + 'SpPane');
-   var pHeight = dojo.position(pane,true).h;
-   var dHeight = dojo.position(dojo.byId('spDisplay'),true).h;
-   var tHeight = dojo.position(dojo.byId('spPanel_tablist'),true).h;
-   var aHeight = dojo.position(dojo.byId(type + 'SpActions'),true).h;
-   var h = dHeight - 50 - tHeight - aHeight;  // room for title
+function adjustSpPaneSize(paneName) {
+   var pane = dojoDom.byId(paneName);
+   var tHeight = dojo.position(dojo.byId('spDisplay'),true).h;
+   var h = tHeight - 140;
    dojo.style(pane, {
      height: h + 'px'
    });
-   // alert(type + 'spPane=' + dojo.position(pane,true).h +  ' display=' + dHeight + '  tab=' + tHeight + ' actions=' + aHeight);
+
 }
 
 
@@ -369,6 +421,18 @@ require(["dojo/parser"], function(parser){
 var rpId;
 var mdId;
 var newSpConnect = null;
+
+// respond to the edit button
+function handleSpEditBtn(cn) {
+   console.log('Sp edit');
+   iam_hideShow(['metaViewPane','metaViewLinks'],['metaEditPane','metaEditLinks']);
+}
+// respond to the view button
+function handleGroupViewBtn(cn) {
+   console.log('group view');
+   iam_hideShow(['metaEditPane','metaEditLinks'],['metaViewPane','metaViewLinks']);
+}
+
 
 
    // pseudo getbyname that works with ie
@@ -406,7 +470,8 @@ var newSpConnect = null;
    }
 
    function _lookupSp(rpid, nolook) {
-      currentSp = '';
+      currentSp = null
+      newSpId = rpid;
       v_spLoading = true;
       if (dijitRegistry.byId('spPane')!=null)  dijitRegistry.byId('spPane').destroyRecursive();
       var url = v_root + v_vers + '/new?rpid=' + rpid;

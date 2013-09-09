@@ -17,48 +17,43 @@
 ##
 ## proxy tab
 ##
-#if ($canEdit)
-#parse ( "browser/proxy_edit.vm" )
-#end
 
 <div id="proxySpContainer" dojoType="dijit.layout.ContentPane" title="Gateways" selected="false" style="overflow:hidden"
    onClose="return(true)" oLayout="false" >
 
-  <div id="proxySpActions" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false" >
+  <div id="proxyViewLinks" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false" >
   <ul>
   #if ($canEdit)
-  <li class="sublist" >Actions:</li>
-  <li class="sublist" ><a tabindex="0" role="button" aria-label="edit gateway informations"
-       href="javascript:iam_showTheDialog('proxyEditDialog',['sp/proxylib'])"><span style="text-decoration: underline">E</span>dit</a></li>
+  ## <li class="sublist" >Actions:</li>
+  <li class="sublist" ><a tabindex="0" role="button" aria-label="Edit gateway informations"
+       href="javascript:iam_showTheDialog('proxyEditDialog',['sp/proxylib'])">Edit</a></li>
   #end
   </ul>
   </div>
 
-<div id="proxySpPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;" onShow="adjustSpPaneSize('attr')">
+<div id="proxyViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;"
+   onShow="adjustSpPaneSize('proxyViewPane')">
 
 
 #set ($google_status = 0 )
 
-This registry allows you to configure access to the social-to-saml authentication gateway.
+## This registry allows you to configure access to the social-to-saml authentication gateway.
 <p>
-<table class="iamtable">
 
-    <tr><th colspan="3">SAML Gateways</th></tr>
-    <tr><td class="label">Entity Id</td>
-         <td colspan="2">${relyingParty.entityId}</td></tr>
+<h3 class="">SAML Gateways</h3>
+<ul class="iamdu">
 
   #foreach ( $idp in $proxy.ProxyIdps )
-    <tr><th colspan="3">$idp.idp</th></tr>
-    <tr><td class="label">Client ID</td>
-     <td colspan="2" > $!{idp.clientId}</td></tr>
+    <div role="heading" class="iamdlhdr">$idp.idp</div>
+    <li><div class="dt" $ahide>Client ID</div><div class="dd">$!{idp.clientId}</div></li>
   #end
+</ul>
    
- <tr><td height="100"></td></tr>
-
-
-</table>
-
 
 </div>
 </div> 
+
+#if ($canEdit)
+#parse ( "browser/proxy_edit.vm" )
+#end
 

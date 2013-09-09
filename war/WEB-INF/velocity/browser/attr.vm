@@ -25,9 +25,9 @@
 #end
 
 <div id="attrSpContainer" dojoType="dijit.layout.ContentPane" title="Attributes" selected="false" style="overflow:hidden"
-   onClose="return(true)" doLayout="false" >
+   doLayout="false" >
 
-  <div id="attrSpActions" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false" >
+  <div id="attrViewLinks" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false" >
   <ul>
   <li class="sublist" >Actions:</li>
   #if ($canEdit || $newEntity)
@@ -42,7 +42,8 @@
   </div>
 
 
-<div id="attrSpPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;" onShow="adjustSpPaneSize('attr')" >
+<div id="attrViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false"
+   style="overflow:auto;" onShow="adjustSpPaneSize('attrViewPane')" >
 
 <table class="iamtable">
 

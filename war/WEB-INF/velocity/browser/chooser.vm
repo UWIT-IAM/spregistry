@@ -129,9 +129,7 @@ Revision 7/11/2013
 <div id="topbanner" data-dojo-type="dijit.layout.ContentPane" region="top" splitter="false">
 <span class="topleft"><a href="https://wiki.cac.washington.edu/x/lR4">IDENTITY AND ACCESS MANAGEMENT</a></span>
 <ul class="topright">
- <li><a href="http://www.washington.edu/itconnect/">UW-IT</a></li>
- <li>|</li>
- <li><a href="http://www.washington.edu/">UW HOME</a></li>
+ <li><a href="https://wiki.cac.washington.edu/x/gjyoAQ" target="sphelp">HELP</a></li>
 </ul> 
 </div>
 <div id="banner" dojoType="dijit.layout.ContentPane" region="top" splitter="false">
@@ -233,7 +231,14 @@ Revision 7/11/2013
 
 ## right side
 
-<div id="homeDisplay" dojoType="dijit.layout.ContentPane"  region="center" splitter="true" style="margin-top:6px;overflow:auto;" >
+<div id="chooserleft" dojoType="dijit.layout.ContentPane"  region="left" splitter="false"
+    style="width:10%;" >
+</div>
+<div id="homeDisplay" dojoType="dijit.layout.ContentPane"  region="center" splitter="true"
+    style="margin-top:20px;overflow:auto;" >
+<div id="chooserright" dojoType="dijit.layout.ContentPane"  region="right" splitter="false"
+    style="width:10%;" >
+</div>
 
 
 <p>
@@ -262,6 +267,7 @@ The Service Provider Registry maintains information on SAML service providers (S
 </div>
 
 
+</div>
 
 
 ## footer
@@ -279,7 +285,7 @@ The Service Provider Registry maintains information on SAML service providers (S
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li>UW Information Technology</li>
+        <li>SPReg 2.0</li>
     </ul>
     </span>
 </div>

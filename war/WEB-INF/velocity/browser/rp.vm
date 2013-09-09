@@ -19,13 +19,16 @@
 ## sp detail
 ##
 
+<script>
+console.log('sp rp panel start');
+</script>
 #parse ( 'definitions.vm' ) 
 
 #set ( $sectionType='sp' )
 
-<div id="spTitle"></div>
+<div id="spTitle" class="displayTitle" data-dojo-type="dijit.layout.ContentPane"></div>
 
-<div id="spPanel" tabindex=-1 dojoType="dijit.layout.TabContainer" doLayout="false" style="overflow:hidden; width:100%" >
+<div id="spPanel" tabindex=-1 dojoType="dijit.layout.TabContainer" doLayout="false" >
 
 #parse ( "browser/meta.vm" )
 
@@ -35,4 +38,7 @@
 #parse ( "browser/proxy.vm" )
 #end
 
+<script>
+console.log('sp rp panel end');
+</script>
 </div>

@@ -41,63 +41,63 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 #set ($google_status = 0 )
 #set ($liveid_status = 0 )
 
-<table class="iamtable">
+<h3>SAML Gateways</h3>
+<div aria-label="entityid">${relyingPartyId}</div>
 
-    <tr><th colspan="3">SAML Gateways</th></tr>
-    <tr><td class="label">Entity Id</td>
-         <td colspan="2">${relyingPartyId}</td></tr>
+<ul class="iamdu">
 
 ## we actually support only a subset of possible proxies
      #set ($google = $proxy.getProxyIdp("Google"))
      #set ($liveid = $proxy.getProxyIdp("LiveID"))
 
-    <tr><th colspan="2">Google</th>
-       <th style="text-align:right;"><a href="javascript:iam_showTheDialog('googleGateHelp',[])">Help</a></th>
-    </tr>
+    <div class="iandlhdr" role="heading">Google</div>
+       <div style="float:right;"><a href="javascript:iam_showTheDialog('googleGateHelp',[])">Help</a></div>
 
-    <tr><td class="label">Client ID</td>
-         <td colspan="2"><input id="google_cid" dojoType="dijit.form.TextBox" size="40"
+    <li><div class="dt">Client ID</div>
+         <div class="dd"><input id="google_cid" dojoType="dijit.form.TextBox" size="60"
            #if ( $google.clientId)
             value="$google.clientId"
            #else
             value=""
            #end
-          /></td></tr>
-    <tr><td class="label">Client Secret</td>
-         <td colspan="2"><input id="google_cpw" dojoType="dijit.form.TextBox" size="40"
+          /></div>
+    </li>
+    <li><div class="dt">Client Secret</div>
+         <div class="dd"><input id="google_cpw" dojoType="dijit.form.TextBox" size="60"
            #if ( $google.clientSecret)
             value="$google.clientSecret"
            #else
             value=""
            #end
-          /></td></tr>
+          /></div>
+    </li>
 
-<tr><td colspan="99" height="20"></td><tr>
 
-    <tr><th colspan="2">LiveID</th>
-       <th style="text-align:right;"><a href="javascript:iam_showTheDialog('liveidGateHelp',[]);">Help</a></th>
-    </tr>
+    <div class="iandlhdr" role="heading">LiveID</div>
+       <div style="float:right;"><a href="javascript:iam_showTheDialog('liveidGateHelp',[]);">Help</a></div>
 
-    <tr><td class="label">Client ID</td>
-         <td colspan="2"><input id="liveid_cid" dojoType="dijit.form.TextBox"
+    <li><div class="dt">Client ID</div>
+         <div class="dd"><input id="liveid_cid" dojoType="dijit.form.TextBox" size="60"
           #if ( $liveid.clientId)
             value="$liveid.clientId"
            #else
             value=""
            #end
-          /></td></tr>
+          /></div>
+    </li>
  
-    <tr><td class="label">Client Secret</td>
-         <td colspan="2"><input id="liveid_cpw" dojoType="dijit.form.TextBox"
+    <li><div class="dt">Client Secret</div>
+         <div class="dd"><input id="liveid_cpw" dojoType="dijit.form.TextBox" size="60"
           #if ( $liveid.clientSecret)
             value="$liveid.clientSecret"
            #else
             value=""
            #end
-          /></td></tr>
+          /></div>
+    </li>
    
+</ul>
 
-</table>
 
 
 </div>
