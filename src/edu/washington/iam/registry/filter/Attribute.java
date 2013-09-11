@@ -66,6 +66,16 @@ public class Attribute implements Serializable  {
 
     }
 
+    // create from another attribute
+    public Attribute (Attribute src) {
+
+       id = src.getId();
+       name = src.getName();
+       description = src.getDescription();
+       editable = src.isEditable();
+    }
+
+
     public void setId(String v) {
        id = v;
     }

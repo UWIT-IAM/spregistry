@@ -23,7 +23,7 @@
      data-dojo-props="submitLabel:'Save changes', submitAction:'saveRP(\'${relyingParty.entityId}\')', cancelLabel:'Cancel'"
      style="display:none">
 
-<div class="rnotice" (<span class="rstar">*</span> denotes required field)</div>
+<div class="rnotice" (<span class="rstar">*</span> required field)</div>
 
 
 #if ( $metadataByLookup )
@@ -212,12 +212,12 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
    #set ( $count = 0 )
    #foreach ( $acs in $relyingParty.assertionConsumerServices )
      <tr id="acs${count}_0">
-      <td class="label" align="right" ><input data-dojo-type="dijit.form.TextBox" size="2" id="acsi_${count}" value="$acs.index"/></td>
-             <td nowrap="nowrap"><input data-dojo-type="dijit.form.TextBox" id="acsb_${count}" value="$acs.binding" size="50" /></td>
+      <td class="label" align="right" ><input data-dojo-type="dijit.form.TextBox" size="2" id="acsi_${count}" value="$acs.index" /></td>
+             <td nowrap="nowrap"><input data-dojo-type="dijit.form.TextBox" id="acsb_${count}" value="$acs.binding" size="30" style="width:400px"/></td>
      </tr>
      <tr id="acs${count}_1">
       <td class="label"  ></td>
-             <td nowrap="nowrap"><input data-dojo-type="dijit.form.TextBox" id="acsl_${count}" value="$acs.location"  size="50"/></td>
+             <td nowrap="nowrap"><input data-dojo-type="dijit.form.TextBox" id="acsl_${count}" value="$acs.location"  size="30" style="width:400px"/></td>
      </tr>
      <tr><td></td><td colspan="99" height="3"></td></tr>
      #set ( $count = $count + 1)
@@ -225,11 +225,11 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
 
    #foreach ( $i in [ $count .. 49 ] )
      <tr id="acs${i}_0" ${hide}>
-      <td class="label" align="right" ><input data-dojo-type="dijit.form.TextBox" size="2" id="acsi_${i}" value=""/></td>
-             <td nowrap="nowrap"><input data-dojo-type="dijit.form.TextBox" id="acsb_${i}" value="" size="50" /></td>
+      <td class="label" align="right" ><input data-dojo-type="dijit.form.TextBox" size="2" id="acsi_${i}" value="" size="30"/></td>
+             <td nowrap="nowrap"><input data-dojo-type="dijit.form.TextBox" id="acsb_${i}" value="" size="30" /></td>
      </tr>
      <tr id="acs${i}_1" ${hide}><td></td>
-             <td nowrap="nowrap"><input data-dojo-type="dijit.form.TextBox" id="acsl_${i}" value="" size="50" /></td>
+             <td nowrap="nowrap"><input data-dojo-type="dijit.form.TextBox" id="acsl_${i}" value="" size="30" /></td>
      </tr>
    #end
      <tr id="acs_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('acs', 'acs_more')">add acs</a></td></tr>

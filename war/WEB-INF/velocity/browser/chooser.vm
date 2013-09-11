@@ -203,7 +203,7 @@ Revision 7/11/2013
 
   <div id="indexTitlebar">
     <div class="indexLeft">
-       <span id="myGroupsTitle">Please login</span>
+       <span id="myGroupsTitle">Login</span>
     </div>
   </div>
 
@@ -246,7 +246,7 @@ The Service Provider Registry maintains information on SAML service providers (S
 <p>
 
 <p>
- <h3>Please login</h3>
+ <h3>Login</h3>
 <p>
 
 <div class="loginform">

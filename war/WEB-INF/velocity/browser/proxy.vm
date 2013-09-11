@@ -40,15 +40,17 @@
 ## This registry allows you to configure access to the social-to-saml authentication gateway.
 <p>
 
-<h3 class="">SAML Gateways</h3>
-<ul class="iamdu">
+<h3>SAML Gateways</h3>
 
   #foreach ( $idp in $proxy.ProxyIdps )
-    <div role="heading" class="iamdlhdr">$idp.idp</div>
-    <li><div class="dt" $ahide>Client ID</div><div class="dd">$!{idp.clientId}</div></li>
+    <h4>$idp.idp</h4>
+    <ul class="iamdu">
+    <li>
+    <div class="dt" $ahide>Client ID:</div><div class="dd" aris-label="client id">$!{idp.clientId}</div>
+    </li>
+    </ul>
+    <hr>
   #end
-</ul>
-   
 
 </div>
 </div> 

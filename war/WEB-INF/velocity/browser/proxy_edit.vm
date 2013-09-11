@@ -22,7 +22,7 @@ The Google gateway allows your SAML SP users to authenticate with their Google i
 <p>
 Your Client ID and Client Secret go into the Gateway form.
 <p>
-See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gateway</a> for more information.
+See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw" target="spghelp">Social-to-SAML gateway</a> for more information.
 </div>
 
 <div id="liveidGateHelp" dojoType="iam/Dialog" title="Google gateway" $hide>
@@ -41,18 +41,18 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 #set ($google_status = 0 )
 #set ($liveid_status = 0 )
 
+<div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/o9o6Aw" target="spghelp">help</a></div>
 <h3>SAML Gateways</h3>
-<div aria-label="entityid">${relyingPartyId}</div>
+## <div aria-label="entityid">${relyingPartyId}</div>
 
-<ul class="iamdu">
 
 ## we actually support only a subset of possible proxies
      #set ($google = $proxy.getProxyIdp("Google"))
      #set ($liveid = $proxy.getProxyIdp("LiveID"))
 
-    <div class="iandlhdr" role="heading">Google</div>
-       <div style="float:right;"><a href="javascript:iam_showTheDialog('googleGateHelp',[])">Help</a></div>
+    <h4>Google</h4>
 
+    <ul class="iamdu">
     <li><div class="dt">Client ID</div>
          <div class="dd"><input id="google_cid" dojoType="dijit.form.TextBox" size="60"
            #if ( $google.clientId)
@@ -71,11 +71,14 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
            #end
           /></div>
     </li>
+    </ul>
+
+    <hr>
 
 
-    <div class="iandlhdr" role="heading">LiveID</div>
-       <div style="float:right;"><a href="javascript:iam_showTheDialog('liveidGateHelp',[]);">Help</a></div>
+    <h4>LiveID</h4>
 
+    <ul class="iamdu">
     <li><div class="dt">Client ID</div>
          <div class="dd"><input id="liveid_cid" dojoType="dijit.form.TextBox" size="60"
           #if ( $liveid.clientId)
@@ -95,8 +98,7 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
            #end
           /></div>
     </li>
-   
-</ul>
+   </ul>
 
 
 

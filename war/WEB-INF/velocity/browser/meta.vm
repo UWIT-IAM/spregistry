@@ -31,6 +31,7 @@
 
 
 #set ($ahide = 'aria-hidden="true"')
+#set ($rdef = 'role="definition"')
 ## tab entry
 <div id="metaSpContainer" dojoType="dijit.layout.ContentPane" title="Metadata" selected="true" style="overflow:hidden"
    doLayout="false" >
@@ -38,13 +39,14 @@
   <div id="metaViewLinks" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false">
   <ul role="navigation">
   #if ($editable)
-  ## <li class="sublist" >Actions:</li>
+   <li class="sublist" >Actions:</li>
    <li class="sublist" > <a id="metaEditLink" role="button" tabindex="0" aria-label="Edit this information"
           href="javascript:dijit.byId('metaEditDialog').show();">Edit</a>
    </li>
   #if ( ! $newEntity )
    <li class="sublist" > <a id="metaDeleteLink" role="button" tabindex="0" aria-label="Delete this service provider"
-          href="javascript:iam_showTheDialog('metaDeleteDialog',[]);">Delete</a></li>
+          href="javascript:iam_showTheDialog('metaDeleteDialog',[]);">Delete</a>
+   </li>
   #end
   #end
   </ul>
@@ -58,19 +60,19 @@
 <ul class="iamdu">
     #set ( $org = $relyingParty.organization )
     #if ( $org.name )
-    <li><div class="dt" $ahide>Name</div><div class="dd" aria-label="Org Name">$org.name</div></li>
+    <li><div class="dt" $ahide>Name</div><div class="dd" aria-label="Org Name" $rdef>$org.name</div></li>
     #end
     #if ( $org.displayName )
-    <li><div class="dt" $ahide>Display </div><div class="dd" aria-label="Display name">$org.displayName</div></li>
+    <li><div class="dt" $ahide>Display </div><div class="dd" aria-label="Display name" $rdef>$org.displayName</div></li>
     #end
     #if ( $org.url )
-    <li><div class="dt" $ahide>url </div><div class="dd" aria-label="org url">$org.url</div></li>
+    <li><div class="dt" $ahide>url </div><div class="dd" aria-label="org url" $rdef>$org.url</div></li>
     #end
 
    #foreach ( $ct in $relyingParty.contactPersons )
     <li>
       <div class="dt" $ahide >$!ct.type</div>
-       <div class="dd" aria-label="$!ct.type contact">
+       <div class="dd" aria-label="$!ct.type contact" $rdef>
      #if ( $ct.givenName || $ct.surName )
       $!ct.givenName $!ct.surName<br>
      #end
@@ -88,14 +90,14 @@
    #end
  </ul>
 
-<div role="heading" class="iamdlhdr">Metadata details</div>
+<h3 >Metadata details</h3>
    
 <ul class="iamdu" >
 
    ## ProtocolSupportEnumerations
       <li>
       <div class="dt" $ahide>Protocols</div>
-      <div class="dd" aria-label="Protocols">
+      <div class="dd" aria-label="Protocols" $rdef>
    #foreach ( $ps in $relyingParty.protocolSupportEnumerations )
       $ps <br>
    #end
@@ -104,21 +106,25 @@
 
    ## KeyInfo
 
-        <li>
-      <div class="dt" $ahide valign="top">KeyInfo</div>
-        <div class="dd" aria-label="Keyinfo"><table class="iamtable" role="list">
+   <li>
+      <div class="dt" $ahide >KeyInfo</div>
+        <div class="dd" aria-label="Keyinfo" $rdef >
+         <ul class="iamdu">
        #foreach ( $key in $relyingParty.keyDescriptors )
-          <tr role="listitem"><td nowrap="nowrap">Key Name:</td><td>$!key.keyName <td><tr>
+         <li><div class="dt dt2" $ahide>Cert</div><div class="dd " $rdef>Name: $!key.keyName
          #if ( $key.cert )
-         <tr role="listitem"><td align="left">Subject:</td><td>$!{key.cert.dn}</td></tr>
-         <tr role="listitem"><td align="left">Issuer:</td><td>$!{key.cert.issuerDn}</td></tr>
-         <tr role="listitem"><td align="left">Issued:</td><td>$dateFormatter.format($key.cert.issued)</td></tr>
-         <tr role="listitem"><td align="left">Expires:</td><td>$dateFormatter.format($key.cert.expires)</td></tr>
-         ### <tr><td align="left">PEM:</td><td><span class="certbox">$key.certificate</span></td></tr>
+          <br>Subject: $!{key.cert.dn}
+          <br>Issuer: $!{key.cert.issuerDn}
+          <br>Issued: $dateFormatter.format($key.cert.issued)
+          <br>Expires: $dateFormatter.format($key.cert.expires)
          #end
+          </div>
+         </li>
        #end
-         </table></div>
-      </li>
+         </ul>
+        </div>
+
+   </li>
 
 
    ## Nameid
@@ -141,47 +147,23 @@
    ## ACS
 
     <li>
-      <div class="dt" $ahide>ACS</div>
-      <div class="dd" aria-label="ACS">
-       <table class="iamtable" role="list">
+      <div class="dt" $ahide valign="top">ACS:</div>
+      <div class="dd" aria-label="ACS" $rdef>
+         <ul class="iamdu">
    #foreach ( $acs in $relyingParty.assertionConsumerServices )
-     <tr role="listitem"><td>$acs.index</td><td nowrap="nowrap">$acs.binding</td><tr>
-     <tr role="listitem"><td></td><td nowrap="nowrap"><tt>$acs.location</tt></td><tr>
+         <li><div class="dt dt2" $ahide>$acs.index</div><div class="dd " $rdef >
+         binding: $acs.binding<br>
+         location: <tt>$acs.location</tt>
+         </div></li>
+         </hr>
    #end
-      </table></div>
+      </div>
      </li>
-#*
-      <dt>ACS</td>
-         <dd><dl class="iamdl2">
-   #foreach ( $acs in $relyingParty.assertionConsumerServices )
-      <dt>$acs.index</dt><dd>
-          $acs.binding
-          <br><tt>$acs.location</tt>
-      </dd>
-   #end
-      </dl></dd>
-
-
-*#
-
 </du>
 
 
 </div>
 #if ($editable)
-#*
-  <div id="metaEditLinks" role="presentation" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false" style="display:none">
-  <ul role="navigation">
-  ## <li class="sublist" >Actions:</li>
-   <li class="sublist" > <a id="metaEditLink" role="button" tabindex="0" aria-label="Save changes"
-          href="javascript:saveRP('${relyingParty.entityId}');"><span style="text-decoration: underline">S</span>ave</a>
-   </li>
-   <li class="sublist" > <a id="metaEditLink" role="button" tabindex="0" aria-label="Cancel changes"
-          href="javascript:handleGroupViewBtn();"><span style="text-decoration: underline">C</span>ancel</a>
-   </li>
-  </ul>
-  </div>
-*#
 #parse ( "browser/meta_edit.vm" )
 #end
 

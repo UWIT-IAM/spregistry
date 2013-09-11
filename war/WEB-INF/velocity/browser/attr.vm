@@ -32,11 +32,13 @@
   <li class="sublist" >Actions:</li>
   #if ($canEdit || $newEntity)
   <li class="sublist" ><a id="attrReqLink" tabindex="0" role="button" aria-label="request attributes" 
-       href="javascript:iam_showTheDialog('attrReqDialog',['sp/attrlib']);"><span style="text-decoration: underline">R</span>equest_attributes</a></li>
+       href="javascript:iam_showTheDialog('attrReqDialog',['sp/attrlib']);">Request_attributes</a>
+  </li>
   #end
   #if ($isAdmin)
   <li class="sublist" ><a id="attrEditLink" tabindex="0" role="button" aria-label="edit attributes"
-       href="javascript:iam_showTheDialog('attrEditDialog',['sp/attrlib']);"><span style="text-decoration: underline">E</span>dit</a></li>
+       href="javascript:iam_showTheDialog('attrEditDialog',['sp/attrlib']);">Edit</a>
+  </li>
   #end
   </ul>
   </div>
@@ -45,34 +47,40 @@
 <div id="attrViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false"
    style="overflow:auto;" onShow="adjustSpPaneSize('attrViewPane')" >
 
-<table class="iamtable">
 
+
+<h3 class="">Released attributes</h3>
+
+<ul class="iamdu">
  
   #foreach ( $attr in $attributes )
 
    #if ($attr.attributeFilterPolicy )
-      <tr><td class="label" title="$!{attr.description}">$!{attr.id}</td>
+      <li><div class="dt dt9" $ahide title="$!{attr.description}">$!{attr.id}</div>
       #set ($ar = $attr.attributeRule)
       #foreach ( $value in $ar.valueRules )
+          <div class="dd">
          #if ( $value.type == "basic:ANY" )
-          <td>All values</td></tr>
+          All values
          #else
            #set ($c=0)
            #foreach ( $rule in $value.rules )
              #if ($c>0)
-               <tr><td></td>
+               <br>
              #end
-             <td>#if ($rule.regex)<span class="subtitle">(regex)</span>#end ${rule.value}</td></tr>
+             #if ($rule.regex)<span class="subtitle">(regex)</span>#end ${rule.value}
              #set ($c = $c + 1)
            #end
          #end
+         </div>
       #end ## value
+      </li>
    #end  ## fpolicy
 
  #end  ## attrs
 
 
- </table>
+</ul>
 
 ## error and status messages
 <div id="requestStatusDiv" class="notice" $hide>&nbsp; 

@@ -94,7 +94,7 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        List<AttributeFilterPolicy> fps = getFilterPolicies(rpid);
        int matches = 0;
        for (int i=0; i<attributes.size(); i++) {
-          Attribute attr = attributes.get(i);
+          Attribute attr = new Attribute(attributes.get(i));
           for (int p=0; p<fps.size(); p++) {
              AttributeFilterPolicy afp = fps.get(p);
              for (int a=0; a<afp.getAttributeRules().size(); a++) {

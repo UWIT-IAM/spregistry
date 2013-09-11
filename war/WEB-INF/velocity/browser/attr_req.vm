@@ -22,7 +22,9 @@
 <div id="attrReqDialog" data-dojo-type="iam/Dialog" title="Request attributes for ${relyingPartyId}"
     data-dojo-props="submitLabel:'Submit request', submitAction:'attr_requestAttrs(\'${relyingPartyId}\')', cancelLabel:'Cancel'"
     style="display:none;" >
+
 Check the attributes you need. Uncheck those you no longer want.
+<div class="rnotice" style="float:right"> (<span class="rstar">*</span> required field)</div>
 
 <form action="">
 <ul class="iamdu">
@@ -54,20 +56,21 @@ Check the attributes you need. Uncheck those you no longer want.
         onChange="local_check_gws()"
        #end
          class="attr_req_chk" aria-label="${attr.id}"/>
-         </div>
-         <div class="dd dd2"><label for="attr_req_${attr.id}" title="$!{attr.description}" >${attr.id}</label>
+      </div>
+      <div class="dd dd2" style="overflow:hidden"><label for="attr_req_${attr.id}" title="$!{attr.description}" >${attr.id}</label>
         <input id="attr_req_${attr.id}_in" value="$chk" type="hidden" aria-hidden="true"></input>
-        </div>
 
        #if ($attr.id == 'gws_groups') 
-         <div class="dd dd2" id="attr_req_gws_text_tr" #if ($grps!='')#else $hide #end><td></td><td nowrap="nowrap">
+         <br>
+         <div id="attr_req_gws_text_tr" #if ($grps!='')#else $hide #end>
            <span aria-hidden="true">Which groups?$rstar</span><br>
              <textarea style="font-size:smaller" data-dojo-type="dijit.form.Textarea"
                   id="attr_req_gws_text" rows="2" cols="40" aria-label="Which groups?">$grps</textarea>
              <textarea data-dojo-type="dijit.form.Textarea" id="attr_req_gws_text_in" $hide>$grps</textarea>
           </div>
-   </li>
        #end
+      </div>
+   </li>
 
 #end
 </ul>

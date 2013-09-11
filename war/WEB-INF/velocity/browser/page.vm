@@ -115,62 +115,6 @@ Revision 8/08/2013
 </div>
 
 
-<div id="helpMetadata" data-dojo-type="iam/Dialog" title="Automatic metadata lookup" $hide
-  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
-<p>
-Many service providers, notably Shibboleth ones, provide a default Metadata 
-endpoints, which can provide
-most of the protocols, keyinfo, etc. need for registration.
-You have to provide the name, descriptions, and contacts.
-<p>
-</div>
-
-<div id="helpAttributes" data-dojo-type="iam/Dialog" title="Attributes" $hide
-  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
-Atributes are released to your SP through one or more policies.
-<p>
-<ul>
-<li>Core policies apply to all *.washington.edu and *.uw.edu service providers.</li>
-<li>Ad-hoc policies apply to individual service providers.</li>
-<li>RandS policies apply to InCommon identified 'Research and Scholarship' service providers.</li>
-</ul>
-<p>
-If you are the owner of the service provider you may request attributes to 
-be released to it.  Please explain why you need each attribute.  If you are requesting
-group memberships you <b>must</b> specify which groups you want.
-</div>
-
-
-<div id="helpGateway" data-dojo-type="iam/Dialog" title="SAML Gateways" $hide
-  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
-  Identity and Access Management provides a Social to SAML authentication gateway. 
-<p>
-To your SAML service provider (a shibboleth SP, for example) the gateway 
-looks like any other SAML identity provider.  You configure it accordingly.
-<p>
-When you send a user to the gateway IdP, the gateway redirects them to
-the social identity provider (Google is supported at present) for login.
-Authentication information from Google is translated by the gateway
-into a SAML assertion, which is returned to your SP in the normal way.
-<p>
-So, in effect,
-<p>
-<ul>
-<li>To your user it looks like a Google login, but</li>
-<li>to your SP this looks like a SAML login.</li>
-</ul>
-<p>
-See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gateway</a> for more information.
-</div>
-
-<div id="helpDNS" data-dojo-type="iam/Dialog" title="DNS 'ownership'" $hide
-  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
-   You must be registered with UW's Network Operations as a registered contact for your DNS name.
-   For more information, see 
-   <a href="https://wiki.cac.washington.edu/x/eRcrAQ">Managing DNS Names For Infrastructure Services Access</a>.
-</div>
-
-
 ## page
 ## loader flash
 <div role="presentation" id="theflash" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height:100%">

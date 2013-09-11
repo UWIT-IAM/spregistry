@@ -502,6 +502,7 @@ var nameRE = new RegExp("^[a-z][a-z0-9\.\_\-]+$");
 // build the rp xml
 function assembleRPMetadata(entityId) {
    rpId = entityId;
+   console.log('get rp info for ' + rpId);
    var xml = '<EntityDescriptor entityID="' + entityId + '">';
 
    // SPSSO
@@ -649,7 +650,8 @@ function saveRP(entityId) {
    if (xml=='') return false;
    rpid = entityId;
    var url = v_root + v_vers + '/rp?id=' + entityId + '&mdid=UW&xsrf=' + v_xsrf;
-   iam_putRequest(url, xml, null, postSaveRP);
+   console.log('req: ' + url);
+   iam_putRequest(url, null, xml, null, postSaveRP);
 }
 
 
@@ -712,12 +714,12 @@ attr_requestAttrs = function(entityId) {
      console.log(aid + ' in value ' + inn.value);
      if (w.get('checked')) {
         if (aid=='gws_groups') {
-           if (grps=='') {
-              iam_showTheNotice('Please identify the groups you need.');
-              return;
-           }
            var grpsin = dijitRegistry.byId('attr_req_gws_text_in').get('value').trim();
            if (grps==grpsin) continue;
+           if (grps=='') {
+              iam_showTheNotice('You must identify the groups you need.');
+              return;
+           }
            xml += '<Add id="' + aid + '"/>';
            _okmsg += '<li>Adding: ' + aid + '</li>';
            gws_text = '\n\nGroups requested:\n' + grps;
@@ -740,13 +742,13 @@ attr_requestAttrs = function(entityId) {
    _okmsg = 'Request submitted<p><ul>' + _okmsg + '</ul>';
    msg = dijitRegistry.byId('attr_req_exptext').get('value').trim();
    if (msg=='') {
-      iam_showTheNotice('Please explain why you need the attributes');
+      iam_showTheNotice('You must explain why you need the attributes');
       return;
    }
    xml = xml + '<Comments>' + iam_makeOkXml(msg+gws_text) + '</Comments>';
    xml = xml + '</Attributes>';
    action = v_root + v_vers + '/rp/attrReq?id=' + entityId + '&xsrf=' + v_xsrf;
-   iam_putRequest(action, xml, null, _postReqAttrs);
+   iam_putRequest(action, null, xml, null, _postReqAttrs);
 };
 
 // edit functions
@@ -826,7 +828,7 @@ function _attributeXml (gid, id) {
 
 function _postSaveAttrs() {
    iam_hideTheDialog('attrEditDialog');
-   iam_showTheMessage('<h3>Attributes updated.</h3><p>Please allow 20 minutes for the changes to propagate to the IdP systems.</h3><p>');
+   iam_showTheMessage('<h3>Attributes updated.</h3><p>Allow 20 minutes for the changes to propagate to the IdP systems.</h3><p>');
    showCurrentSp();
 }
 
@@ -843,7 +845,7 @@ attr_saveAttrs = function(gid, entityId) {
    xml = xml + '</AttributeFilterPolicy></FilterPolicyModification>';
    // alert(xml);
    action = v_root + v_vers + '/rp/attr?id=' + entityId + '&policyId=' + gid + '&xsrf=' + v_xsrf ;
-   iam_putRequest(action, xml, null, _postSaveAttrs);
+   iam_putRequest(action, null, xml, null, _postSaveAttrs);
 }
 
 /*
@@ -853,7 +855,7 @@ attr_saveAttrs = function(gid, entityId) {
 
 function _postSaveProxy() {
    iam_hideTheDialog('proxyEditDialog');
-   iam_showTheMessage('<h3>Gateway parameters saved.</h3><p>Please allow 20 minutes for the changes to propagate to the IdP systems.</h3><p>');
+   iam_showTheMessage('<h3>Gateway parameters saved.</h3><p>Allow 20 minutes for the changes to propagate to the IdP systems.</h3><p>');
    showCurrentSp();
 }
 
@@ -870,7 +872,7 @@ proxy_saveProxy = function(entityId) {
    console.log(xml);
    var headertxt = {'Content-type': 'application/xhtml+xml; charset=utf-8'};
    var url = v_root + v_vers + '/rp/proxy?id=' + entityId + '&xsrf=' + v_xsrf;
-   iam_putRequest(url, xml, null, _postSaveProxy);
+   iam_putRequest(url, null, xml, null, _postSaveProxy);
    // location.reload();
 }
 
