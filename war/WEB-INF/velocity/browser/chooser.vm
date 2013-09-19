@@ -22,11 +22,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
- <title>SP Registry</title>
+ <title>Service Provider Registry</title>
+
+<script>
+dojoConfig = {
+   "async": true,
+   "parseOnLoad": false,
+   "isDebug": true,
+   packages: [{
+      name: "iam",
+      location: "/js"
+   }]
+};
+</script>
 
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/dojo.js" data-dojo-config="async: true"></script>
-  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/tundra/tundra.css"/>
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/resources/dojo.css"/>
+  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/tundra/tundra.css"/>
 
 <link rel="stylesheet" type="text/css" href="/css/iam-dojo-2.css"/>
 
@@ -48,37 +60,19 @@
     });
 </script>
 
-
-
 <script type="text/javascript" src="/js/iam-dojo.js"></script>
 <script type="text/javascript" src="/sp_static/sp.js"></script>
-
 
 <script>
     require(["dojo/dom",
      "dojo/parser",
-     "dijit/MenuBar",
-     "dijit/Menu",
-     "dijit/MenuItem",
      "dijit/Dialog",
-     "dijit/TooltipDialog",
-     "dijit/PopupMenuBarItem",
-     "dijit/form/Button",
-     "dijit/form/RadioButton",
-     "dijit/form/DropDownButton",
-     "dijit/form/CheckBox",
-     "dijit/form/TextBox",
-     "dijit/form/Textarea",
-     "dijit/form/Select",
-     "dijit/form/SimpleTextarea",
      "dijit/layout/ContentPane",
-     "dijit/layout/TabContainer",
-     "dijit/layout/BorderContainer",
+     "iam/Dialog",
      "dojo/domReady!"], function(dom,parser) {
        parser.parse();
        onLoad();
  });
-
 </script>
 
 
@@ -87,15 +81,10 @@ v_root='$root';
 v_vers='$vers';
 v_remoteUser='$remote_user';
 v_xsrf = '${xsrf}';
-
-
-### require(["dojo/_base/Deferred", "dojo/_base/xhr", "dojo/_base/array", "dojo/dom-construct", "dojo/dom", "dojo/domReady!"]);
-
 function redirectToLogin(path) {
    var url = '$root' + '$vers' + path + '$pathextra';
    document.location = url;
 }
-
 </script>
 </head>
 
@@ -103,194 +92,117 @@ function redirectToLogin(path) {
 
 ## banner popups and menus
 
-<div id="helpAbout" dojoType="dijit.Dialog" title="About" $hide
-  data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
+
+<div id="helpTimeout" data-dojo-type="iam/Dialog" title="Time's up"
+    data-dojo-props="submitLabel:'Refresh', submitAction:'location.reload()'"
+    $hide>
+   <p align="center">Your session with the<br>Service Provider Registry<br>has expired.<p>Refresh the page to continue working.</p>
+</div>
+
+<div id="helpAbout" data-dojo-type="iam/Dialog" title="About" $hide data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
    Identity and Access Management
 <br/>
 Service Provider Registry 2.0.0
 <br/>
-Revision 7/11/2013
+Revision 9/12/2013
 </div>
 
 
 ## page
 ## loader flash
-<div id="theflash" dojoType="dijit.layout.ContentPane" style="width: 100%; height:100%">
+<div role="presentation" id="theflash" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height:100%">
 <div style="width: 100%; height:50%">
 </div>
-<div align="center"><img src="/circle_loader.gif">
+<div align="center"><img src="/img/circle_loader.gif">
 </div>
 </div>
 
 
-<div id="thepage" dojoType="dijit.layout.BorderContainer"  gutters="false" liveSplitters="true" style="width: 100%; height: 100%">
+<div id="thepage" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height: 100%;overflow:hidden">
 
 ## banner
-<div id="topbanner" data-dojo-type="dijit.layout.ContentPane" region="top" splitter="false">
+<h1 class="hidden">SERVICE PROVIDER REGISTRY</h1>
+<div id="topbanner" data-dojo-type="dijit.layout.ContentPane">
 <span class="topleft"><a href="https://wiki.cac.washington.edu/x/lR4">IDENTITY AND ACCESS MANAGEMENT</a></span>
 <ul class="topright">
  <li><a href="https://wiki.cac.washington.edu/x/gjyoAQ" target="sphelp">HELP</a></li>
-</ul> 
-</div>
-<div id="banner" dojoType="dijit.layout.ContentPane" region="top" splitter="false">
-    ## <span id="logo"><a href="javascript:showHomePanel()" title="University of Washington"><img src="/UWw.gif" alt="UW" /></a></span>
-    <span id="title"><a href="javascript:showHomePanel()">Service Provider Registry</a></span>
-#*
+</ul>
+</div>##topbanner
+
+## banner
+<div id="banner" data-dojo-type="dijit.layout.ContentPane">
+    <span id="title"><a tabindex=-1 href="javascript:showHomePage()">SERVICE PROVIDER REGISTRY</a></span>
+##     <span id="banner_notice"></span>
     <ul id="ident">
-
+     <li>(dev 2.0 [1.8.3])</li>
         <li>$!{notice}</li>
-        <li>
-        <div dojoType="dijit.form.DropDownButton">
-            <span>
-                Log in
-            </span>
-           <div data-dojo-type="dijit.Menu" id="loginMenu">
-               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){redirectToLogin('$uwloginpath');}">
-                UW NetID
-               </div>
-               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){redirectToLogin('$googleloginpath');}">
-                Google
-               </div>
-               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){redirectToLogin('$incommonloginpath');}">
-                InCommon
-               </div>
-           </div>
-        </div>
-        </li>
-        <li>
-        <div dojoType="dijit.form.DropDownButton">
-            <span>
-                Help
-            </span>
-           <div data-dojo-type="dijit.Menu" id="helpMenu">
-               ## <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpLogin').show();}">
-               ##  Log in
-               ## </div>
-               <div data-dojo-type="dijit.MenuItem" data-dojo-props="onClick:function(){dijit.byId('helpAbout').show();}">
-                About the registry
-               </div>
-           </div>
-        </div>
-        </li>
     </ul>
-*#
+</div>##banner
 
-</div>  ## banner containe
 
+## show the page when the dom is ready
 <script>
-
   function onLoad() {
-   require(["dojo/dom", "dijit/registry", "dojo/domReady!"], function(dom, registry) {
-
-// drop the flash and show the page
-   dom.byId('theflash').style.display = 'none';
-   dom.byId('thepage').style.display = '';
-   dom.byId('thepage').style.width = '100%';
-   dom.byId('thepage').style.height = '100%';
-   registry.byId('thepage').layout();
-   registry.byId('thepage').resize();
-
-   });
+    require(["dojo/dom", "dijit/registry", "dojo/on", "dojo/domReady!"], function(dom, registry, on) {
+      dom.byId('theflash').style.display = 'none';
+  });
 }
-
 </script>
 
 
-#*
-<div id="leftsideIndex" dojoType="dijit.layout.ContentPane" region="left" splitter="true" minSize="100">
 
- <div id="indexPanel" dojoType="dijit.layout.ContentPane" style="overflow:hidden" >
-
-  <div id="indexTitlebar">
-    <div class="indexLeft">
-       <span id="myGroupsTitle">Login</span>
-    </div>
-  </div>
-
-
-  <div class="indexList" id="myGroupsPanel" dojoType="dijit.layout.ContentPane"
-         onLoad="adjustMGPaneSize()"  style="overflow:auto; background-color:#ffffff;">
-
-   The Service Provider Registry needs to know who you are before you can continue.
-  <hr/>
-
-     People with UW NetIDs should choose Weblogin.
-     <p>
-     If you log in with your Google account your Google gmail account
-     will be your login identity.
-       <p>If you login with an InCommon affiliate, such as another university, your ePPN
-     will be your login identity.
-
-  </div>
-
- </div>
-</div>
-
-*#
-
-
-## right side
-
-<div id="chooserleft" dojoType="dijit.layout.ContentPane"  region="left" splitter="false"
-    style="width:10%;" >
-</div>
-<div id="homeDisplay" dojoType="dijit.layout.ContentPane"  region="center" splitter="true"
-    style="margin-top:20px;overflow:auto;" >
-<div id="chooserright" dojoType="dijit.layout.ContentPane"  region="right" splitter="false"
-    style="width:10%;" >
-</div>
-
-
+<div data-dojo-type="dijit.layout.ContentPane" style="margin:10%" >
 <p>
-The Service Provider Registry maintains information on SAML service providers (SP) that use the University's Shibboleth Identity Provider (IdP).
+## The Service Provider Registry maintains information on SAML service providers (SP) that use the University's Shibboleth Identity Provider (IdP).
 <p>
 
 <p>
  <h3>Login</h3>
 <p>
-
+    
 <div class="loginform">
 
-<dl>
+<ul class="iamlist">
+   
+  <li><div class="dt "><a href="javascript:redirectToLogin('$uwloginpath');" title="Login with your UW NetID">UW NetID</a></div>
+   <div class="dd">People with UW NetIDs should log in with them.</div>
+  </li>
 
-  <dt id="lognetid" aria-hidden="true"><a href="javascript:redirectToLogin('$uwloginpath');">UW NetID</a></dt>
-   <dd role="definition" aria-labelledby="lognetid">People with UW NetIDs should log in with them.</dd>
+  <li><div class="dt "><a href="javascript:redirectToLogin('$googleloginpath');">Gmail</a></div>
+   <div class="dd">Your Google gmail address will be your login identity.</div>
+  </li>
 
-  <dt id="loggmail" aria-hidden="true"><a href="javascript:redirectToLogin('$googleloginpath');">Gmail</a></dt>
-   <dd role="definition" aria-labelledby="loggmail">If you log in with your Google account your Google gmail account will be your login identity.</dd>
+  <li><div class="dt "><a href="javascript:redirectToLogin('$incommonloginpath');">InCommon</a></div>
+   <div class="dd">Your ePPN will be your login identity.</div>
+  </li>
 
-  <dt id="logincommon" aria-hidden="true"><a href="javascript:redirectToLogin('$incommonloginpath');">InCommon</a></dt>
-   <dd role="definition" aria-labelledby="logincommon">If you login with an InCommon affiliate your ePPN will be your login identity.</dd>
-
-</dl>
-
+</ul>
+</div>
 </div>
 
-
-</div>
 
 
 ## footer
 
-<div dojoType="dijit.layout.ContentPane" region="bottom" splitter="false">
 
-<div id="footer" dojoType="dijit.layout.ContentPane">
-    <span id="footlogo"><a href="http:/www.uw.edu/" title="University of Washington"><img src="/uofw-small.gif" alt="UW" /></a></span>
+<div id="footer" data-dojo-type="dijit.layout.ContentPane"  style="position:absolute;bottom:0px">>
+    <span id="footlogo"><a href="http:/www.uw.edu/" title="University of Washington"><img src="/img/uofw-small.gif" alt="UW" /></a></span>
     <span id="footcenter">
     <ul id="navigation">
         <li><a href="mailto:help@uw.edu">CONTACT US</a></li>
+        <li>|</li>
         <li><a href="http://www.washington.edu/online/privacy/">PRIVACY</a></li>
+        <li>|</li>
         <li><a href="http://www.washington.edu/online/terms/">TERMS</a></li>
     </ul>
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li>SPReg 2.0</li>
+        <li><a href="javascript:dijit.byId('helpAbout').show();">SPReg 2.0</a></li>
     </ul>
     </span>
 </div>
 
-</div>
 </div>
 </body>
 </html>

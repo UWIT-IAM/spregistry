@@ -23,7 +23,7 @@
      data-dojo-props="submitLabel:'Save changes', submitAction:'saveRP(\'${relyingParty.entityId}\')', cancelLabel:'Cancel'"
      style="display:none">
 
-<div class="rnotice" (<span class="rstar">*</span> required field)</div>
+<div id="metarnotice" class="rnotice">(<span class="rstar">*</span> required field)</div>
 
 
 #if ( $metadataByLookup )
@@ -34,39 +34,39 @@
 These are default values for a Shibboleth 2.x Service Provider.  They will very likely need to be edited.
 #end
 
-##     <tr><th colspan="3">Organization</th></tr>
+<h3>Organization</h3>
 
-<ul class="iamdu">
+<ul class="iamlist">
 ## Organization
    #set ( $count = 0 )
 
    #set ( $org = $relyingParty.organization )
 
      <li id="org0_0">
-      <div class="dt" >Name:${rstar}</div>
-         <div class="dd"><input aria-label="org name" data-dojo-type="dijit.form.TextBox" id="orgn_0" value="$!org.name" /></div>
+      <h4 class="dt">Name:${rstar}</h4>
+         <div class="dd"><input aria-label="org name" aria-labelledby="metarnotice" data-dojo-type="dijit.form.TextBox" id="orgn_0" value="$!org.name" /></div>
      </li>
      <li id="org0_1">
-      <div class="dt" >Display:$rstar</div>
-         <div class="dd"><input aria-label="display name" data-dojo-type="dijit.form.TextBox" id="orgd_0" value="$!org.displayName" /></div>
+      <h4 class="dt" >Display:$rstar</h4>
+         <div class="dd"><input aria-label="org display name" aria-labelledby="metarnotice" data-dojo-type="dijit.form.TextBox" id="orgd_0" value="$!org.displayName" /></div>
      </li>
      <li id="org0_2">
-      <div class="dt" >Url:$rstar</div>
-         <div class="dd"><input aria-label="url" data-dojo-type="dijit.form.TextBox" id="orgu_0" value="$!org.url" /></div>
+      <h4 class="dt" >Url:$rstar</h4>
+         <div class="dd"><input aria-label="org url" aria-labelledby="metarnotice" data-dojo-type="dijit.form.TextBox" id="orgu_0" value="$!org.url" /></div>
      </li>
      #set ( $count = $count + 1)
 
  
  ## Contacts
     <li>
-      <div class="dt">Contacts</div>
+      <h4 class="dt">Contacts</h4>
        <div class="dd">
-        <table class="iamtable">
+        <ul class="iamlist">
    #set ( $count = 0 )
    #foreach ( $ct in $relyingParty.contactPersons )
-     <tr id="ct${count}_0">
-      <td class="label"  >Type:</td><td>
-       <select id="ctt_${count}">
+     <li id="ct${count}_0">
+       <label class="dt dt3" for="ctt_${count}" >Type</label>
+       <select class="dd" id="ctt_${count}">
        #foreach ( $t in ["","technical","support","administrative","billing","other"] )
          <option value="$t" 
            #if ( $t == $ct.type )
@@ -75,25 +75,24 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
          >$t</option>
        #end
        </select>
-     </td>
-     </tr>
-     <tr id="ct${count}_1">
-      <td class="label"  >Name:$rstar</td><td><input data-dojo-type="dijit.form.TextBox" id="ctgn_${count}" value="$!ct.givenName" /></td>
-     </tr>
-     <tr id="ct${count}_2">
-      <td class="label"  >Email:$rstar</td><td><input data-dojo-type="dijit.form.TextBox" id="cte_${count}" value="$!ct.email" /></td>
-     </tr>
-     <tr id="ct${count}_3">
-      <td class="label"  >Phone:</td><td><input data-dojo-type="dijit.form.TextBox" id="ctp_${count}" value="$!ct.phone" /></td>
-     </tr>
-     <tr><td/><td colspan="99" height="5"></td></tr>
+     </li>
+     <li><label class="dt dt3" for="ctgn_${count}" id="ct${count}_1">Name$rstar</label>
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctgn_${count}" value="$!ct.givenName" aria-labelledby="metarnotice" />
+     </li>
+     <li><label class="dt dt3" for="cte_${count}" id="ct${count}_2">Email$rstar</label>
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="cte_${count}" value="$!ct.email" aria-labelledby="metarnotice" />
+     </li>
+     <li><label class="dt dt3" for="ctp_${count}" id="ct${count}_3">Phone</label>
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctp_${count}" value="$!ct.phone" />
+     </li>
+     <li><div class="dt dt3" style="height:.5em"></div></li>
      #set ( $count = $count + 1)
    #end
  
    #foreach ( $i in [ $count .. 4 ] )
-     <tr id="ct${i}_0" #if ( $i > 1 ) ${hide} #end >
-      <td class="label"  >Type:</td><td>
-       <select id="ctt_${i}">
+     <li id="ct${i}_0" #if ( $i > 1 ) ${hide} #end >
+       <label class="dt dt3" for="ctt_${i}" >Type</label>
+       <select class="dd" id="ctt_${i}">
        #foreach ( $t in ["","technical","support","administrative","billing","other"] )
          <option value="$t" 
            #if ( $t == "" )
@@ -102,139 +101,160 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
          >$t</option>
        #end
        </select>
-     </td>
-     </tr>
-     <tr id="ct${i}_1" #if ( $i > 1 ) ${hide} #end >
-      <td class="label"  >Name:$rstar</td><td><input data-dojo-type="dijit.form.TextBox" id="ctgn_${i}" value="" /></td>
-     </tr>
-     <tr id="ct${i}_2" #if ( $i > 1 ) ${hide} #end >
-      <td class="label"  >Email:$rstar</td><td><input data-dojo-type="dijit.form.TextBox" id="cte_${i}" value="" /></td>
-     </tr>
-     <tr id="ct${i}_3" #if ( $i > 1 ) ${hide} #end >
-      <td class="label"  >Phone:</td><td><input data-dojo-type="dijit.form.TextBox" id="ctp_${i}" value="" /></td>
-     </tr>
+     </li>
+     <li id="ct${i}_1" #if ( $i > 1 ) ${hide} #end >
+      <label class="dt dt3" for="ctgn_${i}"  >Name$rstar</label>
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctgn_${i}" value="" aria-labelledby="metarnotice" />
+     </li>
+     <li id="ct${i}_2" #if ( $i > 1 ) ${hide} #end >
+      <label class="dt dt3" for="cte_${i}"  >Email$rstar</label>
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="cte_${i}" value="" aria-labelledby="metarnotice" />
+     </li>
+     <li id="ct${i}_3" #if ( $i > 1 ) ${hide} #end >
+      <label class="dt dt3" for="ctp_${i}"  >Phone</label>
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctp_${i}" value="" />
+     </li>
      #set ( $label = "" )
    #end
-   <tr id="ct_more"><td class="cleanlink" colspan="3"><a href="javascript:meta_showMoreFields('ct', 'ct_more')">add contact person</a></td></tr>
+   <li id="ct_more">
+    <div class="dt dt3"><a href="javascript:meta_showMoreFields('ct', 'ct_more')">add contact person</a></div>
+   </li>
 
-   </table></div>
+   </ul></div>
   </li>
+</ul>
 
 ## Details
 
-##      <tr><th colspan="3">Metadata details</th><th>
+<h3>Metadata details</h3>
 
+<ul class="iamlist">
  ## ProtocolSupportEnumerations
 
 
-      <li><div class="dt">Protocols</div>
+      <li><h4 class="dt">Protocols</h4>
        <div class="dd">
-        <table class="iamtable">
+        <ul class="iamlist">
    #set ( $count = 0 )
    #foreach ( $ps in $relyingParty.protocolSupportEnumerations )
-     <tr id="pse${count}_0">
-      <td class="label"</td><td><input data-dojo-type="dijit.form.TextBox" name="pse_data" id="pse_${count}" value="$ps" /></td>
-     </tr>
+     <li id="pse${count}_0">
+       <input class="dd" data-dojo-type="dijit.form.TextBox" name="pse_data" id="pse_${count}" value="$ps" aria-label="protocol"/>
+     </li>
      #set ( $count = $count + 1)
    #end
 
    #foreach ( $i in [ $count .. 4 ] )
-     <tr id="pse${i}_0" ${hide}>
-      <td class="label"></td><td><input data-dojo-type="dijit.form.TextBox" name="pse" id="pse_${i}" value="" /></td>
+     <li id="pse${i}_0" ${hide}>
+      <input class="dd" data-dojo-type="dijit.form.TextBox" name="pse" id="pse_${i}" value="" aria-label="protocol"/></td>
      </tr>
    #end
-   <tr id="pse_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('pse', 'pse_more')">add protocol</a></td></tr>
-   </table></div>
+   <li id="ct_more">
+    <div class="dt dt3"><a href="javascript:meta_showMoreFields('pse', 'pse_more')">add protocol</a></div>
+   </li>
+   </ul></div>
   </li>
  
    ## KeyInfo
 
-      <li><div class="dt">KeyInfo</div>
+      <li><h4 class="dt">KeyInfo</h4>
        <div class="dd">
-        <table class="iamtable">
+        <ul class="iamlist">
    #set ( $count = 0 )
    #foreach ( $key in $relyingParty.keyDescriptors )
-      <tr id="ki${count}_0">
-      <td class="label" >Name:</td>
-        <td><input data-dojo-type="dijit.form.TextBox" name="keyName_${count}" id="kn_${count}" value="$!key.keyName" /></td>
-      </tr>
+      <li id="ki${count}_0">
+        <label class="dt dt3" for="kn_${count}" >Name</label>
+        <input class="dd" data-dojo-type="dijit.form.TextBox" name="keyName_${count}" id="kn_${count}" value="$!key.keyName" />
+      </li>
 
-      <tr id="ki${count}_1">
-      <td class="label"  valign="top">Cert:</td>
-         <td class="certbox"><textarea cols="64" rows="5" name="keyCert_${count}" id="kc_${count}" style="font-size:8px">$!key.certificate</textarea></td>
-      </tr>
+      <li id="ki${count}_1">
+        <label class="dt dt3" for="kc_${count}" >Cert PEM</label>
+        <textarea class="dd certbox" cols="64" rows="5" name="keyCert_${count}" id="kc_${count}" style="font-size:8px">$!key.certificate</textarea>
+      </li>
      #set ( $count = $count + 1)
    #end
 
    #foreach ( $i in [ $count .. 3 ] )
    
-      <tr id="ki${i}_0" ${hide}>
-      <td class="label" >Name:</td>
-        <td><input data-dojo-type="dijit.form.TextBox" name="keyName_${i}" id="kn_${i}" value="" /></td>
-      </tr>
-      <tr id="ki${i}_1" ${hide}>
-      <td class="label"  valign="top">Cert:</td>
-         <td class="certbox"><textarea cols="64" rows="10" name="keyCert_${i}" id="kc_${i}"></textarea></td>
-      </tr>
+      <li id="ki${i}_0" ${hide}>
+      <label class="dt dt3" for="kn_${i}" >Name</label>
+        <input class="dd" data-dojo-type="dijit.form.TextBox" name="keyName_${i}" id="kn_${i}" value="" />
+      </li>
+      <li id="ki${i}_1" ${hide}>
+      <label class="dt dt3" for="kc_${i}">Cert PEM</label>
+         <textarea class="dd certbox" cols="64" rows="10" name="keyCert_${i}" id="kc_${i}"></textarea>
+      </li>
 
    #end
-     <tr id="ki_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('ki', 'ki_more')">add keyinfo</a></td></tr>
-    </table></div>
+   <li id="ct_more">
+    <div class="dt "><a href="javascript:meta_showMoreFields('ki', 'ki_more')">add keyinfo</a></div>
+   </li>
+    </ul></div>
    </li>
 
  
    ## Nameid
 
-      <li><div class="dt">NameID</div>
+      <li><h4 class="dt">NameID</h4>
        <div class="dd">
-        <table class="iamtable">
+        <ul class="iamlist">
    #set ( $count = 0 )
    #foreach ( $name in $relyingParty.nameIDFormats )
-     <tr id="ni${count}_0">
-      <td class="label"><td><input data-dojo-type="dijit.form.TextBox" name="nameId_${count}" id="ni_${count}" value="$name" /></td>
-     </tr>
+     <li id="ni${count}_0">
+      <input class="dd" data-dojo-type="dijit.form.TextBox" name="nameId_${count}" id="ni_${count}" value="$name" aria-label="nameid"/>
+     </li>
      #set ( $count = $count + 1)
    #end
 
    #foreach ( $i in [ $count .. 4 ] )
-     <tr id="ni${i}_0" ${hide}>
-      <td class="label"><td><input data-dojo-type="dijit.form.TextBox" name="nameId_${xtra}" id="ni_${i}" value="" /></td>
-     </tr>
+     <li id="ni${i}_0" ${hide}>
+      <input class="dd" data-dojo-type="dijit.form.TextBox" name="nameId_${xtra}" id="ni_${i}" value="" aria-label="nameid"/></td>
+     </li>
    #end
-     <tr id="ni_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('ni', 'ni_more')">add nameid</a></td></tr>
-    </table></div>
+   <li id="ct_more">
+    <div class="dt "><a href="javascript:meta_showMoreFields('ni', 'ni_more')">add nameId</a></div>
+   </li>
+    </ul></div>
    </li>
  
    ## ACS
-      <li><div class="dt" $ahide>ACS</div>
-       <div class="dd" aria-label="ACS">
-        <table class="iamtable" role="list">
+      <li><h4 class="dt">ACS</h4>
+       <div class="dd">
+        <ul class="iamlist">
    #set ( $count = 0 )
    #foreach ( $acs in $relyingParty.assertionConsumerServices )
-     <tr id="acs${count}_0">
-      <td class="label" align="right" ><input data-dojo-type="dijit.form.TextBox" size="2" id="acsi_${count}" value="$acs.index" /></td>
-             <td nowrap="nowrap"><input data-dojo-type="dijit.form.TextBox" id="acsb_${count}" value="$acs.binding" size="30" style="width:400px"/></td>
-     </tr>
-     <tr id="acs${count}_1">
-      <td class="label"  ></td>
-             <td nowrap="nowrap"><input data-dojo-type="dijit.form.TextBox" id="acsl_${count}" value="$acs.location"  size="30" style="width:400px"/></td>
-     </tr>
-     <tr><td></td><td colspan="99" height="3"></td></tr>
+     <li id="acs${count}_0">
+        <input class="dt dt2" data-dojo-type="dijit.form.TextBox" size="2" id="acsi_${count}"
+             value="$acs.index" aria-label="acs index"/>
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="acsb_${count}"
+             value="$acs.binding" size="30" style="width:400px" aria-label="binding"/>
+     </li>
+     <li id="acs${count}_1">
+        <div class="dt dt2" role="presentation"></div>
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="acsl_${count}"
+             value="$acs.location"  size="30" style="width:400px" aria-label="location"/>
+     </li>
+     <li><div class="dt" style="height:.5em"></div></li>
      #set ( $count = $count + 1)
    #end
 
    #foreach ( $i in [ $count .. 49 ] )
-     <tr id="acs${i}_0" ${hide}>
-      <td class="label" align="right" ><input data-dojo-type="dijit.form.TextBox" size="2" id="acsi_${i}" value="" size="30"/></td>
-             <td nowrap="nowrap"><input data-dojo-type="dijit.form.TextBox" id="acsb_${i}" value="" size="30" /></td>
-     </tr>
-     <tr id="acs${i}_1" ${hide}><td></td>
-             <td nowrap="nowrap"><input data-dojo-type="dijit.form.TextBox" id="acsl_${i}" value="" size="30" /></td>
-     </tr>
+     <li id="acs${i}_0" ${hide}>
+        <input class="dt dt2" data-dojo-type="dijit.form.TextBox" size="2" id="acsi_${i}"
+             value="" placeholder="#" aria-label="index" />
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="acsb_${i}"
+            value="" placeholder="binding" aria-label="binding" size="30" />
+     </li>
+     <li id="acs${i}_1" ${hide}>
+        <div class="dt dt2" role="presentation"></div>
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="acsl_${i}"
+            value="" placeholder="location" aria-label="location" size="30" />
+     </li>
    #end
-     <tr id="acs_more"><td/><td class="cleanlink"><a href="javascript:meta_showMoreFields('acs', 'acs_more')">add acs</a></td></tr>
+   <li id="ct_more">
+    <div class="dt"><a href="javascript:meta_showMoreFields('acs', 'acs_more')">add ACS</a></div>
+   </li>
 
-    </table></div>
+    </ul></div>
    </li>
 
 </div>

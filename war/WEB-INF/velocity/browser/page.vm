@@ -68,17 +68,14 @@ dojoConfig = {
      "dojo/parser",
      "dijit/Dialog",
      "dijit/TooltipDialog",
-     "dijit/PopupMenuBarItem",
      "dijit/form/Button",
      "dijit/form/RadioButton",
-     "dijit/form/DropDownButton",
      "dijit/form/TextBox",
      "dijit/form/Textarea",
      "dijit/form/Select",
      "dijit/form/SimpleTextarea",
      "dijit/layout/ContentPane",
      "dijit/layout/TabContainer",
-     "dijit/layout/BorderContainer",
      "iam/Dialog",
      "dojo/domReady!"], function(dom,parser) {
        parser.parse();
@@ -106,18 +103,19 @@ v_xsrf = '${xsrf}';
    <p align="center">Your session with the<br>Service Provider Registry<br>has expired.<p>Refresh the page to continue working.</p>
 </div>
 
-<div id="helpAbout" data-dojo-type="iam/Dialog" title="About" $hide data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
+<div id="helpAbout" data-dojo-type="iam/Dialog" title="About" $hide data-dojo-props="cancelLabel:'Close'">
    Identity and Access Management
 <br/>
 Service Provider Registry 2.0.0
 <br/>
-Revision 8/08/2013
+Revision 9/19/2013
 </div>
+
 
 
 ## page
 ## loader flash
-<div role="presentation" id="theflash" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height:100%">
+<div role="presentation" id="theflash" data-dojo-type="dijit.layout.ContentPane" style="width:100%; height:100%; z-index: 1001; display:block;">
 <div style="width: 100%; height:50%">
 </div>
 <div align="center"><img src="/img/circle_loader.gif">
@@ -125,7 +123,7 @@ Revision 8/08/2013
 </div>
 
 
-<div id="thepage" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height: 100%;overflow:hidden">
+<div id="thepage" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height: 100%;overflow:hidden; opacity:0;">
 
 ## banner
 <h1 class="hidden">SERVICE PROVIDER REGISTRY</h1>
@@ -150,6 +148,14 @@ Revision 8/08/2013
     </ul>
 </div>##banner
 
+## notice popup
+   <div class="iamNotice" id="bannerNotice">
+      <span id="bannerNoticeMessage" class="message" role="notice">xxxxxxxxx</span>
+      <span class="dijitDialogCloseIcon" onClick="javascript: iam_hideShow(['pagenotice'],[]);" title="close" role="button" tabIndex="-1">
+         <span class="closeText" title="${buttonCancel}">x</span>
+      </span>
+   </div>
+
 
 ## show the page when the dom is ready
 <script>
@@ -161,12 +167,6 @@ Revision 8/08/2013
       var onresize = window.onresize;
       dojo.connect( window, "onresize", iam_setPanelSizes);
 
-      // drop the flash and show the page
-      dom.byId('theflash').style.display = 'none';
-      // dom.byId('thepage').style.display = '';
-      // dom.byId('thepage').style.width = '100%';
-      // dom.byId('thepage').style.height = '100%';
-
       // start with SP list
       loadSpList();
       on(dom.byId('filterSpList'), 'keyup', checkSpFilter);
@@ -175,6 +175,11 @@ Revision 8/08/2013
       to_interval = setInterval(function(){dijitRegistry.byId('helpTimeout').show();clearInterval(to_interval);}, ${timeLeft}000);
       console.log('session timeout in  ${timeLeft}000 ms');
       #end
+
+      // drop the cover sheet
+      dom.byId('theflash').style.display = 'none';
+      iam_fadeOutIn([],['thepage']);
+
   });
 }
 </script>
@@ -200,8 +205,7 @@ Revision 8/08/2013
 <p>
  <h3>Update a Service Provider</h3>
  <p>
- <span aria-hidden="true">Enter part of your SP's entityId</span><input id="filterSpList"  data-dojo-type="dijit.form.TextBox" 
-         aria-label="Search for an SP. Enter part of it's entity id." />
+ <label for="filterSpList">Enter part of your SP's entityId</label><input id="filterSpList"  data-dojo-type="dijit.form.TextBox" />
 
  <div class="spList" id="spIndexPane" data-dojo-type="dijit.layout.ContentPane"
          onLoad="adjustSPIndexSize()"  style="overflow:auto">

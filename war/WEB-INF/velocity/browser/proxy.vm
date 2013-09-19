@@ -24,8 +24,8 @@
   <div id="proxyViewLinks" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false" >
   <ul>
   #if ($canEdit)
-  ## <li class="sublist" >Actions:</li>
-  <li class="sublist" ><a tabindex="0" role="button" aria-label="Edit gateway informations"
+  <li class="sublist" >Actions:</li>
+  <li class="sublist" ><a tabindex="0" role="button" aria-label="Edit gateway information"
        href="javascript:iam_showTheDialog('proxyEditDialog',['sp/proxylib'])">Edit</a></li>
   #end
   </ul>
@@ -44,9 +44,9 @@
 
   #foreach ( $idp in $proxy.ProxyIdps )
     <h4>$idp.idp</h4>
-    <ul class="iamdu">
+    <ul class="iamlist">
     <li>
-    <div class="dt" $ahide>Client ID:</div><div class="dd" aris-label="client id">$!{idp.clientId}</div>
+    <h5 class="dt">Client ID:</h5><div class="dd">$!{idp.clientId}</div>
     </li>
     </ul>
     <hr>

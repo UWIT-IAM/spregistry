@@ -52,8 +52,8 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 
     <h4>Google</h4>
 
-    <ul class="iamdu">
-    <li><div class="dt">Client ID</div>
+    <ul class="iamlist">
+    <li><label for="google_cid" class="dt">Client ID</label>
          <div class="dd"><input id="google_cid" dojoType="dijit.form.TextBox" size="60"
            #if ( $google.clientId)
             value="$google.clientId"
@@ -62,7 +62,7 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
            #end
           /></div>
     </li>
-    <li><div class="dt">Client Secret</div>
+    <li><label for="google_cpw" class="dt">Client Secret</label>
          <div class="dd"><input id="google_cpw" dojoType="dijit.form.TextBox" size="60"
            #if ( $google.clientSecret)
             value="$google.clientSecret"
@@ -78,8 +78,8 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 
     <h4>LiveID</h4>
 
-    <ul class="iamdu">
-    <li><div class="dt">Client ID</div>
+    <ul class="iamlist">
+    <li><label for="liveid_cid" class="dt">Client ID</label>
          <div class="dd"><input id="liveid_cid" dojoType="dijit.form.TextBox" size="60"
           #if ( $liveid.clientId)
             value="$liveid.clientId"
@@ -89,7 +89,7 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
           /></div>
     </li>
  
-    <li><div class="dt">Client Secret</div>
+    <li><label for="liveid_cpw" class="dt">Client Secret</label>
          <div class="dd"><input id="liveid_cpw" dojoType="dijit.form.TextBox" size="60"
           #if ( $liveid.clientSecret)
             value="$liveid.clientSecret"

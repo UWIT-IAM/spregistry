@@ -197,13 +197,10 @@ function showCurrentSp() {
    var url = v_root + v_vers + '/rp?id=' + currentSp.id + '&mdid=' + currentSp.meta + '&view=inner';
    dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);
    dijitRegistry.byId('spDisplay').set('loadingMessage', 'Loading ' + currentSp.id + ' . . .' );
-console.log('showCurrentSp 1');
    dijitRegistry.byId('spDisplay').set('onLoad', postLoadSp);
    dijitRegistry.byId('spDisplay').set('href', url);
-console.log('showCurrentSp 2');
    showSpPanel();
    window.focus();
-console.log('showCurrentSp end');
 }
 
 function setSearchOver(i) {

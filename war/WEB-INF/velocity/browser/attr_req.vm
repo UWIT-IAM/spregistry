@@ -24,10 +24,10 @@
     style="display:none;" >
 
 Check the attributes you need. Uncheck those you no longer want.
-<div class="rnotice" style="float:right"> (<span class="rstar">*</span> required field)</div>
+<div id="attrrnotice" class="rnotice">(<span class="rstar">*</span> denotes required field)</div>
 
 <form action="">
-<ul class="iamdu">
+<ul class="iamlist">
 
 #foreach ( $attr in $attributes )
   ## we need to know if the attribute is already selected or can be edited
@@ -50,7 +50,7 @@ Check the attributes you need. Uncheck those you no longer want.
     #end  ## if
   #end ## afp
 
-  <li><div class="dt dt2"><input data-dojo-type="dijit.form.CheckBox" id="attr_req_${attr.id}"
+  <li><div class="dt dtcb"><input data-dojo-type="dijit.form.CheckBox" id="attr_req_${attr.id}"
          $chk $dis value="${attr.id}" 
        #if ($attr.id == 'gws_groups') 
         onChange="local_check_gws()"
@@ -63,10 +63,10 @@ Check the attributes you need. Uncheck those you no longer want.
        #if ($attr.id == 'gws_groups') 
          <br>
          <div id="attr_req_gws_text_tr" #if ($grps!='')#else $hide #end>
-           <span aria-hidden="true">Which groups?$rstar</span><br>
+           <label for="attr_req_gws_text">Which groups?$rstar</label><br>
              <textarea style="font-size:smaller" data-dojo-type="dijit.form.Textarea"
-                  id="attr_req_gws_text" rows="2" cols="40" aria-label="Which groups?">$grps</textarea>
-             <textarea data-dojo-type="dijit.form.Textarea" id="attr_req_gws_text_in" $hide>$grps</textarea>
+                  id="attr_req_gws_text" rows="2" cols="40" aria-labelledby="attrrnotice">$grps</textarea>
+             <textarea data-dojo-type="dijit.form.Textarea" id="attr_req_gws_text_in" $hide >$grps</textarea>
           </div>
        #end
       </div>
@@ -74,8 +74,9 @@ Check the attributes you need. Uncheck those you no longer want.
 
 #end
 </ul>
-<p id="attr_reason" aria-hidden="true">Explain your need for the attributes.$rstar</p>
-<textarea data-dojo-type="dijit.form.Textarea" id="attr_req_exptext" rows="10" cols="50" aria-labelledby="attr_reason"></textarea>
+<label for="attr_req_exptext">Explain your need for the attributes.$rstar</label>
+<br>
+<textarea data-dojo-type="dijit.form.Textarea" id="attr_req_exptext" rows="10" cols="50" aria-labelledby="attrrnotice"></textarea>
 
 </form>
 

@@ -31,12 +31,12 @@
   <ul>
   <li class="sublist" >Actions:</li>
   #if ($canEdit || $newEntity)
-  <li class="sublist" ><a id="attrReqLink" tabindex="0" role="button" aria-label="request attributes" 
+  <li class="sublist" ><a id="attrReqLink" tabindex="0" role="button" 
        href="javascript:iam_showTheDialog('attrReqDialog',['sp/attrlib']);">Request_attributes</a>
   </li>
   #end
   #if ($isAdmin)
-  <li class="sublist" ><a id="attrEditLink" tabindex="0" role="button" aria-label="edit attributes"
+  <li class="sublist" ><a id="attrEditLink" tabindex="0" role="button" 
        href="javascript:iam_showTheDialog('attrEditDialog',['sp/attrlib']);">Edit</a>
   </li>
   #end
@@ -51,7 +51,7 @@
 
 <h3 class="">Released attributes</h3>
 
-<ul class="iamdu">
+<ul class="iamlist">
  
   #foreach ( $attr in $attributes )
 

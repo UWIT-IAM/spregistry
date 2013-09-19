@@ -30,8 +30,6 @@
 
 
 
-#set ($ahide = 'aria-hidden="true"')
-#set ($rdef = 'role="definition"')
 ## tab entry
 <div id="metaSpContainer" dojoType="dijit.layout.ContentPane" title="Metadata" selected="true" style="overflow:hidden"
    doLayout="false" >
@@ -40,11 +38,11 @@
   <ul role="navigation">
   #if ($editable)
    <li class="sublist" >Actions:</li>
-   <li class="sublist" > <a id="metaEditLink" role="button" tabindex="0" aria-label="Edit this information"
+   <li class="sublist" > <a id="metaEditLink" role="button" tabindex="0" aria-label="edit metadata"
           href="javascript:dijit.byId('metaEditDialog').show();">Edit</a>
    </li>
   #if ( ! $newEntity )
-   <li class="sublist" > <a id="metaDeleteLink" role="button" tabindex="0" aria-label="Delete this service provider"
+   <li class="sublist" > <a id="metaDeleteLink" role="button" tabindex="0" aria-label="delete metadata"
           href="javascript:iam_showTheDialog('metaDeleteDialog',[]);">Delete</a>
    </li>
   #end
@@ -57,22 +55,22 @@
 
 <h3 class="">Organization</h3>
 
-<ul class="iamdu">
+<ul class="iamlist">
     #set ( $org = $relyingParty.organization )
     #if ( $org.name )
-    <li><div class="dt" $ahide>Name</div><div class="dd" aria-label="Org Name" $rdef>$org.name</div></li>
+    <li><h4 class="dt">Name</h4><div class="dd">$org.name</div></li>
     #end
     #if ( $org.displayName )
-    <li><div class="dt" $ahide>Display </div><div class="dd" aria-label="Display name" $rdef>$org.displayName</div></li>
+    <li><h4 class="dt">Display </h4><div class="dd">$org.displayName</div></li>
     #end
     #if ( $org.url )
-    <li><div class="dt" $ahide>url </div><div class="dd" aria-label="org url" $rdef>$org.url</div></li>
+    <li><h4 class="dt">url </h4><div class="dd">$org.url</div></li>
     #end
 
    #foreach ( $ct in $relyingParty.contactPersons )
     <li>
-      <div class="dt" $ahide >$!ct.type</div>
-       <div class="dd" aria-label="$!ct.type contact" $rdef>
+      <h4 class="dt">$!ct.type</h4>
+       <div class="dd">
      #if ( $ct.givenName || $ct.surName )
       $!ct.givenName $!ct.surName<br>
      #end
@@ -92,12 +90,12 @@
 
 <h3 >Metadata details</h3>
    
-<ul class="iamdu" >
+<ul class="iamlist" >
 
    ## ProtocolSupportEnumerations
       <li>
-      <div class="dt" $ahide>Protocols</div>
-      <div class="dd" aria-label="Protocols" $rdef>
+      <h4 class="dt">Protocols</h4>
+      <div class="dd">
    #foreach ( $ps in $relyingParty.protocolSupportEnumerations )
       $ps <br>
    #end
@@ -107,11 +105,11 @@
    ## KeyInfo
 
    <li>
-      <div class="dt" $ahide >KeyInfo</div>
-        <div class="dd" aria-label="Keyinfo" $rdef >
-         <ul class="iamdu">
+      <h4 class="dt">KeyInfo</h4>
+        <div class="dd">
+         <ul class="iamlist">
        #foreach ( $key in $relyingParty.keyDescriptors )
-         <li><div class="dt dt2" $ahide>Cert</div><div class="dd " $rdef>Name: $!key.keyName
+         <li><h5 class="dt dt2">Cert</h5><div class="dd ">Name: $!key.keyName
          #if ( $key.cert )
           <br>Subject: $!{key.cert.dn}
           <br>Issuer: $!{key.cert.issuerDn}
@@ -130,8 +128,8 @@
    ## Nameid
 
       <li>
-      <div class="dt" $ahide>NameId</div>
-       <div class="dd" aria-label="name id">
+      <h4 class="dt">NameId</h4>
+       <div class="dd">
     #set ($nids=0)
     #foreach ( $name in $relyingParty.nameIDFormats )
       $name<br>
@@ -147,11 +145,11 @@
    ## ACS
 
     <li>
-      <div class="dt" $ahide valign="top">ACS:</div>
-      <div class="dd" aria-label="ACS" $rdef>
-         <ul class="iamdu">
+      <h4 class="dt" valign="top">ACS:</h4>
+      <div class="dd">
+         <ul class="iamlist">
    #foreach ( $acs in $relyingParty.assertionConsumerServices )
-         <li><div class="dt dt2" $ahide>$acs.index</div><div class="dd " $rdef >
+         <li><h5 class="dt dt2">$acs.index</h5><div class="dd">
          binding: $acs.binding<br>
          location: <tt>$acs.location</tt>
          </div></li>
