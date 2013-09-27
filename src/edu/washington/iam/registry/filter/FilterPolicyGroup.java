@@ -249,6 +249,7 @@ public class FilterPolicyGroup {
     */
    public AttributeFilterPolicy getFilterPolicy(String rpid) {
        // log.debug("looking for fp for " + rpid + " in " + id);
+      refreshPolicyIfNeeded();
        for (int g=0; g<filterPolicies.size(); g++) {
            AttributeFilterPolicy fp = filterPolicies.get(g);
            if (fp.matches(rpid)) {
@@ -260,6 +261,7 @@ public class FilterPolicyGroup {
    }
 
    public List<AttributeFilterPolicy> getFilterPolicies(RelyingParty rp) {
+      refreshPolicyIfNeeded();
       List<AttributeFilterPolicy> policies = new Vector();
       // log.debug("looking for fps for " + rp.getEntityId() + " in " + id);
       for (int g=0; g<filterPolicies.size(); g++) {

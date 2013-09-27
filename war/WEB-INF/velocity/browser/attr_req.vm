@@ -24,7 +24,7 @@
     style="display:none;" >
 
 Check the attributes you need. Uncheck those you no longer want.
-<div id="attrrnotice" class="rnotice">(<span class="rstar">*</span> denotes required field)</div>
+## <div id="attrrnotice" class="rnotice">(<span class="rstar">*</span> denotes required field)</div>
 
 <form action="">
 <ul class="iamlist">
@@ -65,7 +65,7 @@ Check the attributes you need. Uncheck those you no longer want.
          <div id="attr_req_gws_text_tr" #if ($grps!='')#else $hide #end>
            <label for="attr_req_gws_text">Which groups?$rstar</label><br>
              <textarea style="font-size:smaller" data-dojo-type="dijit.form.Textarea"
-                  id="attr_req_gws_text" rows="2" cols="40" aria-labelledby="attrrnotice">$grps</textarea>
+                  id="attr_req_gws_text" rows="2" cols="40" aria-label="which groups, required">$grps</textarea>
              <textarea data-dojo-type="dijit.form.Textarea" id="attr_req_gws_text_in" $hide >$grps</textarea>
           </div>
        #end
@@ -76,7 +76,7 @@ Check the attributes you need. Uncheck those you no longer want.
 </ul>
 <label for="attr_req_exptext">Explain your need for the attributes.$rstar</label>
 <br>
-<textarea data-dojo-type="dijit.form.Textarea" id="attr_req_exptext" rows="10" cols="50" aria-labelledby="attrrnotice"></textarea>
+<textarea data-dojo-type="dijit.form.Textarea" id="attr_req_exptext" rows="10" cols="50" aria-label="reason for attributes, required"></textarea>
 
 </form>
 

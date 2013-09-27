@@ -230,6 +230,7 @@ public class Metadata {
    // select rps by match
    public int addSelectRelyingParties(String sel, List<RelyingParty> list) {
       int nrp = 0;
+      refreshMetadataIfNeeded();
       locker.readLock().lock();
       for (int i=0; i<relyingParties.size(); i++) {
          RelyingParty rp = relyingParties.get(i);

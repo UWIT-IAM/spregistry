@@ -94,7 +94,7 @@ public class RelyingPartyController {
     private static GroupManager groupManager;
     private String adminGroupName = "u_groups_act-as";
     private Group adminGroup = null;
-    private String proxyGroupName = "u_groups_sp-proxy";
+    private String proxyGroupName = "u_weblogin_spreg-gateway";
     private Group proxyGroup = null;
 
     public DNSVerifier getDnsVerifier() {

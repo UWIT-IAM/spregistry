@@ -23,7 +23,7 @@
      data-dojo-props="submitLabel:'Save changes', submitAction:'saveRP(\'${relyingParty.entityId}\')', cancelLabel:'Cancel'"
      style="display:none">
 
-<div id="metarnotice" class="rnotice">(<span class="rstar">*</span> required field)</div>
+## <div id="metarnotice" class="rnotice">(<span class="rstar">*</span> required field)</div>
 
 
 <h3 tabindex="0">Edit metadata for ${relyingPartyId}</h3>

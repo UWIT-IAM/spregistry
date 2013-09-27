@@ -145,7 +145,6 @@ Revision 9/26/2013
     <span id="title"><a tabindex=-1 href="javascript:showHomePage()">SERVICE PROVIDER REGISTRY</a></span>
 ##     <span id="banner_notice"></span>
     <ul id="ident">
-     <li>*test* (dev 2.0 [1.8.3])</li>
         <li>$!{notice}</li>
     </ul>
 </div>##banner
