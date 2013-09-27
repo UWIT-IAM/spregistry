@@ -108,7 +108,9 @@ v_xsrf = '${xsrf}';
 <br/>
 Service Provider Registry 2.0.0
 <br/>
-Revision 9/19/2013
+Revision 9/26/2013
+<p/>
+<a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a>
 </div>
 
 
@@ -143,18 +145,13 @@ Revision 9/19/2013
     <span id="title"><a tabindex=-1 href="javascript:showHomePage()">SERVICE PROVIDER REGISTRY</a></span>
 ##     <span id="banner_notice"></span>
     <ul id="ident">
-     <li>(dev 2.0 [1.8.3])</li>
+     <li>*test* (dev 2.0 [1.8.3])</li>
         <li>$!{notice}</li>
     </ul>
 </div>##banner
 
 ## notice popup
-   <div class="iamNotice" id="bannerNotice">
-      <span id="bannerNoticeMessage" class="message" role="notice">xxxxxxxxx</span>
-      <span class="dijitDialogCloseIcon" onClick="javascript: iam_hideShow(['pagenotice'],[]);" title="close" role="button" tabIndex="-1">
-         <span class="closeText" title="${buttonCancel}">x</span>
-      </span>
-   </div>
+<div id="bannerNotice" data-dojo-type="dijit.layout.ContentPane" role="alert" $hide></div>
 
 
 ## show the page when the dom is ready
@@ -191,24 +188,23 @@ Revision 9/19/2013
 <h2 class="hidden">Actions</h2>
 
  <h3>Register a Service Provider</h3>
-<p>
 
    Enter your SP's entityId
     <input dojoType="dijit.form.TextBox" size="60" id="newSp" value="" />
-    <span style="float:left;font-size:smaller"><input data-dojo-type="dijit.form.CheckBox" id="newSpNolookup"</input>
-      <label for="newSpNolookup">Skip metadata lookup</label></span>
-   <a href="javascript:meta_lookupSp()" aria-role="button" style="float:right">Continue</a>
+    <span style="float:left;font-size:smaller">
+        <input data-dojo-type="dijit.form.CheckBox" id="newSpNolookup" checked="checked"</input>
+      <label for="newSpNolookup">Get metadata from the SP</label></span>
+   <button style="float:right;font-size:smaller" type="button"
+            data-dojo-type="dijit/form/Button" onClick="javascript:meta_lookupSp()">Continue</button>
+
 <p>
 
-<hr>
 
-<p>
- <h3>Update a Service Provider</h3>
- <p>
+ <h3 style="padding-top:20px">Update a Service Provider</h3>
  <label for="filterSpList">Enter part of your SP's entityId</label><input id="filterSpList"  data-dojo-type="dijit.form.TextBox" />
-
+<br>
  <div class="spList" id="spIndexPane" data-dojo-type="dijit.layout.ContentPane"
-         onLoad="adjustSPIndexSize()"  style="overflow:auto">
+         onLoad="adjustSPIndexSize()"  style="margin-top:6px;overflow:auto">
      <i role="presentation">Retriving the list of service providers</i>
   </div>
 

@@ -287,7 +287,7 @@ function showSpList(e) {
     if ((txsp.length>0) && spList[i].id.indexOf(txsp)<0) continue;
     ndsp += 1;
     if (ndsp>10) {
-       htm += '<span class="listitem dim4"><i>.&nbsp;.&nbsp;.&nbsp;more</i></span>';
+       htm += '<span class="listitem dim4"><i>.&nbsp;.&nbsp;.&nbsp;</i></span>';
        break;
     }
     ttl = 'InCommon federation';
@@ -630,7 +630,8 @@ function assembleRPMetadata(entityId) {
 
 function postSaveRP() {
    console.log('postSaveRP');
-   iam_showTheNotice('Changes saved');
+   // iam_showTheNotice('Changes saved');
+   iam_bannerNotice('Changes saved');
    var url = v_root + v_vers + '/rp/?id=' + rpId + '&mdid=UW';
    if (newSpConnect!=null) dojo.disconnect(newSpConnect);
    newSpConnect = null;
@@ -654,7 +655,7 @@ function saveRP(entityId) {
 
 function postDeleteRP() {
    iam_hideTheDialog('metaDeleteDialog');
-   iam_showTheNotice('Relying party ' + rpId + ' deleted');
+   iam_bannerNotice('Relying party ' + rpId + ' deleted');
    iam_hideShow(['spDisplay'],['homeDisplay']);
    document.body.style.cursor = 'default';
 }
@@ -691,7 +692,7 @@ var _okmsg;
 
 function _postReqAttrs() {
    iam_hideTheDialog('attrReqDialog');
-   iam_showTheMessage(_okmsg);
+   iam_bannerNotice('Request submitted.');
 }
 
 // submit the request
@@ -736,7 +737,7 @@ attr_requestAttrs = function(entityId) {
       iam_showTheNotice('There are no changes to request.');
       return;
    }
-   _okmsg = 'Request submitted<p><ul>' + _okmsg + '</ul>';
+   _okmsg = 'Request submitted<ul>' + _okmsg + '</ul>';
    msg = dijitRegistry.byId('attr_req_exptext').get('value').trim();
    if (msg=='') {
       iam_showTheNotice('You must explain why you need the attributes');
@@ -825,7 +826,7 @@ function _attributeXml (gid, id) {
 
 function _postSaveAttrs() {
    iam_hideTheDialog('attrEditDialog');
-   iam_showTheMessage('<h3>Attributes updated.</h3><p>Allow 20 minutes for the changes to propagate to the IdP systems.</h3><p>');
+   iam_bannerNotice('Attributes updated: Allow 20 minutes to propagate.');
    showCurrentSp();
 }
 
@@ -852,7 +853,7 @@ attr_saveAttrs = function(gid, entityId) {
 
 function _postSaveProxy() {
    iam_hideTheDialog('proxyEditDialog');
-   iam_showTheMessage('<h3>Gateway parameters saved.</h3><p>Allow 20 minutes for the changes to propagate to the IdP systems.</h3><p>');
+   iam_bannerNotice('Parameters saved: Allow 20 minutes to propagate.');
    showCurrentSp();
 }
 

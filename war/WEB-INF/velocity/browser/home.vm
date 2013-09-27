@@ -27,17 +27,6 @@
 
 <div id="PageContent">
 
-<h2>About the registry</h2>
-<div class="indentLeft">
-<p>
-All Service Providers (SP) wishing to authenticate users via the University of Washington's Shibboleth Identity Provider (IdP)
-must register for that service.  
-<p>
-<ul>
-<li><a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a></li>
-</ul>
-</div>
-
 <h3>Register a Service Provider</h3>
 <div class="indentLeft">
 <p>

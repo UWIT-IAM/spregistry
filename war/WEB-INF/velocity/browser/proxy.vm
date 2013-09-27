@@ -42,6 +42,7 @@
 
 <h3>SAML Gateways</h3>
 
+  #set ($nogw=1)
   #foreach ( $idp in $proxy.ProxyIdps )
     <h4>$idp.idp</h4>
     <ul class="iamlist">
@@ -50,7 +51,9 @@
     </li>
     </ul>
     <hr>
+    #set ($nogw=0)
   #end
+  #if ($nogw) <i>No gateways confgured.</i> #end
 
 </div>
 </div> 

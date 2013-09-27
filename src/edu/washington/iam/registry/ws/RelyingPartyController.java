@@ -235,6 +235,7 @@ public class RelyingPartyController {
                         log.debug("is admin");
                         session.isAdmin = true;
                      }
+
                      if (proxyGroup.isMember(session.remoteUser)) {
                         log.debug("is proxy");
                         session.isProxy = true;
