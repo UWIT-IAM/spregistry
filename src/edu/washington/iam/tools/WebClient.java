@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Vector;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.http.entity.StringEntity;
@@ -90,13 +91,21 @@ public class WebClient {
           // "SOAP-ENV:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">" + 
           // "xmlns:tns=\"http://ssl.ws.epki.comodo.com/\" " +
 
-
+    public void closeIdleConnections() { 
+       log.debug("closing idle");
+       connectionManager.closeExpiredConnections();
+       connectionManager.closeIdleConnections(30, TimeUnit.SECONDS);
+    }
     
     public Element doSoapRequest(String url, String action, String body) {
 
+       closeIdleConnections();
+
        // log.debug("do soap: " + action);
+       Element ele = null;
        DefaultHttpClient httpclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
        // httpclient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false); 
+
        try {
 
           // log.debug(" url: " + url);
@@ -113,7 +122,7 @@ public class WebClient {
 
           if (response.getStatusLine().getStatusCode()>=400) {
               log.error("soap error: "  + response.getStatusLine().getStatusCode() + " = " + response.getStatusLine().getReasonPhrase());
-              return null;
+              throw new WebClientException("soap error");
           } 
           HttpEntity entity = response.getEntity();
 
@@ -126,27 +135,27 @@ public class WebClient {
           // parse response text
           Document doc = documentBuilder.parse(entity.getContent());
           
-          Element ele = XMLHelper.getElementByName(doc.getDocumentElement(), "Body");
+          ele = XMLHelper.getElementByName(doc.getDocumentElement(), "Body");
           if (ele == null) {
              log.error("no body element");
              throw new WebClientException("no body element?");
           }
-          // log.debug("body: " + ele.getTagName());
-
-          return ele;
        } catch (Exception e) {
           log.error("exception " + e);
        }
-       return null;
+       return ele;
     }
 
     public Element doRestGet(String url, String auth) {
 
-       log.debug("do rest get");
+       closeIdleConnections();
+
+       // log.debug("do rest get");
+       Element ele = null;
        DefaultHttpClient httpclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
        try {
 
-          log.debug(" url: " + url);
+          // log.debug(" url: " + url);
           // log.debug(" auth: " + auth);
 
           HttpGet httpget = new HttpGet(url);
@@ -154,10 +163,7 @@ public class WebClient {
           httpget.addHeader("Accept", "text/xml");
 
           HttpResponse response = httpclient.execute(httpget);
-          log.debug("resp: " + response.getStatusLine().getStatusCode() + " = " + response.getStatusLine().getReasonPhrase());
-
           HttpEntity entity = response.getEntity();
-log.debug("resp: " + entity.getContent());
 
           // null is error - should get something
           if (entity == null) {
@@ -166,11 +172,11 @@ log.debug("resp: " + entity.getContent());
 
           // parse response text
           Document doc = documentBuilder.parse(entity.getContent());
-          return doc.getDocumentElement();
+          ele = doc.getDocumentElement();
        } catch (Exception e) {
           log.error("exception " + e);
        }
-       return null;
+       return ele;
     }
 
     public Element doRestGet(String url) {
@@ -179,7 +185,10 @@ log.debug("resp: " + entity.getContent());
 
     public Element doRestPut(String url, List<NameValuePair> data, String auth) {
 
+       closeIdleConnections();
+
        log.debug("do rest put");
+       Element ele = null;
        DefaultHttpClient httpclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
        try {
 
@@ -190,8 +199,7 @@ log.debug("resp: " + entity.getContent());
           httpput.setEntity(new UrlEncodedFormEntity(data));
 
           HttpResponse response = httpclient.execute(httpput);
-
-          log.debug("resp: " + response.getStatusLine().getStatusCode() + " = " + response.getStatusLine().getReasonPhrase());
+           log.debug("resp: " + response.getStatusLine().getStatusCode() + " = " + response.getStatusLine().getReasonPhrase());
           HttpEntity entity = response.getEntity();
 
           // null is error - should get something
@@ -201,11 +209,11 @@ log.debug("resp: " + entity.getContent());
 
           // parse response text
           Document doc = documentBuilder.parse(entity.getContent());
-          return doc.getDocumentElement();
+          ele = doc.getDocumentElement();
        } catch (Exception e) {
           log.error("exception " + e);
        }
-       return null;
+       return ele;
     }
 
     // initialize

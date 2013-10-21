@@ -50,25 +50,27 @@
 
 
 <h3 class="">Released attributes</h3>
+<p><i>No attribute filtering except where noted.</i>
+<p>
 
 <ul class="iamlist">
  
   #foreach ( $attr in $attributes )
 
    #if ($attr.attributeFilterPolicy )
-      <li><div class="dt dt9" $ahide title="$!{attr.description}">$!{attr.id}</div>
+      <li><div class="dt dt9" title="$!{attr.description}">$!{attr.id}</div>
       #set ($ar = $attr.attributeRule)
       #foreach ( $value in $ar.valueRules )
           <div class="dd">
          #if ( $value.type == "basic:ANY" )
-          All values
+##           All values
          #else
            #set ($c=0)
            #foreach ( $rule in $value.rules )
              #if ($c>0)
-               <br>
+              <br>
              #end
-             #if ($rule.regex)<span class="subtitle">(regex)</span>#end ${rule.value}
+             #if ($rule.regex)<span class="subtitle">(regex)</span>#end <tt>${rule.value.replaceFirst("urn:mace:washington.edu:groups:","")}</tt>
              #set ($c = $c + 1)
            #end
          #end

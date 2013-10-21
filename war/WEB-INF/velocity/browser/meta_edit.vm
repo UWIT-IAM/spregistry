@@ -36,7 +36,7 @@
 These are default values for a Shibboleth 2.x Service Provider.  They will very likely need to be edited.
 #end
 
-<h3>Organization</h3>
+<h3 class="accessibility">Organization</h3>
 
 <ul class="iamlist">
 ## Organization
@@ -63,9 +63,11 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
     <li>
       <h4 class="dt">Contacts</h4>
        <div class="dd">
-        <ul class="iamlist">
    #set ( $count = 0 )
    #foreach ( $ct in $relyingParty.contactPersons )
+   <fieldset>
+   <legend class="accessibility">contact number $count</legend>
+        <ul class="iamlist">
      <li id="ct${count}_0">
        <span class="dt dt3" >Type</span>
        <select class="dd" id="ctt_${count}" aria-label="contact type">
@@ -88,10 +90,15 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
         <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctp_${count}" value="$!ct.phone" aria-label="phone"/>
      </li>
      <li><div class="dt dt3" style="height:.5em"></div></li>
+     <ul>
+     </fieldset>
      #set ( $count = $count + 1)
    #end
- 
+
    #foreach ( $i in [ $count .. 4 ] )
+   <fieldset>
+   <legend class="accessibility">contact number $i</legend>
+        <ul class="iamlist">
      <li id="ct${i}_0" #if ( $i > 1 ) ${hide} #end >
        <span class="dt dt3" >Type</span>
        <select class="dd" id="ctt_${i}" aria-label="contact type">
@@ -109,20 +116,22 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
         <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctgn_${i}" value="" aria-label="Name, required" />
      </li>
      <li id="ct${i}_2" #if ( $i > 1 ) ${hide} #end >
-      ## <label class="dt dt3" >Email$rstar</label>
+      <label class="dt dt3" >Email$rstar</label>
         <input class="dd" data-dojo-type="dijit.form.TextBox" id="cte_${i}" value="" aria-label="email, required" />
      </li>
      <li id="ct${i}_3" #if ( $i > 1 ) ${hide} #end >
       <span class="dt dt3">Phone</span>
         <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctp_${i}" value="" aria-label="phone"/>
      </li>
+     </ul>
      #set ( $label = "" )
+   </fieldset>
    #end
-   <li id="ct_more">
+   <div id="ct_more">
     <div class="dt dt3"><a href="javascript:meta_showMoreFields('ct', 'ct_more')">add contact person</a></div>
-   </li>
+   </div>
 
-   </ul></div>
+   </div>
   </li>
 </ul>
 

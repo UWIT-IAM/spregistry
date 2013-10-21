@@ -216,6 +216,7 @@ public class Metadata {
    // get rp by id
    public RelyingParty getRelyingPartyById(String rpid) throws RelyingPartyException {
       log.debug("md " + id + " looking for " + rpid);
+      refreshMetadataIfNeeded();
       RelyingParty ret = null;
       locker.readLock().lock();
       for (int i=0; i<relyingParties.size(); i++) {
@@ -229,6 +230,7 @@ public class Metadata {
 
    // select rps by match
    public int addSelectRelyingParties(String sel, List<RelyingParty> list) {
+      refreshMetadataIfNeeded();
       int nrp = 0;
       refreshMetadataIfNeeded();
       locker.readLock().lock();

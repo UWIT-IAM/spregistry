@@ -93,18 +93,12 @@ function redirectToLogin(path) {
 ## banner popups and menus
 
 
-<div id="helpTimeout" data-dojo-type="iam/Dialog" title="Time's up"
-    data-dojo-props="submitLabel:'Refresh', submitAction:'location.reload()'"
-    $hide>
-   <p align="center">Your session with the<br>Service Provider Registry<br>has expired.<p>Refresh the page to continue working.</p>
-</div>
-
 <div id="helpAbout" data-dojo-type="iam/Dialog" title="About" $hide data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
    Identity and Access Management
 <br/>
 Service Provider Registry 2.0.0
 <br/>
-Revision 9/12/2013
+Revision 10/01/2013
 </div>
 
 
@@ -120,7 +114,7 @@ Revision 9/12/2013
 
 <div id="thepage" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height: 100%;overflow:hidden">
 
-## banner
+## top banner
 <h1 class="hidden">SERVICE PROVIDER REGISTRY</h1>
 <div id="topbanner" data-dojo-type="dijit.layout.ContentPane">
 <span class="topleft"><a href="https://wiki.cac.washington.edu/x/lR4">IDENTITY AND ACCESS MANAGEMENT</a></span>
@@ -152,9 +146,6 @@ Revision 9/12/2013
 
 
 <div data-dojo-type="dijit.layout.ContentPane" style="margin:10%" >
-<p>
-## The Service Provider Registry maintains information on SAML service providers (SP) that use the University's Shibboleth Identity Provider (IdP).
-<p>
 
 <p>
  <h3>Login</h3>

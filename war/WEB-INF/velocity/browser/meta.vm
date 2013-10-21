@@ -53,7 +53,9 @@
  <div id="metaViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;"
     onShow="adjustSpPaneSize('metaViewPane')" >
 
-<h3 class="">Organization</h3>
+## <fieldset>
+## <legend class="h3">Organization</legend>
+<h3>Organization</h3>
 
 <ul class="iamlist">
     #set ( $org = $relyingParty.organization )
@@ -61,34 +63,33 @@
     <li><h4 class="dt">Name</h4><div class="dd">$org.name</div></li>
     #end
     #if ( $org.displayName )
-    <li><h4 class="dt">Display </h4><div class="dd">$org.displayName</div></li>
+    <li><h4 class="dt">Display name</h4><div class="dd">$org.displayName</div></li>
     #end
     #if ( $org.url )
-    <li><h4 class="dt">url </h4><div class="dd">$org.url</div></li>
+    <li><h4 class="dt">Url </h4><div class="dd">$org.url</div></li>
     #end
 
+    <li><h4 class="dt">Contacts </h4><div class="dd">
    #foreach ( $ct in $relyingParty.contactPersons )
-    <li>
-      <h4 class="dt">$!ct.type</h4>
-       <div class="dd">
+     <fieldset style="margin-bottom:8px">
+    <legend class="h4">$!ct.type</legend>
      #if ( $ct.givenName || $ct.surName )
       $!ct.givenName $!ct.surName<br>
      #end
      #if ( $ct.company )
-      $!ct.company<br>
+      $!ct.company </br>
      #end
      #if ( $ct.email )
-      $!ct.email<br>
+      $!ct.email</br>
      #end
-     #if ( $ct.phone )
-      $!ct.phone<br>
-     #end
-      </div>
-    </li>
+     </fieldset>
    #end
+    </div>
+    </li>
  </ul>
+## </fieldset>
 
-<h3 >Metadata details</h3>
+<h3>Metadata details</h3>
    
 <ul class="iamlist" >
 
@@ -107,21 +108,21 @@
    <li>
       <h4 class="dt">KeyInfo</h4>
         <div class="dd">
-         <ul class="iamlist">
        #foreach ( $key in $relyingParty.keyDescriptors )
-         <li><h5 class="dt dt2">Cert</h5><div class="dd ">Name: $!key.keyName
+         <fieldset style="margin-bottom:8px">
+          <legend class="h4">Certificate</legend>
+         <ul class="iamlist">
+         <li><span class="dt dt3">Name</span><span class="dd dd3">$!key.keyName</span></li>
          #if ( $key.cert )
-          <br>Subject: $!{key.cert.dn}
-          <br>Issuer: $!{key.cert.issuerDn}
-          <br>Issued: $dateFormatter.format($key.cert.issued)
-          <br>Expires: $dateFormatter.format($key.cert.expires)
+         <li><span class="dt dt3">Subject</span><span class="dd dd3">$!key.cert.dn</span></li>
+         <li><span class="dt dt3">Issuer</span><span class="dd dd3">$!key.cert.issuerDn</span></li>
+         <li><span class="dt dt3">Issued</span><span class="dd dd3">$dateFormatter.format($key.cert.issued)</span></li>
+         <li><span class="dt dt3">Expires</span><span class="dd dd3">$dateFormatter.format($key.cert.expires)</span></li>
          #end
-          </div>
-         </li>
-       #end
          </ul>
+         </fieldset>
+       #end
         </div>
-
    </li>
 
 
@@ -147,17 +148,18 @@
     <li>
       <h4 class="dt" valign="top">ACS:</h4>
       <div class="dd">
-         <ul class="iamlist">
    #foreach ( $acs in $relyingParty.assertionConsumerServices )
-         <li><h5 class="dt dt2">$acs.index</h5><div class="dd">
-         binding: $acs.binding<br>
-         location: <tt>$acs.location</tt>
-         </div></li>
-         </hr>
+         <fieldset style="margin-bottom:8px">
+          <legend class="h4">Index: $acs.index</legend>
+           <ul class="iamlist">
+           <li><span class="dt dt3">binding</span><span class="dd dd3">$acs.binding</span</li>
+           <li><span class="dt dt3">location</span><span class="dd dd3">$acs.location</span</li>
+           </ul>
+         </fieldset>
    #end
       </div>
-     </li>
-</du>
+   </li>
+</ul>
 
 
 </div>

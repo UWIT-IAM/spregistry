@@ -804,6 +804,10 @@ function _attributeXml (gid, id) {
         if (vw==null) break;
         v = vw.get('value').trim();
         if (v!='') {
+           if (id=='gws_groups') {
+              if (v.indexOf('urn:')!=0) v = 'urn:mace:washington.edu:groups:' + v;
+              console.log('chk fix val: ' + v);
+           } 
           if (dijitRegistry.byId(gid + '_attr_edit_x_' + i + '_' + id).get('checked')) {
               txt += '<basic:Rule xsi:type="basic:AttributeValueRegex" regex="' + iam_makeOkXml(v) + '"/>';
           } else { 
