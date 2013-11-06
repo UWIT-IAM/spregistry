@@ -28,9 +28,7 @@
  #end
 #end
 
-<div id="attrEditDialog" dojoType="iam/Dialog" title="Edit attributes for ${relyingPartyId}" 
-    data-dojo-props="submitLabel:'Save changes', submitAction:'attr_saveAttrs(\'${gid}\', \'${relyingPartyId}\')', cancelLabel:'Cancel'"
-    $hide >
+<div id="attrEditDialog" dojoType="dijit/Dialog" title="Edit attributes for ${relyingPartyId}" $hide >
 
 ## <p>Allow 40 minutes for our IdP to acquire the changes to this service provider's attribute release policy.
 <h3>Attributes from by $group.description</h3>
@@ -111,4 +109,8 @@
 
 </ul>
 </form>
+    <div class="dijitDialogPaneActionBar">
+        <button dojoType="dijit.form.Button" type="button" onClick="attr_saveAttrs('${gid}', '${relyingPartyId}')">Save changes</button>
+        <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('attrEditDialog');" >Close</button>
+    </div>
 </div>

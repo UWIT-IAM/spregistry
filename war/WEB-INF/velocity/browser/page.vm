@@ -38,7 +38,8 @@ dojoConfig = {
 
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/dojo.js" data-dojo-config="async: true"></script>
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/resources/dojo.css"/>
-  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/tundra/tundra.css"/>
+##  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/tundra/tundra.css"/>
+  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/claro/claro.css"/>
 
 <link rel="stylesheet" type="text/css" href="/css/iam-dojo-2.css"/>
 
@@ -92,25 +93,34 @@ v_xsrf = '${xsrf}';
 </script>
 </head>
 
-<body class="tundra" id="documentbody">
+<body class="claro" id="documentbody">
 
 ## banner popups and menus
 
-
-<div id="helpTimeout" data-dojo-type="iam/Dialog" title="Time's up"
-    data-dojo-props="submitLabel:'Refresh', submitAction:'location.reload()'"
-    $hide>
-   <p align="center">Your session with the<br>Service Provider Registry<br>has expired.<p>Refresh the page to continue working.</p>
+<div id="helpTimeout" data-dojo-type="dijit/Dialog" title="Time's up" $hide>
+ <div class="dijitDialogPaneContentArea">
+   <p aligh="center">Your session with the <br/>Service Provider Registry<br/> has expired. <br/>Refresh the page to continue working.</p>
+ </div>
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" type="button" onClick="location.reload()">Refresh</button>
+ </div>
 </div>
 
-<div id="helpAbout" data-dojo-type="iam/Dialog" title="About" $hide data-dojo-props="cancelLabel:'Close'">
-   Identity and Access Management
-<br/>
-Service Provider Registry 2.0.0
-<br/>
-Revision 9/26/2013
-<p/>
-<a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a>
+
+
+<div id="helpAbout" data-dojo-type="dijit/Dialog" title="About" $hide >
+  <div class="dijitDialogPaneContentArea">
+    Identity and Access Management
+    <br/>
+    Service Provider Registry 2.0.0
+    <br/>
+    Revision 11/03/2013
+    <p/>
+    <a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a>
+  </div>
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('helpAbout')">Close</button>
+ </div>
 </div>
 
 
@@ -125,7 +135,7 @@ Revision 9/26/2013
 </div>
 
 
-<div id="thepage" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height: 100%;overflow:hidden; opacity:0;">
+<div id="thepage" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height: 100%;overflow:hidden; opacity:0; padding:0px;">
 
 ## banner
 <h1 class="hidden">SERVICE PROVIDER REGISTRY</h1>
@@ -189,17 +199,17 @@ Revision 9/26/2013
  <h3>Register a Service Provider</h3>
 
    Enter your SP's entityId
-    <input dojoType="dijit.form.TextBox" size="60" id="newSp" value="" />
-    <span style="float:left;font-size:smaller">
+    <input style="float:right" dojoType="dijit.form.TextBox" size="60" id="newSp" value="" />
+    <span style="float:right;font-size:smaller">
         <input data-dojo-type="dijit.form.CheckBox" id="newSpNolookup" checked="checked"</input>
       <label for="newSpNolookup">Get metadata from the SP</label></span>
-   <button style="float:right;font-size:smaller" type="button"
+   <button style="float:left;font-size:smaller" type="button"
             data-dojo-type="dijit/form/Button" onClick="javascript:meta_lookupSp()">Continue</button>
 
 <p>
 
 
- <h3 style="padding-top:20px">Update a Service Provider</h3>
+ <h3 style="clear:both;padding-top:25px">Update a Service Provider</h3>
  <label for="filterSpList">Enter part of your SP's entityId</label><input id="filterSpList"  data-dojo-type="dijit.form.TextBox" />
 <br>
  <div class="spList" id="spIndexPane" data-dojo-type="dijit.layout.ContentPane"
@@ -218,7 +228,7 @@ Revision 9/26/2013
 <div id="displayPanel" data-dojo-type="dijit.layout.ContentPane">
 
 <div id="homeDisplay" data-dojo-type="dijit.layout.ContentPane" style="margin-top:6px;overflow:auto;" >
-#parse ( 'browser/home.vm' )
+## #parse ( 'browser/home.vm' )
  </div>
 
 <div id="spDisplay" data-dojo-type="dijit.layout.ContentPane" style="display:none" >
@@ -235,8 +245,11 @@ Revision 9/26/2013
 ## footer
 
 
-<div id="footer" data-dojo-type="dijit.layout.ContentPane"  style="position:absolute;bottom:0px">>
-    <span id="footlogo"><a href="http:/www.uw.edu/" title="University of Washington"><img src="/img/uofw-small.gif" alt="UW" /></a></span>
+<div id="footer" data-dojo-type="dijit.layout.ContentPane"  style="position:absolute;bottom:0px">
+    <span id="footlogo"><a href="http:/www.uw.edu/" title="University of Washington">
+       ##  <img src="/img/uofw-small.gif" alt="UW" />
+       &copy;&nbsp;2013&nbsp;UNIVERSITY OF WASHINGTON
+       </a></span>
     <span id="footcenter">
     <ul id="navigation">
         <li><a href="mailto:help@uw.edu">CONTACT US</a></li>
@@ -248,7 +261,7 @@ Revision 9/26/2013
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li><a href="javascript:dijit.byId('helpAbout').show();">SPReg 2.0</a></li>
+        <li><a href="javascript:iam_showTheDialog('helpAbout');">SPReg 2.0</a></li>
     </ul>
     </span>
 </div>

@@ -338,12 +338,12 @@ function loadSpList()
 
 function setPaneSizes() {
    console.log('Set pane sizes.....');
-   var pHeight = dojo.position(dojo.byId('indexPanel'),true).h;
-   var h = pHeight - 120;
+   var ih = dojo.position(dojo.byId('indexPanel'),true).h;
+   var h = ih - 20;
 
    var dh = dojo.position(dojo.byId('displayPanel'),true).h;
    var dw = dojo.position(dojo.byId('displayPanel'),true).w;
-   var idh = dh - 10;
+   var idh = dh - 20;
    var idw = dw - 10;
    console.log('spDisp height:' + idh + ' width:' + idw);
 

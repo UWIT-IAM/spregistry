@@ -34,21 +34,16 @@
 <div id="metaSpContainer" dojoType="dijit.layout.ContentPane" title="Metadata" selected="true" style="overflow:hidden"
    doLayout="false" >
 
-  <div id="metaViewLinks" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false">
-  <ul role="navigation">
+<ul class="buttonBar" role="navigation">
   #if ($editable)
-   <li class="sublist" >Actions:</li>
-   <li class="sublist" > <a id="metaEditLink" role="button" tabindex="0" aria-label="edit metadata"
-          href="javascript:dijit.byId('metaEditDialog').show();">Edit</a>
+   <li><button dojoType="dijit.form.Button" type="button" onClick="dijit.byId('metaEditDialog').show();">Edit</button>
    </li>
-  #if ( ! $newEntity )
-   <li class="sublist" > <a id="metaDeleteLink" role="button" tabindex="0" aria-label="delete metadata"
-          href="javascript:iam_showTheDialog('metaDeleteDialog',[]);">Delete</a>
-   </li>
+   #if ( ! $newEntity )
+    <li><button dojoType="dijit.form.Button" type="button" onClick="iam_showTheDialog('metaDeleteDialog',[]);">Delete</button>
+    </li>
+   #end
   #end
-  #end
-  </ul>
-  </div>
+</ul>
 
  <div id="metaViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;"
     onShow="adjustSpPaneSize('metaViewPane')" >

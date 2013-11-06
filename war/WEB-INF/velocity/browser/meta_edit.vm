@@ -19,11 +19,11 @@
 ## Templates for rp edit 
 ##
 
-<div id="metaEditDialog" data-dojo-type="iam/Dialog" title="Edit metadata"
-     data-dojo-props="submitLabel:'Save changes', submitAction:'saveRP(\'${relyingParty.entityId}\')', cancelLabel:'Cancel'"
-     style="display:none">
+<div id="metaEditDialog" data-dojo-type="dijit/Dialog" title="Edit metadata" $hide>
 
 ## <div id="metarnotice" class="rnotice">(<span class="rstar">*</span> required field)</div>
+
+<div class="dijitDialogPaneContentArea">
 
 
 <h3 tabindex="0">Edit metadata for ${relyingPartyId}</h3>
@@ -268,15 +268,22 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
 
     </ul></div>
    </li>
+</div>
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" type="button" onClick="saveRP('${relyingParty.entityId}')">Save changes</button>
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('helpAbout')">Close</button>
+ </div>
 
 </div>
 
 ## submitter
 
-<div id="metaDeleteDialog" data-dojo-type="iam/Dialog" title="Metadata delete"
+<div id="metaDeleteDialog" data-dojo-type="dijit/Dialog" title="Metadata delete" $hide>
      data-dojo-props="submitLabel:'Yes, delete', submitAction:'deleteRP(\'${relyingParty.entityId}\')', cancelLabel:'Cancel'"
-  style="display:none">
-
 <h3>Permanemtly delete ${relyingParty.entityId}?</h3>
-<p>
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" type="button" onClick="deleteRP('${relyingParty.entityId}')">Yes, delete</button>
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('helpAbout')">Cancel</button>
+ </div>
+
 </div>

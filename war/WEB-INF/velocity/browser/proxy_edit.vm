@@ -17,7 +17,7 @@
 ##
 
 ## helpers
-<div id="googleGateHelp" dojoType="iam/Dialog" title="Google gateway" $hide>
+<div id="googleGateHelp" dojoType="dijit/Dialog" title="Google gateway" $hide>
 The Google gateway allows your SAML SP users to authenticate with their Google identities.
 <p>
 Your Client ID and Client Secret go into the Gateway form.
@@ -25,7 +25,7 @@ Your Client ID and Client Secret go into the Gateway form.
 See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw" target="spghelp">Social-to-SAML gateway</a> for more information.
 </div>
 
-<div id="liveidGateHelp" dojoType="iam/Dialog" title="Google gateway" $hide>
+<div id="liveidGateHelp" dojoType="dijit/Dialog" title="Google gateway" $hide>
 The LiveID gateway allows your SAML SP users to authenticate with their LiveID identities.
 <p>
 Activate the LiveID gateway by entering your liveid application's id and secret in the gateway form.
@@ -34,12 +34,12 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 </div>
 
 
-<div id="proxyEditDialog" data-dojo-type="iam/Dialog" title="Edit proxy data for ${relyingPartyId}"
-    data-dojo-props="submitLabel:'Save changes', submitAction:'proxy_saveProxy(\'${relyingPartyId}\')', cancelLabel:'Cancel'"
-    ${hide}>
+<div id="proxyEditDialog" data-dojo-type="dijit/Dialog" title="Edit proxy data for ${relyingPartyId}" ${hide}>
 
 #set ($google_status = 0 )
 #set ($liveid_status = 0 )
+
+<div class="dijitDialogPaneContentArea">
 
 <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/o9o6Aw" target="spghelp">help</a></div>
 <h3>SAML Gateways</h3>
@@ -99,6 +99,12 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
           /></div>
     </li>
    </ul>
+
+</div>
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" type="button" onClick="proxy_saveProxy('${relyingPartyId}')">Save changes</button>
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('helpAbout')">Close</button>
+ </div>
 
 
 

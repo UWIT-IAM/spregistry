@@ -27,21 +27,21 @@
 <div id="attrSpContainer" dojoType="dijit.layout.ContentPane" title="Attributes" selected="false" style="overflow:hidden"
    doLayout="false" >
 
-  <div id="attrViewLinks" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false" >
-  <ul>
-  <li class="sublist" >Actions:</li>
+##   <div id="attrViewLinks" class="tabbox" dojoType="dijit.layout.ContentPane" doLayout="false" >
+<ul class="buttonBar">
+
   #if ($canEdit || $newEntity)
-  <li class="sublist" ><a id="attrReqLink" tabindex="0" role="button" 
-       href="javascript:iam_showTheDialog('attrReqDialog',['sp/attrlib']);">Request_attributes</a>
+  <li><button dojoType="dijit.form.Button" type="button"
+       onClick="iam_showTheDialog('attrReqDialog',['sp/attrlib']);">Request_attributes</button>
   </li>
   #end
   #if ($isAdmin)
-  <li class="sublist" ><a id="attrEditLink" tabindex="0" role="button" 
-       href="javascript:iam_showTheDialog('attrEditDialog',['sp/attrlib']);">Edit</a>
+  <li><button dojoType="dijit.form.Button" type="button"
+       onClick="iam_showTheDialog('attrEditDialog',['sp/attrlib']);">Edit</button>
   </li>
   #end
   </ul>
-  </div>
+##   </div>
 
 
 <div id="attrViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false"
@@ -49,8 +49,8 @@
 
 
 
-<h3 class="">Released attributes</h3>
-<p><i>No attribute filtering except where noted.</i>
+<h3 class="hidden">Released attributes</h3>
+<p>These attribute are released to this service provider.</i>
 <p>
 
 <ul class="iamlist">

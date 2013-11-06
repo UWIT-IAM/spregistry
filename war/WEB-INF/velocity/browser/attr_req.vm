@@ -19,10 +19,10 @@
 ## attr request
 ##
 
-<div id="attrReqDialog" data-dojo-type="iam/Dialog" title="Request attributes for ${relyingPartyId}"
-    data-dojo-props="submitLabel:'Submit request', submitAction:'attr_requestAttrs(\'${relyingPartyId}\')', cancelLabel:'Cancel'"
+<div id="attrReqDialog" data-dojo-type="dijit/Dialog" title="Request attributes for ${relyingPartyId}" 
     style="display:none;" >
 
+<div class="dijitDialogPaneContentArea">
 Check the attributes you need. Uncheck those you no longer want.
 ## <div id="attrrnotice" class="rnotice">(<span class="rstar">*</span> denotes required field)</div>
 
@@ -79,7 +79,12 @@ Check the attributes you need. Uncheck those you no longer want.
 <textarea data-dojo-type="dijit.form.Textarea" id="attr_req_exptext" rows="10" cols="50" aria-label="reason for attributes, required"></textarea>
 
 </form>
+</div>
 
+    <div class="dijitDialogPaneActionBar">
+        <button data-dojo-type="dijit/form/Button" type="button" onClick="attr_requestAttrs('${relyingPartyId}')">Submit</button>
+        <button data-dojo-type="dijit/form/Button" type="button" onClick="iam_hideTheDialog('attrReqDialog');">Close</button>
+    </div>
 
 </div>
 
