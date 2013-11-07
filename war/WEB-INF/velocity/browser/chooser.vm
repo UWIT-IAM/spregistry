@@ -93,13 +93,21 @@ function redirectToLogin(path) {
 ## banner popups and menus
 
 
-<div id="helpAbout" data-dojo-type="iam/Dialog" title="About" $hide data-dojo-props="submitLabel:'Close', submitAction:'console.log(\'close\')'">
-   Identity and Access Management
-<br/>
-Service Provider Registry 2.0.0
-<br/>
-Revision 10/01/2013
+<div id="helpAbout" data-dojo-type="dijit/Dialog" title="About" $hide >
+  <div class="dijitDialogPaneContentArea">
+    Identity and Access Management
+    <br/>
+    Service Provider Registry 2.0.0
+    <br/>
+    Revision 11/07/2013
+    <p/>
+    <a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a>
+  </div>
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('helpAbout')">Close</button>
+ </div>
 </div>
+
 
 
 ## page
@@ -128,7 +136,6 @@ Revision 10/01/2013
     <span id="title"><a tabindex=-1 href="javascript:showHomePage()">SERVICE PROVIDER REGISTRY</a></span>
 ##     <span id="banner_notice"></span>
     <ul id="ident">
-     <li>(dev 2.0 [1.8.3])</li>
         <li>$!{notice}</li>
     </ul>
 </div>##banner
@@ -176,8 +183,11 @@ Revision 10/01/2013
 ## footer
 
 
-<div id="footer" data-dojo-type="dijit.layout.ContentPane"  style="position:absolute;bottom:0px">>
-    <span id="footlogo"><a href="http:/www.uw.edu/" title="University of Washington"><img src="/img/uofw-small.gif" alt="UW" /></a></span>
+<div id="footer" data-dojo-type="dijit.layout.ContentPane"  style="position:absolute;bottom:0px">
+    <span id="footlogo"><a href="http:/www.uw.edu/" title="University of Washington">
+       ##  <img src="/img/uofw-small.gif" alt="UW" />
+       &copy;&nbsp;2013&nbsp;UNIVERSITY OF WASHINGTON
+       </a></span>
     <span id="footcenter">
     <ul id="navigation">
         <li><a href="mailto:help@uw.edu">CONTACT US</a></li>
@@ -189,10 +199,11 @@ Revision 10/01/2013
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li><a href="javascript:dijit.byId('helpAbout').show();">SPReg 2.0</a></li>
+        <li><a href="javascript:iam_showTheDialog('helpAbout');">SPReg 2.0</a></li>
     </ul>
     </span>
 </div>
+
 
 </div>
 </body>

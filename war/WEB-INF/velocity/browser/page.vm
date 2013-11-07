@@ -114,7 +114,7 @@ v_xsrf = '${xsrf}';
     <br/>
     Service Provider Registry 2.0.0
     <br/>
-    Revision 11/03/2013
+    Revision 11/07/2013
     <p/>
     <a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a>
   </div>
@@ -155,7 +155,7 @@ v_xsrf = '${xsrf}';
     <span id="title"><a tabindex=-1 href="javascript:showHomePage()">SERVICE PROVIDER REGISTRY</a></span>
 ##     <span id="banner_notice"></span>
     <ul id="ident">
-        <li>$!{notice}</li>
+        <li></li>
     </ul>
 </div>##banner
 
