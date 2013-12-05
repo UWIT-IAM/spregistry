@@ -114,7 +114,7 @@ v_xsrf = '${xsrf}';
     <br/>
     Service Provider Registry 2.0.0
     <br/>
-    Revision 11/07/2013
+    Revision 12/05/2013
     <p/>
     <a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a>
   </div>
@@ -188,6 +188,10 @@ v_xsrf = '${xsrf}';
 
   });
 }
+
+function openNewSPForm() {
+   iam_hideShow(['newSpOpener'],['newSpForm']);
+}
 </script>
 
 
@@ -196,7 +200,13 @@ v_xsrf = '${xsrf}';
 
 <h2 class="hidden">Actions</h2>
 
- <h3>Register a Service Provider</h3>
+  <div id="newSpOpener" >
+ <button type="button"
+            data-dojo-type="dijit/form/Button" onClick="javascript:openNewSPForm()">Register a New Service Provider</button>
+  </div>
+
+ <div id="newSpForm" $hide>
+ <h3>Register a New Service Provider</h3>
 
    Enter your SP's entityId
     <input dojoType="dijit.form.TextBox" size="60" id="newSp" value="" />
@@ -207,11 +217,12 @@ v_xsrf = '${xsrf}';
    <br>
    <button style="font-size:smaller" type="button"
             data-dojo-type="dijit/form/Button" onClick="javascript:meta_lookupSp()">Continue</button>
+  </div>
 
 <p>
 
 
- <h3 style="clear:both;padding-top:25px">Update a Service Provider</h3>
+ <h3 style="clear:both;padding-top:25px">Update an Existing Service Provider</h3>
  <label for="filterSpList">Enter part of your SP's entityId</label><input id="filterSpList"  data-dojo-type="dijit.form.TextBox" />
 <br>
  <div class="spList" id="spIndexPane" data-dojo-type="dijit.layout.ContentPane"
