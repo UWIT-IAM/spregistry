@@ -279,11 +279,10 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
 ## submitter
 
 <div id="metaDeleteDialog" data-dojo-type="dijit/Dialog" title="Metadata delete" $hide>
-     data-dojo-props="submitLabel:'Yes, delete', submitAction:'deleteRP(\'${relyingParty.entityId}\')', cancelLabel:'Cancel'"
-<h3>Permanemtly delete ${relyingParty.entityId}?</h3>
+<h3>Permanently delete ${relyingParty.entityId}?</h3>
  <div class="dijitDialogPaneActionBar">
     <button dojoType="dijit.form.Button" type="button" onClick="deleteRP('${relyingParty.entityId}')">Yes, delete</button>
-    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('helpAbout')">Cancel</button>
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('metaDeleteDialog')">Cancel</button>
  </div>
 
 </div>

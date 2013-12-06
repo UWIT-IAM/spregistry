@@ -700,7 +700,7 @@ public class RelyingPartyController {
            int p = dns.indexOf('/', 10);
            if (p<0) dns = dns.substring(7);
            else dns = dns.substring(7,p);
-        } else lookup = true;
+        }
 
         if (dns.length()==0) return (emptyMV());
 
@@ -739,7 +739,7 @@ public class RelyingPartyController {
            }
         }
         if (rp==null) {
-           if (!rpid.startsWith("http")) return emptyMV(rpid + " did not respond with metadata");
+           if (lookup) return emptyMV(rpid + " did not respond with metadata");
            rp = rpManager.genRelyingPartyByName(rpid, dns);
            mv.addObject("relyingParty", rp);
            mv.addObject("relyingPartyId", rpid);
@@ -767,19 +767,13 @@ public class RelyingPartyController {
         log.info("PUT update for: " + id);
         int status = 200;
 
-       if (session.isBrowser && !(paramXsrf!=null && paramXsrf.equals(session.xsrfCode))) {
-           log.info("got invalid xsrf=" + paramXsrf + ", expected+" + session.xsrfCode);
-           return emptyMV("invalid session (xsrf)");
-       }
+        if (session.isBrowser && !(paramXsrf!=null && paramXsrf.equals(session.xsrfCode))) {
+            log.info("got invalid xsrf=" + paramXsrf + ", expected+" + session.xsrfCode);
+            return emptyMV("invalid session (xsrf)");
+        }
 
         ModelAndView mv = emptyMV("OK dokey");
 
-        if (!(id.startsWith("https://")||id.startsWith("http://"))) {
-            status = 400;
-            mv.addObject("alert", "Not a vaild entity id.");
-            response.setStatus(status);
-            return mv;
-        }
         try {
            if (!dnsVerifier.isOwner(id, session.remoteUser, null)) {
                status = 401;

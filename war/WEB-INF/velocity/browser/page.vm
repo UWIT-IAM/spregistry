@@ -212,8 +212,8 @@ function openNewSPForm() {
     <input dojoType="dijit.form.TextBox" size="60" id="newSp" value="" />
    <br>
     <span style="font-size:smaller">
-        <input data-dojo-type="dijit.form.CheckBox" id="newSpNolookup" checked="checked"</input>
-      <label for="newSpNolookup">Get metadata from the SP</label></span>
+        <input data-dojo-type="dijit.form.CheckBox" id="newSpLookup" checked="checked"</input>
+      <label for="newSpLookup">Get metadata from the SP</label></span>
    <br>
    <button style="font-size:smaller" type="button"
             data-dojo-type="dijit/form/Button" onClick="javascript:meta_lookupSp()">Continue</button>

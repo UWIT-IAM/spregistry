@@ -466,16 +466,17 @@ function handleGroupViewBtn(cn) {
       iam_showTheDialog('metaEditDialog',[]);
    }
 
-   function _lookupSp(rpid, nolook) {
+   function _lookupSp(rpid, lookup) {
       currentSp = null
       newSpId = rpid;
       v_spLoading = true;
       if (dijitRegistry.byId('spPane')!=null)  dijitRegistry.byId('spPane').destroyRecursive();
       var url = v_root + v_vers + '/new?rpid=' + rpid;
-      if (nolook) url += '&nolook=y';
+      if (!lookup) url += '&nolook=y';
       console.log(url);
-      dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);
-      dijitRegistry.byId('spDisplay').set('loadingMessage', 'Searching for ' + rpid + ' . . .' );
+      dijitRegistry.byId('spDisplay').set('errorMessage', 'Request for metadata failed.  Is the SP online?');
+      if (lookup) dijitRegistry.byId('spDisplay').set('loadingMessage', 'Searching for ' + rpid + ' . . .' );
+      else dijitRegistry.byId('spDisplay').set('loadingMessage', 'Processing . . .');
       dijitRegistry.byId('spDisplay').set('href', url);
       // dijitRegistry.byId('spDisplay').set('onLoad', postLoadNewSp);
       newSpConnect = dojo.connect(dijitRegistry.byId('spDisplay'), 'onLoad', postLoadNewSp);
@@ -490,8 +491,8 @@ function handleGroupViewBtn(cn) {
          iam_showTheNotice('you must provide an entityid');
          return;
       }
-      var ck = dijitRegistry.byId('newSpNolookup').get('checked');
-      return _lookupSp(dns, ck);
+      var lookup = dijitRegistry.byId('newSpLookup').get('checked');
+      return _lookupSp(dns, lookup);
    }  
 
 var nameRE = new RegExp("^[a-z][a-z0-9\.\_\-]+$");
@@ -633,7 +634,10 @@ function postSaveRP() {
    // iam_showTheNotice('Changes saved');
    iam_bannerNotice('Changes saved');
    var url = v_root + v_vers + '/rp/?id=' + rpId + '&mdid=UW';
-   if (newSpConnect!=null) dojo.disconnect(newSpConnect);
+   if (newSpConnect!=null) {
+      console.log('clear new sp connect');
+      dojo.disconnect(newSpConnect);
+   }
    newSpConnect = null;
    dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);
    dijitRegistry.byId('spDisplay').set('href', url);
@@ -654,10 +658,12 @@ function saveRP(entityId) {
 
 
 function postDeleteRP() {
+   console.log('post delete');
    iam_hideTheDialog('metaDeleteDialog');
    iam_bannerNotice('Relying party ' + rpId + ' deleted');
    iam_hideShow(['spDisplay'],['homeDisplay']);
    document.body.style.cursor = 'default';
+   rpId = null;
 }
 
 
@@ -665,7 +671,7 @@ function postDeleteRP() {
 function deleteRP(entityId) {
    rpId = entityId;
    var url = v_root + v_vers + '/rp?id=' + entityId + '&mdid=UW&xsrf=' + v_xsrf;
-   iam_deleteRequest(url, postDeleteRP);
+   iam_deleteRequest(url, null, null, postDeleteRP);
 }
 
 // convert sloppy textarea into comma-separated list
