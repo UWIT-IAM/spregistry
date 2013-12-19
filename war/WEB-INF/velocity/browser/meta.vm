@@ -147,8 +147,8 @@
          <fieldset style="margin-bottom:8px">
           <legend class="h4">Index: $acs.index</legend>
            <ul class="iamlist">
-           <li><span class="dt dt3">binding</span><span class="dd dd3">$acs.binding</span</li>
-           <li><span class="dt dt3">location</span><span class="dd dd3">$acs.location</span</li>
+           <li><span class="dt dt3">binding</span><span class="dd dd3">$acs.binding</span></li>
+           <li><span class="dt dt3">location</span><span class="dd dd3">$acs.location</span></li>
            </ul>
          </fieldset>
    #end
