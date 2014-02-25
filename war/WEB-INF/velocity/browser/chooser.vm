@@ -15,7 +15,7 @@
  * ========================================================================
  *#
 
-## sp registry webservice (main page)
+## sp registry webservice (login chooser page)
 
 #parse ( 'definitions.vm' )
 

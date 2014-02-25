@@ -92,7 +92,7 @@ public class RelyingPartyController {
 
     private static DNSVerifier dnsVerifier;
     private static GroupManager groupManager;
-    private String adminGroupName = "u_groups_act-as";
+    private String adminGroupName = "u_weblogin_admins";
     private Group adminGroup = null;
     private String proxyGroupName = "u_weblogin_spreg-gateway";
     private Group proxyGroup = null;
