@@ -103,7 +103,7 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 </div>
  <div class="dijitDialogPaneActionBar">
     <button dojoType="dijit.form.Button" type="button" onClick="proxy_saveProxy('${relyingPartyId}')">Save changes</button>
-    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('helpAbout')">Close</button>
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('proxyEditDialog')">Close</button>
  </div>
 
 

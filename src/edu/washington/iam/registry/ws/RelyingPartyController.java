@@ -657,6 +657,7 @@ public class RelyingPartyController {
         Proxy proxy = proxyManager.getProxy(id);
         // don't send proxy secret to non-admin
         if (proxy!=null && !canEdit) {
+           log.debug("clearing secrets");
            for (int p=0; p<proxy.getProxyIdps().size(); p++) proxy.getProxyIdps().get(p).setClientSecret("");
         }
 
@@ -1247,6 +1248,9 @@ public class RelyingPartyController {
     }
     public void setSecureLoginPath(String v) {
         secureLoginPath = v;
+    }
+    public void setGoogleIdentityProvider(String v) {
+        googleIdentityProvider = v;
     }
 
     public void setMyEntityId(String v) {

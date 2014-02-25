@@ -271,7 +271,7 @@ These are default values for a Shibboleth 2.x Service Provider.  They will very 
 </div>
  <div class="dijitDialogPaneActionBar">
     <button dojoType="dijit.form.Button" type="button" onClick="saveRP('${relyingParty.entityId}')">Save changes</button>
-    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('helpAbout')">Close</button>
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('metaEditDialog')">Close</button>
  </div>
 
 </div>

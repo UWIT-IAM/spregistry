@@ -38,7 +38,7 @@ dojoConfig = {
 
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/dojo.js" data-dojo-config="async: true"></script>
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/resources/dojo.css"/>
-  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/tundra/tundra.css"/>
+  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/claro/claro.css"/>
 
 <link rel="stylesheet" type="text/css" href="/css/iam-dojo-2.css"/>
 
@@ -88,7 +88,7 @@ function redirectToLogin(path) {
 </script>
 </head>
 
-<body class="tundra" id="documentbody">
+<body class="claro" id="documentbody">
 
 ## banner popups and menus
 
