@@ -63,6 +63,7 @@ import edu.washington.iam.registry.filter.FilterPolicyGroup;
 import edu.washington.iam.registry.filter.Attribute;
 
 import edu.washington.iam.registry.proxy.Proxy;
+import edu.washington.iam.registry.proxy.ProxyIdp;
 import edu.washington.iam.registry.proxy.ProxyManager;
 
 import edu.washington.iam.registry.exception.RelyingPartyException;
