@@ -20,10 +20,15 @@ package edu.washington.iam.registry.ws;
 import java.lang.Exception;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.BufferedWriter;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Date;
+import java.util.Vector;
+import java.util.Collection;
+import java.util.Iterator;
 import java.text.SimpleDateFormat;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +85,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 
 import java.security.cert.X509Certificate;
+import java.security.cert.CertificateParsingException;
 
 
 @Controller
@@ -166,6 +172,7 @@ public class RelyingPartyController {
        private ModelAndView mv;
        private long timeLeft;
        private boolean isProxy;
+       private List altNames;
     }
 
     /* send user to login chooser page */ 
@@ -268,25 +275,30 @@ public class RelyingPartyController {
            // use the CN portion of the DN as the client userid
            X509Certificate[] certs = (X509Certificate[])request.getAttribute("javax.servlet.request.X509Certificate");
            if (certs != null) {
-             session.viewType = "plain";
+             session.viewType = "xml";
              session.isBrowser = false;
              session.rootPath = certRootPath;
              X509Certificate cert = certs[0];
              String dn = cert.getSubjectX500Principal().getName();
              session.remoteUser = dn.replaceAll(".*CN=", "").replaceAll(",.*","");
              log.info(".. remote user by cert, dn=" + dn + ", cn=" + session.remoteUser);
-/*** If we wanted the altnames, here's how
-             Collection altNames = cert.getSubjectAlternativeNames();
-             if (altNames!=null) {
-                for (Iterator i = altNames.iterator(); i.hasNext(); ) {
-                   List item = (List)i.next();
-                   Integer type = (Integer)item.get(0);
-                   if (type.intValue() == 2) {
-                      String altName = (String)item.get(1);
+             session.altNames = new Vector();
+             try {
+                Collection altNames = cert.getSubjectAlternativeNames();
+                if (altNames!=null) {
+                   for (Iterator i = altNames.iterator(); i.hasNext(); ) {
+                      List item = (List)i.next();
+                      Integer type = (Integer)item.get(0);
+                      if (type.intValue() == 2) {
+                         String altName = (String)item.get(1);
+                         log.info(".. adding altname " + altName);
+                         session.altNames.add(altName);
+                      }
                    }
-                }
+                } else session.altNames.add(session.remoteUser);  // rules say cn meaningful only when altnames not present
+             } catch (CertificateParsingException e) {
+                log.info(".. altname parse failed: " + e);
              }
- ***/
            }
 
         }
@@ -675,6 +687,47 @@ public class RelyingPartyController {
         return (mv); 
     }
 
+    // rp's metadata (API endpoint)
+    @RequestMapping(value="/ws/metadata", method=RequestMethod.GET)
+    public ModelAndView getRelyingParty(@RequestParam(value="id", required=true) String id,
+            @RequestParam(value="mdid", required=true) String mdid,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        RPSession session = processRequestInfo(request, response);
+        if (session==null) return (emptyMV());
+        if (session.mv!=null) return (session.mv);
+
+        session.pageType = "metadata";
+        session.pageTitle = "Service provider";
+
+        RelyingParty rp = null;
+
+        String errmsg = null;
+
+        ModelAndView mv = basicModelAndView(session, "xml", "metadata");
+
+        try {
+           rp = rpManager.getRelyingPartyById(id, mdid);
+        } catch (RelyingPartyException e) {
+           return emptyMV("not found");
+        }
+        log.info("returning metadata id=" + id );
+        try {
+           StringWriter writer = new StringWriter();
+           BufferedWriter xout = new BufferedWriter(writer);
+           rp.writeXml(xout);
+           xout.close();
+           mv.addObject("metadata", writer.toString());
+        } catch (IOException e) {
+           log.error("string writer errro: " + e);
+           return emptyMV("internal error");
+        }
+
+        return (mv); 
+    }
+
+
     // new rp
     @RequestMapping(value="/new", method=RequestMethod.GET)
     public ModelAndView getRelyingPartyNew(@RequestParam(value="rpid", required=true) String rpid,
@@ -828,6 +881,80 @@ public class RelyingPartyController {
         return mv;
     }
 
+
+    // API update an rp metadata
+    @RequestMapping(value="/ws/metadata", method=RequestMethod.PUT)
+    public ModelAndView putRelyingParty(@RequestParam(value="id", required=true) String id,
+            @RequestParam(value="mdid", required=true) String mdid,
+            InputStream in,
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        RPSession session = processRequestInfo(request, response, false);
+        if (session==null) return (emptyMV());
+        log.info("API PUT update for: " + id);
+        int status = 403;
+
+        ModelAndView mv = basicModelAndView(session, "xml", "empty");
+
+        String dns = dnsFromEntityId(id);
+        for (int i=0; i<session.altNames.size(); i++) {
+           if (dns.equals(session.altNames.get(i))) {
+              log.info("dns match found for " + dns);
+              status = 200;
+           }
+        }
+        if (status==403) {
+           mv.addObject("alert", "You are not an owner of that entity.");
+           response.setStatus(status);
+           return mv;
+        }
+        Metadata md = rpManager.getMetadataById(mdid);
+        if (md==null || !md.isEditable()) {
+           status = 400;
+           mv.addObject("alert", "The metadata was not found or is not editable");
+           response.setStatus(status);
+           return mv;
+        }
+
+        Document doc = null;
+        try {
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            doc = builder.parse (in);
+        } catch (Exception e) {
+            log.info("parse error: " + e);
+            status = 400;
+            mv.addObject("alert", "The posted document was not valid:\n" + e);
+            response.setStatus(status);
+            return mv;
+        }
+        if (doc!=null) {
+           try {
+              md.updateRelyingParty(doc, id);
+           } catch (RelyingPartyException e) {
+              status = 400;
+              mv.addObject("alert", "Update of the metadata failed:\n" + e);
+           }
+        }
+
+        SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
+        msg.setTo(mailTo);
+        String act = "updated";
+        if (status==201) act = "created";
+        else if (status>=400) act = "attempted edit of";
+        msg.setSubject("Service provider metadata " + act + " by " + session.remoteUser);
+        msg.setText( "User '" + session.remoteUser + "' " + act + " metadata for '" + id + "'.\nRequest status: " + status +
+               "\n\nThis message is advisory.  No response is indicated.");
+        try{
+            this.mailSender.send(msg);
+        } catch(MailException ex) {
+            log.error("sending mail: " + ex.getMessage());            
+        }
+
+        response.setStatus(status);
+        return mv;
+    }
 
     // delete an rp
     @RequestMapping(value="/rp", method=RequestMethod.DELETE)
@@ -1206,6 +1333,16 @@ public class RelyingPartyController {
        } catch (NumberFormatException e) {
           return 0;
        }
+    }
+    private String dnsFromEntityId(String entityid) {
+       String dns = entityid;
+       if (dns.startsWith("http://")) dns = dns.substring(7);
+       if (dns.startsWith("https://")) dns = dns.substring(8);
+       int i = dns.indexOf("/");
+       if (i>0) dns = dns.substring(0,i);
+       i = dns.indexOf(":");
+       if (i>0) dns = dns.substring(0,i);
+       return dns;
     }
     private String cleanString(String in) {
        if (in==null) return null;

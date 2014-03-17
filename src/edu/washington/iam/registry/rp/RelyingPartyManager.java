@@ -30,6 +30,8 @@ public interface RelyingPartyManager extends Serializable {
    public RelyingParty updateRelyingPartyMD(RelyingParty rp, RelyingParty rrp);
 
    public List<Metadata> getMetadata();
+   public Metadata getMetadataById(String mdid);
+
 
    public void init();
    public void cleanup();

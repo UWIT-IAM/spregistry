@@ -175,10 +175,15 @@ public class Metadata {
        }
    }
 
+
    // load a single rp (from posted xml)
    public void updateRelyingParty(Document doc) throws RelyingPartyException {
+      updateRelyingParty(doc, null);
+   }
+   public void updateRelyingParty(Document doc, String id) throws RelyingPartyException {
       if (!editable) throw new RelyingPartyException("not editable");
       RelyingParty rp = new RelyingParty(doc.getDocumentElement(), this);
+      if (id!=null && !rp.getEntityId().equals(id)) throw new RelyingPartyException("Id doesn't match");
 
       refreshMetadataIfNeeded();
       locker.readLock().lock();

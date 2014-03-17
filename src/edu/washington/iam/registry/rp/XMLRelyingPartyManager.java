@@ -265,7 +265,7 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
 
     }
 
-    private Metadata getMetadataById(String mdid) {
+    public Metadata getMetadataById(String mdid) {
        for (int i=0; i<metadata.size(); i++) if (metadata.get(i).getId().equals(mdid)) return metadata.get(i);
        return null;
     }
