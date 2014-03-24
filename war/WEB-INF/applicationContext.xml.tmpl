@@ -12,7 +12,7 @@
            http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
 
-    <bean id="sprpManager" init-method="init" class="edu.washington.registry.rp.XMLRelyingPartyManager">
+    <bean id="sprpManager" init-method="init" destroy-method="cleanup" class="edu.washington.iam.registry.rp.XMLRelyingPartyManager">
         <property name="metadataSources">
           <list>
             <props>
@@ -33,14 +33,14 @@
               <prop key="description">UW non-federation peers</prop>
               <prop key="uri">file:/data/local/sp-registry/UW-rp-metadata.xml</prop>
               <prop key="editable">true</prop>
+              <prop key="refresh">600</prop>
               <prop key="tempUri">file:/data/local/sp-registry/tmp-rp-uw.xml</prop>
             </props>
           </list>
         </property>
     </bean>
 
-    <bean id="spfpManager" init-method="init" class="edu.washington.registry.filter.XMLFilterPolicyManager">
-        <property name="groupManager" ref="groupManager" />
+    <bean id="spfpManager" init-method="init" destroy-method="cleanup" class="edu.washington.iam.registry.filter.XMLFilterPolicyManager">
         <property name="policyGroupSources">
           <list>
             <props>
@@ -50,10 +50,17 @@
               <prop key="editable">false</prop>
             </props>
             <props>
+              <prop key="id">UWrands</prop>
+              <prop key="description">UW R&amp;S filter policies</prop>
+              <prop key="uri">file:/data/local/sp-registry/rs-filter.xml</prop>
+              <prop key="editable">false</prop>
+            </props>
+            <props>
               <prop key="id">UW</prop>
               <prop key="description">UW ad-hoc filter policies</prop>
               <prop key="uri">file:/data/local/sp-registry/rp-filter.xml</prop>
               <prop key="editable">true</prop>
+              <prop key="refresh">600</prop>
               <prop key="tempUri">file:/data/local/sp-registry/tmp-filter-uw.xml</prop>
             </props>
           </list>
@@ -63,12 +70,36 @@
         <property name="tempUri" value="file:/data/local/sp-registry/filter-policy.xml.tmp" />
     </bean>
 
-    <bean id="groupManager" init-method="init" class="edu.washington.registry.util.GWSGroupManager">
-        <property name="urlBase" value="https://iam-ws.u.washington.edu:7443/group_sws/v1/group/" />
+    <bean id="spprManager" init-method="init" destroy-method="cleanup" class="edu.washington.iam.registry.proxy.XMLProxyManager">
+        <property name="proxyUri" value="file:/data/local/sp-registry/rp-proxy.xml" />
+        <property name="tempUri" value="file:/data/local/sp-registry/rp-proxy.xml.tmp" />
+        <property name="pyUri" value="file:/data/local/sp-registry/rp-secrets" />
+        <property name="tempPyUri" value="file:/data/local/sp-registry/rp-secrets.tmp" />
+        <property name="proxyMdUri" value="file:/data/local/sp-registry/rp-proxy-metadata.xml" />
+    </bean>
+
+
+    <bean id="webClient" init-method="init" class="edu.washington.iam.tools.WebClient">
         <property name="certFile" value="/data/local/etc/urizen3.crt" />
         <property name="keyFile" value="/data/local/etc/urizen3.key" />
         <property name="caFile" value="/data/local/etc/uwca.crt" />
-        <property name="memberXPath" value="//*[@class='member']" />
     </bean>
+
+    <bean id="netactDnsVerifier" init-method="init" class="edu.washington.iam.tools.netact.NetactDNSVerifier">
+        <property name="webClient" ref="webClient"/>
+    </bean>
+    <bean id="gwsDnsVerifier" init-method="init" class="edu.washington.iam.tools.gws.GWSDNSVerifier">
+        <property name="webClient" ref="webClient"/>
+        <property name="gwsMemberBase" value="https://iam-tools.u.washington.edu/group_sws/v2/group/u_weblogin_dns-owners_"/>
+    </bean>
+    <bean id="comboDnsVerifier" init-method="init" class="edu.washington.iam.tools.ComboDNSVerifier">
+        <property name="netVerifier" ref="netactDnsVerifier"/>
+        <property name="gwsVerifier" ref="gwsDnsVerifier"/>
+    </bean>
+    <bean id="gwsGroupManager" init-method="init" class="edu.washington.iam.tools.gws.GWSGroupManager">
+        <property name="webClient" ref="webClient"/>
+        <property name="gwsBase" value="https://iam-tools.u.washington.edu/group_sws/v2/group/"/>
+    </bean>
+
 
 </beans>
