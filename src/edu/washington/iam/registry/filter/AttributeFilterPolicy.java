@@ -48,15 +48,17 @@ public class AttributeFilterPolicy implements Serializable  {
     private boolean editable;
     private List<AttributeRule> attributeRules;
     private String policyGroupId;
+    private String policyGroupDescription;
     private boolean category;
 
     // create from document element ( partly parsed )
-    public AttributeFilterPolicy (String type, String name, Element ele, boolean edit, String pgid) throws FilterPolicyException {
+    public AttributeFilterPolicy (String type, String name, Element ele, boolean edit, FilterPolicyGroup pg) throws FilterPolicyException {
 
        editable = edit;
        attributeRules = new Vector();
        entityId = name;
-       policyGroupId = pgid;
+       policyGroupId = pg.getId();
+       policyGroupDescription = pg.getDescription();
        category = false;
        if (type.equals("basic:AttributeRequesterString")) regex = false;
        else if (type.equals("basic:AttributeRequesterRegex")) regex = true;
@@ -64,14 +66,15 @@ public class AttributeFilterPolicy implements Serializable  {
        else throw new FilterPolicyException("cant use type " + type);
 
        log.debug("create filter policy for " + entityId + " regex?" + regex + " cat?" + category );
-       addAttributeRules(ele, edit, pgid);
+       addAttributeRules(ele, edit, policyGroupId);
     }
 
     // create from strings 
-    public AttributeFilterPolicy (String pgid, String rpid) {
+    public AttributeFilterPolicy (FilterPolicyGroup pg, String rpid) {
        editable = false;
        attributeRules = new Vector();
-       policyGroupId = pgid;
+       policyGroupId = pg.getId();
+       policyGroupDescription = pg.getDescription();
        entityId = rpid;
        regex = false;
     }
@@ -176,6 +179,9 @@ public class AttributeFilterPolicy implements Serializable  {
     }
     public String getPolicyGroupId() {
        return (policyGroupId);
+    }
+    public String getPolicyGroupDescription() {
+       return (policyGroupDescription);
     }
 
     public void setEditable(boolean v) {

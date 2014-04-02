@@ -106,7 +106,7 @@ function setSpTab() {
 function postLoadSp() {
    console.log('postLoad');
 
-   if (currentSp!=null) dojoDom.byId('spTitle').innerHTML = currentSp.id;
+   if (currentSp!=null) dojoDom.byId('spTitle').innerHTML = currentSp.meta  + ' | ' + currentSp.id;
    else dojoDom.byId('spTitle').innerHTML = newSpId;
 
    var sp = dijitRegistry.byId('spPanel');

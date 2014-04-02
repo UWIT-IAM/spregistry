@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import edu.washington.iam.registry.rp.RelyingParty;
 import edu.washington.iam.registry.exception.FilterPolicyException;
 import edu.washington.iam.registry.exception.AttributeNotFoundException;
 import edu.washington.iam.registry.exception.NoPermissionException;
@@ -33,8 +34,8 @@ import edu.washington.iam.registry.exception.NoPermissionException;
 public interface FilterPolicyManager extends Serializable {
 
    public List<Attribute> getAttributes();
-   public List<Attribute> getAttributes(String userid);
-   public List<AttributeFilterPolicy> getFilterPolicies(String rpid);
+   public List<Attribute> getAttributes(RelyingParty rp);
+   public List<AttributeFilterPolicy> getFilterPolicies(RelyingParty rp);
 
     public int removeRelyingParty(String entityId, String pgid)
            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException;
@@ -47,4 +48,6 @@ public interface FilterPolicyManager extends Serializable {
     public List<FilterPolicyGroup> getFilterPolicyGroups();
     public void updateRelyingParty(String pgid, Document doc, String remoteUser)
              throws FilterPolicyException, AttributeNotFoundException, NoPermissionException;
+    public FilterPolicyGroup getPolicyGroup(String pgid);
+
 }

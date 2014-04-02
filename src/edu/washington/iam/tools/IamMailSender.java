@@ -49,7 +49,7 @@ public class IamMailSender {
    public void setReplyTo(String replyTo) {
         this.replyTo = replyTo;
    }
-   private String from = "UW Certificate Services <iam-support@uw.edu>";
+   private String from = "SP Registry <iam-support@uw.edu>";
    public void setFrom(String from) {
         this.from = from;
    }

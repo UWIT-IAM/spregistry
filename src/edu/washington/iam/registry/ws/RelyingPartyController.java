@@ -665,7 +665,7 @@ public class RelyingPartyController {
 
         log.info("returning rp id=" + id );
         List<FilterPolicyGroup> filterPolicyGroups = filterPolicyManager.getFilterPolicyGroups();
-        List<Attribute> attributes = filterPolicyManager.getAttributes(id);
+        List<Attribute> attributes = filterPolicyManager.getAttributes(rp);
 
         Proxy proxy = proxyManager.getProxy(id);
         // don't send proxy secret to non-admin
@@ -802,7 +802,7 @@ public class RelyingPartyController {
         }
 
         List<FilterPolicyGroup> filterPolicyGroups = filterPolicyManager.getFilterPolicyGroups();
-        List<Attribute> attributes = filterPolicyManager.getAttributes(rp.getEntityId());
+        List<Attribute> attributes = filterPolicyManager.getAttributes(rp);
         mv.addObject("filterPolicyGroups", filterPolicyGroups);
         mv.addObject("filterPolicyManager", filterPolicyManager);
         return (mv); 

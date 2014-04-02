@@ -43,6 +43,7 @@ import org.xml.sax.SAXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.washington.iam.registry.rp.RelyingParty;
 import edu.washington.iam.registry.ws.RelyingPartyController;
 import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.registry.exception.FilterPolicyException;
@@ -68,15 +69,15 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
     Thread reloader = null;
     private long modifyTime = 0; // for the attrs
 
-    public List<AttributeFilterPolicy> getFilterPolicies(String rpid) {
-       log.debug("looking for fps for " + rpid);
+    public List<AttributeFilterPolicy> getFilterPolicies(RelyingParty rp) {
+       log.debug("looking for fps for " + rp.getEntityId());
        List<AttributeFilterPolicy> list = new Vector();
 
        for (int g=0; g<filterPolicyGroups.size(); g++) {
           List<AttributeFilterPolicy> fps = filterPolicyGroups.get(g).getFilterPolicies();
           for (int p=0; p<fps.size(); p++) {
              AttributeFilterPolicy fp = fps.get(p);
-             if (fp.matches(rpid)) {
+             if (fp.matches(rp)) {
                 log.debug("  adding " + fp.getEntityId());
                 list.add(fp);
              }
@@ -88,10 +89,10 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
     }
 
     // returns list of all attributes, policy set where matches rp
-    public List<Attribute> getAttributes(String rpid) {
+    public List<Attribute> getAttributes(RelyingParty rp) {
        List<Attribute> ret = new Vector();
-       log.debug("getting editable attributes for " + rpid);
-       List<AttributeFilterPolicy> fps = getFilterPolicies(rpid);
+       log.debug("getting editable attributes for " + rp.getEntityId());
+       List<AttributeFilterPolicy> fps = getFilterPolicies(rp);
        int matches = 0;
        for (int i=0; i<attributes.size(); i++) {
           Attribute attr = new Attribute(attributes.get(i));
@@ -137,7 +138,7 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
           log.debug("attr update, pol=" + pgid + ", rp=" + rpid);
           AttributeFilterPolicy afp = policyGroup.getFilterPolicy(rpid);
           if (afp==null) {
-              afp = new AttributeFilterPolicy(pgid, rpid);
+              afp = new AttributeFilterPolicy(policyGroup, rpid);
               policyGroup.getFilterPolicies().add(afp);
           }
 
@@ -180,7 +181,7 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        pg.removeAttribute(entityId, attributeId, type, value);
     }
 
-    private FilterPolicyGroup getPolicyGroup(String pgid) {
+    public FilterPolicyGroup getPolicyGroup(String pgid) {
        for (int g=0; g<filterPolicyGroups.size(); g++) if (filterPolicyGroups.get(g).getId().equals(pgid)) return filterPolicyGroups.get(g);
        return null;
     }

@@ -58,7 +58,7 @@
   #foreach ( $attr in $attributes )
 
    #if ($attr.attributeFilterPolicy )
-      <li><div class="dt dt9" title="$!{attr.description}">$!{attr.id}</div>
+      <li><div class="dt dt9" title="$!{attr.attributeFilterPolicy.policyGroupDescription}">$!{attr.id}</div>
       #set ($ar = $attr.attributeRule)
       #foreach ( $value in $ar.valueRules )
           <div class="dd">

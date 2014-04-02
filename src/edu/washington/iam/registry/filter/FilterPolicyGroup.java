@@ -219,7 +219,7 @@ public class FilterPolicyGroup {
        AttributeFilterPolicy afp = getFilterPolicy(value);
         try {
            if (afp!=null) afp.addAttributeRules(ele, editable, id);
-           else filterPolicies.add(new AttributeFilterPolicy(type, value, ele, editable, id));
+           else filterPolicies.add(new AttributeFilterPolicy(type, value, ele, editable, this));
         } catch (FilterPolicyException ex) {
            log.error("load of attribute failed: " + ex);
 
@@ -238,7 +238,7 @@ public class FilterPolicyGroup {
        AttributeFilterPolicy afp = getFilterPolicy(value);
        try {
            if (afp!=null) afp.addAttributeRules(ele, editable, id);
-           else filterPolicies.add(new AttributeFilterPolicy(type, value, ele, editable, id));
+           else filterPolicies.add(new AttributeFilterPolicy(type, value, ele, editable, this));
        } catch (FilterPolicyException ex) {
            log.error("load of attribute failed: " + ex);
        }
