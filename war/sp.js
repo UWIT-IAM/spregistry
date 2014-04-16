@@ -780,10 +780,10 @@ attr_checkAll = function(gid, id) {
    } else {
       for (i=0;i<99;i++) {
          v = dojoDom.byId(gid + '_attr_edit_tr_v_' + i + '_' + id);
-         if (v.style.display=='none') {
-            v.style.display = '';
-            break;
-         }
+         if (v==null) break;
+         v.style.display = '';
+         v = dijitRegistry.byId(gid + '_attr_edit_v_' + i + '_' + id);
+         if (v.get('value').trim()=='') break;
       }
    }
 };

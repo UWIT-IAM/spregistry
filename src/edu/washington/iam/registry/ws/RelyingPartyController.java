@@ -653,7 +653,7 @@ public class RelyingPartyController {
         }
         session.pageTitle = rp.getEntityId();
         try {
-           if (dnsVerifier.isOwner(id, session.remoteUser, null)) {
+           if (session.isAdmin || dnsVerifier.isOwner(id, session.remoteUser, null)) {
               log.debug("user can edit");
               canEdit = true;
            }
@@ -766,7 +766,7 @@ public class RelyingPartyController {
 
         // check access
         try {
-           if (dnsVerifier.isOwner(dns, session.remoteUser, null)) {
+           if (session.isAdmin || dnsVerifier.isOwner(dns, session.remoteUser, null)) {
               log.debug("user owns dns");
            } else {
               // response.setStatus(200);  // 403
@@ -783,6 +783,7 @@ public class RelyingPartyController {
         if (lookup) {
            try {
               rp = rpManager.genRelyingPartyByLookup(dns);
+              if (rp!=null) log.debug("rp: " + rp.getEntityId());
               RelyingParty orp = rpManager.getRelyingPartyById(rp.getEntityId(), "UW");
               if (orp!=null) rp = orp;
               mv.addObject("relyingParty", rp);
@@ -830,7 +831,7 @@ public class RelyingPartyController {
         ModelAndView mv = emptyMV("OK dokey");
 
         try {
-           if (!dnsVerifier.isOwner(id, session.remoteUser, null)) {
+           if (!session.isAdmin || dnsVerifier.isOwner(id, session.remoteUser, null)) {
                status = 401;
                mv.addObject("alert", "You are not an owner of that entity.");
                response.setStatus(status);
@@ -979,7 +980,7 @@ public class RelyingPartyController {
         ModelAndView mv = emptyMV("OK dokey delete rp");
 
         try {
-          if (!dnsVerifier.isOwner(id, session.remoteUser, null)) {
+          if (!(session.isAdmin || dnsVerifier.isOwner(id, session.remoteUser, null))) {
                status = 401;
                mv.addObject("alert", "You are not the owner.");
            } else {
@@ -1058,7 +1059,7 @@ public class RelyingPartyController {
         mv.addObject("filterPolicyManager", filterPolicyManager);
         mv.addObject("remoteUser", session.remoteUser);
         try {
-           if (dnsVerifier.isOwner(id, session.remoteUser, null)) mv.addObject("domainOwner",true);
+           if (session.isAdmin || dnsVerifier.isOwner(id, session.remoteUser, null)) mv.addObject("domainOwner",true);
         } catch (DNSVerifyException e) {
            mv.addObject("alert", "Could not verify ownership:\n" + e.getCause());
            response.setStatus(500);
@@ -1156,7 +1157,7 @@ public class RelyingPartyController {
         ModelAndView mv = emptyMV("OK dokey");
 
         try {
-           if (!dnsVerifier.isOwner(id, session.remoteUser, null)) {
+           if (!(session.isAdmin || dnsVerifier.isOwner(id, session.remoteUser, null))) {
                status = 401;
                mv.addObject("alert", "You are not an owner of that entity.");
            }
@@ -1257,7 +1258,7 @@ public class RelyingPartyController {
 
         ModelAndView mv = emptyMV("OK dokey");
         try {
-           if (!dnsVerifier.isOwner(id, session.remoteUser, null)) {
+           if (!(session.isAdmin || dnsVerifier.isOwner(id, session.remoteUser, null))) {
                status = 401;
                mv.addObject("alert", "You are not an owner of that entity.");
                response.setStatus(status);

@@ -51,7 +51,7 @@ public class GWSDNSVerifier implements DNSVerifier {
     public boolean isOwner(String dns, String id, List<String> owners) throws DNSVerifyException  {
 
        // skip this if domain is UW
-       if ( (dns.indexOf(".washington.edu")>0) || (dns.indexOf(".uw.edu")>0) ) return false;
+       // if ( (dns.indexOf(".washington.edu")>0) || (dns.indexOf(".uw.edu")>0) ) return false;
 
        boolean isOwner = false;
        if (id==null) id = "";

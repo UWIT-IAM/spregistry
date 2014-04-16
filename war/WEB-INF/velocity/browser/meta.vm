@@ -114,6 +114,8 @@
          <li><span class="dt dt3">Issued</span><span class="dd dd3">$dateFormatter.format($key.cert.issued)</span></li>
          <li><span class="dt dt3">Expires</span><span class="dd dd3">$dateFormatter.format($key.cert.expires)</span></li>
          #end
+         <li><span class="dt dt3"></span>
+             <span class="dd dd3"><a href="javascript:iam_showTheDialog('pemDialog_$!{key.cert.snStr}')">show pem</a></span></li>
          </ul>
          </fieldset>
        #end
@@ -164,13 +166,14 @@
 
 </div>
 
-## certificate PEM popup
-<div id="metaCertDialog" data-dojo-type="dijit.Dialog" title="Certificate PEM" style="display:none">
-<div id="metaCertDialog_content">
-
+## certificate PEM popups
+#foreach ( $key in $relyingParty.keyDescriptors )
+<div id="pemDialog_${key.cert.snStr}" data-dojo-type="dijit.Dialog" title="Certificate PEM" style="display:none">
+<div id="pemDialog_${key.cert.snStr}_content">
  <div class="certbox"><pre>$key.certificate</pre></div>
 </div>
 </div>
+#end
 
 
 

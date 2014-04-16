@@ -37,6 +37,7 @@ public class IamCertificate {
    public String dnST;  // state 
    public int keySize;
    public String issuerDn;
+   public String snStr;  // sn as string
 
    public IamCertificate() {
       names = new Vector();
@@ -82,6 +83,9 @@ public class IamCertificate {
    }
    public String getIssuerDn() {
       return issuerDn;
+   }
+   public String getSnStr() {
+      return snStr;
    }
 
 }

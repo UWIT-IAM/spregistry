@@ -100,7 +100,6 @@ public class RelyingParty implements Serializable  {
 
            if (XMLHelper.matches(name,"SPSSODescriptor")) {
               authnRequestsSigned = ele.getAttribute("AuthnRequestsSigned");
-              if (authnRequestsSigned==null) authnRequestsSigned = "";
               protocolSupportEnumerationsUnsplit = e1.getAttribute("protocolSupportEnumeration");
               protocolSupportEnumerations = Arrays.asList(protocolSupportEnumerationsUnsplit.split(" "));
               for (int j=0; j<protocolSupportEnumerations.size(); j++) {

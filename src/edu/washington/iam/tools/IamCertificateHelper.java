@@ -162,6 +162,7 @@ public final class IamCertificateHelper {
             log.info("bad cert");
             throw new IamCertificateException("invalid cert PEM");
          }
+         cert.snStr = x509.getSerialNumber().toString();
          cert.issued = x509.getNotBefore();
          cert.expires = x509.getNotAfter();
          // log.debug("pem expires = " + cert.expires);

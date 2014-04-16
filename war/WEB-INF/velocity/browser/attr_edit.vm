@@ -31,7 +31,7 @@
 <div id="attrEditDialog" dojoType="dijit/Dialog" title="Edit attributes for ${relyingPartyId}" $hide >
 
 ## <p>Allow 40 minutes for our IdP to acquire the changes to this service provider's attribute release policy.
-<h3>Attributes from by $group.description</h3>
+<h3>Attributes by $group.description</h3>
 <form action="">
 <ul class="iamlist">
 
@@ -56,6 +56,8 @@
     </div>
     <div class="dd dd2" style="overflow:hidden"><label for="${gid}_attr_edit_chk_${attr.id}">$!{attr.id}</label>
        <input tabindex="-1" id="${gid}_attr_edit_chk_${attr.id}_in" value="$chk" type="hidden" aria-hidden="true"></input>
+   
+ <a href="javascript:attr_checkAll('$gid', '$!{attr.id}')">add filter</a>
       
     ## show any existing releases
     #set ($count=0)
@@ -85,6 +87,7 @@
     #end
 
     #if (!$started)
+      ## add the 'all values' option 
       <li id="${gid}_attr_edit_tr_all_${attr.id}" $hide>
          <input class="dt dtcb" style="overflow:hidden:font-size:smaller"
                   data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_all_$!{attr.id}"
@@ -92,7 +95,9 @@
               <label class="dd dd2" for="${gid}_attr_edit_all_$!{attr.id}">all values</label>
      </li>
     #end
-    #foreach ( $i in [ $count .. 10 ] )
+
+    #set ( $ecount = $count + 5 )
+    #foreach ( $i in [ $count .. $ecount] )
        <li $hide id="${gid}_attr_edit_tr_v_${i}_$!{attr.id}">
             <div class="dt dt2" role="presentation"></div>
             <div class="dd dd2"><input data-dojo-type="dijit.form.TextBox" id="${gid}_attr_edit_v_${i}_$!{attr.id}" value="" 
