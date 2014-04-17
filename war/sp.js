@@ -518,7 +518,7 @@ function assembleRPMetadata(entityId) {
    var xml = '<EntityDescriptor entityID="' + entityId + '">';
 
    // SPSSO
-   pse = '';
+   var pse = '';
    for (i=0; i<5; i++) {
       e = dojoDom.byId('pse_' + i);
       if (e!=null) {
