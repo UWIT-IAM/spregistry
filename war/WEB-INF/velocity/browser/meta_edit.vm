@@ -66,8 +66,8 @@
         <ul class="iamlist">
      <li id="ct${count}_0">
        <span class="dt dt3" >Type</span>
-       <select class="dd" id="ctt_${count}" data-dojo-type="dijit/form/Select" aria-label="contact type">
-       #foreach ( $t in ["","technical","support","administrative","billing","other"] )
+       <select class="dd" id="ctt_${count}" aria-label="contact type">
+       #foreach ( $t in ["technical","support","administrative","billing","other"] )
          <option value="$t" 
            #if ( $t == $ct.type )
              selected="selected"
@@ -77,7 +77,7 @@
        </select>
      </li>
      <li><span class="dt dt3" id="ct${count}_1">Name$rstar</span>
-        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctgn_${count}" value="$!ct.givenName" aria-label="name, required" />
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctgn_${count}" value="$!ct.givenName"  aria-label="name, required" />
      </li>
      <li><span class="dt dt3" id="ct${count}_2">Email$rstar</span>
         <input class="dd" data-dojo-type="dijit.form.TextBox" id="cte_${count}" value="$!ct.email" aria-label="email, required" />
@@ -97,10 +97,10 @@
         <ul class="iamlist">
      <li id="ct${i}_0" #if ( $i > 1 ) ${hide} #end >
        <span class="dt dt3" >Type</span>
-       <select class="dd" id="ctt_${i}" data-dojo-type="dijit/form/Select" aria-label="contact type">
+       <select class="dd" id="ctt_${i}"  aria-label="contact type">
        #foreach ( $t in ["","technical","support","administrative","billing","other"] )
          <option value="$t" 
-           #if ( $t == "" )
+           #if ( $t == " " )
              selected="selected"
            #end
          >$t</option>
@@ -145,7 +145,7 @@
    #set ( $count = 0 )
    #foreach ( $ps in $relyingParty.protocolSupportEnumerations )
      <li id="pse${count}_0">
-       <input class="dd" data-dojo-type="dijit.form.TextBox" name="pse_data" id="pse_${count}" value="$ps" aria-label="protocol"/>
+       <input class="dd ddtext" data-dojo-type="dijit.form.TextBox" name="pse_data" id="pse_${count}" value="$ps" aria-label="protocol"/>
      </li>
      #set ( $count = $count + 1)
    #end

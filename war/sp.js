@@ -179,7 +179,7 @@ function showSp(i, tab) {
 
 function lookupSp() {
    alert('plain lookupsp called');
-   var ndns = document.getElementById('new_dns').value.trim();
+   var ndns = dojoDom.byId('new_dns').value.trim();
    if (ndns==null || ndns=='') {
       iam_showTheNotice('You must provide a dns name');
       return;
@@ -450,8 +450,8 @@ function handleGroupViewBtn(cn) {
    function _getElementsByIdname(base) {
       var list = [];
       var i = 0;
-      while (document.getElementById(base + '_' + i)) {
-         list.push(document.getElementById(base + '_' + i++));
+      while (dojoDom.byId(base + '_' + i)) {
+         list.push(dojoDom.byId(base + '_' + i++));
       }
       return list;
    }
@@ -470,7 +470,7 @@ function handleGroupViewBtn(cn) {
          }
          return;
        }
-       plus = document.getElementById(id);
+       plus = dojoDom.byId(id);
        plus.style.display = 'none';
    };
 
@@ -520,7 +520,7 @@ function assembleRPMetadata(entityId) {
    // SPSSO
    pse = '';
    for (i=0; i<5; i++) {
-      e = document.getElementById('pse_' + i);
+      e = dojoDom.byId('pse_' + i);
       if (e!=null) {
          v = e.value.trim();
          if (v == '') continue;
@@ -537,8 +537,8 @@ function assembleRPMetadata(entityId) {
    // keyinfo
    hadKi = false;
    for (i=0; i<4; i++) {
-      kn = document.getElementById('kn_' + i);
-      kc = document.getElementById('kc_' + i);
+      kn = dojoDom.byId('kn_' + i);
+      kc = dojoDom.byId('kc_' + i);
       knv = kn.value.trim();
       kcv = kc.value.trim();
       if (knv=='' && kcv=='') continue;
@@ -555,7 +555,7 @@ function assembleRPMetadata(entityId) {
    }
    // nameid
    for (i=0; i<5; i++) {
-      e = document.getElementById('ni_' + i);
+      e = dojoDom.byId('ni_' + i);
       if (e!=null) {
          v = e.value.trim();
          if (v == '') continue;
@@ -566,11 +566,11 @@ function assembleRPMetadata(entityId) {
    // acs
    hadAcs = false;
    for (i=0; i<50; i++) {
-      idx = document.getElementById('acsi_' + i);
+      idx = dojoDom.byId('acsi_' + i);
       idxv = idx.value.trim();
       if (idxv=='') continue;
-      bv = document.getElementById('acsb_' + i).value.trim();
-      lv = document.getElementById('acsl_' + i).value.trim();
+      bv = dojoDom.byId('acsb_' + i).value.trim();
+      lv = dojoDom.byId('acsl_' + i).value.trim();
       xml = xml + '<AssertionConsumerService index="' + idxv + '" ';
       xml = xml + 'Binding="' + bv + '" Location="' + lv + '"/>';
       hadAcs = true;
@@ -583,19 +583,19 @@ function assembleRPMetadata(entityId) {
    // org (only one really)
    for (i=0; i<1; i++) {
       xml = xml + '<Organization>';
-      v = document.getElementById('orgn_' + i).value.trim();
+      v = dojoDom.byId('orgn_' + i).value.trim();
       if (v!='') xml = xml + '<OrganizationName>' + iam_makeOkXml(v) + '</OrganizationName>';
       else {
          iam_showTheNotice("You must provide an Org name");
          return '';
       }
-      v = document.getElementById('orgd_' + i).value.trim();
+      v = dojoDom.byId('orgd_' + i).value.trim();
       if (v!='') xml = xml + '<OrganizationDisplayName>' + iam_makeOkXml(v) + '</OrganizationDisplayName>';
       else {
          iam_showTheNotice("You must provide an Org display name");
          return '';
       }
-      v = document.getElementById('orgu_' + i).value.trim();
+      v = dojoDom.byId('orgu_' + i).value.trim();
       if (v!='') xml = xml + '<OrganizationURL>' + iam_makeOkXml(v) + '</OrganizationURL>';
       else {
          iam_showTheNotice("You must provide an Org URL");
@@ -609,20 +609,20 @@ function assembleRPMetadata(entityId) {
    hadMail = false;
    hadPhone = false;
    for (i=0; i<5; i++) {
-      v = document.getElementById('ctt_' + i).value.trim();
+      v = dojoDom.byId('ctt_' + i).value.trim();
       if (v=='') continue;
       xml = xml + '<ContactPerson contactType="' + iam_makeOkXml(v) + '">';
-      v = document.getElementById('ctgn_' + i).value.trim();
+      v = dojoDom.byId('ctgn_' + i).value.trim();
       if (v!='') {
          xml = xml + '<GivenName>' + iam_makeOkXml(v) + '</GivenName>';
          hadName = true;
       }
-      v = document.getElementById('cte_' + i).value.trim();
+      v = dojoDom.byId('cte_' + i).value.trim();
       if (v!='') {
          xml = xml + '<EmailAddress>' + iam_makeOkXml(v) + '</EmailAddress>';
          hadMail = true;
       }
-      v = document.getElementById('ctp_' + i).value.trim();
+      v = dojoDom.byId('ctp_' + i).value.trim();
       if (v!='') {
          xml = xml + '<TelephoneNumber>' + iam_makeOkXml(v) + '</TelephoneNumber>';
          hadPhone = true;
@@ -883,10 +883,10 @@ function _postSaveProxy() {
 
 // submit proxy edits
 proxy_saveProxy = function(entityId) {
-   var gcid = document.getElementById('google_cid').value.trim();
-   var gcpw = document.getElementById('google_cpw').value.trim();
-   var lcid = document.getElementById('liveid_cid').value.trim();
-   var lcpw = document.getElementById('liveid_cpw').value.trim();
+   var gcid = dojoDom.byId('google_cid').value.trim();
+   var gcpw = dojoDom.byId('google_cpw').value.trim();
+   var lcid = dojoDom.byId('liveid_cid').value.trim();
+   var lcpw = dojoDom.byId('liveid_cpw').value.trim();
    xml = '<Proxys><Proxy entityId="' + currentSp.id + '">';
    if (gcid!='') xml += '<ProxyIdp idp="Google" clientId="' + iam_makeOkXml(gcid) + '" clientSecret="' + iam_makeOkXml(gcpw) + '"/>';
    if (lcid!='') xml += '<ProxyIdp idp="LiveID" clientId="' + iam_makeOkXml(lcid) + '" clientSecret="' + iam_makeOkXml(lcpw) + '"/>';
