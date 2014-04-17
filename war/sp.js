@@ -16,10 +16,10 @@
  */
 
 // sp-registry javascript
-// vers: 07/05/2013
+// vers: 04/16/2014
 
 // common vars
-var v_root = '/sp-registry';
+var v_root = '/spreg';
 var v_remoteUser = '';
 var v_xsrf = '';
 var v_etag = '';
@@ -66,6 +66,20 @@ function hashHandler(tab, spid) {
 iam_set('hashCookie', 'spck1');
 iam_set('hashHandler', hashHandler);
 // iam_hashInit('sprck', hashHandler);
+
+// user/admin role chooser
+var adminQS = ''
+function setRole(r, d) {
+   if (r=='a') {
+      adminQS = '&role=admin'
+      dojoDom.byId('banner_notice').innerHTML = 'acting as administrator'; 
+   } else {
+      adminQS = ''
+      dojoDom.byId('banner_notice').innerHTML = ''; 
+   }
+   showHomePage();
+   if (d!=null) iam_hideTheDialog(d);
+}
 
 // show the home panel
 function showHomePage() {
@@ -175,7 +189,7 @@ function lookupSp() {
    currentSpTab = 'm';
    v_spLoading = true;
    if (dijitRegistry.byId('spPane')!=null)  dijitRegistry.byId('spPane').destroyRecursive();
-   var url = v_root + v_vers + '/new?dns=' + ndns + '&view=inner';
+   var url = v_root + v_vers + '/new?dns=' + ndns + '&view=inner' + adminQS;
    dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);
    dijitRegistry.byId('spDisplay').set('onLoad', postLoadSp);
    dijitRegistry.byId('spDisplay').set('href', url);
@@ -194,7 +208,7 @@ function showCurrentSp() {
    } else console.log('showCur no sur');
    if (dijitRegistry.byId('spPane')!=null)  dijitRegistry.byId('spPane').destroyRecursive();
 
-   var url = v_root + v_vers + '/rp?id=' + currentSp.id + '&mdid=' + currentSp.meta + '&view=inner';
+   var url = v_root + v_vers + '/rp?id=' + currentSp.id + '&mdid=' + currentSp.meta + '&view=inner' + adminQS;
    dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);
    dijitRegistry.byId('spDisplay').set('loadingMessage', 'Loading ' + currentSp.id + ' . . .' );
    dijitRegistry.byId('spDisplay').set('onLoad', postLoadSp);
@@ -471,7 +485,7 @@ function handleGroupViewBtn(cn) {
       newSpId = rpid;
       v_spLoading = true;
       if (dijitRegistry.byId('spPane')!=null)  dijitRegistry.byId('spPane').destroyRecursive();
-      var url = v_root + v_vers + '/new?rpid=' + rpid;
+      var url = v_root + v_vers + '/new?rpid=' + rpid + adminQS;
       if (!lookup) url += '&nolook=y';
       console.log(url);
       dijitRegistry.byId('spDisplay').set('errorMessage', 'Request for metadata failed.  Is the SP online?');
@@ -633,7 +647,7 @@ function postSaveRP() {
    console.log('postSaveRP');
    // iam_showTheNotice('Changes saved');
    iam_bannerNotice('Changes saved');
-   var url = v_root + v_vers + '/rp/?id=' + rpId + '&mdid=UW';
+   var url = v_root + v_vers + '/rp/?id=' + rpId + '&mdid=UW' + adminQS;
    if (newSpConnect!=null) {
       console.log('clear new sp connect');
       dojo.disconnect(newSpConnect);
@@ -651,7 +665,7 @@ function saveRP(entityId) {
    xml = assembleRPMetadata(entityId);
    if (xml=='') return false;
    rpid = entityId;
-   var url = v_root + v_vers + '/rp?id=' + entityId + '&mdid=UW&xsrf=' + v_xsrf;
+   var url = v_root + v_vers + '/rp?id=' + entityId + '&mdid=UW&xsrf=' + v_xsrf + adminQS;
    console.log('req: ' + url);
    iam_putRequest(url, null, xml, null, postSaveRP);
 }
@@ -670,7 +684,7 @@ function postDeleteRP() {
 // submit a delete
 function deleteRP(entityId) {
    rpId = entityId;
-   var url = v_root + v_vers + '/rp?id=' + entityId + '&mdid=UW&xsrf=' + v_xsrf;
+   var url = v_root + v_vers + '/rp?id=' + entityId + '&mdid=UW&xsrf=' + v_xsrf + adminQS;
    iam_deleteRequest(url, null, null, postDeleteRP);
 }
 
@@ -751,7 +765,7 @@ attr_requestAttrs = function(entityId) {
    }
    xml = xml + '<Comments>' + iam_makeOkXml(msg+gws_text) + '</Comments>';
    xml = xml + '</Attributes>';
-   action = v_root + v_vers + '/rp/attrReq?id=' + entityId + '&xsrf=' + v_xsrf;
+   action = v_root + v_vers + '/rp/attrReq?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
    iam_putRequest(action, null, xml, null, _postReqAttrs);
 };
 
@@ -852,7 +866,7 @@ attr_saveAttrs = function(gid, entityId) {
    }
    xml = xml + '</AttributeFilterPolicy></FilterPolicyModification>';
    // alert(xml);
-   action = v_root + v_vers + '/rp/attr?id=' + entityId + '&policyId=' + gid + '&xsrf=' + v_xsrf ;
+   action = v_root + v_vers + '/rp/attr?id=' + entityId + '&policyId=' + gid + '&xsrf=' + v_xsrf  + adminQS;
    iam_putRequest(action, null, xml, null, _postSaveAttrs);
 }
 
@@ -879,7 +893,7 @@ proxy_saveProxy = function(entityId) {
    xml += '</Proxy></Proxys>';
    console.log(xml);
    var headertxt = {'Content-type': 'application/xhtml+xml; charset=utf-8'};
-   var url = v_root + v_vers + '/rp/proxy?id=' + entityId + '&xsrf=' + v_xsrf;
+   var url = v_root + v_vers + '/rp/proxy?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
    iam_putRequest(url, null, xml, null, _postSaveProxy);
    // location.reload();
 }

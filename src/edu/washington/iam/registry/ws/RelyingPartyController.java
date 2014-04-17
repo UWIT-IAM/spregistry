@@ -99,9 +99,9 @@ public class RelyingPartyController {
 
     private static DNSVerifier dnsVerifier;
     private static GroupManager groupManager;
-    private String adminGroupName;
+    private String adminGroupName = null;
     private Group adminGroup = null;
-    private String proxyGroupName;
+    private String proxyGroupName = null;
     private Group proxyGroup = null;
 
     public DNSVerifier getDnsVerifier() {
@@ -173,6 +173,7 @@ public class RelyingPartyController {
        private long timeLeft;
        private boolean isProxy;
        private List altNames;
+       private boolean wantsAdmin;
     }
 
     /* send user to login chooser page */ 
@@ -203,6 +204,7 @@ public class RelyingPartyController {
     private RPSession processRequestInfo(HttpServletRequest request, HttpServletResponse response, boolean canLogin) {
         RPSession session = new RPSession();
         session.isAdmin = false;
+        session.wantsAdmin = false;
         session.isUWLogin = false;
         session.isProxy = false;
         String reloginPath = null;
@@ -613,6 +615,7 @@ public class RelyingPartyController {
             @RequestParam(value="mdid", required=true) String mdid,
             @RequestParam(value="view", required=false) String view,
             @RequestParam(value="dns", required=false) String dns,
+            @RequestParam(value="role", required=false) String role,
             HttpServletRequest request,
             HttpServletResponse response) {
 
@@ -629,6 +632,8 @@ public class RelyingPartyController {
         boolean canEdit = false;
         boolean refreshOpt = false;
         if (view!=null && view.equals("refresh")) refreshOpt = true;
+ 
+        if (session.isAdmin && role!=null && role.equals("admin")) session.wantsAdmin = true;
 
         String errmsg = null;
 
@@ -683,6 +688,7 @@ public class RelyingPartyController {
         mv.addObject("proxy", proxy);
         mv.addObject("isAdmin", session.isAdmin);
         mv.addObject("isProxy", session.isProxy);
+        mv.addObject("wantsAdmin", session.wantsAdmin);
         mv.addObject("dateFormatter", new SimpleDateFormat("yy/MM/dd"));
         return (mv); 
     }
@@ -733,6 +739,7 @@ public class RelyingPartyController {
     public ModelAndView getRelyingPartyNew(@RequestParam(value="rpid", required=true) String rpid,
             @RequestParam(value="mdid", required=false) String mdid,
             @RequestParam(value="view", required=false) String view,
+            @RequestParam(value="role", required=false) String role,
             @RequestParam(value="nolook", required=false) String nolook, // enter manual data for this entity
             HttpServletRequest request,
             HttpServletResponse response) {
@@ -745,6 +752,7 @@ public class RelyingPartyController {
         session.pageTitle = "New service provider";
         boolean lookup = true;
         if (nolook!=null && nolook.startsWith("y")) lookup = false;
+        if (session.isAdmin && role!=null && role.equals("admin")) session.wantsAdmin = true;
         
         String dns = rpid;
         if (rpid.startsWith("https://")) {
@@ -818,6 +826,7 @@ public class RelyingPartyController {
     @RequestMapping(value="/rp", method=RequestMethod.PUT)
     public ModelAndView putRelyingParty(@RequestParam(value="id", required=true) String id,
             @RequestParam(value="mdid", required=true) String mdid,
+            @RequestParam(value="role", required=false) String role,
             @RequestParam(value="xsrf", required=false) String paramXsrf,
             InputStream in,
             HttpServletRequest request,
@@ -825,6 +834,8 @@ public class RelyingPartyController {
 
         RPSession session = processRequestInfo(request, response, false);
         if (session==null) return (emptyMV());
+        if (session.isAdmin && role!=null && role.equals("admin")) session.wantsAdmin = true;
+
         log.info("PUT update for: " + id);
         int status = 200;
 
@@ -966,6 +977,7 @@ public class RelyingPartyController {
     @RequestMapping(value="/rp", method=RequestMethod.DELETE)
     public ModelAndView deleteRelyingParty(@RequestParam(value="id", required=true) String id,
             @RequestParam(value="mdid", required=true) String mdid,
+            @RequestParam(value="role", required=false) String role,
             @RequestParam(value="xsrf", required=false) String paramXsrf,
             InputStream in,
             HttpServletRequest request,
@@ -973,6 +985,7 @@ public class RelyingPartyController {
 
         RPSession session = processRequestInfo(request, response, false);
         if (session==null) return (emptyMV());
+        if (session.isAdmin && role!=null && role.equals("admin")) session.wantsAdmin = true;
 
         log.info("DELETE for: " + id);
         int status = 200;
@@ -1245,7 +1258,8 @@ public class RelyingPartyController {
 
     // update an rp's proxy 
     @RequestMapping(value="/rp/proxy", method=RequestMethod.PUT)
-    public ModelAndView putRelyingPartyAttributes(@RequestParam(value="id", required=true) String id,
+    public ModelAndView putRelyingPartyAttributesZ(@RequestParam(value="id", required=true) String id,
+            @RequestParam(value="role", required=false) String role,
             @RequestParam(value="xsrf", required=false) String paramXsrf,
             InputStream in,
             HttpServletRequest request,
@@ -1253,6 +1267,8 @@ public class RelyingPartyController {
 
         RPSession session = processRequestInfo(request, response, false);
         if (session==null) return (emptyMV());
+        if (session.isAdmin && role!=null && role.equals("admin")) session.wantsAdmin = true;
+
         log.info("PUT update proxy for " + id);
         int status = 200;
 
@@ -1330,7 +1346,7 @@ public class RelyingPartyController {
     /* utility */
     private boolean userCanEdit(RPSession session, String entityId)
         throws DNSVerifyException {
-        return session.isAdmin || dnsVerifier.isOwner(entityId, session.remoteUser, null);
+        return session.wantsAdmin || dnsVerifier.isOwner(entityId, session.remoteUser, null);
     }
 
     private long getLongHeader(HttpServletRequest request, String name) {

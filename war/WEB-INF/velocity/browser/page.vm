@@ -123,6 +123,21 @@ v_xsrf = '${xsrf}';
  </div>
 </div>
 
+#if ($isAdmin)
+<div id="roleChooser" data-dojo-type="dijit/Dialog" title="Role" $hide>
+ <div class="dijitDialogPaneContentArea">
+ </div>
+   Choose the role you want to work as:
+   <p>
+    <button dojoType="dijit.form.Button" type="button" onClick="setRole('u', 'roleChooser')">user</button>
+    <button dojoType="dijit.form.Button" type="button" onClick="setRole('a', 'roleChooser')">administrator</button>
+   <p>
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('roleChooser')">Close</button>
+ </div>
+</div>
+#end
+
 
 
 ## page
@@ -143,6 +158,10 @@ v_xsrf = '${xsrf}';
 <span class="topleft"><a href="https://wiki.cac.washington.edu/x/lR4">IDENTITY AND ACCESS MANAGEMENT</a></span>
 <ul class="topright">
  <li>Logged in: $remote_user</li>
+ #if ($isAdmin)
+ <li>|</li>
+ <li><a href="javascript:iam_showTheDialog('roleChooser');">role</a></li>
+ #end
  <li>|</li>
  <li><a href="javascript:document.location='${root}${vers}/logout/';">logout</a></li>
  <li>|</li>
@@ -153,7 +172,7 @@ v_xsrf = '${xsrf}';
 ## banner
 <div id="banner" data-dojo-type="dijit.layout.ContentPane">
     <span id="title"><a tabindex=-1 href="javascript:showHomePage()">SERVICE PROVIDER REGISTRY</a></span>
-##     <span id="banner_notice"></span>
+    <span id="banner_notice"></span>
     <ul id="ident">
         <li></li>
     </ul>
