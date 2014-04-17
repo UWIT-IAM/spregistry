@@ -115,7 +115,9 @@
          <li><span class="dt dt3">Expires</span><span class="dd dd3">$dateFormatter.format($key.cert.expires)</span></li>
          #end
          <li><span class="dt dt3"></span>
-             <span class="dd dd3"><a href="javascript:iam_showTheDialog('pemDialog_$!{key.cert.snStr}')">show pem</a></span></li>
+             <span class="dd dd3">
+              <button class="ddbutton" dojoType="dijit.form.Button" onClick="iam_showTheDialog('pemDialog_$!{key.cert.snStr}');">Show PEM</button>
+             </span></li>
          </ul>
          </fieldset>
        #end

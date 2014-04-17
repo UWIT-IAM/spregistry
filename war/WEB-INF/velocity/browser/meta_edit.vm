@@ -66,7 +66,7 @@
         <ul class="iamlist">
      <li id="ct${count}_0">
        <span class="dt dt3" >Type</span>
-       <select class="dd" id="ctt_${count}" aria-label="contact type">
+       <select class="dd" id="ctt_${count}" data-dojo-type="dijit/form/Select" aria-label="contact type">
        #foreach ( $t in ["","technical","support","administrative","billing","other"] )
          <option value="$t" 
            #if ( $t == $ct.type )
@@ -97,7 +97,7 @@
         <ul class="iamlist">
      <li id="ct${i}_0" #if ( $i > 1 ) ${hide} #end >
        <span class="dt dt3" >Type</span>
-       <select class="dd" id="ctt_${i}" aria-label="contact type">
+       <select class="dd" id="ctt_${i}" data-dojo-type="dijit/form/Select" aria-label="contact type">
        #foreach ( $t in ["","technical","support","administrative","billing","other"] )
          <option value="$t" 
            #if ( $t == "" )
@@ -124,9 +124,9 @@
    </fieldset>
    #end
    <div id="ct_more">
-    <div class="dt dt3"><a href="javascript:meta_showMoreFields('ct', 'ct_more')">add contact person</a></div>
-   </div>
-
+    <span class="dt dt3">
+       <button dojoType="dijit.form.Button" class="ddbutton" onClick="meta_showMoreFields('ct', 'ct_more')">Add contact</button>
+    </span>
    </div>
   </li>
 </ul>
@@ -156,7 +156,9 @@
      </tr>
    #end
    <li id="ct_more">
-    <div class="dt dt3"><a href="javascript:meta_showMoreFields('pse', 'pse_more')">add protocol</a></div>
+    <span class="dt dt3">
+       <button dojoType="dijit.form.Button" class="ddbutton" onClick="meta_showMoreFields('pse', 'pse_more')">Add protocol</button>
+    </span>
    </li>
    </ul></div>
   </li>
@@ -194,7 +196,9 @@
 
    #end
    <li id="ct_more">
-    <div class="dt "><a href="javascript:meta_showMoreFields('ki', 'ki_more')">add keyinfo</a></div>
+    <span class="dt dt3">
+       <button dojoType="dijit.form.Button" class="ddbutton" onClick="meta_showMoreFields('ki', 'ki_more')">Add keyinfo</button>
+    </span>
    </li>
     </ul></div>
    </li>
@@ -221,7 +225,9 @@
      </li>
    #end
    <li id="ct_more">
-    <div class="dt "><a href="javascript:meta_showMoreFields('ni', 'ni_more')">add nameId</a></div>
+    <span class="dt dt3">
+       <button dojoType="dijit.form.Button" class="ddbutton" onClick="meta_showMoreFields('ni', 'ni_more')">Add nameinfo</button>
+    </span>
    </li>
     </ul></div>
    </li>
@@ -262,7 +268,9 @@
      </li>
    #end
    <li id="ct_more">
-    <div class="dt"><a href="javascript:meta_showMoreFields('acs', 'acs_more')">add ACS</a></div>
+    <span class="dt dt3">
+       <button dojoType="dijit.form.Button" class="ddbutton" onClick="meta_showMoreFields('acs', 'acs_more')">Add ACS</button>
+    </span>
    </li>
 
     </ul></div>

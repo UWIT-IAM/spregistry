@@ -31,7 +31,7 @@
 <div id="attrEditDialog" dojoType="dijit/Dialog" title="Edit attributes for ${relyingPartyId}" $hide >
 
 ## <p>Allow 40 minutes for our IdP to acquire the changes to this service provider's attribute release policy.
-<h3>Attributes by $group.description</h3>
+<h3 style="margin-left:50px;margin-right:50px;">Attributes by $group.description</h3>
 <form action="">
 <ul class="iamlist">
 
@@ -57,8 +57,6 @@
     <div class="dd dd2" style="overflow:hidden"><label for="${gid}_attr_edit_chk_${attr.id}">$!{attr.id}</label>
        <input tabindex="-1" id="${gid}_attr_edit_chk_${attr.id}_in" value="$chk" type="hidden" aria-hidden="true"></input>
    
- <a href="javascript:attr_checkAll('$gid', '$!{attr.id}')">add filter</a>
-      
     ## show any existing releases
     #set ($count=0)
     #set ($started = false)
