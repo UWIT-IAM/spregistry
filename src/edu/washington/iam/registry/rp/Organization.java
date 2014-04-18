@@ -114,6 +114,9 @@ public class Organization implements Serializable  {
     public String getName() {
        return (name);
     }
+    public String getSafeName() {
+       return (name.replaceAll("'",""));
+    }
 
     public void setDisplayName(String v) {
        displayName = v;

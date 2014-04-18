@@ -1,5 +1,5 @@
 /* ========================================================================
- * Copyright (c) 2011-2013 The University of Washington
+ * Copyright (c) 2011-2014 The University of Washington
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 // sp-registry javascript
 // vers: 04/16/2014
 
-// common vars
+// globals
 var v_root = '/spreg';
 var v_remoteUser = '';
 var v_xsrf = '';
@@ -30,19 +30,17 @@ var v_loadErrorMessage = "Operation failed. You may need to reload the page to r
 var v_currentSpTab = 'm';
 var v_spLoading = false;
 
-// sp list ( structures from the server )
+// sp list ( loaded by api from the server )
 
-var spList;
+var spList;     // all the sp
 var nsp = 0;
 var currentSp;  // the active sp or null
 var newSpId = '';
 
 iam_set('rightSide', 'spDisplay');
 
-function logger(){
-  console.log('logger');
-}
 
+/* Context save and restore.  Hash data in the url and in the cookie.  */
 
 // hash change causes sp display (callback from iam tools)
 function hashHandler(tab, spid) {
@@ -65,9 +63,9 @@ function hashHandler(tab, spid) {
 
 iam_set('hashCookie', 'spck1');
 iam_set('hashHandler', hashHandler);
-// iam_hashInit('sprck', hashHandler);
 
 // user/admin role chooser
+
 var adminQS = ''
 function setRole(r, d) {
    if (r=='a') {
@@ -81,6 +79,7 @@ function setRole(r, d) {
    if (d!=null) iam_hideTheDialog(d);
 }
 
+
 // show the home panel
 function showHomePage() {
    iam_hideShow(['spDisplay'],['homeDisplay']);
@@ -92,15 +91,14 @@ function showSpPanel() {
 }
 
 
-// SP display tools
+/*
+ * Methods used to handle the SP display 
+ */
 
 var spKeyListener = null;
 
-function checkSpTabKey(e) {
-  console.log(e);
-}
+//  Switch to the correct tab
 
-// after the sp page has loaded.  set the right tab
 function setSpTab() {
    console.log('setSpTab: tab=' + v_currentSpTab);
    var tab = null;
@@ -116,7 +114,9 @@ function setSpTab() {
    v_spLoading = false;
 }
 
-// after the sp page has loaded.  setup watchers and etc
+// Setup hash and key listeners, set the tab
+// called after the SP display loads
+
 function postLoadSp() {
    console.log('postLoad');
 
@@ -131,7 +131,6 @@ function postLoadSp() {
          v_currentSpTab = tab;
          iam_hashSetCurrent(tab, null);
       });
-   // newSpKeyUp = dojo.connect(dijitRegistry.byId('spDisplay'), 'onKeyUp', checkSpTabKey);
    if (spKeyListener!=null) spKeyListener.remove();
    require(["dojo/on"], function(on){
      spKeyListener = on(dojoDom.byId("spDisplay"), "keypress", function(e){
@@ -142,10 +141,6 @@ function postLoadSp() {
              if (v_currentSpTab=='m') iam_showTheDialog('metaEditDialog');
              else if (v_currentSpTab=='a') iam_showTheDialog('attrEditDialog');
              else if (v_currentSpTab=='p') iam_showTheDialog('proxyEditDialog');
-             break;
-          case 68: // D
-          case 100:
-             if (v_currentSpTab=='m') iam_showTheDialog('metaDeleteDialog');
              break;
           case 82: // R
           case 114:
@@ -160,7 +155,7 @@ function postLoadSp() {
 }
 
 
-// show an sp by index
+// display an SP by index
 
 function showSp(i, tab) {
    console.log('showsp, i='+i+' current=' + currentSp);
@@ -174,31 +169,9 @@ function showSp(i, tab) {
    }
 }
 
-// new sp 
-// this starts the process.  postLoadSp ends it
 
-function lookupSp() {
-   alert('plain lookupsp called');
-   var ndns = dojoDom.byId('new_dns').value.trim();
-   if (ndns==null || ndns=='') {
-      iam_showTheNotice('You must provide a dns name');
-      return;
-   }
-   console.log(ndns);
-   currentSp = '';
-   currentSpTab = 'm';
-   v_spLoading = true;
-   if (dijitRegistry.byId('spPane')!=null)  dijitRegistry.byId('spPane').destroyRecursive();
-   var url = v_root + v_vers + '/new?dns=' + ndns + '&view=inner' + adminQS;
-   dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);
-   dijitRegistry.byId('spDisplay').set('onLoad', postLoadSp);
-   dijitRegistry.byId('spDisplay').set('href', url);
-   showSpPanel();
-   window.focus();
-}
-
-// show the current sp
-// this starts the process.  postLoadSp ends it
+// display the current SP
+// this starts the load.  postLoadSp ends it
 
 function showCurrentSp() {
    v_spLoading = true;
@@ -217,6 +190,20 @@ function showCurrentSp() {
    window.focus();
 }
 
+// Catch 'enter' in the new-sp textbox.  Act as if 'Continue'
+function checkNewSp(e) {
+  console.log(e);
+  if (e.keyCode==13) {  // enter
+     meta_lookupSp();
+     return;
+  }
+}
+
+/*
+ * SP list tools
+ */
+
+// decorate the 'current' sp in the list
 function setSearchOver(i) {
   require(["dojo/dom-class"], function(domClass){
     domClass.add('spitem' + i, 'listitemhover');
@@ -228,17 +215,10 @@ function setSearchOut(i) {
   });
 }
 
-// check the new sp entry for enter
-function checkNewSp(e) {
-  console.log(e);
-  if (e.keyCode==13) {  // enter
-     meta_lookupSp();
-     return;
-  }
-}
-
-// fill out the list according to filter settings
+// filter the sp list according to the filter textbox
 // 'enter' select the one on top
+// activated by keypress in the filter textbox
+
 var curselsp = (-1);
 function checkSpFilter(e) {
   console.log(e);
@@ -275,14 +255,17 @@ function checkSpFilter(e) {
   showSpList();
 }
 
+// display the filtered sp list
+
 function showSpList(e) {
   
   curselsp = (-1);
   nsp = spList.length;
-  // console.log(nsp + ' service providers');
+  console.log(nsp + ' service providers loaded');
+
   var txsp = dijitRegistry.byId('filterSpList').get('value');
- 
-  // count how many
+
+  // Count how many will show.  We darken the list when it gets short
   var ndsp = 0;
   var dc = 'dim0';
   for (i=0; i<nsp; i++) {
@@ -304,8 +287,11 @@ function showSpList(e) {
        htm += '<span class="listitem dim4"><i>.&nbsp;.&nbsp;.&nbsp;</i></span>';
        break;
     }
-    ttl = 'InCommon federation';
-    if (spList[i].meta.substring(0,2)=='UW') ttl = 'UW federation';
+   
+    // decorate the link with org and federation
+    ttl = spList[i].org;
+    if (spList[i].meta.substring(0,2)=='UW') ttl += ' (UW)';
+    else ttl += ' (InCommon)';
    
     if (curselsp<0) {
        cls = ' class="listitem listitemhover ' + dc + '" '
@@ -323,32 +309,21 @@ function showSpList(e) {
   dijitRegistry.byId('spIndexPane').set('content',htm);
 }
 
-// load the sp list
+// load the list of SPs.  API call to server.
 function loadSpList()
 {
    var url = v_root + v_vers + '/rps';
-   dojo.xhrGet({
-     url: url,
-     handleAs: 'json',
-     load: function(data, args) {
+   iam_getRequest(url, null, 'json', function(data, args) {
         spList = data.rps;
         showSpList();
         iam_hashHandler();
-      },
-     error: function(data, args) {
-        alert(args.xhr.status);
-        if (args.xhr.status==418) {
-           iam_showTheNotice('Try refresh');
-           return;
-        } else alert(iam_getAlertFromXmlData(data));
-      }
-   });
+      });
 }
 
 
 /* panel sizing */
 
-// index and display panels have been sized
+// index and display panels have been sized already by iam-dojo.js
 
 function setPaneSizes() {
    console.log('Set pane sizes.....');
@@ -375,18 +350,9 @@ function setPaneSizes() {
         left: '0px'
       });
 
-/*
-     dojo.style(dojo.byId('newDisplay'), {
-        height: idh + 'px',
-        top: '0px',
-        left: '0px'
-      });
- */
-
-
 }
 
-// my group size adjust
+// presently deactivated
 function adjustSPIndexSize() {
 return 0;
    var pane = dojo.byId('spIndexPane');
@@ -401,7 +367,7 @@ return 0;
    // alert('set to ' + dojo.position(dojo.byId(paneName),true).h);
 }
 
-// group pane sizing
+// Size the SP ddetail isplay
 function adjustSpPaneSize(paneName) {
    var pane = dojoDom.byId(paneName);
    var tHeight = dojo.position(dojo.byId('spDisplay'),true).h;
@@ -414,6 +380,7 @@ function adjustSpPaneSize(paneName) {
 
 
 function reparse(node) {
+console.log('REPARSE');
 require(["dojo/parser"], function(parser){
   parser.parse(node);
 });
@@ -425,7 +392,7 @@ require(["dojo/parser"], function(parser){
 
 
 /*
- * RP metadata tools 
+ * RP metadata tab functions 
  * 
  */
 
@@ -446,68 +413,76 @@ function handleGroupViewBtn(cn) {
 
 
 
-   // pseudo getbyname that works with ie
-   function _getElementsByIdname(base) {
-      var list = [];
-      var i = 0;
-      while (dojoDom.byId(base + '_' + i)) {
-         list.push(dojoDom.byId(base + '_' + i++));
+// pseudo getbyname that works with ie
+function _getElementsByIdname(base) {
+   var list = [];
+   var i = 0;
+   while (dojoDom.byId(base + '_' + i)) {
+      list.push(dojoDom.byId(base + '_' + i++));
+   }
+   return list;
+}
+
+// respond to one of the 'add xxx' buttons
+meta_showMoreFields = function(name, id) {
+   // show the first of the hidden ones
+   for (e=0; e<20; e++) {
+      var enam = name + e;
+      list = _getElementsByIdname(name+e);
+      if (list.length==0) break;
+      if (list[0].style.display == '') continue;
+      for (i=0; i<list.length; i++) {
+         list[i].style.display = '';
+         list[i].className = 'messyDetail';
       }
-      return list;
+      return;
+    }
+    plus = dojoDom.byId(id);
+    plus.style.display = 'none';
+};
+
+// after load of new sp, remove the connect and show the edit dialog
+function postLoadNewSp() {
+   console.log('postLoadNewSp');
+   dojo.disconnect(newSpConnect);
+   newSpConnect = null;
+   postLoadSp();
+   iam_showTheDialog('metaEditDialog',[]);
+}
+
+// API call to fetch or generate metadata for a new SP
+function _lookupSp(rpid, lookup) {
+   currentSp = null
+   newSpId = rpid;
+   v_spLoading = true;
+   if (dijitRegistry.byId('spPane')!=null)  dijitRegistry.byId('spPane').destroyRecursive();
+   var url = v_root + v_vers + '/new?rpid=' + rpid + adminQS;
+   if (!lookup) url += '&nolook=y';
+   console.log(url);
+   dijitRegistry.byId('spDisplay').set('errorMessage', 'Request for metadata failed.  Is the SP online?');
+   if (lookup) dijitRegistry.byId('spDisplay').set('loadingMessage', 'Searching for ' + rpid + ' . . .' );
+   else dijitRegistry.byId('spDisplay').set('loadingMessage', 'Processing . . .');
+   dijitRegistry.byId('spDisplay').set('href', url);
+   newSpConnect = dojo.connect(dijitRegistry.byId('spDisplay'), 'onLoad', postLoadNewSp);
+   showSpPanel();
+   window.focus();
+}
+
+// start a lookup of a new SP from the textbox
+
+meta_lookupSp = function() {
+   var dns = dijitRegistry.byId('newSp').get('value').trim();
+   if (dns==null || dns=='') {
+      iam_showTheNotice('you must provide an entityid');
+      return;
    }
+   var lookup = dijitRegistry.byId('newSpLookup').get('checked');
+   return _lookupSp(dns, lookup);
+}  
 
-   // show some inputs
-   meta_showMoreFields = function(name, id) {
-      // show the first set of hidden ones
-      for (e=0; e<20; e++) {
-         var enam = name + e;
-         list = _getElementsByIdname(name+e);
-         if (list.length==0) break;
-         if (list[0].style.display == '') continue;
-         for (i=0; i<list.length; i++) {
-            list[i].style.display = '';
-            list[i].className = 'messyDetail';
-         }
-         return;
-       }
-       plus = dojoDom.byId(id);
-       plus.style.display = 'none';
-   };
-
-   function postLoadNewSp() {
-      console.log('postLoadNewSp');
-      postLoadSp();
-      iam_showTheDialog('metaEditDialog',[]);
-   }
-
-   function _lookupSp(rpid, lookup) {
-      currentSp = null
-      newSpId = rpid;
-      v_spLoading = true;
-      if (dijitRegistry.byId('spPane')!=null)  dijitRegistry.byId('spPane').destroyRecursive();
-      var url = v_root + v_vers + '/new?rpid=' + rpid + adminQS;
-      if (!lookup) url += '&nolook=y';
-      console.log(url);
-      dijitRegistry.byId('spDisplay').set('errorMessage', 'Request for metadata failed.  Is the SP online?');
-      if (lookup) dijitRegistry.byId('spDisplay').set('loadingMessage', 'Searching for ' + rpid + ' . . .' );
-      else dijitRegistry.byId('spDisplay').set('loadingMessage', 'Processing . . .');
-      dijitRegistry.byId('spDisplay').set('href', url);
-      // dijitRegistry.byId('spDisplay').set('onLoad', postLoadNewSp);
-      newSpConnect = dojo.connect(dijitRegistry.byId('spDisplay'), 'onLoad', postLoadNewSp);
-      showSpPanel();
-      window.focus();
-   }
-
-   // user gives us dns name to query
-   meta_lookupSp = function() {
-      var dns = dijitRegistry.byId('newSp').get('value').trim();
-      if (dns==null || dns=='') {
-         iam_showTheNotice('you must provide an entityid');
-         return;
-      }
-      var lookup = dijitRegistry.byId('newSpLookup').get('checked');
-      return _lookupSp(dns, lookup);
-   }  
+/* 
+ * tools to handle save of metadata
+ */
 
 var nameRE = new RegExp("^[a-z][a-z0-9\.\_\-]+$");
 
@@ -643,24 +618,26 @@ function assembleRPMetadata(entityId) {
    return xml;
 }
 
+// after metadata has been saved, reload the SP 
+
 function postSaveRP() {
    console.log('postSaveRP');
-   // iam_showTheNotice('Changes saved');
    iam_bannerNotice('Changes saved');
    var url = v_root + v_vers + '/rp/?id=' + rpId + '&mdid=UW' + adminQS;
-   if (newSpConnect!=null) {
-      console.log('clear new sp connect');
-      dojo.disconnect(newSpConnect);
+   if (currentSp==null) {
+      console.log('post load new SP');
+      // add the new sp to the list  ( quicker than reloading the list )
+      spList[nsp] = {'id':rpId, 'meta':'UW', 'org':''};
+      nsp += 1;
    }
-   newSpConnect = null;
    dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);
    dijitRegistry.byId('spDisplay').set('href', url);
-   // handleGroupViewBtn();
    document.body.style.cursor = 'default';
 }
 
 
-// submit the changes
+// respond to the 'save changes' button
+
 function saveRP(entityId) {
    xml = assembleRPMetadata(entityId);
    if (xml=='') return false;
@@ -670,6 +647,8 @@ function saveRP(entityId) {
    iam_putRequest(url, null, xml, null, postSaveRP);
 }
 
+
+// after SP has been deleted, show message and return to home page
 
 function postDeleteRP() {
    console.log('post delete');
@@ -681,7 +660,8 @@ function postDeleteRP() {
 }
 
 
-// submit a delete
+// Respond to the 'delete' confirmation
+
 function deleteRP(entityId) {
    rpId = entityId;
    var url = v_root + v_vers + '/rp?id=' + entityId + '&mdid=UW&xsrf=' + v_xsrf + adminQS;
@@ -696,10 +676,9 @@ function convertToList(str)
    return (ret);
 }
 
-//
-//
-//   Attribute functions
-//
+/*
+ *   Attribute functions
+ */
 
 function local_check_gws() {
    ck = dijitRegistry.byId('attr_req_gws_groups').get('checked');
