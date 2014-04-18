@@ -754,16 +754,7 @@ public class RelyingPartyController {
         if (nolook!=null && nolook.startsWith("y")) lookup = false;
         if (session.isAdmin && role!=null && role.equals("admin")) session.wantsAdmin = true;
         
-        String dns = rpid;
-        if (rpid.startsWith("https://")) {
-           int p = dns.indexOf('/', 10);
-           if (p<0) dns = dns.substring(8);
-           else dns = dns.substring(8,p);
-        } else if (rpid.startsWith("http://")) {
-           int p = dns.indexOf('/', 10);
-           if (p<0) dns = dns.substring(7);
-           else dns = dns.substring(7,p);
-        }
+        String dns = dnsFromEntityId(rpid);
 
         if (dns.length()==0) return (emptyMV());
 
@@ -799,6 +790,14 @@ public class RelyingPartyController {
               catch (RelyingPartyException e){
                   log.debug("rp doesn't already exist in our metadata");
               }
+
+              if(!dns.equals(dnsFromEntityId(rp.getEntityId()))){
+                  log.info(String.format("requested dns '%s' not equal to fetched entityId '%s'",
+                                         dns, rp.getEntityId()));
+                  return emptyMV(String.format("Host lookup '%s' and EntityID '%s' must have the same host name",
+                                               dns, rp.getEntityId()));
+              }
+
               mv.addObject("relyingParty", rp);
               mv.addObject("relyingPartyId", rp.getEntityId());
               session.pageTitle = rp.getEntityId();
