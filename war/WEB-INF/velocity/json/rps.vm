@@ -22,9 +22,8 @@
 {
 rps:[
 #foreach ( $rp in $relyingParties )
-$sep { 'id':'$rp.entityId', 'meta':'$rp.metadataId', 'org':'$!rp.organization.safeName'}
+$sep { 'id':'$rp.entityId', 'meta':'$rp.metadataId', 'org':'$!rp.organization.safeJsonName'}
 #set ($sep=',')
 #end
 ]
 }
-### $sep { 'id':'$rp.entityId', 'meta':'$rp.metadataId', 'organization':'$rp.organization.OrganizationName'}

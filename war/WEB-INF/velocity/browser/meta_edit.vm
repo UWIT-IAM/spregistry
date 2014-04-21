@@ -1,5 +1,5 @@
 #* ========================================================================
- * Copyright (c) 2009-2013 The University of Washington
+ * Copyright (c) 2009-2014 The University of Washington
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@
         <ul class="iamlist">
      <li id="ct${count}_0">
        <span class="dt dt3" >Type</span>
-       <select class="dd" id="ctt_${count}" aria-label="contact type">
+       <select class="dd" id="ctt_${count}" data-dojo-type="dijit.form.Select" aria-label="contact type">
        #foreach ( $t in ["technical","support","administrative","billing","other"] )
          <option value="$t" 
            #if ( $t == $ct.type )
@@ -97,7 +97,7 @@
         <ul class="iamlist">
      <li id="ct${i}_0" #if ( $i > 1 ) ${hide} #end >
        <span class="dt dt3" >Type</span>
-       <select class="dd" id="ctt_${i}"  aria-label="contact type">
+       <select class="dd" id="ctt_${i}"  data-dojo-type="dijit.form.Select" aria-label="contact type">
        #foreach ( $t in ["","technical","support","administrative","billing","other"] )
          <option value="$t" 
            #if ( $t == " " )

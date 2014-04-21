@@ -26,6 +26,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 
+import  org.apache.commons.lang.StringEscapeUtils;
 
 public final class XMLHelper {
 
@@ -103,5 +104,16 @@ public final class XMLHelper {
        if (col>0) nsname = nsname.substring(col+1);
        return (nsname.matches(name));
     }
+
+    /**
+     * make a string safe for xml 
+     *
+     **/
+
+    public static String safeXml(String in) {
+       if (in==null) return null;
+       return StringEscapeUtils.escapeXml(in);
+    }
+
 }
 

@@ -1456,6 +1456,21 @@ public class RelyingPartyController {
        proxyGroup = groupManager.getGroup(proxyGroupName);
     }
 
+    /* refresh cache groups  */
+
+    @RequestMapping(value="/ws/refresh", method=RequestMethod.GET)
+    public ModelAndView getSet(
+               HttpServletRequest request,
+               HttpServletResponse response) {
+
+       RPSession session = processRequestInfo(request, response);
+       response.setStatus(200);
+       log.info("refreshing cache groups");
+       adminGroup = groupManager.getGroup(adminGroupName);
+       proxyGroup = groupManager.getGroup(proxyGroupName);
+       return emptyMV();
+    }
+
     // diagnostic
     @RequestMapping(value="/**", method=RequestMethod.GET)
     public ModelAndView homePageStar(HttpServletRequest request, HttpServletResponse response) {

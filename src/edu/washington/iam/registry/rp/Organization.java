@@ -42,7 +42,6 @@ public class Organization implements Serializable  {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-
     private String name;
     private String displayName;
     private String url;
@@ -64,7 +63,6 @@ public class Organization implements Serializable  {
        // if (name==null) throw new RelyingPartyException("missing org name");
        // if (displayName==null) throw new RelyingPartyException("missing org displayName");
        // if (url==null) throw new RelyingPartyException("missing org url");
-      
     }
 
     // create from strings 
@@ -74,36 +72,12 @@ public class Organization implements Serializable  {
        url = u;
     }
 
-/**
-    public Element toDOM(Document doc) {
-        Element org = doc.createElement("Organization");
-        if (name != null) {
-           Element e = doc.createElement("OrganizationName");
-           e.setAttribute("xml:lang", "en");
-           e.appendChild(doc.createTextNode(name));
-           org.appendChild(e);
-        }
-        if (displayName != null) {
-           Element e = doc.createElement("OrganizationDisplayName");
-           e.setAttribute("xml:lang", "en");
-           e.appendChild(doc.createTextNode(displayName));
-           org.appendChild(e);
-        }
-        if (url != null) {
-           Element e = doc.createElement("OrganizationURL");
-           e.setAttribute("xml:lang", "en");
-           e.appendChild(doc.createTextNode(url));
-           org.appendChild(e);
-        }
-       return org;
-    }
- **/
 
     public void writeXml(BufferedWriter xout) throws IOException {
        xout.write("  <Organization>\n");
-       if (name!=null) xout.write("   <OrganizationName xml:lang=\"en\">" + name + "</OrganizationName>\n");
-       if (displayName!=null) xout.write("   <OrganizationDisplayName xml:lang=\"en\">" + displayName + "</OrganizationDisplayName>\n");
-       if (url!=null) xout.write("   <OrganizationURL xml:lang=\"en\">" + url + "</OrganizationURL>\n");
+       if (name!=null) xout.write("   <OrganizationName xml:lang=\"en\">" + XMLHelper.safeXml(name) + "</OrganizationName>\n");
+       if (displayName!=null) xout.write("   <OrganizationDisplayName xml:lang=\"en\">" + XMLHelper.safeXml(displayName) + "</OrganizationDisplayName>\n");
+       if (url!=null) xout.write("   <OrganizationURL xml:lang=\"en\">" + XMLHelper.safeXml(url) + "</OrganizationURL>\n");
        xout.write("  </Organization>\n");
     }
 
@@ -111,25 +85,34 @@ public class Organization implements Serializable  {
     public void setName(String v) {
        name = v;
     }
-    public String getName() {
+    public String getRawName() {
        return (name);
     }
-    public String getSafeName() {
+    public String getName() {
+       return (XMLHelper.safeXml(name));
+    }
+    public String getSafeJsonName() {
        return (name.replaceAll("'",""));
     }
 
     public void setDisplayName(String v) {
        displayName = v;
     }
-    public String getDisplayName() {
+    public String getRawDisplayName() {
        return (displayName);
+    }
+    public String getDisplayName() {
+       return (XMLHelper.safeXml(displayName));
     }
 
     public void setUrl(String v) {
        url = v;
     }
-    public String getUrl() {
+    public String getRawUrl() {
        return (url);
+    }
+    public String getUrl() {
+       return (XMLHelper.safeXml(url));
     }
 
 }

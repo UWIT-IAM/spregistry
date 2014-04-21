@@ -159,7 +159,7 @@ function postLoadSp() {
 
 function showSp(i, tab) {
    console.log('showsp, i='+i+' current=' + currentSp);
-   if (currentSp==null || currentSp.id!=spList[i].id) {
+   if (currentSp==null || currentSp.id!=spList[i].id || currentSp.meta!=spList[i].meta) {
       currentSp = spList[i];
       v_currentSpTab = tab;
       showCurrentSp();
@@ -584,7 +584,8 @@ function assembleRPMetadata(entityId) {
    hadMail = false;
    hadPhone = false;
    for (i=0; i<5; i++) {
-      v = dojoDom.byId('ctt_' + i).value.trim();
+      // v = dojoDom.byId('ctt_' + i).value.trim();
+      var v = dijitRegistry.byId('ctt_' + i).get('value').trim();
       if (v=='') continue;
       xml = xml + '<ContactPerson contactType="' + iam_makeOkXml(v) + '">';
       v = dojoDom.byId('ctgn_' + i).value.trim();
