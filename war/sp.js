@@ -484,7 +484,16 @@ meta_lookupSp = function() {
  * tools to handle save of metadata
  */
 
+var badRE = new RegExp("[<>&]");
 var nameRE = new RegExp("^[a-z][a-z0-9\.\_\-]+$");
+
+function chkText(v, e) {
+   if (v.search(badRE)>=0) {
+       iam_showTheNotice("invalid " + e);
+       return 0;
+   }
+   return 1;
+}
 
 // build the rp xml
 function assembleRPMetadata(entityId) {
@@ -498,9 +507,11 @@ function assembleRPMetadata(entityId) {
       e = dojoDom.byId('pse_' + i);
       if (e!=null) {
          v = e.value.trim();
+         if (chkText(v, "PSE")) return null;
          if (v == '') continue;
          if (pse=='') pse = 'protocolSupportEnumeration="' + e.value.trim();
          else pse = pse + ' ' + e.value.trim();
+         
       }
    }
    if (pse=='') {
@@ -517,6 +528,8 @@ function assembleRPMetadata(entityId) {
       knv = kn.value.trim();
       kcv = kc.value.trim();
       if (knv=='' && kcv=='') continue;
+      if (chkText(knv, "keyname")) return null;
+      if (chkText(knc, "cert pem")) return null;
       ki = '<KeyDescriptor><ds:KeyInfo>';
       if (knv!='') ki = ki + '<ds:KeyName>' + knv + '</ds:KeyName>';
       if (kcv!='') ki = ki + '<ds:X509Data><ds:X509Certificate>' + kcv + '</ds:X509Certificate></ds:X509Data>';
@@ -534,6 +547,7 @@ function assembleRPMetadata(entityId) {
       if (e!=null) {
          v = e.value.trim();
          if (v == '') continue;
+         if (chkText(v, "nameid")) return null;
          xml = xml + '<NameIDFormat>' + v + '</NameIDFormat>';
       }
    }
@@ -546,6 +560,8 @@ function assembleRPMetadata(entityId) {
       if (idxv=='') continue;
       bv = dojoDom.byId('acsb_' + i).value.trim();
       lv = dojoDom.byId('acsl_' + i).value.trim();
+      if (chkText(bv, "acs binding")) return null;
+      if (chkText(lv, "acs location")) return null;
       xml = xml + '<AssertionConsumerService index="' + idxv + '" ';
       xml = xml + 'Binding="' + bv + '" Location="' + lv + '"/>';
       hadAcs = true;

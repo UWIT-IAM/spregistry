@@ -123,7 +123,7 @@ public final class XMLHelper {
 
     public static String safeJson(String in) {
        if (in==null) return null;
-       return in.replaceAll("'","");
+       return in.replaceAll("'","").replaceAll("\n","");
     }
 }
 
