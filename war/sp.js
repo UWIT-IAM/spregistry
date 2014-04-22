@@ -487,12 +487,12 @@ meta_lookupSp = function() {
 var badRE = new RegExp("[<>&]");
 var nameRE = new RegExp("^[a-z][a-z0-9\.\_\-]+$");
 
-function chkText(v, e) {
+function badText(v, e) {
    if (v.search(badRE)>=0) {
        iam_showTheNotice("invalid " + e);
-       return 0;
+       return 1;
    }
-   return 1;
+   return 0;
 }
 
 // build the rp xml
@@ -507,7 +507,7 @@ function assembleRPMetadata(entityId) {
       e = dojoDom.byId('pse_' + i);
       if (e!=null) {
          v = e.value.trim();
-         if (chkText(v, "PSE")) return '';
+         if (badText(v, "PSE")) return '';
          if (v == '') continue;
          if (pse=='') pse = 'protocolSupportEnumeration="' + e.value.trim();
          else pse = pse + ' ' + e.value.trim();
@@ -523,13 +523,11 @@ function assembleRPMetadata(entityId) {
    // keyinfo
    hadKi = false;
    for (i=0; i<4; i++) {
-      kn = dojoDom.byId('kn_' + i);
-      kc = dojoDom.byId('kc_' + i);
-      knv = kn.value.trim();
-      kcv = kc.value.trim();
+      knv = dojoDom.byId('kn_' + i).value.trim();
+      kcv = dojoDom.byId('kc_' + i).value.trim();
       if (knv=='' && kcv=='') continue;
-      if (chkText(knv, "keyname")) return '';
-      if (chkText(knc, "cert pem")) return '';
+      if (badText(knv, "keyname")) return '';
+      if (badText(kcv, "cert pem")) return '';
       ki = '<KeyDescriptor><ds:KeyInfo>';
       if (knv!='') ki = ki + '<ds:KeyName>' + knv + '</ds:KeyName>';
       if (kcv!='') ki = ki + '<ds:X509Data><ds:X509Certificate>' + kcv + '</ds:X509Certificate></ds:X509Data>';
@@ -547,7 +545,7 @@ function assembleRPMetadata(entityId) {
       if (e!=null) {
          v = e.value.trim();
          if (v == '') continue;
-         if (chkText(v, "nameid")) return '';
+         if (badText(v, "nameid")) return '';
          xml = xml + '<NameIDFormat>' + v + '</NameIDFormat>';
       }
    }
@@ -560,8 +558,8 @@ function assembleRPMetadata(entityId) {
       if (idxv=='') continue;
       bv = dojoDom.byId('acsb_' + i).value.trim();
       lv = dojoDom.byId('acsl_' + i).value.trim();
-      if (chkText(bv, "acs binding")) return '';
-      if (chkText(lv, "acs location")) return '';
+      if (badText(bv, "acs binding")) return '';
+      if (badText(lv, "acs location")) return '';
       xml = xml + '<AssertionConsumerService index="' + idxv + '" ';
       xml = xml + 'Binding="' + bv + '" Location="' + lv + '"/>';
       hadAcs = true;
