@@ -15,11 +15,9 @@
  * ========================================================================
  *#
 
-/* macros for spreg */
-
 ## make a string safe for xml (html)
-#macro ( X $S )$XMLHelper.safeXml($S)#end
+#macro ( X $S )$!{XMLHelper.safeXml($S)}#end
 
 ## make a string safe for json
-#macro ( J $S )$XMLHelper.safeJson($S)#end
+#macro ( J $S )$!{XMLHelper.safeJson($S)}#end
 
