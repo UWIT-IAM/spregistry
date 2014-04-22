@@ -782,7 +782,7 @@ public class RelyingPartyController {
 
         if (lookup) {
            try {
-              rp = rpManager.genRelyingPartyByLookup(dns);
+              rp = rpManager.genRelyingPartyByLookup(hostPortFromEntityId(rpid));
               if (rp!=null) log.debug("rp: " + rp.getEntityId());
               try {
                   RelyingParty orp = rpManager.getRelyingPartyById(rp.getEntityId(), "UW");
@@ -792,11 +792,11 @@ public class RelyingPartyController {
                   log.debug("rp doesn't already exist in our metadata");
               }
 
-              if(!dns.equals(dnsFromEntityId(rp.getEntityId()))){
+              if(!hostPortFromEntityId(rpid).equals(hostPortFromEntityId(rp.getEntityId()))){
                   log.info(String.format("requested dns '%s' not equal to fetched entityId '%s'",
-                                         dns, rp.getEntityId()));
+                                         hostPortFromEntityId(rpid), rp.getEntityId()));
                   return emptyMV(String.format("Host lookup '%s' and EntityID '%s' must have the same host name",
-                                               dns, rp.getEntityId()));
+                                               hostPortFromEntityId(rpid), rp.getEntityId()));
               }
 
               mv.addObject("relyingParty", rp);
@@ -1358,6 +1358,11 @@ public class RelyingPartyController {
        } catch (NumberFormatException e) {
           return 0;
        }
+    }
+    private String hostPortFromEntityId(String entityId){
+        entityId = entityId.replaceFirst("^https?://", "");
+        entityId = entityId.replaceFirst("/.*$", "");
+        return entityId;
     }
     private String dnsFromEntityId(String entityid) {
        String dns = entityid;
