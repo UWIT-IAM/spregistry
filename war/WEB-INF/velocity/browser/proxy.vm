@@ -43,7 +43,7 @@
     <h4>$idp.idp</h4>
     <ul class="iamlist">
     <li>
-    <h5 class="dt">Client ID:</h5><div class="dd">$!{idp.clientId}</div>
+    <h5 class="dt">Client ID:</h5><div class="dd">#X($!{idp.clientId})</div>
     </li>
     </ul>
     <hr>

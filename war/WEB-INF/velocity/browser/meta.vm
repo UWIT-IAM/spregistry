@@ -55,13 +55,13 @@
 <ul class="iamlist">
     #set ( $org = $relyingParty.organization )
     #if ( $org.name )
-    <li><h4 class="dt">Name</h4><div class="dd">$org.name</div></li>
+    <li><h4 class="dt">Name</h4><div class="dd">#X($org.name)</div></li>
     #end
     #if ( $org.displayName )
-    <li><h4 class="dt">Display name</h4><div class="dd">$org.displayName</div></li>
+    <li><h4 class="dt">Display name</h4><div class="dd">#X($org.displayName)</div></li>
     #end
     #if ( $org.url )
-    <li><h4 class="dt">Url </h4><div class="dd">$org.url</div></li>
+    <li><h4 class="dt">Url </h4><div class="dd">#X($org.url)</div></li>
     #end
 
     <li><h4 class="dt">Contacts </h4><div class="dd">
@@ -69,13 +69,13 @@
      <fieldset style="margin-bottom:8px">
     <legend class="h4">$!ct.type</legend>
      #if ( $ct.givenName || $ct.surName )
-      $!ct.givenName $!ct.surName<br>
+      #X($!ct.givenName $!ct.surName)<br>
      #end
      #if ( $ct.company )
-      $!ct.company </br>
+      #X($!ct.company) </br>
      #end
      #if ( $ct.email )
-      $!ct.email</br>
+      #X($!ct.email)</br>
      #end
      </fieldset>
    #end
@@ -109,10 +109,10 @@
          <ul class="iamlist">
          <li><span class="dt dt3">Name</span><span class="dd dd3">$!key.keyName</span></li>
          #if ( $key.cert )
-         <li><span class="dt dt3">Subject</span><span class="dd dd3">$!key.cert.dn</span></li>
-         <li><span class="dt dt3">Issuer</span><span class="dd dd3">$!key.cert.issuerDn</span></li>
-         <li><span class="dt dt3">Issued</span><span class="dd dd3">$dateFormatter.format($key.cert.issued)</span></li>
-         <li><span class="dt dt3">Expires</span><span class="dd dd3">$dateFormatter.format($key.cert.expires)</span></li>
+         <li><span class="dt dt3">Subject</span><span class="dd dd3">#X($!key.cert.dn)</span></li>
+         <li><span class="dt dt3">Issuer</span><span class="dd dd3">#X($!key.cert.issuerDn)</span></li>
+         <li><span class="dt dt3">Issued</span><span class="dd dd3">#X($dateFormatter.format($key.cert.issued))</span></li>
+         <li><span class="dt dt3">Expires</span><span class="dd dd3">#X($dateFormatter.format($key.cert.expires))</span></li>
          #end
          <li><span class="dt dt3"></span>
              <span class="dd dd3">

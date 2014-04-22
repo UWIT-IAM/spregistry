@@ -385,6 +385,7 @@ public class RelyingPartyController {
     // create basic model and view
     private ModelAndView basicModelAndView(RPSession session, String view, String basePage) {
         ModelAndView mv = new ModelAndView(view + "/" + basePage);
+        mv.addObject("XMLHelper", XMLHelper.class);
         mv.addObject("remote_user", session.remoteUser);
         mv.addObject("root", session.rootPath);
         mv.addObject("vers", session.servletPath);

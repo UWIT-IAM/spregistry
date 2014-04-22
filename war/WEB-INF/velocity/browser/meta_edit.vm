@@ -42,15 +42,15 @@
 
      <li id="org0_0">
       <h4 class="dt">Name:${rstar}</h4>
-         <div class="dd"><input aria-label="org name. required entry" data-dojo-type="dijit.form.TextBox" id="orgn_0" value="$!org.name" /></div>
+         <div class="dd"><input aria-label="org name. required entry" data-dojo-type="dijit.form.TextBox" id="orgn_0" value="#X($!org.name)" /></div>
      </li>
      <li id="org0_1">
       <h4 class="dt" >Display:$rstar</h4>
-         <div class="dd"><input aria-label="org display name, required" data-dojo-type="dijit.form.TextBox" id="orgd_0" value="$!org.displayName" /></div>
+         <div class="dd"><input aria-label="org display name, required" data-dojo-type="dijit.form.TextBox" id="orgd_0" value="#X($!org.displayName)" /></div>
      </li>
      <li id="org0_2">
       <h4 class="dt" >Url:$rstar</h4>
-         <div class="dd"><input aria-label="org url, required" data-dojo-type="dijit.form.TextBox" id="orgu_0" value="$!org.url" /></div>
+         <div class="dd"><input aria-label="org url, required" data-dojo-type="dijit.form.TextBox" id="orgu_0" value="#X($!org.url)" /></div>
      </li>
      #set ( $count = $count + 1)
 
@@ -77,13 +77,13 @@
        </select>
      </li>
      <li><span class="dt dt3" id="ct${count}_1">Name$rstar</span>
-        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctgn_${count}" value="$!ct.givenName"  aria-label="name, required" />
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctgn_${count}" value="#X($!ct.givenName)"  aria-label="name, required" />
      </li>
      <li><span class="dt dt3" id="ct${count}_2">Email$rstar</span>
-        <input class="dd" data-dojo-type="dijit.form.TextBox" id="cte_${count}" value="$!ct.email" aria-label="email, required" />
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="cte_${count}" value="#X($!ct.email)" aria-label="email, required" />
      </li>
      <li><span class="dt dt3" id="ct${count}_3">Phone</span>
-        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctp_${count}" value="$!ct.phone" aria-label="phone"/>
+        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctp_${count}" value="#X($!ct.phone)" aria-label="phone"/>
      </li>
      <li><div class="dt dt3" style="height:.5em"></div></li>
      <ul>

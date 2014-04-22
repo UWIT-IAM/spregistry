@@ -115,5 +115,15 @@ public final class XMLHelper {
        return StringEscapeUtils.escapeXml(in);
     }
 
+
+    /**
+     * make a string safe for json 
+     *
+     **/
+
+    public static String safeJson(String in) {
+       if (in==null) return null;
+       return in.replaceAll("'","");
+    }
 }
 

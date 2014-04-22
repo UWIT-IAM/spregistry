@@ -70,7 +70,8 @@
              #if ($c>0)
               <br>
              #end
-             #if ($rule.regex)<span class="subtitle">(regex)</span>#end <tt>${rule.value.replaceFirst("urn:mace:washington.edu:groups:","")}</tt>
+             #if ($rule.regex)<span class="subtitle">(regex)</span>#end
+               <tt>#X(${rule.value.replaceFirst("urn:mace:washington.edu:groups:","")})</tt>
              #set ($c = $c + 1)
            #end
          #end

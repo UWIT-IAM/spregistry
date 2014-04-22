@@ -74,7 +74,7 @@
           <li id="${gid}_attr_edit_tr_v_${count}_$!{attr.id}">
              <div class="dt dt2" role="presentation"></div>
              <div class="dd dd2"><input data-dojo-type="dijit.form.TextBox" 
-                     id="${gid}_attr_edit_v_${count}_$!{attr.id}" value="$!{rule.value.replaceFirst('urn:mace:washington.edu:groups:','')}" 
+                     id="${gid}_attr_edit_v_${count}_$!{attr.id}" value="#X($!{rule.value.replaceFirst('urn:mace:washington.edu:groups:','')})" 
                       onClick="attr_showNext('$gid', ${count},'$!{attr.id}')" ></input>
                 <input data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_x_${count}_$!{attr.id}"
                   #if ($rule.regex) $checked #end></input><label for="${gid}_attr_edit_x_${count}_$!{attr.id}">regex</label>
