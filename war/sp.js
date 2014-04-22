@@ -507,7 +507,7 @@ function assembleRPMetadata(entityId) {
       e = dojoDom.byId('pse_' + i);
       if (e!=null) {
          v = e.value.trim();
-         if (chkText(v, "PSE")) return null;
+         if (chkText(v, "PSE")) return '';
          if (v == '') continue;
          if (pse=='') pse = 'protocolSupportEnumeration="' + e.value.trim();
          else pse = pse + ' ' + e.value.trim();
@@ -528,8 +528,8 @@ function assembleRPMetadata(entityId) {
       knv = kn.value.trim();
       kcv = kc.value.trim();
       if (knv=='' && kcv=='') continue;
-      if (chkText(knv, "keyname")) return null;
-      if (chkText(knc, "cert pem")) return null;
+      if (chkText(knv, "keyname")) return '';
+      if (chkText(knc, "cert pem")) return '';
       ki = '<KeyDescriptor><ds:KeyInfo>';
       if (knv!='') ki = ki + '<ds:KeyName>' + knv + '</ds:KeyName>';
       if (kcv!='') ki = ki + '<ds:X509Data><ds:X509Certificate>' + kcv + '</ds:X509Certificate></ds:X509Data>';
@@ -547,7 +547,7 @@ function assembleRPMetadata(entityId) {
       if (e!=null) {
          v = e.value.trim();
          if (v == '') continue;
-         if (chkText(v, "nameid")) return null;
+         if (chkText(v, "nameid")) return '';
          xml = xml + '<NameIDFormat>' + v + '</NameIDFormat>';
       }
    }
@@ -560,8 +560,8 @@ function assembleRPMetadata(entityId) {
       if (idxv=='') continue;
       bv = dojoDom.byId('acsb_' + i).value.trim();
       lv = dojoDom.byId('acsl_' + i).value.trim();
-      if (chkText(bv, "acs binding")) return null;
-      if (chkText(lv, "acs location")) return null;
+      if (chkText(bv, "acs binding")) return '';
+      if (chkText(lv, "acs location")) return '';
       xml = xml + '<AssertionConsumerService index="' + idxv + '" ';
       xml = xml + 'Binding="' + bv + '" Location="' + lv + '"/>';
       hadAcs = true;
