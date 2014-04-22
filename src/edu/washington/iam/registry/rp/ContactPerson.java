@@ -86,13 +86,13 @@ public class ContactPerson implements Serializable  {
 
 
     public void writeXml(BufferedWriter xout) throws IOException {
-       xout.write("  <ContactPerson contactType=\"" + type + "\">\n");
-       if (company != null) xout.write("   <Company>" + company + "</Company>\n");
-       if (givenName != null) xout.write("   <GivenName>" + givenName + "</GivenName>\n");
-       if (surName != null) xout.write("   <SurName>" + surName + "</SurName>\n");
-       if (email != null) xout.write("   <EmailAddress>" + email + "</EmailAddress>\n");
-       if (phone != null) xout.write("   <TelephoneNumber>" + phone + "</TelephoneNumber>\n");
-       xout.write("  </ContactPerson>\n");
+        xout.write("  <ContactPerson contactType=\"" + XMLHelper.safeXml(type) + "\">\n");
+        if (company != null) xout.write("   <Company>" + XMLHelper.safeXml(company) + "</Company>\n");
+        if (givenName != null) xout.write("   <GivenName>" + XMLHelper.safeXml(givenName) + "</GivenName>\n");
+        if (surName != null) xout.write("   <SurName>" + XMLHelper.safeXml(surName) + "</SurName>\n");
+        if (email != null) xout.write("   <EmailAddress>" + XMLHelper.safeXml(email) + "</EmailAddress>\n");
+        if (phone != null) xout.write("   <TelephoneNumber>" + XMLHelper.safeXml(phone) + "</TelephoneNumber>\n");
+        xout.write("  </ContactPerson>\n");
     }
 
     public void setType(String v) {

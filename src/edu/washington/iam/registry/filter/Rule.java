@@ -74,7 +74,8 @@ public class Rule implements Serializable  {
     public void writeXml(BufferedWriter xout) throws IOException {
        String valueStr = "value";
        if (type.equals("basic:AttributeValueRegex")) valueStr = "regex";
-       xout.write("     <basic:Rule xsi:type=\"" + type + "\" " + valueStr + "=\"" + value + "\"/>\n");
+       xout.write("     <basic:Rule xsi:type=\"" + type + "\" " + valueStr + "=\"" 
+                  + XMLHelper.safeXml(value) + "\"/>\n");
     }
 
     public void setType(String v) {

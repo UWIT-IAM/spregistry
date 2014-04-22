@@ -69,7 +69,9 @@ public class ProxyIdp implements Serializable  {
 
     // write xml doc
     public void writeXml(BufferedWriter xout) throws IOException {
-       xout.write("<ProxyIdp idp=\"" + idp + "\" clientId=\"" + clientId + "\" clientSecret=\"" + clientSecret + "\"/>\n");
+        xout.write("<ProxyIdp idp=\"" + XMLHelper.safeXml(idp) 
+                   + "\" clientId=\"" + XMLHelper.safeXml(clientId) 
+                   + "\" clientSecret=\"" + XMLHelper.safeXml(clientSecret) + "\"/>\n");
     }
 
     // write py doc

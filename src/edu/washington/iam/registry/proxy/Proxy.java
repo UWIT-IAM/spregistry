@@ -70,7 +70,7 @@ public class Proxy implements Serializable  {
     // write xml doc
     public void writeXml(BufferedWriter xout) throws IOException {
        if (idps.size()==0) return;
-       xout.write("<Proxy entityId=\"" + entityId + "\">\n");
+       xout.write("<Proxy entityId=\"" + XMLHelper.safeXml(entityId) + "\">\n");
        for (int i=0; i<idps.size(); i++) idps.get(i).writeXml(xout);
        xout.write("</Proxy>\n");
     }

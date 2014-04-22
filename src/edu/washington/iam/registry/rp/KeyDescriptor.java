@@ -93,11 +93,11 @@ public class KeyDescriptor implements Serializable  {
 
 
     public void writeXml(BufferedWriter xout) throws IOException {
-       if (use.length()>0) xout.write("   <KeyDescriptor use=\"" + use + "\">\n");
+        if (use.length()>0) xout.write("   <KeyDescriptor use=\"" + XMLHelper.safeXml(use) + "\">\n");
        else xout.write("   <KeyDescriptor>\n");
        xout.write("    <ds:KeyInfo xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\">\n");
-       if (keyName!=null) xout.write("     <ds:KeyName>" + keyName + "</ds:KeyName>\n");
-       if (certificate!=null) xout.write("     <ds:X509Data><ds:X509Certificate>" + certificate + "</ds:X509Certificate></ds:X509Data>\n");
+       if (keyName!=null) xout.write("     <ds:KeyName>" + XMLHelper.safeXml(keyName) + "</ds:KeyName>\n");
+       if (certificate!=null) xout.write("     <ds:X509Data><ds:X509Certificate>" + XMLHelper.safeXml(certificate) + "</ds:X509Certificate></ds:X509Data>\n");
        xout.write("    </ds:KeyInfo>\n");
        xout.write("   </KeyDescriptor>\n");
     }

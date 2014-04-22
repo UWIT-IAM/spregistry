@@ -115,7 +115,8 @@ public class ValueRule implements Serializable  {
        } else if (rules.size()==1) {
           String valueStr = "value";
           if (rules.get(0).getType().equals("basic:AttributeValueRegex")) valueStr = "regex";
-          xout.write("    <" + pd + " xsi:type=\"" + rules.get(0).getType() + "\" " + valueStr + "=\"" + rules.get(0).getValue() + "\"/>\n");
+          xout.write("    <" + pd + " xsi:type=\"" + rules.get(0).getType() + "\" " + valueStr + "=\"" 
+                     + XMLHelper.safeXml(rules.get(0).getValue()) + "\"/>\n");
        } else {
           xout.write("    <" + pd + " xsi:type=\"" + type + "\">\n");
           for (int i=0; i<rules.size(); i++) rules.get(i).writeXml(xout);

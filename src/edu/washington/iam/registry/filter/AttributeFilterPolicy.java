@@ -165,8 +165,8 @@ public class AttributeFilterPolicy implements Serializable  {
            return;
        }
        String pid = entityId.replaceAll("[^a-zA-Z0-9]","_");
-       xout.write(" <AttributeFilterPolicy id=\"" + pid + "\">\n" + 
-         "  <PolicyRequirementRule xsi:type=\"basic:AttributeRequesterString\" value=\"" + entityId + "\"/>\n");
+       xout.write(" <AttributeFilterPolicy id=\"" + XMLHelper.safeXml(pid) + "\">\n" + 
+                  "  <PolicyRequirementRule xsi:type=\"basic:AttributeRequesterString\" value=\"" + XMLHelper.safeXml(entityId) + "\"/>\n");
        for (int i=0; i<attributeRules.size(); i++) attributeRules.get(i).writeXml(xout);
        xout.write(" </AttributeFilterPolicy>\n\n");
     }

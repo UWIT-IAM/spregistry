@@ -106,7 +106,7 @@ public class AttributeRule implements Serializable  {
     // write
     public void writeXml(BufferedWriter xout) throws IOException {
        if (valueRules.size()>0) {
-          xout.write("  <AttributeRule attributeID=\"" + id + "\">\n");
+           xout.write("  <AttributeRule attributeID=\"" + XMLHelper.safeXml(id) + "\">\n");
           for (int i=0; i<valueRules.size(); i++) valueRules.get(i).writeXml(xout);
           xout.write("  </AttributeRule>\n");
        }

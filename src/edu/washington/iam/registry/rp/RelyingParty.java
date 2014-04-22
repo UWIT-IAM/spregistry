@@ -168,7 +168,6 @@ public class RelyingParty implements Serializable  {
               }
            }
        }
-
     }
 
     // create default rp
@@ -192,17 +191,19 @@ public class RelyingParty implements Serializable  {
     }
 
     public void writeXml(BufferedWriter xout) throws IOException {
-       xout.write(" <EntityDescriptor entityID=\"" + entityId + "\">\n");
-       String ars = "";
-       if (authnRequestsSigned.length()>0) ars = " AuthnRequestsSigned=\"" + authnRequestsSigned + "\"";
-       xout.write("  <SPSSODescriptor " + ars + " protocolSupportEnumeration=\"" + protocolSupportEnumerationsUnsplit + "\">\n");
+        xout.write(" <EntityDescriptor entityID=\"" + XMLHelper.safeXml(entityId) + "\">\n");
+        String ars = "";
+        if (authnRequestsSigned.length()>0) ars = " AuthnRequestsSigned=\"" + XMLHelper.safeXml(authnRequestsSigned) + "\"";
+        xout.write("  <SPSSODescriptor " 
+                   + ars 
+                   + " protocolSupportEnumeration=\"" + XMLHelper.safeXml(protocolSupportEnumerationsUnsplit) + "\">\n");
 
        for (int i=0; i<keyDescriptors.size(); i++) {
           keyDescriptors.get(i).writeXml(xout);
        }
  
        for (int i=0; i<nameIDFormats.size(); i++) {
-          xout.write("   <NameIDFormat>" + nameIDFormats.get(i) + "</NameIDFormat>\n");
+           xout.write("   <NameIDFormat>" + XMLHelper.safeXml(nameIDFormats.get(i)) + "</NameIDFormat>\n");
        }
 
 /***  don't know if this goes before or after the nameidformats
@@ -270,6 +271,12 @@ public class RelyingParty implements Serializable  {
     }
     public List<AssertionConsumerService> getAssertionConsumerServices() {
        return (assertionConsumerServices);
+    }
+    public String getAuthnRequestsSigned(){
+        return authnRequestsSigned;
+    }
+    public void setAuthnRequestsSigned(String v){
+        authnRequestsSigned = v;
     }
 
     public void setOrganization(Organization v) {

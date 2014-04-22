@@ -85,35 +85,22 @@ public class Organization implements Serializable  {
     public void setName(String v) {
        name = v;
     }
-    public String getRawName() {
-       return (name);
-    }
     public String getName() {
-       return (XMLHelper.safeXml(name));
-    }
-    public String getSafeJsonName() {
-       return (name.replaceAll("'",""));
+       return (name);
     }
 
     public void setDisplayName(String v) {
        displayName = v;
     }
-    public String getRawDisplayName() {
-       return (displayName);
-    }
     public String getDisplayName() {
-       return (XMLHelper.safeXml(displayName));
+       return (displayName);
     }
 
     public void setUrl(String v) {
        url = v;
     }
-    public String getRawUrl() {
+    public String getUrl() {
        return (url);
     }
-    public String getUrl() {
-       return (XMLHelper.safeXml(url));
-    }
-
 }
 

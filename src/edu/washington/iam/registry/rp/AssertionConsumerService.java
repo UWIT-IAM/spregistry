@@ -34,6 +34,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.registry.exception.RelyingPartyException;
 
 public class AssertionConsumerService implements Serializable  {
@@ -77,7 +78,9 @@ public class AssertionConsumerService implements Serializable  {
  **/
 
     public void writeXml(BufferedWriter xout) throws IOException {
-       xout.write("   <AssertionConsumerService Binding=\"" + binding + "\" Location=\"" + location + "\" index=\"" + index + "\"/>\n");
+        xout.write("   <AssertionConsumerService Binding=\"" + XMLHelper.safeXml(binding) 
+                   + "\" Location=\"" + XMLHelper.safeXml(location) 
+                   + "\" index=\"" + XMLHelper.safeXml(index) + "\"/>\n");
     }
 
     public void setBinding(String v) {
