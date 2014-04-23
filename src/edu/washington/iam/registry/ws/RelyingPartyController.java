@@ -674,11 +674,6 @@ public class RelyingPartyController {
         List<Attribute> attributes = filterPolicyManager.getAttributes(rp);
 
         Proxy proxy = proxyManager.getProxy(id);
-        // don't send proxy secret to non-admin
-        if (proxy!=null && !canEdit) {
-           log.debug("clearing secrets");
-           for (int p=0; p<proxy.getProxyIdps().size(); p++) proxy.getProxyIdps().get(p).setClientSecret("");
-        }
 
         mv.addObject("canEdit", canEdit);
         mv.addObject("relyingParty", rp);
