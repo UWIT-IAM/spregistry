@@ -36,7 +36,7 @@
 
 <ul class="buttonBar" role="navigation">
   #if ($editable)
-   <li><button dojoType="dijit.form.Button" type="button" onClick="dijit.byId('metaEditDialog').show();">Edit</button>
+   <li><button dojoType="dijit.form.Button" type="button" onClick="iam_showTheDialog('metaEditDialog',[])">Edit</button>
    </li>
    #if ( ! $newEntity )
     <li><button dojoType="dijit.form.Button" type="button" onClick="iam_showTheDialog('metaDeleteDialog',[]);">Delete</button>

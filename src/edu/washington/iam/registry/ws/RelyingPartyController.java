@@ -800,6 +800,7 @@ public class RelyingPartyController {
            } catch (RelyingPartyException e) {
               mv.addObject("rpnotfound", true);
               log.debug("metadata not found for " + dns);
+              log.debug(e.getMessage());
            }
         }
         if (rp==null) {

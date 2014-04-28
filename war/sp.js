@@ -16,7 +16,7 @@
  */
 
 // sp-registry javascript
-// vers: 04/16/2014
+// vers: 04/28/2014
 
 // globals
 var v_root = '/spreg';
@@ -364,7 +364,6 @@ return 0;
    dojo.style(pane, {
      height: h + 'px'
    });
-   // alert('set to ' + dojo.position(dojo.byId(paneName),true).h);
 }
 
 // Size the SP ddetail isplay
@@ -399,19 +398,6 @@ require(["dojo/parser"], function(parser){
 var rpId;
 var mdId;
 var newSpConnect = null;
-
-// respond to the edit button
-function handleSpEditBtn(cn) {
-   console.log('Sp edit');
-   iam_hideShow(['metaViewPane','metaViewLinks'],['metaEditPane','metaEditLinks']);
-}
-// respond to the view button
-function handleGroupViewBtn(cn) {
-   console.log('group view');
-   iam_hideShow(['metaEditPane','metaEditLinks'],['metaViewPane','metaViewLinks']);
-}
-
-
 
 // pseudo getbyname that works with ie
 function _getElementsByIdname(base) {
@@ -470,7 +456,7 @@ function _lookupSp(rpid, lookup) {
 
 // start a lookup of a new SP from the textbox
 
-meta_lookupSp = function() {
+function meta_lookupSp() {
    var dns = dijitRegistry.byId('newSp').get('value').trim();
    if (dns==null || dns=='') {
       iam_showTheNotice('you must provide an entityid');
@@ -483,6 +469,22 @@ meta_lookupSp = function() {
 /* 
  * tools to handle save of metadata
  */
+
+// If the new sp edit is cancelled without save, show a warning
+function metaEditHide() {
+   console.log("edit popup hide");
+   if (currentSp==null) {
+      iam_showTheDialog('newSpNotSavedDialog');
+   }
+}
+
+// if you wanted to check if any metadata editing was done, these might be useful
+function metaEditShow() {
+   console.log("edit popup show");
+}
+function metaEditKey() {
+   console.log("edit popup key");
+}
 
 var badRE = new RegExp("[<>&]");
 var nameRE = new RegExp("^[a-z][a-z0-9\.\_\-]+$");
@@ -710,7 +712,7 @@ function _postReqAttrs() {
 }
 
 // submit the request
-attr_requestAttrs = function(entityId) {
+function attr_requestAttrs(entityId) {
 
    _okmsg = '';
    var gws_text = '';
@@ -766,7 +768,7 @@ attr_requestAttrs = function(entityId) {
 // edit functions
 
 // respond to attribute checkbox
-attr_checkAttr = function(gid, id) {
+function attr_checkAttr(gid, id) {
    chk = dijitRegistry.byId(gid + '_attr_edit_chk_' + id);
    if (chk.get('checked')) {
       dojoDom.byId(gid + '_attr_edit_tr_all_' + id).style.display = '';
@@ -777,7 +779,7 @@ attr_checkAttr = function(gid, id) {
 };
 
 // respond to 'all' checkbox
-attr_checkAll = function(gid, id) {
+function attr_checkAll(gid, id) {
    chk = dijitRegistry.byId(gid + '_attr_edit_all_' + id);
    if (chk.get('checked')) {
       for (i=0;i<99;i++) {
@@ -796,7 +798,7 @@ attr_checkAll = function(gid, id) {
    }
 };
 
-attr_showNext = function(gid, i, id) {
+function attr_showNext(gid, i, id) {
    n = i+1;
    dojoDom.byId(gid + '_attr_edit_tr_v_' + n + '_' + id).style.display = '';
 }
@@ -849,7 +851,7 @@ function _postSaveAttrs() {
 }
 
 // save attr changes
-attr_saveAttrs = function(gid, entityId) {
+function attr_saveAttrs(gid, entityId) {
    xml = '<FilterPolicyModification><AttributeFilterPolicy policyId="' + gid + '" entityId="' + entityId + '">';
    xml = xml + '<PolicyRequirementRule xsi:type="basic:AttributeRequesterString" value="' + entityId + '" />'
     // get all the attributes
@@ -859,7 +861,6 @@ attr_saveAttrs = function(gid, entityId) {
        xml += _attributeXml(gid, w.get('id').replace(gid+'_attr_edit_chk_',''));
    }
    xml = xml + '</AttributeFilterPolicy></FilterPolicyModification>';
-   // alert(xml);
    action = v_root + v_vers + '/rp/attr?id=' + entityId + '&policyId=' + gid + '&xsrf=' + v_xsrf  + adminQS;
    iam_putRequest(action, null, xml, null, _postSaveAttrs);
 }
@@ -876,7 +877,7 @@ function _postSaveProxy() {
 }
 
 // submit proxy edits
-proxy_saveProxy = function(entityId) {
+function proxy_saveProxy(entityId) {
    var gcid = dojoDom.byId('google_cid').value.trim();
    var gcpw = dojoDom.byId('google_cpw').value.trim();
    var lcid = dojoDom.byId('liveid_cid').value.trim();
