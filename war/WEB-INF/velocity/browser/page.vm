@@ -246,7 +246,7 @@ function openNewSPForm() {
 <br>
  <div class="spList" id="spIndexPane" data-dojo-type="dijit.layout.ContentPane"
          onLoad="adjustSPIndexSize()"  style="margin-top:6px;overflow:auto">
-     <i role="presentation">Retriving the list of service providers</i>
+     <i role="presentation">Retrieving the list of service providers</i>
   </div>
 
 </div>
