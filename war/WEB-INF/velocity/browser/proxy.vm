@@ -18,7 +18,7 @@
 ## proxy tab
 ##
 
-<div id="proxySpContainer" dojoType="dijit.layout.ContentPane" title="Gateways" selected="false" style="overflow:hidden"
+<div id="proxySpContainer" dojoType="dijit.layout.ContentPane" title="Gateway" selected="false" style="overflow:hidden"
    onClose="return(true)" oLayout="false" >
 
 <ul class="buttonBar" role="navigation">
@@ -36,7 +36,7 @@
 ## This registry allows you to configure access to the social-to-saml authentication gateway.
 <p>
 
-<h3>SAML Gateways</h3>
+<h3>SAML Gateway</h3>
 
   #set ($havegw=0)
   #foreach ( $idp in $proxy.ProxyIdps )
@@ -49,7 +49,7 @@
     <hr>
     #set ($havegw=1)
   #end
-  #if ($havegw==0) <i>No gateways confgured.</i> #end
+  #if ($havegw==0) <i>No gateway confgured.</i> #end
 
 </div>
 </div> 

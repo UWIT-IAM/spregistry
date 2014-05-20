@@ -409,6 +409,13 @@ function _getElementsByIdname(base) {
    return list;
 }
 
+// respond to acs clear button
+function meta_clearACS(i) {
+   dijitRegistry.byId('acsi_'+i).set('value','');
+   dojoDom.byId('acs' + i + '_0').style.display = 'none';
+   dojoDom.byId('acs' + i + '_1').style.display = 'none';
+}
+
 // respond to one of the 'add xxx' buttons
 meta_showMoreFields = function(name, id) {
    // show the first of the hidden ones
@@ -498,6 +505,10 @@ function badText(v, e) {
 }
 
 // build the rp xml
+var pse_chks =  {"pse_10":"urn:oasis:names:tc:SAML:1.0:protocol",
+                 "pse_11":"urn:oasis:names:tc:SAML:1.1:protocol", 
+                 "pse_20":"urn:oasis:names:tc:SAML:2.0:protocol"};
+
 function assembleRPMetadata(entityId) {
    rpId = entityId;
    console.log('get rp info for ' + rpId);
@@ -505,16 +516,12 @@ function assembleRPMetadata(entityId) {
 
    // SPSSO
    var pse = '';
-   for (i=0; i<5; i++) {
-      e = dojoDom.byId('pse_' + i);
-      if (e!=null) {
-         v = e.value.trim();
-         if (badText(v, "PSE")) return '';
-         if (v == '') continue;
-         if (pse=='') pse = 'protocolSupportEnumeration="' + e.value.trim();
-         else pse = pse + ' ' + e.value.trim();
-         
-      }
+   
+   for ( var p in pse_chks ) {
+      var ck = dijitRegistry.byId(p).get('checked');
+      if (!ck) continue;
+      if (pse=='') pse = 'protocolSupportEnumeration="' + pse_chks[p];
+      else pse = pse + ' ' + pse_chks[p];
    }
    if (pse=='') {
       iam_showTheNotice("You must provide at least one protocol ");
@@ -558,7 +565,7 @@ function assembleRPMetadata(entityId) {
       idx = dojoDom.byId('acsi_' + i);
       idxv = idx.value.trim();
       if (idxv=='') continue;
-      bv = dojoDom.byId('acsb_' + i).value.trim();
+      bv = dijitRegistry.byId('acsb_' + i).value.trim();
       lv = dojoDom.byId('acsl_' + i).value.trim();
       if (badText(bv, "acs binding")) return '';
       if (badText(lv, "acs location")) return '';
@@ -639,7 +646,8 @@ function assembleRPMetadata(entityId) {
 
 function postSaveRP() {
    console.log('postSaveRP');
-   iam_bannerNotice('Changes saved');
+   // iam_bannerNotice('Changes saved');
+   iam_showTheNotice('Changes saved');
    var url = v_root + v_vers + '/rp/?id=' + rpId + '&mdid=UW' + adminQS;
    if (currentSp==null) {
       console.log('post load new SP');
@@ -670,7 +678,7 @@ function saveRP(entityId) {
 function postDeleteRP() {
    console.log('post delete');
    iam_hideTheDialog('metaDeleteDialog');
-   iam_bannerNotice('Relying party ' + rpId + ' deleted');
+   iam_showTheNotice('Relying party ' + rpId + ' deleted');
    iam_hideShow(['spDisplay'],['homeDisplay']);
    document.body.style.cursor = 'default';
    rpId = null;
@@ -708,7 +716,7 @@ var _okmsg;
 
 function _postReqAttrs() {
    iam_hideTheDialog('attrReqDialog');
-   iam_bannerNotice('Request submitted.');
+   iam_showTheNotice('Request submitted.');
 }
 
 // submit the request
@@ -846,7 +854,7 @@ function _attributeXml (gid, id) {
 
 function _postSaveAttrs() {
    iam_hideTheDialog('attrEditDialog');
-   iam_bannerNotice('Attributes updated: Allow 20 minutes to propagate.');
+   iam_showTheNotice('Attributes updated: Allow 20 minutes to propagate.');
    showCurrentSp();
 }
 
@@ -872,7 +880,7 @@ function attr_saveAttrs(gid, entityId) {
 
 function _postSaveProxy() {
    iam_hideTheDialog('proxyEditDialog');
-   iam_bannerNotice('Parameters saved: Allow 20 minutes to propagate.');
+   iam_showTheNotice('Parameters saved: Allow 20 minutes to propagate.');
    showCurrentSp();
 }
 
@@ -880,11 +888,11 @@ function _postSaveProxy() {
 function proxy_saveProxy(entityId) {
    var gcid = dojoDom.byId('google_cid').value.trim();
    var gcpw = dojoDom.byId('google_cpw').value.trim();
-   var lcid = dojoDom.byId('liveid_cid').value.trim();
-   var lcpw = dojoDom.byId('liveid_cpw').value.trim();
+   // var lcid = dojoDom.byId('liveid_cid').value.trim();
+   // var lcpw = dojoDom.byId('liveid_cpw').value.trim();
    xml = '<Proxys><Proxy entityId="' + currentSp.id + '">';
    if (gcid!='') xml += '<ProxyIdp idp="Google" clientId="' + iam_makeOkXml(gcid) + '" clientSecret="' + iam_makeOkXml(gcpw) + '"/>';
-   if (lcid!='') xml += '<ProxyIdp idp="LiveID" clientId="' + iam_makeOkXml(lcid) + '" clientSecret="' + iam_makeOkXml(lcpw) + '"/>';
+   // if (lcid!='') xml += '<ProxyIdp idp="LiveID" clientId="' + iam_makeOkXml(lcid) + '" clientSecret="' + iam_makeOkXml(lcpw) + '"/>';
    xml += '</Proxy></Proxys>';
    console.log(xml);
    var headertxt = {'Content-type': 'application/xhtml+xml; charset=utf-8'};

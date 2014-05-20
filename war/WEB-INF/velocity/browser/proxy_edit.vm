@@ -25,6 +25,7 @@ Your Client ID and Client Secret go into the Gateway form.
 See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw" target="spghelp">Social-to-SAML gateway</a> for more information.
 </div>
 
+#*
 <div id="liveidGateHelp" dojoType="dijit/Dialog" title="Google gateway" $hide>
 The LiveID gateway allows your SAML SP users to authenticate with their LiveID identities.
 <p>
@@ -32,6 +33,7 @@ Activate the LiveID gateway by entering your liveid application's id and secret 
 <p>
 See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gateway</a> for more information.
 </div>
+*#
 
 
 <div id="proxyEditDialog" data-dojo-type="dijit/Dialog" title="Edit proxy data for ${relyingPartyId}" ${hide}>
@@ -42,7 +44,7 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
 <div class="dijitDialogPaneContentArea">
 
 <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/o9o6Aw" target="spghelp">help</a></div>
-<h3>SAML Gateways</h3>
+<h3>SAML Gateway</h3>
 ## <div aria-label="entityid">${relyingPartyId}</div>
 
 
@@ -68,6 +70,8 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
     <hr>
 
 
+#*   skip live until it supports proxy
+
     <h4>LiveID</h4>
 
     <ul class="iamlist">
@@ -83,6 +87,7 @@ See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gatewa
           /></div>
     </li>
    </ul>
+*#
 
 </div>
  <div class="dijitDialogPaneActionBar">
