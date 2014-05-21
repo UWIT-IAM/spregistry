@@ -97,9 +97,9 @@ function redirectToLogin(path) {
   <div class="dijitDialogPaneContentArea">
     Identity and Access Management
     <br/>
-    Service Provider Registry 2.0.0
+    Service Provider Registry 2.1.0
     <br/>
-    Revision 11/07/2013
+    Revision 05/21/2014
     <p/>
     <a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a>
   </div>
@@ -186,7 +186,7 @@ function redirectToLogin(path) {
 <div id="footer" data-dojo-type="dijit.layout.ContentPane"  style="position:absolute;bottom:0px">
     <span id="footlogo"><a href="http:/www.uw.edu/" title="University of Washington">
        ##  <img src="/img/uofw-small.gif" alt="UW" />
-       &copy;&nbsp;2013&nbsp;UNIVERSITY OF WASHINGTON
+       &copy;&nbsp;2014&nbsp;UNIVERSITY OF WASHINGTON
        </a></span>
     <span id="footcenter">
     <ul id="navigation">
@@ -199,7 +199,7 @@ function redirectToLogin(path) {
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li><a href="javascript:iam_showTheDialog('helpAbout');">SPReg 2.0</a></li>
+        <li><a href="javascript:iam_showTheDialog('helpAbout');">SPReg 2.1</a></li>
     </ul>
     </span>
 </div>
