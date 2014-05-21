@@ -79,7 +79,7 @@ public class KeyDescriptor implements Serializable  {
                   cert = new IamCertificate(pem);
                   setCertificate(pem);
                } catch (IamCertificateException e) {
-                  throw new RelyingPartyException(e.getMessage());
+                  throw new RelyingPartyException("The certificate PEM was not valid.");
                }
             }
         }

@@ -127,19 +127,18 @@
 
    ## Nameid
 
+   #if ( $relyingParty.nameIDFormats.size() > 0 )
       <li>
       <h4 class="dt">NameId</h4>
        <div class="dd">
-    #set ($nids=0)
-    #foreach ( $name in $relyingParty.nameIDFormats )
-      $name<br>
-      #set ($nids=1)
-    #end
-   #if ($nids==0)
-      (<i>none specified</i>)
-   #end
+      #set ($nids=0)
+      #foreach ( $name in $relyingParty.nameIDFormats )
+        $name<br>
+        #set ($nids=1)
+      #end
        </div>
       </li>
+  #end
 
 
    ## ACS

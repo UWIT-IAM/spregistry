@@ -186,7 +186,7 @@ public class RelyingParty implements Serializable  {
            "urn:oasis:names:tc:SAML:1.0:profiles:browser-post", "https://" + dns + "/Shibboleth.sso/SAML/POST"));
        assertionConsumerServices.add(new AssertionConsumerService(2,
            "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", "https://" + dns + "/Shibboleth.sso/SAML2/POST"));
-       organization = new Organization(dns, dns, dns);
+       organization = new Organization("", "", "");
        contactPersons.add(new ContactPerson("administrative"));
     }
 

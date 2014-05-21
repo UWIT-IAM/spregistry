@@ -112,9 +112,9 @@ v_xsrf = '${xsrf}';
   <div class="dijitDialogPaneContentArea">
     Identity and Access Management
     <br/>
-    Service Provider Registry 2.0.0
+    Service Provider Registry 2.1.0
     <br/>
-    Revision 12/05/2013
+    Revision 05/21/2014
     <p/>
     <a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a>
   </div>
@@ -242,7 +242,8 @@ function openNewSPForm() {
 
 
  <h3 style="clear:both;padding-top:25px">Update an Existing Service Provider</h3>
- <label for="filterSpList">Enter part of your SP's entityId</label><input id="filterSpList"  data-dojo-type="dijit.form.TextBox" />
+ <label for="filterSpList">Enter part of your SP's entityId
+ </label><input id="filterSpList"  data-dojo-type="dijit.form.TextBox" />
 <br>
  <div class="spList" id="spIndexPane" data-dojo-type="dijit.layout.ContentPane"
          onLoad="adjustSPIndexSize()"  style="margin-top:6px;overflow:auto">
@@ -293,7 +294,7 @@ function openNewSPForm() {
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li><a href="javascript:iam_showTheDialog('helpAbout');">SPReg 2.0</a></li>
+        <li><a href="javascript:iam_showTheDialog('helpAbout');">SPReg 2.1</a></li>
     </ul>
     </span>
 </div>

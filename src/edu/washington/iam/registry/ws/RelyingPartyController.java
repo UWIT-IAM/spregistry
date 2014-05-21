@@ -776,6 +776,7 @@ public class RelyingPartyController {
         mv.addObject("newEntity", true);
 
         if (lookup) {
+           mv.addObject("newByLookup", true);
            try {
               rp = rpManager.genRelyingPartyByLookup(hostPortFromEntityId(rpid));
               if (rp!=null) log.debug("rp: " + rp.getEntityId());
@@ -872,7 +873,9 @@ public class RelyingPartyController {
               status = rpManager.updateRelyingParty(doc, mdid);
            } catch (RelyingPartyException e) {
               status = 400;
-              mv.addObject("alert", "Update of the entity failed:\n" + e);
+              mv.addObject("alert", "Update failed:\n" + e.getMessage());
+              response.setStatus(status);
+              return mv;
            }
         }
 

@@ -22,7 +22,7 @@ The Google gateway allows your SAML SP users to authenticate with their Google i
 <p>
 Your Client ID and Client Secret go into the Gateway form.
 <p>
-See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw" target="spghelp">Social-to-SAML gateway</a> for more information.
+See the <a href="https://wiki.cac.washington.edu/x/F0jRAw" target="spghelp">Social-to-SAML gateway</a> for more information.
 </div>
 
 #*
@@ -31,7 +31,7 @@ The LiveID gateway allows your SAML SP users to authenticate with their LiveID i
 <p>
 Activate the LiveID gateway by entering your liveid application's id and secret in the gateway form.
 <p>
-See the <a href="https://wiki.cac.washington.edu/x/o9o6Aw">Social-to-SAML gateway</a> for more information.
+See the <a href="https://wiki.cac.washington.edu/x/F0jRAw">Social-to-SAML gateway</a> for more information.
 </div>
 *#
 

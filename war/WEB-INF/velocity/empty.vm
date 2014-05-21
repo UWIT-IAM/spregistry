@@ -15,26 +15,17 @@
  * ========================================================================
  *#
 
-## groups webservice (really simple error page)
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-<head>
- <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-</head>
-<body>
-
+## spreg webservice simple error page
 
 ## browser presents alert in alert popup
+<document>
 
 #if ( ${alert} )
-  <span class="alert">${alert}</span>
-   <alert class="alert"><![CDATA[${alert}]]></alert>
+  <alert>${alert}</alert>
 #end
 #if ( $msg )
-  <span class="message">${msg}</span>
+  <message>${msg}</message>
 #end
 
-
-</body>
-</html>
+</document>
 
