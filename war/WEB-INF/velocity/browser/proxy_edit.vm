@@ -43,7 +43,7 @@ See the <a href="https://wiki.cac.washington.edu/x/F0jRAw">Social-to-SAML gatewa
 
 <div class="dijitDialogPaneContentArea">
 
-<div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/o9o6Aw" target="spghelp">help</a></div>
+<div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/F0jRAw" target="spghelp">help</a></div>
 <h3>SAML Gateway</h3>
 ## <div aria-label="entityid">${relyingPartyId}</div>
 
