@@ -791,8 +791,11 @@ public class RelyingPartyController {
               if(!hostPortFromEntityId(rpid).equals(hostPortFromEntityId(rp.getEntityId()))){
                   log.info(String.format("requested dns '%s' not equal to fetched entityId '%s'",
                                          hostPortFromEntityId(rpid), rp.getEntityId()));
-                  return emptyMV(String.format("Host lookup '%s' and EntityID '%s' must have the same host name",
-                                               hostPortFromEntityId(rpid), rp.getEntityId()));
+                  return emptyMV(
+                   "The entityID you supplied appears to be on a host already registered with a different entityID. " +
+                   "Shibboleth can support multiple entityIDs on one SP, but in most cases that isn't the best approach. " + 
+                   "If you actually do need to register additional entityIDs for an existing SP, " + 
+                   "you'll need to use the manual registration process.");
               }
 
               mv.addObject("relyingParty", rp);

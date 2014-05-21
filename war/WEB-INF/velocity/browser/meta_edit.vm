@@ -20,11 +20,11 @@
 ##
 
 <div id="metaEditDialog" data-dojo-type="dijit/Dialog" title="Edit metadata" $hide
-  onShow="metaEditShow()" onHide="metaEditHide()" onKeyPress="metaEditKey()">
+  onShow="metaEditShow()" onHide="metaEditHide()" onKeyPress="metaEditKey()" onClick="metaEditKey()">
 
 ## <div id="metarnotice" class="rnotice">(<span class="rstar">*</span> required field)</div>
 
-<div class="dijitDialogPaneContentArea">
+<div class="dijitDialogPaneContentArea" data-dojo-type="dijit/layout/ContentPane">
 
 
 <h3 tabindex="0">Edit metadata for ${relyingParty.entityId}</h3>
@@ -313,7 +313,7 @@
    </li>
 </div>
  <div class="dijitDialogPaneActionBar">
-    <button dojoType="dijit.form.Button" type="button" onClick="saveRP('${relyingParty.entityId}')">Save changes</button>
+    <button dojoType="dijit.form.Button" id="metaEditSaver" disabled="disabled" type="button" onClick="saveRP('${relyingParty.entityId}')">Save changes</button>
     <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('metaEditDialog')">Close</button>
  </div>
 
@@ -331,18 +331,18 @@
 
 ## new not saved dialog
 
-<div id="newSpNotSavedDialog" data-dojo-type="dijit/Dialog" title="Metadata not saved" $hide>
-<h3>The new service provider's metadata has not been saved.<p>Close anyway?</h3>
+<div id="metaNotSavedDialog" data-dojo-type="dijit/Dialog" title="Metadata not saved" $hide>
+<h3>Your changes have not not been saved.<p>Close anyway?</h3>
  <div class="dijitDialogPaneActionBar">
     <button dojoType="dijit.form.Button" type="button">Yes, close
         <script type="dojo/on" data-dojo-event="click">
-          iam_hideTheDialog('newSpNotSavedDialog');
+          iam_hideTheDialog('metaNotSavedDialog');
           showHomePage();
         </script>
     </button>
     <button dojoType="dijit.form.Button" type="button">Cancel
         <script type="dojo/on" data-dojo-event="click">
-           iam_hideTheDialog('newSpNotSavedDialog');
+           iam_hideTheDialog('metaNotSavedDialog');
            iam_showTheDialog('metaEditDialog');
         </script>
     </button>

@@ -16,7 +16,6 @@
  */
 
 // sp-registry javascript
-// vers: 04/28/2014
 
 // globals
 var v_root = '/spreg';
@@ -36,6 +35,8 @@ var spList;     // all the sp
 var nsp = 0;
 var currentSp;  // the active sp or null
 var newSpId = '';
+var numMetaEditKey = 0;
+var numProxyEditKey = 0;
 
 iam_set('rightSide', 'spDisplay');
 
@@ -149,7 +150,8 @@ function postLoadSp() {
        }
      });
    });
-
+   numMetaEditKey = 0;
+   numProxyEditKey = 0;
    setSpTab();
 
 }
@@ -480,8 +482,8 @@ function meta_lookupSp() {
 // If the new sp edit is cancelled without save, show a warning
 function metaEditHide() {
    console.log("edit popup hide");
-   if (currentSp==null) {
-      iam_showTheDialog('newSpNotSavedDialog');
+   if (currentSp==null || numMetaEditKey>1) {  // '1' to ignore the 'close' click
+      iam_showTheDialog('metaNotSavedDialog');
    }
 }
 
@@ -491,6 +493,8 @@ function metaEditShow() {
 }
 function metaEditKey() {
    console.log("edit popup key");
+   numMetaEditKey += 1;
+   if (numMetaEditKey==1) dijitRegistry.byId('metaEditSaver').set('disabled',0);
 }
 
 var badRE = new RegExp("[<>&]");
@@ -658,6 +662,7 @@ function postSaveRP() {
    dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);
    dijitRegistry.byId('spDisplay').set('href', url);
    document.body.style.cursor = 'default';
+   numMetaEditKey = 0;
 }
 
 
@@ -878,15 +883,37 @@ function attr_saveAttrs(gid, entityId) {
  */
 
 
+function proxyEditHide() {
+   console.log("proxy popup hide");
+   var gcid = dojoDom.byId('google_cid').value.trim();
+   if (gcid!='' && numProxyEditKey>1) {  // '1' to ignore the 'close' click
+      iam_showTheDialog('proxyNotSavedDialog');
+   }
+}
+
+function proxyEditShow() {
+   console.log("proxy popup show");
+}
+function proxyEditKey() {
+   console.log("proxy popup key");
+   numProxyEditKey += 1;
+   if (numProxyEditKey==1) dijitRegistry.byId('proxyEditSaver').set('disabled',0);
+}
+
 function _postSaveProxy() {
    iam_hideTheDialog('proxyEditDialog');
    iam_showTheNotice('Parameters saved: Allow 20 minutes to propagate.');
    showCurrentSp();
+   numProxyEditKey = 0;
 }
 
 // submit proxy edits
 function proxy_saveProxy(entityId) {
    var gcid = dojoDom.byId('google_cid').value.trim();
+   if (gcid=='') {
+      iam_hideTheDialog('proxyEditDialog');
+      return;
+   }
    var gcpw = dojoDom.byId('google_cpw').value.trim();
    // var lcid = dojoDom.byId('liveid_cid').value.trim();
    // var lcpw = dojoDom.byId('liveid_cpw').value.trim();

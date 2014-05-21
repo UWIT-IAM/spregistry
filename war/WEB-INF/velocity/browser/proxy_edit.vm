@@ -17,7 +17,9 @@
 ##
 
 ## helpers
-<div id="googleGateHelp" dojoType="dijit/Dialog" title="Google gateway" $hide>
+<div id="googleGateHelp" dojoType="dijit/Dialog" title="Google gateway" $hide
+    onShow="proxyEditShow()" onHide="proxyEditHide()" onKeyPress="proxyEditKey()" onClick="proxyEditKey()">
+
 The Google gateway allows your SAML SP users to authenticate with their Google identities.
 <p>
 Your Client ID and Client Secret go into the Gateway form.
@@ -41,7 +43,7 @@ See the <a href="https://wiki.cac.washington.edu/x/F0jRAw">Social-to-SAML gatewa
 #set ($google_status = 0 )
 #set ($liveid_status = 0 )
 
-<div class="dijitDialogPaneContentArea">
+<div class="dijitDialogPaneContentArea" data-dojo-type="dijit/layout/ContentPane" >
 
 <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/F0jRAw" target="spghelp">help</a></div>
 <h3>SAML Gateway</h3>
@@ -91,10 +93,30 @@ See the <a href="https://wiki.cac.washington.edu/x/F0jRAw">Social-to-SAML gatewa
 
 </div>
  <div class="dijitDialogPaneActionBar">
-    <button dojoType="dijit.form.Button" type="button" onClick="proxy_saveProxy('${relyingPartyId}')">Save changes</button>
+    <button dojoType="dijit.form.Button" id="proxyEditSaver" type="button" onClick="proxy_saveProxy('${relyingPartyId}')">Save changes</button>
     <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('proxyEditDialog')">Close</button>
  </div>
 
+
+## not saved dialog
+
+<div id="proxyNotSavedDialog" data-dojo-type="dijit/Dialog" title="Metadata not saved" $hide>
+<h3>Your changes have not not been saved.<p>Close anyway?</h3>
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" type="button">Yes, close
+        <script type="dojo/on" data-dojo-event="click">
+          iam_hideTheDialog('proxyNotSavedDialog');
+          showHomePage();
+        </script>
+    </button>
+    <button dojoType="dijit.form.Button" type="button">Cancel
+        <script type="dojo/on" data-dojo-event="click">
+           iam_hideTheDialog('proxyNotSavedDialog');
+           iam_showTheDialog('proxyEditDialog');
+        </script>
+    </button>
+ </div>
+</div>
 
 
 </div>
