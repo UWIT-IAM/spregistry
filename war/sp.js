@@ -437,10 +437,13 @@ meta_showMoreFields = function(name, id) {
 };
 
 // after load of new sp, remove the connect and show the edit dialog
+// if something went wrong there are no edit elements
 function postLoadNewSp() {
    console.log('postLoadNewSp');
    dojo.disconnect(newSpConnect);
    newSpConnect = null;
+   var v = dojoDom.byId('orgn_0');
+   if (v=='') return;
    postLoadSp();
    iam_showTheDialog('metaEditDialog',[]);
 }
@@ -657,6 +660,7 @@ function postSaveRP() {
       console.log('post load new SP');
       // add the new sp to the list  ( quicker than reloading the list )
       spList[nsp] = {'id':rpId, 'meta':'UW', 'org':''};
+      currentSp = spList[nsp];
       nsp += 1;
    }
    dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);

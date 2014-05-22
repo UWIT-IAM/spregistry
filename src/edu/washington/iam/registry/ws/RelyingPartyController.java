@@ -773,6 +773,15 @@ public class RelyingPartyController {
            return emptyMV("Could not verify ownership:\n" + e.getCause());
         }
 
+        // check that it doesn't already exist
+        try {
+           rpManager.getRelyingPartyById(rpid, "UW");
+           log.debug("wants new, but already exists");
+           return emptyMV("Entity " + rpid + " already exists in the UW federation metadata");
+        } catch (RelyingPartyException e) {
+           log.debug("really new");
+        }
+
         mv.addObject("newEntity", true);
 
         if (lookup) {
