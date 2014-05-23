@@ -71,7 +71,7 @@ var adminQS = ''
 function setRole(r, d) {
    if (r=='a') {
       adminQS = '&role=admin'
-      dojoDom.byId('banner_notice').innerHTML = 'acting as administrator'; 
+      dojoDom.byId('banner_notice').innerHTML = '<span style="font-size:larger;color:#a00000">Acting as administrator</span>'; 
    } else {
       adminQS = ''
       dojoDom.byId('banner_notice').innerHTML = ''; 
@@ -654,7 +654,7 @@ function assembleRPMetadata(entityId) {
 function postSaveRP() {
    console.log('postSaveRP');
    // iam_bannerNotice('Changes saved');
-   iam_showTheNotice('Changes saved');
+   iam_showTheMessage('Changes saved.<p>Allow 40 minutes for the changes<br>to propagate to the IdP.');
    var url = v_root + v_vers + '/rp/?id=' + rpId + '&mdid=UW' + adminQS;
    if (currentSp==null) {
       console.log('post load new SP');
@@ -687,7 +687,7 @@ function saveRP(entityId) {
 function postDeleteRP() {
    console.log('post delete');
    iam_hideTheDialog('metaDeleteDialog');
-   iam_showTheNotice('Relying party ' + rpId + ' deleted');
+   iam_showTheMessage('Relying party ' + rpId + ' deleted');
    iam_hideShow(['spDisplay'],['homeDisplay']);
    document.body.style.cursor = 'default';
    rpId = null;
@@ -725,7 +725,7 @@ var _okmsg;
 
 function _postReqAttrs() {
    iam_hideTheDialog('attrReqDialog');
-   iam_showTheNotice('Request submitted.');
+   iam_showTheMessage('Request submitted.');
 }
 
 // submit the request
@@ -863,7 +863,7 @@ function _attributeXml (gid, id) {
 
 function _postSaveAttrs() {
    iam_hideTheDialog('attrEditDialog');
-   iam_showTheNotice('Attributes updated: Allow 20 minutes to propagate.');
+   iam_showTheMessage('Attributes updated: Allow 20 minutes to propagate.');
    showCurrentSp();
 }
 
