@@ -103,6 +103,7 @@
    <li>
       <h4 class="dt">KeyInfo</h4>
         <div class="dd">
+       #set ($i=0)
        #foreach ( $key in $relyingParty.keyDescriptors )
          <fieldset style="margin-bottom:8px">
           <legend class="h4">Certificate</legend>
@@ -116,10 +117,11 @@
          #end
          <li><span class="dt dt3"></span>
              <span class="dd dd3" style="overflow:hidden;">
-              <button class="ddbutton" dojoType="dijit.form.Button" onClick="iam_showTheDialog('pemDialog_$!{key.cert.snStr}');">Show PEM</button>
+              <button class="ddbutton" dojoType="dijit.form.Button" onClick="iam_showTheDialog('pemDialog_${i}');">Show PEM</button>
              </span></li>
          </ul>
          </fieldset>
+         #set ($i = $i+1 )
        #end
         </div>
    </li>
@@ -168,12 +170,14 @@
 </div>
 
 ## certificate PEM popups
+#set ($i=0)
 #foreach ( $key in $relyingParty.keyDescriptors )
-<div id="pemDialog_${key.cert.snStr}" data-dojo-type="dijit.Dialog" title="Certificate PEM" style="display:none">
-<div id="pemDialog_${key.cert.snStr}_content">
+<div id="pemDialog_${i}" data-dojo-type="dijit.Dialog" title="Certificate PEM" style="display:none">
+<div id="pemDialog_${i}_content">
  <div class="certbox"><pre>$key.certificate</pre></div>
 </div>
 </div>
+#set ($i = $i+1 )
 #end
 
 
