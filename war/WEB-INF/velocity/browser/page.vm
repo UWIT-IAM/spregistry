@@ -116,7 +116,7 @@ v_xsrf = '${xsrf}';
     <br/>
     Revision 05/21/2014
     <p/>
-    <a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a>
+    <a href="https://wiki.cac.washington.edu/x/gjyoAQ">Learn more about the registry</a>
   </div>
  <div class="dijitDialogPaneActionBar">
     <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('helpAbout')">Close</button>
