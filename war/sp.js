@@ -592,9 +592,17 @@ function assembleRPMetadata(entityId) {
    for (i=0; i<50; i++) {
       idx = dojoDom.byId('acsi_' + i);
       idxv = idx.value.trim();
-      if (idxv=='') continue;
       bv = dijitRegistry.byId('acsb_' + i).value.trim();
       lv = dojoDom.byId('acsl_' + i).value.trim();
+      if (idxv=='' && lv=='') continue;
+      if (idxv=='') {
+         iam_showTheNotice("You must provide an index for each ACS location specified");
+         return '';
+      }
+      if (lv=='') {
+         iam_showTheNotice("You must provide a location for each ACS index specified");
+         return '';
+      }
       if (badText(bv, "acs binding")) return '';
       if (badText(lv, "acs location")) return '';
       xml = xml + '<AssertionConsumerService index="' + idxv + '" ';
