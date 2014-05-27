@@ -422,8 +422,9 @@ function meta_clearACS(i) {
 
 // respond to acs clear button
 function meta_clearKI(i) {
-   dojoDom.byId('kn_'+i).innerHTML='';
-   dojoDom.byId('kc_'+i).innerHTML='';
+   console.log('clear KI ' + i);
+   dijitRegistry.byId('kn_'+i).set('value','');
+   dijitRegistry.byId('kc_'+i).set('value','');
    dojoDom.byId('ki' + i + '_0').style.display = 'none';
    dojoDom.byId('ki' + i + '_1').style.display = 'none';
 }

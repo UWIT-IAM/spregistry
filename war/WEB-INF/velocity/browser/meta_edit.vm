@@ -80,10 +80,8 @@
          >$t</option>
        #end
        </select>
-           <span style="float:right">
-            <button dojoType="dijit.form.Button" class="xbutton" title="delete this contact"
+            <button dojoType="dijit.form.Button" class="xbutton" title="delete this contact" style="margin-left:10px"
              onClick="meta_clearCT('${count}')">x</button>
-           </span>
      </li>
      <li id="ct${count}_1"><span class="dt dt3">Name$rstar</span>
         <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctgn_${count}" value="#X($!ct.givenName)"  aria-label="name, required" />
@@ -115,10 +113,8 @@
          >$t</option>
        #end
        </select>
-           <span style="float:right">
-            <button dojoType="dijit.form.Button" class="xbutton" title="delete this contact"
+            <button dojoType="dijit.form.Button" class="xbutton" title="delete this contact" style="margin-left:10px"
              onClick="meta_clearCT('${i}')">x</button>
-           </span>
      </li>
      <li id="ct${i}_1" #if ( $i > 0 ) ${hide} #end >
       <span class="dt dt3" >Name$rstar</span>
@@ -187,7 +183,7 @@
    #foreach ( $key in $relyingParty.keyDescriptors )
       <li id="ki${count}_0">
         <span class="dt dt3" >Name</span>
-        <input class="dd" name="keyName_${count}" id="kn_${count}" value="$!key.keyName" aria-label="name"/>
+        <input class="dd" data-dojo-type="dijit/form/TextBox" name="keyName_${count}" id="kn_${count}" value="$!key.keyName" aria-label="name"/>
       </li>
 
       <li id="ki${count}_1">
@@ -195,7 +191,7 @@
             <button dojoType="dijit.form.Button" class="xbutton" title="delete this keyinfo"
              onClick="meta_clearKI('${count}')">x</button>
            </span>
-        <textarea class="dd certbox" cols="64" rows="5" name="keyCert_${count}" id="kc_${count}"
+        <textarea data-dojo-type="dijit/form/Textarea" class="dd certbox" cols="64" rows="5" name="keyCert_${count}" id="kc_${count}"
                style="font-size:8px" aria-label="cert pem">$!key.certificate</textarea>
       </li>
      #set ( $count = $count + 1)
