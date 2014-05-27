@@ -420,6 +420,25 @@ function meta_clearACS(i) {
    dojoDom.byId('acs' + i + '_1').style.display = 'none';
 }
 
+// respond to acs clear button
+function meta_clearKI(i) {
+   dojoDom.byId('kn_'+i).innerHTML='';
+   dojoDom.byId('kc_'+i).innerHTML='';
+   dojoDom.byId('ki' + i + '_0').style.display = 'none';
+   dojoDom.byId('ki' + i + '_1').style.display = 'none';
+}
+
+// respond to contact clear button
+function meta_clearCT(i) {
+   dijitRegistry.byId('ctgn_'+i).set('value','');
+   dijitRegistry.byId('cte_'+i).set('value','');
+   dijitRegistry.byId('ctp_'+i).set('value','');
+   dojoDom.byId('ct' + i + '_0').style.display = 'none';
+   dojoDom.byId('ct' + i + '_1').style.display = 'none';
+   dojoDom.byId('ct' + i + '_2').style.display = 'none';
+   dojoDom.byId('ct' + i + '_3').style.display = 'none';
+}
+
 // respond to one of the 'add xxx' buttons
 meta_showMoreFields = function(name, id) {
    // show the first of the hidden ones
@@ -611,25 +630,30 @@ function assembleRPMetadata(entityId) {
       xml = xml + '</Organization>';
    }
 
-   // contact
+   // contact:  need at least one; for each need name and email
+   hadOne = false;
    hadName = false;
    hadMail = false;
-   hadPhone = false;
    for (i=0; i<5; i++) {
-      // v = dojoDom.byId('ctt_' + i).value.trim();
+      hadName = false;
+      hadMail = false;
       var v = dijitRegistry.byId('ctt_' + i).get('value').trim();
-      if (v=='') continue;
+      var vn = dojoDom.byId('ctgn_' + i).value.trim();
+      var ve = dojoDom.byId('cte_' + i).value.trim();
+      hadName = true;
+      if (vn=='' && ve=='') continue;
+      if (vn=='') {
+         iam_showTheNotice("You must provide a name for each contact");
+         return '';
+      }
+      if (ve=='') {
+         iam_showTheNotice("You must provide an email for each contact");
+         return '';
+      }
+      hadOne = true;
       xml = xml + '<ContactPerson contactType="' + iam_makeOkXml(v) + '">';
-      v = dojoDom.byId('ctgn_' + i).value.trim();
-      if (v!='') {
-         xml = xml + '<GivenName>' + iam_makeOkXml(v) + '</GivenName>';
-         hadName = true;
-      }
-      v = dojoDom.byId('cte_' + i).value.trim();
-      if (v!='') {
-         xml = xml + '<EmailAddress>' + iam_makeOkXml(v) + '</EmailAddress>';
-         hadMail = true;
-      }
+      xml = xml + '<GivenName>' + iam_makeOkXml(vn) + '</GivenName>';
+      xml = xml + '<EmailAddress>' + iam_makeOkXml(ve) + '</EmailAddress>';
       v = dojoDom.byId('ctp_' + i).value.trim();
       if (v!='') {
          xml = xml + '<TelephoneNumber>' + iam_makeOkXml(v) + '</TelephoneNumber>';
@@ -637,12 +661,8 @@ function assembleRPMetadata(entityId) {
       }
       xml = xml + '</ContactPerson>';
    }
-   if (!hadName) {
-      iam_showTheNotice("You must provide a contact name");
-      return '';
-   }
-   if (!hadMail) {
-      iam_showTheNotice("You must provide a contact Email address");
+   if (!hadOne) {
+      iam_showTheNotice("You must provide at least one contact");
       return '';
    }
 

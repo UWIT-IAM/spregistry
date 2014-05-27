@@ -75,6 +75,7 @@ dojoConfig = {
      "dijit/form/Textarea",
      "dijit/form/Select",
      "dijit/form/SimpleTextarea",
+     "dijit/form/Textarea",
      "dijit/layout/ContentPane",
      "dijit/layout/TabContainer",
      "iam/Dialog",

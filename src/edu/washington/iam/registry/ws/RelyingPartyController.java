@@ -140,8 +140,8 @@ public class RelyingPartyController {
     private String incommonLoginPath = "/incommonlogin";
     private long standardLoginSec = 9*60*60;  // 9 hour session lifetime
     private long secureLoginSec = 1*60*60;  // 1 hour session lifetime
-    private String googleIdentityProvider = "https://idpgateway.u.washington.edu:7443/google";
-    private String spRegistryUrl = "https://iam-tools.u.washington.edu/sp-registry/";
+    private String googleIdentityProvider = "https://idp.u.washington.edu/google";
+    private String spRegistryUrl = "https://iam-tools.u.washington.edu/spreg/";
 
     private String myEntityId = null;
     private String eppnName = "eppn";  // env var name of user eppn
