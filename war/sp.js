@@ -945,21 +945,21 @@ function _postSaveProxy() {
 // submit proxy edits
 function proxy_saveProxy(entityId) {
    var gcid = dojoDom.byId('google_cid').value.trim();
-   if (gcid=='') {
-      iam_hideTheDialog('proxyEditDialog');
-      return;
-   }
    var gcpw = dojoDom.byId('google_cpw').value.trim();
-   // var lcid = dojoDom.byId('liveid_cid').value.trim();
-   // var lcpw = dojoDom.byId('liveid_cpw').value.trim();
    xml = '<Proxys><Proxy entityId="' + currentSp.id + '">';
    if (gcid!='') xml += '<ProxyIdp idp="Google" clientId="' + iam_makeOkXml(gcid) + '" clientSecret="' + iam_makeOkXml(gcpw) + '"/>';
-   // if (lcid!='') xml += '<ProxyIdp idp="LiveID" clientId="' + iam_makeOkXml(lcid) + '" clientSecret="' + iam_makeOkXml(lcpw) + '"/>';
    xml += '</Proxy></Proxys>';
    console.log(xml);
-   var headertxt = {'Content-type': 'application/xhtml+xml; charset=utf-8'};
    var url = v_root + v_vers + '/rp/proxy?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
    iam_putRequest(url, null, xml, null, _postSaveProxy);
-   // location.reload();
 }
 
+function proxy_deleteProxy(entityId) {
+   var gcid = dojoDom.byId('google_cid').value.trim();
+   var gcpw = dojoDom.byId('google_cpw').value.trim();
+   xml = '<Proxys><Proxy entityId="' + currentSp.id + '">'
+        + '</Proxy></Proxys>';
+   console.log(xml);
+   var url = v_root + v_vers + '/rp/proxy?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
+   iam_putRequest(url, null, xml, null, _postSaveProxy);
+}

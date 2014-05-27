@@ -97,7 +97,7 @@ function redirectToLogin(path) {
   <div class="dijitDialogPaneContentArea">
     Identity and Access Management
     <br/>
-    Service Provider Registry 2.1.0
+    Service Provider Registry 2.1.1
     <br/>
     Revision 05/21/2014
     <p/>
