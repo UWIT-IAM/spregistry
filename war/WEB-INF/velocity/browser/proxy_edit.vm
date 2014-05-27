@@ -92,7 +92,7 @@ See the <a href="https://wiki.cac.washington.edu/x/F0jRAw">Social-to-SAML gatewa
 *#
 
 <div id="proxyDeleteDialog" data-dojo-type="dijit/Dialog" title="Proxy delete" $hide>
-<h3>Permanently delete gateway data for ${relyingPartyId}?</h3>
+<h3>Permanently delete proxy data for ${relyingPartyId}?</h3>
  <div class="dijitDialogPaneActionBar">
     <button dojoType="dijit.form.Button" type="button" onClick="proxy_deleteProxy('${relyingPartyId}')">Yes, delete</button>
     <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('proxyDeleteDialog')">Cancel</button>
