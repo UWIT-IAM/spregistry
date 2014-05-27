@@ -288,9 +288,9 @@ function openNewSPForm() {
     <ul id="navigation">
         <li><a href="mailto:help@uw.edu">CONTACT US</a></li>
         <li>|</li>
-        <li><a href="http://www.washington.edu/online/privacy/">PRIVACY</a></li>
+        <li><a href="http://www.washington.edu/online/privacy/" target="sppriv">PRIVACY</a></li>
         <li>|</li>
-        <li><a href="http://www.washington.edu/online/terms/">TERMS</a></li>
+        <li><a href="http://www.washington.edu/online/terms/" target="spterms">TERMS</a></li>
     </ul>
     </span>
     <span id="footright">

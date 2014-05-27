@@ -416,6 +416,7 @@ function _getElementsByIdname(base) {
 // respond to acs clear button
 function meta_clearACS(i) {
    dijitRegistry.byId('acsi_'+i).set('value','');
+   dijitRegistry.byId('acsl_'+i).set('value','');
    dojoDom.byId('acs' + i + '_0').style.display = 'none';
    dojoDom.byId('acs' + i + '_1').style.display = 'none';
 }
