@@ -109,7 +109,7 @@ See the <a href="https://wiki.cac.washington.edu/x/F0jRAw">Social-to-SAML gatewa
 ## not saved dialog
 
 <div id="proxyNotSavedDialog" data-dojo-type="dijit/Dialog" title="Metadata not saved" $hide>
-<h3>Your changes have not not been saved.<p>Close anyway?</h3>
+<h3>Your changes have not been saved.<p>Close anyway?</h3>
  <div class="dijitDialogPaneActionBar">
     <button dojoType="dijit.form.Button" type="button">Yes, close
         <script type="dojo/on" data-dojo-event="click">
@@ -117,7 +117,7 @@ See the <a href="https://wiki.cac.washington.edu/x/F0jRAw">Social-to-SAML gatewa
           showHomePage();
         </script>
     </button>
-    <button dojoType="dijit.form.Button" type="button">Cancel
+    <button dojoType="dijit.form.Button" type="button">No, go back
         <script type="dojo/on" data-dojo-event="click">
            iam_hideTheDialog('proxyNotSavedDialog');
            iam_showTheDialog('proxyEditDialog');

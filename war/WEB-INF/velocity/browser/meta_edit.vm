@@ -95,6 +95,9 @@
      <li><div class="dt dt3" style="height:.5em"></div></li>
      <ul>
      </fieldset>
+     #if ($count == 0 )
+        <i>At least two contacts are recommended.</i>
+     #end
      #set ( $count = $count + 1)
    #end
 
@@ -339,7 +342,7 @@
 ## new not saved dialog
 
 <div id="metaNotSavedDialog" data-dojo-type="dijit/Dialog" title="Metadata not saved" $hide>
-<h3>Your changes have not not been saved.<p>Close anyway?</h3>
+<h3>Your changes have not been saved.<p>Close anyway?</h3>
  <div class="dijitDialogPaneActionBar">
     <button dojoType="dijit.form.Button" type="button">Yes, close
         <script type="dojo/on" data-dojo-event="click">
@@ -347,7 +350,7 @@
           showHomePage();
         </script>
     </button>
-    <button dojoType="dijit.form.Button" type="button">Cancel
+    <button dojoType="dijit.form.Button" type="button">No, go back
         <script type="dojo/on" data-dojo-event="click">
            iam_hideTheDialog('metaNotSavedDialog');
            iam_showTheDialog('metaEditDialog');
