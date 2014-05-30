@@ -345,14 +345,14 @@ function setPaneSizes() {
         left: '0px'
       });
    
-     dijitRegistry.byId('spDisplay').resize();
-
      dojo.style(dojo.byId('homeDisplay'), {
         height: idh + 'px',
         width: idw + 'px',
         top: '0px',
         left: '0px'
       });
+
+     if (currentSp!=null) showCurrentSp();
 
 }
 
