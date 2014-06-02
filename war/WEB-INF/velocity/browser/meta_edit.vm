@@ -195,7 +195,7 @@
              onClick="meta_clearKI('${count}')">x</button>
            </span>
         <textarea data-dojo-type="dijit/form/Textarea" class="dd certbox" cols="64" rows="5" name="keyCert_${count}" id="kc_${count}"
-               style="font-size:8px" aria-label="cert pem">$!key.certificate</textarea>
+               style="font-size:8px;min-height:3em;" aria-label="cert pem">$!key.certificate</textarea>
       </li>
      #set ( $count = $count + 1)
    #end
@@ -208,7 +208,8 @@
       </li>
       <li id="ki${i}_1" ${hide}>
       <span class="dt dt3" >Cert PEM</span>
-         <textarea data-dojo-type="dijit/form/Textarea" class="dd certbox" cols="64" rows="10" name="keyCert_${i}" id="kc_${i}" aria-label="cert pem"></textarea>
+         <textarea data-dojo-type="dijit/form/Textarea" class="dd certbox" cols="64" rows="10" name="keyCert_${i}" id="kc_${i}"
+             style="font-size:8px;min-height:3em;"  aria-label="cert pem"></textarea>
       </li>
 
    #end
