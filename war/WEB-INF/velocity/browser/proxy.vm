@@ -18,48 +18,43 @@
 ## proxy tab
 ##
 
-## There's gotta be a better way to see if a list is empty
-#set ($havegw=0)
-#foreach ( $idp in $proxy.ProxyIdps )
-  #set ($havegw=1)
+#macro(gatewayItemConfig $name $idpProxy)
+<h4 class="dt" valign="top">$name</h4>
+<div class="dd">
+  #if($idpProxy)
+  <span class="dt dt3">Client ID:</span>
+  <span class="dd dd3">#X($!{idpProxy.clientId})</span>
+  #else
+  <i>Not configured</i>
+  #end
+</div>
 #end
 
 <div id="proxySpContainer" dojoType="dijit.layout.ContentPane" title="Gateway" selected="false" style="overflow:hidden"
-   onClose="return(true)" oLayout="false" >
+     onClose="return(true)" oLayout="false" >
 
-<ul class="buttonBar" role="navigation">
-  ## We'll have to revisit this when we can edit a list of gateways instead of just google
-  #if ($canEdit)
+  <ul class="buttonBar" role="navigation">
+    #if ($canEdit)
     <li><button dojoType="dijit.form.Button" type="button" onClick="iam_showTheDialog('proxyEditDialog',['sp/proxylib'])">Edit</button></li>
-    #if($havegw == 1)
-      <li><button dojoType="dijit.form.Button" type="button" onClick="iam_showTheDialog('proxyDeleteDialog',['sp/proxylib'])">Delete</button></li>
     #end
-  #end
-</ul>
+  </ul>
 
-<div id="proxyViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;"
-   onShow="adjustSpPaneSize('proxyViewPane')">
+  <div id="proxyViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;"
+       onShow="adjustSpPaneSize('proxyViewPane')">
 
+    ## This registry allows you to configure access to the social-to-saml authentication gateway.
+    <p>
+      <h3>SAML Gateway</h3>
+      <ul class="iamlist">
+        <li>
+          #gatewayItemConfig("Google", $proxy.getProxyIdp("Google"))
+        </li>
+        <li>
+          #gatewayItemConfig("Facebook", $proxy.getProxyIdp("Facebook"))
+        </li>
+      </ul>
 
-#set ($google_status = 0 )
-
-## This registry allows you to configure access to the social-to-saml authentication gateway.
-<p>
-
-<h3>SAML Gateway</h3>
-
-  #foreach ( $idp in $proxy.ProxyIdps )
-    <h4>$idp.idp</h4>
-    <ul class="iamlist">
-    <li>
-    <h5 class="dt">Client ID:</h5><div class="dd">#X($!{idp.clientId})</div>
-    </li>
-    </ul>
-    <hr>
-  #end
-  #if ($havegw==0) <i>No gateway confgured.</i> #end
-
-</div>
+  </div>
 </div> 
 
 #if ($canEdit)

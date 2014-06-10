@@ -16,80 +16,31 @@
  *#
 ##
 
-## helpers
-<div id="googleGateHelp" dojoType="dijit/Dialog" title="Google gateway" $hide
-    onShow="proxyEditShow()" onHide="proxyEditHide()" onKeyPress="proxyEditKey()" onClick="proxyEditKey()">
+#macro(gatewayItemEdit $friendlyName $name $idpProxy)
+<h4>$friendlyName</h4>
 
-The Google gateway allows your SAML SP users to authenticate with their Google identities.
-<p>
-Your Client ID and Client Secret go into the Gateway form.
-<p>
-See the <a href="https://wiki.cac.washington.edu/x/F0jRAw" target="spghelp">Social-to-SAML gateway</a> for more information.
-</div>
-
-#*
-<div id="liveidGateHelp" dojoType="dijit/Dialog" title="Google gateway" $hide>
-The LiveID gateway allows your SAML SP users to authenticate with their LiveID identities.
-<p>
-Activate the LiveID gateway by entering your liveid application's id and secret in the gateway form.
-<p>
-See the <a href="https://wiki.cac.washington.edu/x/F0jRAw">Social-to-SAML gateway</a> for more information.
-</div>
-*#
-
+<ul class="iamlist">
+  <li><label for="${name}_cid" class="dt">Client ID</label>
+    <div class="dd"><input id="${name}_cid" dojoType="dijit.form.TextBox" size="60"
+                           value="#X($!{idpProxy.clientId})"
+                           /></div>
+  </li>
+  <li><label for="google_cpw" class="dt">Client Secret</label>
+    <div class="dd"><input id="${name}_cpw" dojoType="dijit.form.TextBox" size="60"
+                           value="#X($!{idpProxy.clientSecret})"
+                           /></div>
+  </li>
+</ul>
+#end
 
 <div id="proxyEditDialog" data-dojo-type="dijit/Dialog" title="Edit proxy data for ${relyingPartyId}" ${hide}>
+  <div class="dijitDialogPaneContentArea" data-dojo-type="dijit/layout/ContentPane" >
 
-#set ($google_status = 0 )
-#set ($liveid_status = 0 )
-
-<div class="dijitDialogPaneContentArea" data-dojo-type="dijit/layout/ContentPane" >
-
-<div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/F0jRAw" target="spghelp">help</a></div>
-<h3>SAML Gateway</h3>
-## <div aria-label="entityid">${relyingPartyId}</div>
-
-
-## we actually support only a subset of possible proxies
-     #set ($google = $proxy.getProxyIdp("Google"))
-     #set ($liveid = $proxy.getProxyIdp("LiveID"))
-
-    <h4>Google</h4>
-
-    <ul class="iamlist">
-    <li><label for="google_cid" class="dt">Client ID</label>
-         <div class="dd"><input id="google_cid" dojoType="dijit.form.TextBox" size="60"
-            value="#X($!{google.clientId})"
-          /></div>
-    </li>
-    <li><label for="google_cpw" class="dt">Client Secret</label>
-         <div class="dd"><input id="google_cpw" dojoType="dijit.form.TextBox" size="60"
-            value="#X($!{google.clientSecret})"
-          /></div>
-    </li>
-    </ul>
-
+    <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/F0jRAw" target="spghelp">help</a></div>
+    <h3>SAML Gateway</h3>
+    #gatewayItemEdit("Google", "google", $proxy.getProxyIdp("Google"))
     <hr>
-
-
-#*   skip live until it supports proxy
-
-    <h4>LiveID</h4>
-
-    <ul class="iamlist">
-    <li><label for="liveid_cid" class="dt">Client ID</label>
-         <div class="dd"><input id="liveid_cid" dojoType="dijit.form.TextBox" size="60"
-            value="#X($!{liveid.clientId})"
-          /></div>
-    </li>
- 
-    <li><label for="liveid_cpw" class="dt">Client Secret</label>
-         <div class="dd"><input id="liveid_cpw" dojoType="dijit.form.TextBox" size="60"
-            value="#X($!{liveid.clientSecret})"
-          /></div>
-    </li>
-   </ul>
-*#
+    #gatewayItemEdit("Facebook", "facebook", $proxy.getProxyIdp("Facebook"))
 
 <div id="proxyDeleteDialog" data-dojo-type="dijit/Dialog" title="Proxy delete" $hide>
 <h3>Permanently delete proxy data for ${relyingPartyId}?</h3>
