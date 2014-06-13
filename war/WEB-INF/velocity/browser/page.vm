@@ -115,7 +115,7 @@ v_xsrf = '${xsrf}';
     <br/>
     Service Provider Registry 2.1.2
     <br/>
-    Revision 06/04/2014
+    Revision 06/13/2014
     <p/>
     <a href="https://wiki.cac.washington.edu/x/gjyoAQ">Learn more about the registry</a>
   </div>
@@ -173,7 +173,11 @@ v_xsrf = '${xsrf}';
 ## banner
 <div id="banner" data-dojo-type="dijit.layout.ContentPane">
     <span id="title"><a tabindex=-1 href="javascript:showHomePage()">SERVICE PROVIDER REGISTRY</a></span>
-    <span id="banner_notice"></span>
+    <span id="banner_notice">
+#if ($adminRole)
+   <span style="font-size:larger;color:#a00000">Acting as administrator</span>
+#end
+    </span>
     <ul id="ident">
         <li></li>
     </ul>

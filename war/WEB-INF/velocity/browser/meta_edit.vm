@@ -71,7 +71,7 @@
         <ul class="iamlist">
      <li id="ct${count}_0">
        <span class="dt dt3" >Type</span>
-       <select class="dd" id="ctt_${count}" data-dojo-type="dijit.form.Select" aria-label="contact type">
+       <select class="dd" id="ctt_${count}" data-dojo-type="dijit.form.Select" aria-label="contact type" onChange="metaEditKey()">
        #foreach ( $t in ["technical","support","administrative","billing","other"] )
          <option value="$t" 
            #if ( $t == $ct.type )
@@ -348,7 +348,7 @@
     <button dojoType="dijit.form.Button" type="button">Yes, close
         <script type="dojo/on" data-dojo-event="click">
           iam_hideTheDialog('metaNotSavedDialog');
-          showHomePage();
+          ### showHomePage();
         </script>
     </button>
     <button dojoType="dijit.form.Button" type="button">No, go back

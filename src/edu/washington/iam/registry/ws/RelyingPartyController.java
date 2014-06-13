@@ -93,6 +93,8 @@ public class RelyingPartyController {
 
     private final Logger log =  LoggerFactory.getLogger(getClass());
 
+    public static String SECURE_LOGIN_CLASS = "urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken";
+
     private static FilterPolicyManager filterPolicyManager;
     private static RelyingPartyManager rpManager;
     private static ProxyManager proxyManager;
@@ -128,6 +130,7 @@ public class RelyingPartyController {
     private static String browserRootPath;
     private static String certRootPath;
     private static String loginCookie;
+    private static String roleCookie = "spck2";
     private static String logoutUrl;
 
     private static String mailTo = "pubcookie@u.washington.edu";
@@ -173,7 +176,7 @@ public class RelyingPartyController {
        private long timeLeft;
        private boolean isProxy;
        private List altNames;
-       private boolean wantsAdmin;
+       private boolean adminRole;
     }
 
     /* send user to login chooser page */ 
@@ -204,7 +207,7 @@ public class RelyingPartyController {
     private RPSession processRequestInfo(HttpServletRequest request, HttpServletResponse response, boolean canLogin) {
         RPSession session = new RPSession();
         session.isAdmin = false;
-        session.wantsAdmin = false;
+        session.adminRole = false;
         session.isUWLogin = false;
         session.isProxy = false;
         String reloginPath = null;
@@ -213,6 +216,7 @@ public class RelyingPartyController {
 
         // see if logged in (browser has login cookie; cert user has cert)
 
+        int resetAdmin = 1;  // on expired or no cookie, reset the 'admin role cookei'
         Cookie[] cookies = request.getCookies();
         if (cookies!=null) {
           for (int i=0; i<cookies.length; i++) {
@@ -234,6 +238,7 @@ public class RelyingPartyController {
                      if ((nSec>(cSec+secureLoginSec)) && session.authn2) {
                         log.debug("secure expired");
                         session.authn2 = false;
+                        resetAdmin = 2;
                      }
 
                      // cookie OK
@@ -250,7 +255,7 @@ public class RelyingPartyController {
                         log.debug("is proxy");
                         session.isProxy = true;
                      }
-                     break;
+                     if (resetAdmin==1) resetAdmin = 0;
                   } else {
                      log.debug("cookie expired for " + cookieData[1]);
                      // remember where they logged in last
@@ -261,10 +266,21 @@ public class RelyingPartyController {
                } else {
                   log.info("bogus cookie ignored");
                }
+            } else if (cookies[i].getName().equals(roleCookie) && cookies[i].getValue().equals("a")) {
+               log.debug("got role=admin cookie");
+               session.adminRole = true;
             }
           }
         }
 
+        if (resetAdmin>0) {
+           log.debug("clearing expired admn request");
+           session.adminRole = false;
+           Cookie c = new Cookie(roleCookie, "x");
+           c.setSecure(true);
+           c.setPath("/");
+           response.addCookie(c);
+        }
 
         if (session.remoteUser!=null) {
            // ok, is a logged in browser
@@ -324,6 +340,12 @@ public class RelyingPartyController {
            return null;
         }
 
+        // only admins can get admin role
+        if (!session.isAdmin) session.adminRole = false;
+        if (session.adminRole && !session.authn2) {  // admin needs 2f
+           log.debug("need secure login for admin role");
+           sendToLogin(request, response, secureLoginPath);
+        }
         session.servletPath = request.getServletPath();
         session.remoteAddr = request.getRemoteAddr();
 
@@ -393,6 +415,7 @@ public class RelyingPartyController {
         mv.addObject("pageTitle", session.pageTitle);
         mv.addObject("xsrf", session.xsrfCode);
         mv.addObject("timeLeft", session.timeLeft);
+        mv.addObject("adminRole", session.adminRole);
         return mv;
     }
     private ModelAndView basicModelAndView(RPSession session) {
@@ -442,6 +465,8 @@ public class RelyingPartyController {
 
        String methodKey = "P";
        if (method==2) methodKey = "2";
+       String aclass = (String)request.getAttribute("Shib-AuthnContext-Class");
+       if (aclass!=null && aclass.equals(SECURE_LOGIN_CLASS)) methodKey = "2";
        log.debug("method = " + method + ", key = " + methodKey);
 
        if (remoteUser!=null) {
@@ -449,10 +474,14 @@ public class RelyingPartyController {
               remoteUser = remoteUser.substring(0, remoteUser.lastIndexOf("@washington.edu"));
               log.info("dropped @washington.edu to get id = " + remoteUser);
            }
+
            if (remoteUser.endsWith("@uw.edu")) {
-              remoteUser = remoteUser.substring(0, remoteUser.lastIndexOf("@uw.edu"));
-              log.info("dropped @uw.edu to get id = " + remoteUser);
+              // no longer allow google's @uw to be same as UW login
+              // remoteUser = remoteUser.substring(0, remoteUser.lastIndexOf("@uw.edu"));
+              // log.info("dropped @uw.edu to get id = " + remoteUser);
+              return loginChooserMV(request, response);  // return to login chooser
            }
+
            double dbl = Math.random();
            long modtime = new Date().getTime();  // milliseconds
            log.debug("login: ck = ...;" + remoteUser + ";" + dbl + ";" + methodKey + ";" + modtime/1000);
@@ -477,10 +506,9 @@ public class RelyingPartyController {
            }
        } else {
            // send login failed message
-           ModelAndView mv = new ModelAndView("browser/page");
+           ModelAndView mv = new ModelAndView("browser/nologin");
            mv.addObject("root", browserRootPath);
            mv.addObject("vers", request.getServletPath());
-           mv.addObject("pageType", "browser/nologin");
            mv.addObject("pageTitle", "login failed");
            mv.addObject("myEntityId", myEntityId);
            return mv;
@@ -634,8 +662,6 @@ public class RelyingPartyController {
         boolean refreshOpt = false;
         if (view!=null && view.equals("refresh")) refreshOpt = true;
  
-        if (session.isAdmin && role!=null && role.equals("admin")) session.wantsAdmin = true;
-
         String errmsg = null;
 
         ModelAndView mv = basicModelAndView(session, "browser", "rp");
@@ -684,7 +710,6 @@ public class RelyingPartyController {
         mv.addObject("proxy", proxy);
         mv.addObject("isAdmin", session.isAdmin);
         mv.addObject("isProxy", session.isProxy);
-        mv.addObject("wantsAdmin", session.wantsAdmin);
         mv.addObject("dateFormatter", new SimpleDateFormat("yy/MM/dd"));
         return (mv); 
     }
@@ -748,7 +773,6 @@ public class RelyingPartyController {
         session.pageTitle = "New service provider";
         boolean lookup = true;
         if (nolook!=null && nolook.startsWith("y")) lookup = false;
-        if (session.isAdmin && role!=null && role.equals("admin")) session.wantsAdmin = true;
         
         String dns = dnsFromEntityId(rpid);
 
@@ -843,7 +867,6 @@ public class RelyingPartyController {
 
         RPSession session = processRequestInfo(request, response, false);
         if (session==null) return (emptyMV());
-        if (session.isAdmin && role!=null && role.equals("admin")) session.wantsAdmin = true;
 
         log.info("PUT update for: " + id);
         int status = 200;
@@ -996,7 +1019,6 @@ public class RelyingPartyController {
 
         RPSession session = processRequestInfo(request, response, false);
         if (session==null) return (emptyMV());
-        if (session.isAdmin && role!=null && role.equals("admin")) session.wantsAdmin = true;
 
         log.info("DELETE for: " + id);
         int status = 200;
@@ -1278,7 +1300,6 @@ public class RelyingPartyController {
 
         RPSession session = processRequestInfo(request, response, false);
         if (session==null) return (emptyMV());
-        if (session.isAdmin && role!=null && role.equals("admin")) session.wantsAdmin = true;
 
         log.info("PUT update proxy for " + id);
         int status = 200;
@@ -1357,7 +1378,7 @@ public class RelyingPartyController {
     /* utility */
     private boolean userCanEdit(RPSession session, String entityId)
         throws DNSVerifyException {
-        return session.wantsAdmin || dnsVerifier.isOwner(entityId, session.remoteUser, null);
+        return session.adminRole || dnsVerifier.isOwner(entityId, session.remoteUser, null);
     }
 
     private long getLongHeader(HttpServletRequest request, String name) {
@@ -1398,6 +1419,9 @@ public class RelyingPartyController {
 
     public void setLoginCookie(String v) {
         loginCookie = v;
+    }
+    public void setRoleCookie(String v) {
+        roleCookie = v;
     }
 
     public void setLogoutUrl(String v) {

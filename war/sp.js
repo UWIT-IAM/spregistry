@@ -62,6 +62,7 @@ function hashHandler(tab, spid) {
    } else showHomePage();
 }
 
+var roleCookie = 'spck2';
 iam_set('hashCookie', 'spck1');
 iam_set('hashHandler', hashHandler);
 
@@ -69,15 +70,16 @@ iam_set('hashHandler', hashHandler);
 
 var adminQS = ''
 function setRole(r, d) {
+   console.log('in: cookie = ' + dojoCookie(roleCookie) + '  role=' + r);
    if (r=='a') {
-      adminQS = '&role=admin'
-      dojoDom.byId('banner_notice').innerHTML = '<span style="font-size:larger;color:#a00000">Acting as administrator</span>'; 
+      dojoCookie(roleCookie, 'a');
+      // dojoDom.byId('banner_notice').innerHTML = '<span style="font-size:larger;color:#a00000">Acting as administrator</span>'; 
    } else {
-      adminQS = ''
-      dojoDom.byId('banner_notice').innerHTML = ''; 
+      dojoCookie(roleCookie, null, {expires: -1});
+      // dojoDom.byId('banner_notice').innerHTML = ''; 
    }
-   showHomePage();
-   if (d!=null) iam_hideTheDialog(d);
+   console.log('out: cookie = ' + dojoCookie(roleCookie));
+   dojoDoc.location = v_root;
 }
 
 
@@ -918,7 +920,7 @@ function attr_saveAttrs(gid, entityId) {
  * gateway tools
  */
 
-// TODO: figure out what to do now that there's multiple proxy types
+
 function proxyEditHide() {
    console.log("proxy popup hide");
    var gcid = dojoDom.byId('google_cid').value.trim();
@@ -945,26 +947,16 @@ function _postSaveProxy() {
 
 // submit proxy edits
 function proxy_saveProxy(entityId) {
-    var proxyTypes = [
-        {friendlyName: 'Google', name: 'google'},
-        {friendlyName: 'Facebook', name: 'facebook'}
-    ];
-    xml = '<Proxys><Proxy entityId="' + currentSp.id + '">';
-    for(i = 0; i < proxyTypes.length; i++){
-        var pt_cid = dojoDom.byId(proxyTypes[i].name+'_cid').value.trim();
-        var pt_cpw = dojoDom.byId(proxyTypes[i].name+'_cpw').value.trim();
-        if (pt_cid!='') xml += '<ProxyIdp idp="' + proxyTypes[i].friendlyName
-            + '" clientId="' + iam_makeOkXml(pt_cid)
-            + '" clientSecret="' + iam_makeOkXml(pt_cpw) + '"/>';
-    }
-    xml += '</Proxy></Proxys>';
-    console.log(xml);
-    var url = v_root + v_vers + '/rp/proxy?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
-    iam_putRequest(url, null, xml, null, _postSaveProxy);
+   var gcid = dojoDom.byId('google_cid').value.trim();
+   var gcpw = dojoDom.byId('google_cpw').value.trim();
+   xml = '<Proxys><Proxy entityId="' + currentSp.id + '">';
+   if (gcid!='') xml += '<ProxyIdp idp="Google" clientId="' + iam_makeOkXml(gcid) + '" clientSecret="' + iam_makeOkXml(gcpw) + '"/>';
+   xml += '</Proxy></Proxys>';
+   console.log(xml);
+   var url = v_root + v_vers + '/rp/proxy?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
+   iam_putRequest(url, null, xml, null, _postSaveProxy);
 }
 
-
-// TODO: figure out what to do now that there's multiple proxy types
 function proxy_deleteProxy(entityId) {
    var gcid = dojoDom.byId('google_cid').value.trim();
    var gcpw = dojoDom.byId('google_cpw').value.trim();
