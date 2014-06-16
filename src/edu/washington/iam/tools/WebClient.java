@@ -36,6 +36,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -47,6 +48,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -79,6 +82,9 @@ public class WebClient {
     private boolean initialized = false;
     private DocumentBuilder documentBuilder;
 
+    DefaultHttpClient soapclient = null;
+    DefaultHttpClient restclient = null;
+
     // 
     private String soapHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + 
         "<soap:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " + 
@@ -92,7 +98,7 @@ public class WebClient {
           // "xmlns:tns=\"http://ssl.ws.epki.comodo.com/\" " +
 
     public void closeIdleConnections() { 
-       log.debug("closing idle");
+       // log.debug("closing idle");
        connectionManager.closeExpiredConnections();
        connectionManager.closeIdleConnections(30, TimeUnit.SECONDS);
     }
@@ -103,8 +109,9 @@ public class WebClient {
 
        // log.debug("do soap: " + action);
        Element ele = null;
-       DefaultHttpClient httpclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
-       // httpclient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false); 
+       // DefaultHttpClient soapclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
+       if (soapclient==null) soapclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
+       // soapclient.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false); 
 
        try {
 
@@ -118,7 +125,7 @@ public class WebClient {
           strent.setContentType("text/xml; charset=utf-8");
           httppost.setEntity(strent); 
 
-          HttpResponse response = httpclient.execute(httppost);
+          CloseableHttpResponse response = soapclient.execute(httppost);
 
           if (response.getStatusLine().getStatusCode()>=400) {
               log.error("soap error: "  + response.getStatusLine().getStatusCode() + " = " + response.getStatusLine().getReasonPhrase());
@@ -128,7 +135,7 @@ public class WebClient {
 
           // null is error - should get something
           if (entity == null) {
-             throw new WebClientException("httpclient post exception");
+             throw new WebClientException("soapclient post exception");
           }
 
           // log.debug("got " + entity.getContentLength() + " bytes");
@@ -152,27 +159,42 @@ public class WebClient {
 
        // log.debug("do rest get");
        Element ele = null;
-       DefaultHttpClient httpclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
+       // restclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
+       if (restclient==null) restclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
        try {
 
-          // log.debug(" url: " + url);
+          // log.debug(" rest get, url: " + url);
           // log.debug(" auth: " + auth);
 
           HttpGet httpget = new HttpGet(url);
           if (auth!=null) httpget.addHeader("Authorization", auth);
           httpget.addHeader("Accept", "text/xml");
 
-          HttpResponse response = httpclient.execute(httpget);
+          CloseableHttpResponse response = restclient.execute((HttpUriRequest)httpget);
+          log.debug(" rest get, rsp: " + response.getStatusLine().getStatusCode());
+          // httpget.releaseConnection();
+          if (response.getStatusLine().getStatusCode()==404) {
+              // log.error("rest, url not found");
+              response.close();
+              return null;
+          }
+          if (response.getStatusLine().getStatusCode()>=400) {
+              // log.error("rest error: "  + response.getStatusLine().getStatusCode() + " = " + response.getStatusLine().getReasonPhrase());
+              response.close();
+              throw new WebClientException("rest error");
+          } 
           HttpEntity entity = response.getEntity();
 
           // null is error - should get something
           if (entity == null) {
-             throw new WebClientException("httpclient post exception");
+              response.close();
+              throw new WebClientException("restclient get exception");
           }
 
           // parse response text
           Document doc = documentBuilder.parse(entity.getContent());
           ele = doc.getDocumentElement();
+          response.close();
        } catch (Exception e) {
           log.error("exception " + e);
        }
@@ -189,27 +211,29 @@ public class WebClient {
 
        log.debug("do rest put");
        Element ele = null;
-       DefaultHttpClient httpclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
+       if (restclient==null) restclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
        try {
 
-          log.debug(" url: " + url);
+          log.debug(" rest url: " + url);
 
           HttpPut httpput = new HttpPut(url);
           if (auth!=null) httpput.addHeader("Authorization", auth);
           httpput.setEntity(new UrlEncodedFormEntity(data));
 
-          HttpResponse response = httpclient.execute(httpput);
-           log.debug("resp: " + response.getStatusLine().getStatusCode() + " = " + response.getStatusLine().getReasonPhrase());
+          CloseableHttpResponse response = restclient.execute(httpput);
+          log.debug("resp: " + response.getStatusLine().getStatusCode() + " = " + response.getStatusLine().getReasonPhrase());
           HttpEntity entity = response.getEntity();
 
           // null is error - should get something
           if (entity == null) {
-             throw new WebClientException("httpclient post exception");
+             response.close();
+             throw new WebClientException("restclient post exception");
           }
 
           // parse response text
           Document doc = documentBuilder.parse(entity.getContent());
           ele = doc.getDocumentElement();
+          response.close();
        } catch (Exception e) {
           log.error("exception " + e);
        }

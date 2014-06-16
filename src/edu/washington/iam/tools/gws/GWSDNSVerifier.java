@@ -58,19 +58,21 @@ public class GWSDNSVerifier implements DNSVerifier {
        log.debug("looking for gws owner (" + id + ") in " + dns);
 
        try {
-          String url = gwsMemberBase + dns + "/effective_member?source=registry";
+          String url = gwsMemberBase + dns + "/effective_member";
           Element resp = webClient.doRestGet(url);
-          Element grpE = XMLHelper.getElementByName(resp, "group");
-          Element mbrsE = XMLHelper.getElementByName(grpE, "members");
-          List<Element> mbrs = XMLHelper.getElementsByName(mbrsE, "member");
-          log.debug("get  " + mbrs.size() + " group members");
-          for (int i=0; i<mbrs.size(); i++) {
-             String mbr = mbrs.get(i).getTextContent();
-             log.debug("mbr: " + mbr);
-             if (owners!=null && !owners.contains(mbr)) owners.add(mbr);
-             if (mbr.equals(id)) {
-                if (owners==null) return true;
-                isOwner = true;
+          if (resp!=null) {
+             Element grpE = XMLHelper.getElementByName(resp, "group");
+             Element mbrsE = XMLHelper.getElementByName(grpE, "members");
+             List<Element> mbrs = XMLHelper.getElementsByName(mbrsE, "member");
+             log.debug("get  " + mbrs.size() + " group members");
+             for (int i=0; i<mbrs.size(); i++) {
+                String mbr = mbrs.get(i).getTextContent();
+                log.debug("mbr: " + mbr);
+                if (owners!=null && !owners.contains(mbr)) owners.add(mbr);
+                if (mbr.equals(id)) {
+                   if (owners==null) return true;
+                   isOwner = true;
+                }
              }
           }
 
