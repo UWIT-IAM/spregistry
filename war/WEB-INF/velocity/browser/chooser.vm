@@ -167,11 +167,15 @@ function redirectToLogin(path) {
   </li>
 
   <li><div class="dt "><a href="javascript:redirectToLogin('$googleloginpath');">Gmail</a></div>
-   <div class="dd">Your Google gmail address will be your login identity.</div>
+   <div class="dd">Your Google gmail address will be your login identity.
+        <br><i>(Google "@uw.edu" logins will not be not accepted.  Use UW NetID login)</i>
+   </div>
   </li>
 
   <li><div class="dt "><a href="javascript:redirectToLogin('$incommonloginpath');">InCommon</a></div>
-   <div class="dd">Your ePPN will be your login identity.</div>
+   <div class="dd">Your ePPN will be your login identity.
+       <br><i>(Your InCommon IdP must provide your ePPN to us.)</i>
+   </div>
   </li>
 
 </ul>

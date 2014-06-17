@@ -129,6 +129,7 @@
 
    ## Nameid
 
+   #if ( $relyingParty.nameIDFormats )
    #if ( $relyingParty.nameIDFormats.size() > 0 )
       <li>
       <h4 class="dt">NameId</h4>
@@ -140,6 +141,7 @@
       #end
        </div>
       </li>
+  #end
   #end
 
 
