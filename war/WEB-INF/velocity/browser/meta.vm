@@ -176,7 +176,7 @@
 #foreach ( $key in $relyingParty.keyDescriptors )
 <div id="pemDialog_${i}" data-dojo-type="dijit.Dialog" title="Certificate PEM" style="display:none">
 <div id="pemDialog_${i}_content">
- <div class="certbox"><pre>$key.certificate</pre></div>
+ <div class="certbox"><pre>$!key.certificate</pre></div>
 </div>
 </div>
 #set ($i = $i+1 )

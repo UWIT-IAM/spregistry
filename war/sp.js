@@ -955,7 +955,7 @@ function proxy_saveProxy(entityId) {
    if (gcid!='') xml += '<ProxyIdp idp="Google" clientId="' + iam_makeOkXml(gcid) + '" clientSecret="' + iam_makeOkXml(gcpw) + '"/>';
    if (fcid!='') xml += '<ProxyIdp idp="Facebook" clientId="' + iam_makeOkXml(fcid) + '" clientSecret="' + iam_makeOkXml(fcpw) + '"/>';
    xml += '</Proxy></Proxys>';
-   console.log(xml);
+   // console.log(xml);
    var url = v_root + v_vers + '/rp/proxy?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
    iam_putRequest(url, null, xml, null, _postSaveProxy);
 }
