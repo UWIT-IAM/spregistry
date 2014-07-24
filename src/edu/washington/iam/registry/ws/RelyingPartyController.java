@@ -103,8 +103,6 @@ public class RelyingPartyController {
     private static GroupManager groupManager;
     private String adminGroupName = null;
     private Group adminGroup = null;
-    private String proxyGroupName = null;
-    private Group proxyGroup = null;
 
     public DNSVerifier getDnsVerifier() {
         return dnsVerifier;
@@ -251,10 +249,6 @@ public class RelyingPartyController {
                         session.isAdmin = true;
                      }
 
-                     if (proxyGroup.isMember(session.remoteUser)) {
-                        log.debug("is proxy");
-                        session.isProxy = true;
-                     }
                      if (resetAdmin==1) resetAdmin = 0;
                   } else {
                      log.debug("cookie expired for " + cookieData[1]);
@@ -1442,9 +1436,6 @@ public class RelyingPartyController {
     public void setAdminGroupName(String v) {
         adminGroupName = v;
     }
-    public void setProxyGroupName(String v) {
-        proxyGroupName = v;
-    }
     public void setStandardLoginSec(long v) {
         standardLoginSec = v;
     }
@@ -1495,7 +1486,6 @@ public class RelyingPartyController {
        log.info("RelyingPartyController init");
        RPCrypt.init(cryptKey);
        adminGroup = groupManager.getGroup(adminGroupName);
-       proxyGroup = groupManager.getGroup(proxyGroupName);
     }
 
     /* refresh cache groups  */
@@ -1509,7 +1499,6 @@ public class RelyingPartyController {
        response.setStatus(200);
        log.info("refreshing cache groups");
        adminGroup = groupManager.getGroup(adminGroupName);
-       proxyGroup = groupManager.getGroup(proxyGroupName);
        return emptyMV();
     }
 

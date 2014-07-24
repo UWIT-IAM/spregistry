@@ -34,10 +34,7 @@ console.log('sp rp panel start');
 
 #parse ( "browser/attr.vm" )
 
-## uncomment this #if to put back the gateway group check
-## #if ($isProxy)
 #parse ( "browser/proxy.vm" )
-## #end
 
 <script>
 console.log('sp rp panel end');
