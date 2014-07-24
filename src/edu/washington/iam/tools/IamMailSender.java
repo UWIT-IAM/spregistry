@@ -61,7 +61,7 @@ public class IamMailSender {
          mime.setRecipients(RecipientType.TO, InternetAddress.parse(msg.getTo()));
          mime.setSubject(msg.makeSubstitutions(msg.getSubject()));
          mime.setReplyTo(InternetAddress.parse(replyTo));
-         mime.setFrom(new InternetAddress(from));
+         mime.setFrom(new InternetAddress(msg.getFrom()));
          mime.addHeader("X-Auto-Response-Suppress", "NDR, OOF, AutoReply");
          mime.addHeader("Precedence", "Special-Delivery, never-bounce");
          mime.setText(msg.makeSubstitutions(msg.getText()));

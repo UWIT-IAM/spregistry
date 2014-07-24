@@ -1229,7 +1229,7 @@ public class RelyingPartyController {
            mv.addObject("alert", "The posted document was not valid:\n" + e);
         }
         if (doc!=null) {
-           StringBuffer txt = new StringBuffer("Entity Id: " + id + "\n");
+           StringBuffer txt = new StringBuffer("[ Assign to Identity and Access Management. ]\n\nEntity Id: " + id + "\n");
            txt.append("User:      " + session.remoteUser + "\n\nRequesting:\n");
            List<Element> attrs = XMLHelper.getElementsByName(doc.getDocumentElement(), "Add");
            log.debug(attrs.size() + " adds");
@@ -1245,7 +1245,8 @@ public class RelyingPartyController {
    /* production to RT system */
            msg.setTo(requestMailTo);
            msg.setSubject("IdP attribute request for " + id);
-           msg.setText("//proxy\n//requestor: " + session.remoteUser + "@washington.edu\n\n" + txt.toString());
+           msg.setFrom(session.remoteUser + "@uw.edu");
+           msg.setText(txt.toString());
            try{
                this.mailSender.send(msg);
            } catch(MailException ex) {
