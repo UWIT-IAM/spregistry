@@ -13,7 +13,6 @@ import edu.washington.iam.registry.exception.RelyingPartyException;
 
 public interface RelyingPartyManager extends Serializable {
 
-   // public List<RelyingParty> getRelyingParties();
    public List<String> getRelyingPartyIds();
    public List<RelyingParty> getRelyingParties(String sel, String type);
 
