@@ -253,11 +253,12 @@
  
    ## ACS
 #set ($bind1="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST")
-#set ($bind2="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign")
+#set ($bind2="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect")
+#set ($bind3="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign")
 #set ($bind4="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact")
-#set ($bind3="urn:oasis:names:tc:SAML:2.0:bindings:PAOS")
-#set ($bind5="urn:oasis:names:tc:SAML:1.0:profiles:browser-post")
-#set ($bind6="urn:oasis:names:tc:SAML:1.0:profiles:artifact-01")
+#set ($bind5="urn:oasis:names:tc:SAML:2.0:bindings:PAOS")
+#set ($bind6="urn:oasis:names:tc:SAML:1.0:profiles:browser-post")
+#set ($bind7="urn:oasis:names:tc:SAML:1.0:profiles:artifact-01")
 
       <li><h4 class="dt">ACS</h4>
        <div class="dd">
@@ -272,7 +273,7 @@
         ##       value="$acs.binding" size="30" style="width:400px" aria-label="binding"/>
 
        <select class="dd" id="acsb_${count}" data-dojo-type="dijit.form.Select" aria-label="binding">
-       #foreach ( $t in [$bind1, $bind2, $bind3, $bind4, $bind5, $bind6] )
+       #foreach ( $t in [$bind1, $bind2, $bind3, $bind4, $bind5, $bind6, $bind7] )
          <option value="$t" 
            #if ( $t == $acs.binding )
              selected="selected"
@@ -302,7 +303,7 @@
 ##         <input class="dd" data-dojo-type="dijit.form.TextBox" id="acsb_${i}"
 ##             value="" placeholder="binding" aria-label="binding" size="30" />
        <select class="dd" id="acsb_${i}" data-dojo-type="dijit.form.Select" aria-label="binding">
-       #foreach ( $t in [$bind1, $bind2, $bind3, $bind4, $bind5] )
+       #foreach ( $t in [$bind1, $bind2, $bind3, $bind4, $bind5, $bind6, $bind7] )
          <option value="$t">$t</option>
        #end
        </select>

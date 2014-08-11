@@ -103,8 +103,6 @@ public class RelyingPartyController {
     private static GroupManager groupManager;
     private String adminGroupName = null;
     private Group adminGroup = null;
-    private String proxyGroupName = null;
-    private Group proxyGroup = null;
 
     public DNSVerifier getDnsVerifier() {
         return dnsVerifier;
@@ -251,10 +249,6 @@ public class RelyingPartyController {
                         session.isAdmin = true;
                      }
 
-                     if (proxyGroup.isMember(session.remoteUser)) {
-                        log.debug("is proxy");
-                        session.isProxy = true;
-                     }
                      if (resetAdmin==1) resetAdmin = 0;
                   } else {
                      log.debug("cookie expired for " + cookieData[1]);
@@ -1229,7 +1223,7 @@ public class RelyingPartyController {
            mv.addObject("alert", "The posted document was not valid:\n" + e);
         }
         if (doc!=null) {
-           StringBuffer txt = new StringBuffer("Entity Id: " + id + "\n");
+           StringBuffer txt = new StringBuffer("[ Assign to Identity and Access Management. ]\n\nEntity Id: " + id + "\n");
            txt.append("User:      " + session.remoteUser + "\n\nRequesting:\n");
            List<Element> attrs = XMLHelper.getElementsByName(doc.getDocumentElement(), "Add");
            log.debug(attrs.size() + " adds");
@@ -1245,7 +1239,8 @@ public class RelyingPartyController {
    /* production to RT system */
            msg.setTo(requestMailTo);
            msg.setSubject("IdP attribute request for " + id);
-           msg.setText("//proxy\n//requestor: " + session.remoteUser + "@washington.edu\n\n" + txt.toString());
+           msg.setFrom(session.remoteUser + "@uw.edu");
+           msg.setText(txt.toString());
            try{
                this.mailSender.send(msg);
            } catch(MailException ex) {
@@ -1441,9 +1436,6 @@ public class RelyingPartyController {
     public void setAdminGroupName(String v) {
         adminGroupName = v;
     }
-    public void setProxyGroupName(String v) {
-        proxyGroupName = v;
-    }
     public void setStandardLoginSec(long v) {
         standardLoginSec = v;
     }
@@ -1494,7 +1486,6 @@ public class RelyingPartyController {
        log.info("RelyingPartyController init");
        RPCrypt.init(cryptKey);
        adminGroup = groupManager.getGroup(adminGroupName);
-       proxyGroup = groupManager.getGroup(proxyGroupName);
     }
 
     /* refresh cache groups  */
@@ -1508,7 +1499,6 @@ public class RelyingPartyController {
        response.setStatus(200);
        log.info("refreshing cache groups");
        adminGroup = groupManager.getGroup(adminGroupName);
-       proxyGroup = groupManager.getGroup(proxyGroupName);
        return emptyMV();
     }
 
