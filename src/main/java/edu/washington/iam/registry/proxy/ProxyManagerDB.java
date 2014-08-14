@@ -12,45 +12,30 @@ import org.w3c.dom.Document;
 import java.sql.*;
 //import org.postgresql.jdbc3.Jdbc3PoolingDataSource;
 
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 public class ProxyManagerDB implements ProxyManager {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    private JdbcTemplate template;
     public void setTemplate(JdbcTemplate template) {
         this.template = template;
     }
 
-    private JdbcTemplate template;
 
     public List<Proxy> getProxys() {
-        return null;
+        return template.query("select * from proxy",
+                new ProxyMapper());
     }
 
     public Proxy getProxy(String entityId) {
-        return template.query("SELECT * FROM proxy "
-                    + "WHERE entity_id = 'https://jpf.cac.washington.edu/shibboleth' ;",
-                new ResultSetExtractor<Proxy>() {
-                    @Override
-                    public Proxy extractData(ResultSet rs) throws SQLException, DataAccessException {
-                        Proxy p = null;
-                        List<ProxyIdp> pIdps = new Vector<ProxyIdp>();
-                        while(rs.next()){
-                            if(p == null){
-                                p = new Proxy();
-                                p.setEntityId(rs.getString("entity_id"));
-                            }
-                            ProxyIdp pIdp = new ProxyIdp();
-                            pIdp.setIdp(rs.getString("social_provider"));
-                            pIdp.setClientSecret(rs.getString("social_secret"));
-                            pIdp.setClientId(rs.getString("social_key"));
-                            pIdps.add(pIdp);
-                        }
-                        p.setProxyIdps(pIdps);
-                        return p;
-                    }
-                });
+        List<Proxy> proxies = template.query("select * from proxy where entity_id = ?",
+                new Object[] {entityId},
+                new ProxyMapper());
+        if(proxies.size() != 0)
+            return proxies.get(0);
+        else
+            return null;
     }
 
     public int removeRelyingParty(String rpid) {
@@ -59,5 +44,35 @@ public class ProxyManagerDB implements ProxyManager {
 
     public void updateProxy(String id, Document doc, String remoteUser) throws ProxyException, NoPermissionException {
 
+    }
+
+    private static final class ProxyMapper implements ResultSetExtractor<List<Proxy>> {
+        @Override
+        public List<Proxy> extractData(ResultSet rs) throws SQLException, DataAccessException{
+            Map<String, List<ProxyIdp>> proxyIdpsMap = new HashMap<String, List<ProxyIdp>>();
+            while(rs.next()){
+                String entityId = rs.getString("entity_id");
+                ProxyIdp pIdp = new ProxyIdp();
+                pIdp.setIdp(rs.getString("social_provider"));
+                pIdp.setClientSecret(rs.getString("social_secret"));
+                pIdp.setClientId(rs.getString("social_key"));
+                if(proxyIdpsMap.containsKey(entityId)){
+                    proxyIdpsMap.get(entityId).add(pIdp);
+                }
+                else{
+                    List<ProxyIdp> pIdps = new ArrayList<ProxyIdp>();
+                    pIdps.add(pIdp);
+                    proxyIdpsMap.put(entityId, pIdps);
+                }
+            }
+            List<Proxy> proxyList = new ArrayList<Proxy>();
+            for(Map.Entry<String, List<ProxyIdp>> entry : proxyIdpsMap.entrySet()){
+                Proxy proxy = new Proxy();
+                proxy.setEntityId(entry.getKey());
+                proxy.setProxyIdps(entry.getValue());
+                proxyList.add(proxy);
+            }
+            return proxyList;
+        }
     }
 }

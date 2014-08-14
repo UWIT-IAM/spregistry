@@ -18,10 +18,7 @@ public class ProxyManagerDBTest {
 
     @Test
     public void testGetProxy() throws Exception {
-        //ApplicationContext ctx = new ClassPathXmlApplicationContext("applicationContext.xml");
-        //ProxyManagerDB dao = new ProxyManagerDB();
-        //dao.setTemplate((JdbcTemplate) ctx.getBean("jdbcTemplate"));
-        Proxy p = dao.getProxy("foo");
+        Proxy p = dao.getProxy("https://jpf.cac.washington.edu/shibboleth");
         Assert.assertNotNull(p);
     }
 }
