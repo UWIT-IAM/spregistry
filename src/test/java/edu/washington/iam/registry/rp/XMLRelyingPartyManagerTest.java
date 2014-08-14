@@ -3,9 +3,6 @@ package edu.washington.iam.registry.rp;
 import org.junit.Test;
 import org.junit.Assert;
 
-/**
- * Created by jpf on 8/12/14.
- */
 public class XMLRelyingPartyManagerTest {
     @org.junit.Before
     public void setUp() throws Exception {

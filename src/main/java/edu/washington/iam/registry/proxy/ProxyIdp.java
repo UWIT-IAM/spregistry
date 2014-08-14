@@ -57,6 +57,7 @@ public class ProxyIdp implements Serializable  {
     }
 
     // create from document element
+    public ProxyIdp(){}
     public ProxyIdp (Element ele) throws ProxyException {
 
        idp = ele.getAttribute("idp");

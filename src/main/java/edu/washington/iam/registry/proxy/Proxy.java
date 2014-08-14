@@ -51,6 +51,8 @@ public class Proxy implements Serializable  {
     }
 
     // create from document element
+    public Proxy (){}
+
     public Proxy (Element ele) throws ProxyException {
 
        entityId = ele.getAttribute("entityId");
