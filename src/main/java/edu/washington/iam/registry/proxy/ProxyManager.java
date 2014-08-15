@@ -30,11 +30,14 @@ import edu.washington.iam.registry.exception.ProxyException;
 import edu.washington.iam.registry.exception.NoPermissionException;
 
 public interface ProxyManager extends Serializable {
-
    public List<Proxy> getProxys();
    public Proxy getProxy(String entityId);
    public int removeRelyingParty(String rpid);
 
-   public void updateProxy(String id, Document doc, String remoteUser) throws ProxyException, NoPermissionException;
+    /**
+     *
+     * @param proxy Takes a validated proxy and stores it
+     */
+   public void updateProxy(Proxy proxy);
 
 }

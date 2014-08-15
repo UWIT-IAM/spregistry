@@ -51,6 +51,7 @@ public class ProxyIdp implements Serializable  {
        return in.replaceAll("\"","\\\"");
     }
 
+    // TODO: Our new constructor doesn't check for 'invalid' characters. Sort out if these are really invalid
     // check for any bad chars
     private void isOK(String s) throws ProxyException {
        if (s.indexOf('<')>=0 || s.indexOf('>')>=0 || s.indexOf('"')>=0 || s.indexOf('\'')>=0 ) throw new ProxyException("invalid characters");

@@ -17,10 +17,7 @@
 
 package edu.washington.iam.registry.proxy;
 
-import java.util.List;
-import java.util.Vector;
-import java.util.Collections;
-import java.util.Properties;
+import java.util.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
@@ -158,31 +155,24 @@ public class XMLProxyManager implements ProxyManager {
     /*
      * Update proxy from an API PUT. 
      */
-    public void updateProxy(String id, Document doc, String remoteUser)
-             throws ProxyException, NoPermissionException {
-
-       log.info("proxy update " + id);
-
-       List<Element> eles = XMLHelper.getElementsByName(doc.getDocumentElement(), "Proxy");
-       if (eles.size()!=1) throw new ProxyException("proxy xml must contain one element");
+    public void updateProxy(Proxy newproxy){
+       log.info("proxy update " + newproxy.getEntityId());
 
        refreshProxyIfNeeded();
-       Element pxe = eles.get(0);
-          Proxy newproxy = new Proxy(pxe);
-          if (!newproxy.getEntityId().equals(id)) throw new ProxyException("post doesn't match qs id");
-          // replace the entry 
-          boolean np = true;
-          for (int p=0; p<proxys.size(); p++) {
-             if (proxys.get(p).getEntityId().equals(id)) {
-                proxys.set(p, newproxy);
-                np = false;
-             }
+       // replace the entry
+       boolean np = true;
+       for (int p=0; p<proxys.size(); p++) {
+          if (proxys.get(p).getEntityId().equals(newproxy.getEntityId())) {
+             proxys.set(p, newproxy);
+             np = false;
           }
-          if (np) proxys.add(newproxy);
+       }
+       if (np) proxys.add(newproxy);
 
        // save the new docs
        writeProxyFiles();
     }
+
 
     class ProxyReloader extends Thread {
         

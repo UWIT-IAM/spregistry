@@ -1330,14 +1330,16 @@ public class RelyingPartyController {
         }
         if (doc!=null) {
            try {
-              proxyManager.updateProxy(id, doc, session.remoteUser);
+              List<Element> eles = XMLHelper.getElementsByName(doc.getDocumentElement(), "Proxy");
+              if (eles.size()!=1) throw new ProxyException("proxy xml must contain one element");
+              Element pxe = eles.get(0);
+              Proxy newproxy = new Proxy(pxe);
+              if (!newproxy.getEntityId().equals(id)) throw new ProxyException("post doesn't match qs id");
+              proxyManager.updateProxy(newproxy);
               status = 200;
            } catch (ProxyException e) {
               status = 400;
               mv.addObject("alert", "Update of the entity failed:" + e);
-           } catch (NoPermissionException e) {
-              status = 401;
-              mv.addObject("alert", "no permission" + e);
            }
         }
 
