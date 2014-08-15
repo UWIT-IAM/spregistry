@@ -15,8 +15,6 @@
           class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="org.postgresql.Driver"/>
         <property name="url" value="jdbc:postgresql://iamdbdev01.s.uw.edu/spregistry"/>
-        <property name="username" value="USER"/>
-        <property name="password" value="PASSWORD"/>
     </bean>
 
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
