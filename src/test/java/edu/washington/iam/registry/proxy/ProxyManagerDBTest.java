@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -15,11 +16,23 @@ public class ProxyManagerDBTest {
     @Autowired
     private ProxyManagerDB dao;
 
+    @Autowired
+    private JdbcTemplate template;
+
     @Test
     public void testGetProxy() throws Exception {
+        // set up
 
-        Proxy p = dao.getProxy("https://www.example.com");
+
+        Proxy p = dao.getProxy("https://gettest.example.com");
+
         Assert.assertNotNull(p);
+        Assert.assertEquals("https://gettest.example.com", p.getEntityId());
+        Assert.assertEquals(2, p.getProxyIdps().size());
+        Assert.assertEquals("thisisthetwit", p.getProxyIdp("Twitter").getClientId());
+        Assert.assertEquals("shhh", p.getProxyIdp("Google").getClientSecret());
+
+        // tear down
     }
 
     /*

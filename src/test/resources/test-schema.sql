@@ -6,19 +6,14 @@ CREATE TABLE proxy (
     social_key text,
     social_secret text,
     status integer,
-    -- update_time timestamp with time zone DEFAULT now()
+    update_time timestamp DEFAULT now()
 );
 
+insert into proxy (entity_id, social_provider, social_key, social_secret, status)
+  values ('https://gettest.example.com', 'Google', 'thisisthegoog','shhh', 1);
+insert into proxy (entity_id, social_provider, social_key, social_secret, status)
+  values ('https://gettest.example.com', 'Twitter', 'thisisthetwit','lkdsjf', 1);
+insert into proxy (entity_id, social_provider, social_key, social_secret, status)
+  values ('https://notgettest.example.com', 'Twitter', 'thisisthetwit','lkdsjf', 1);
 
--- ALTER TABLE public.proxy OWNER TO spreg;
-
---
--- Name: entity_id_idx; Type: INDEX; Schema: public; Owner: spreg; Tablespace:
---
-
---CREATE INDEX entity_id_idx ON proxy USING btree (entity_id);
-
-
-insert into proxy (entity_id, social_provider, social_key, social_secret)
-    values ('https://www.example.com', 'Google', 'thisisthegoog','shhh');
 
