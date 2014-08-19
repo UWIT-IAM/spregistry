@@ -21,9 +21,6 @@ public class ProxyManagerDBTest {
 
     @Test
     public void testGetProxy() throws Exception {
-        // set up
-
-
         Proxy p = dao.getProxy("https://gettest.example.com");
 
         Assert.assertNotNull(p);
@@ -31,8 +28,6 @@ public class ProxyManagerDBTest {
         Assert.assertEquals(2, p.getProxyIdps().size());
         Assert.assertEquals("thisisthetwit", p.getProxyIdp("Twitter").getClientId());
         Assert.assertEquals("shhh", p.getProxyIdp("Google").getClientSecret());
-
-        // tear down
     }
 
     /*
