@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Node;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -54,20 +55,13 @@ import edu.washington.iam.registry.exception.NoPermissionException;
 public class XMLFilterPolicyManager implements FilterPolicyManager {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final ReentrantReadWriteLock locker = new ReentrantReadWriteLock();
 
     private List<FilterPolicyGroup> filterPolicyGroups;
 
-    private List<Attribute> attributes;
-    private String attributeUri;
-    private String attributeSourceName;
-    private int attributeRefresh = 0;  // seconds
+    @Autowired
+    private AttributeDAO attributeDAO;
 
     private List<Properties> policyGroupSources;
-    private String tempUri = "file:/tmp/fp.xml";
-
-    Thread reloader = null;
-    private long modifyTime = 0; // for the attrs
 
     public List<AttributeFilterPolicy> getFilterPolicies(RelyingParty rp) {
        log.debug("looking for fps for " + rp.getEntityId());
@@ -88,28 +82,32 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        return list;
     }
 
-    // returns list of all attributes, policy set where matches rp
+    @Override
+    public List<Attribute> getAttributes(){
+        return attributeDAO.getAttributes();
+    }
+
+    @Override
     public List<Attribute> getAttributes(RelyingParty rp) {
-       List<Attribute> ret = new Vector();
-       log.debug("getting editable attributes for " + rp.getEntityId());
-       List<AttributeFilterPolicy> fps = getFilterPolicies(rp);
-       int matches = 0;
-       for (int i=0; i<attributes.size(); i++) {
-          Attribute attr = new Attribute(attributes.get(i));
-          for (int p=0; p<fps.size(); p++) {
-             AttributeFilterPolicy afp = fps.get(p);
-             for (int a=0; a<afp.getAttributeRules().size(); a++) {
-                if (afp.getAttributeRules().get(a).getId().equals(attr.getId())) {
-                   attr.setAttributeFilterPolicy(afp);
-                   attr.setAttributeRule(afp.getAttributeRules().get(a));
-                   matches++;
+        List<Attribute> ret = new Vector();
+        log.debug("getting editable attributes for " + rp.getEntityId());
+        List<AttributeFilterPolicy> fps = this.getFilterPolicies(rp);
+        int matches = 0;
+        for (Attribute attribute : attributeDAO.getAttributes()) {
+            Attribute attr = new Attribute(attribute);
+            for (AttributeFilterPolicy afp : fps) {
+                for (AttributeRule attributeRule : afp.getAttributeRules()) {
+                    if (attributeRule.getId().equals(attr.getId())) {
+                        attr.setAttributeFilterPolicy(afp);
+                        attr.setAttributeRule(attributeRule);
+                        matches++;
+                    }
                 }
-             }
-          }
-          ret.add(attr);
-       }
-       log.debug("from " + attributes.size() + ", found " + matches + " matches");
-       return ret;
+            }
+            ret.add(attr);
+        }
+        log.debug("from " + attributeDAO.getAttributes().size() + ", found " + matches + " matches");
+        return ret;
     }
 
     /*
@@ -147,7 +145,7 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
              Element attrEle = attrs.get(j);
              String attributeId = attrEle.getAttribute("attributeID");
              String act = attrEle.getAttribute("action");
-             Attribute attribute = getAttribute(attributeId);
+             Attribute attribute = attributeDAO.getAttribute(attributeId);
 
              log.debug(".." + act + " " + attributeId);
 
@@ -169,14 +167,14 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
 
     public void addAttributeRule(String policyGroupId, String entityId, String attributeId, String type, String value, String remoteUser)
            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
-       Attribute attribute = getAttribute(attributeId);
+       Attribute attribute = attributeDAO.getAttribute(attributeId);
        FilterPolicyGroup pg = getPolicyGroup(policyGroupId);
        pg.addAttribute(entityId, attributeId, type, value);
     }
 
     public void removeAttributeRule(String pgid, String entityId, String attributeId, String type, String value, String remoteUser)
          throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
-       Attribute attribute = getAttribute(attributeId);
+       Attribute attribute = attributeDAO.getAttribute(attributeId);
        FilterPolicyGroup pg = getPolicyGroup(pgid);
        pg.removeAttribute(entityId, attributeId, type, value);
     }
@@ -185,75 +183,6 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        for (int g=0; g<filterPolicyGroups.size(); g++) if (filterPolicyGroups.get(g).getId().equals(pgid)) return filterPolicyGroups.get(g);
        return null;
     }
-
-    private void loadAttributes() {
-       attributes = new Vector();
-       DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-       builderFactory.setNamespaceAware(false);
-       Document doc;
-
-       try {
-          DocumentBuilder builder = builderFactory.newDocumentBuilder();
-          doc = builder.parse (attributeUri);
-       } catch (Exception e) {
-          log.error("parse issue: " + e);
-          return;
-       }
-       // update the timestamp
-       File f = new File(attributeSourceName);
-       modifyTime = f.lastModified();
-       log.debug("attr load " + f.getName() + ": time = " + modifyTime);
-
-       List<Element> list = XMLHelper.getElementsByName(doc.getDocumentElement(), "Attribute");
-       log.info("found " + list.size());
-
-       for (int i=0; i<list.size(); i++) {
-          Element fpe = list.get(i);
-          try {
-             attributes.add(new Attribute(fpe));
-          } catch (AttributeException e) {
-             log.error("load of element failed: " + e);
-          }
-       }
-
-    }
-
-    // attribute reloader
-    class AttributeReloader extends Thread {
-        
-        public void run() {
-           log.debug("attr reloader running: interval = " + attributeRefresh);
-
-           while (true) {
-              log.debug("reloader checking...");
-              File f = new File(attributeSourceName);
-              if (f.lastModified()>modifyTime) {
-                 // reload the attributes
-                 log.debug("reload starting for " + attributeUri);
-                 locker.writeLock().lock();
-                 try {
-                    loadAttributes();
-                 } catch (Exception e) {
-                    log.error("reload errro: " + e);
-                 }
-                 locker.writeLock().unlock();
-                 log.debug("reload completed, time now " + modifyTime);
-              }
-              try {
-                 if (isInterrupted()) {
-                    log.info("interrupted during processing");
-                    break;
-                 }
-                 Thread.sleep(attributeRefresh * 1000);
-              } catch (InterruptedException e) {
-                 log.info("sleep interrupted");
-                 break;
-              }
-           }
-        }
-
-    }
-
 
     private void loadPolicyGroups() {
        filterPolicyGroups = new Vector();
@@ -272,13 +201,7 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
 
     }
 
-    // find an attribute
-    public Attribute getAttribute(String id) throws AttributeNotFoundException {
-       for (int i=0; i<attributes.size(); i++) {
-          if (attributes.get(i).getId().equals(id)) return attributes.get(i);
-       }
-       throw new AttributeNotFoundException();
-    }
+
      
     public void setPolicyGroupSources(List<Properties> v) {
        policyGroupSources = v;
@@ -288,22 +211,6 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        return filterPolicyGroups;
     }
 
-    public List<Attribute> getAttributes() {
-       return attributes;
-    }
-
-    public void setAttributeUri(String v) {
-       attributeUri = v;
-       attributeSourceName = attributeUri.replaceFirst("file:","");
-    }
-    public void setTempUri(String v) {
-       tempUri = v;
-    }
-
-    public void setAttributeRefresh(int i) {
-       attributeRefresh = i;
-    }
-
 /**
     public void setGroupManager(GroupManager v) {
        groupManager = v;
@@ -311,19 +218,10 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
  **/
 
     public void init() {
-       loadAttributes();
-       loadPolicyGroups();
-
-       // start attribute list refresher
-       if (attributeRefresh>0) {
-          reloader = new Thread(new AttributeReloader());
-          reloader.start();
-       }
-       
+        loadPolicyGroups();
     }
 
     public void cleanup() {
-        if (reloader != null) reloader.interrupt();
     }
 
 }

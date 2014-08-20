@@ -1,0 +1,42 @@
+<Attributes>
+ <Attribute id="affiliation" description="affiliation"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="assurance" description="InCommon assurance level.  Presently fixed to silver for testing"
+    authorizingGroup="u_weblogin_admins" />
+ <Attribute id="attributePersistentID" description="The persistent id as an attribute"
+     authorizingGroup="u_weblogin_admins" />
+ <Attribute id="cn" description="Full name (PDS: cn)"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="displayName" description="Full name (PDS: displayName)"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="email" description="email (uwEWPEmail1 or uwSWPEmail or id@uw.edu)" authorizingGroup="u_weblogin_admins" />
+ <Attribute id="employeeNumber" description="Employee id (PDS: uwEmployeeID)" authorizingGroup="u_weblogin_admins" />
+ <Attribute id="entitlement_gartner" description="Gartner entitlement"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="entitlement_lib" description="basic library entitlement"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="entitlement_sln" description="Course enrolement by SLN"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="ePPN" description="uwnetid (PDS: uwNetID + @washington.edu)"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="eppnNameId" description="eppn as nameid"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="ePTID" description="The persistent id as a SAML1 targeted id"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="givenName" description="First and middle names (PDS: uwPersonRegisteredFirstMiddle)" 
+      authorizingGroup="u_weblogin_admins" />
+ <Attribute id="gws_groups" description="GWS group effective memberships"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="homedept" description="Home department (PDS: uwEmployeeHomeDepartment)"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="idNameId" description="The uwNetID as a SAML nameid"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="mailstop" description="Mail stop (PDS: uwEmployeeMailstop)"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="nameIDPersistentID" description="The persistent id as a SAML nameid"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="phone" description="Employee phone (PDS: uwEWPPhone1)"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="saml1PersistentID" description="ePTID (saml1 only)"  authorizingGroup="u_weblogin_admins" /> 
+ <Attribute id="saml2PersistentID" description="persistent ID (saml2 only)"  authorizingGroup="u_weblogin_admins" /> 
+ <Attribute id="scopedAffiliation" description="affiliation with '@washington.edu'"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="surname" description="Last name (PDS: sn)"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="title" description="Title (PDS: uwEWPTitle1)"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="uwNetID" description="UW NetID"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="uwRegID" description="UW registry id"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="uwStudentID" description="UW Student ID"  authorizingGroup="u_weblogin_admins" /> 
+
+<!--
+ <Attribute id="NIHePPN" description="ePPN coded for NIH"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="NIHePTID" description="UW NetID"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="uwEmployeeID" description="UW NetID"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="nsc_pid" description="D"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="nsc_opeid" description="D"  authorizingGroup="u_weblogin_admins" />
+ -->
+
+</Attributes>

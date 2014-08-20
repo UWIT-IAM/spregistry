@@ -2,27 +2,32 @@
 
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-           http://www.springframework.org/schema/aop
-           http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
-           http://www.springframework.org/schema/tx
-           http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/context
+	       http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-    <bean id="postgresDataSource"
-          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="org.postgresql.Driver"/>
-        <property name="url" value="jdbc:postgresql://iamdbdev01.s.uw.edu/spregistry"/>
+    <context:annotation-config />
+
+    <bean id="spfpManager" init-method="init" destroy-method="cleanup" class="edu.washington.iam.registry.filter.XMLFilterPolicyManager">
+        <property name="policyGroupSources">
+            <list>
+                <props>
+                    <prop key="id">UW</prop>
+                    <prop key="description">UW ad-hoc filter policies</prop>
+                    <prop key="uri">file:target/test-classes/test-rp-filter.xml</prop>
+                    <prop key="editable">true</prop>
+                    <prop key="refresh">600</prop>
+                    <prop key="tempUri">file:target/test-classes/test-tmp-filter-uw.xml</prop>
+                </props>
+            </list>
+        </property>
     </bean>
 
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <property name="dataSource" ref="postgresDataSource"></property>
+    <bean id="attributeDAO"
+          class="edu.washington.iam.registry.filter.AttributeDAOXML">
+        <property name="attributeUri" value="file:target/test-classes/test-attributes.xml" />
+        <property name="attributeRefresh" value="600" />
     </bean>
-
-    <bean id="proxyManagerDB" class="edu.washington.iam.registry.proxy.ProxyManagerDB">
-        <property name="template" ref="jdbcTemplate"></property>
-    </bean>
-
 </beans>
