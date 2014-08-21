@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.Assert;
+import org.junit.Assert;
 
 import java.util.List;
 
@@ -18,8 +18,21 @@ public class XMLFilterPolicyManagerTest {
     @Test
     public void testGetAttributes() throws Exception {
         List<Attribute> attributes = filterPolicyManager.getAttributes();
-        Assert.notNull(attributes);
-        Assert.notEmpty(attributes);
+        Assert.assertNotNull(attributes);
+        Assert.assertTrue(attributes.size() > 0);
 
+    }
+
+    @Test
+    public void testGetFilterPolicy() throws  Exception {
+        FilterPolicyGroup filterPolicyGroup = new FilterPolicyGroup();
+        filterPolicyGroup.setId("UW");
+        AttributeFilterPolicy attributeFilterPolicy =
+                filterPolicyManager.getFilterPolicy(filterPolicyGroup, "https://diafine3.cac.washington.edu/shibboleth");
+        Assert.assertNotNull(attributeFilterPolicy);
+        Assert.assertEquals(8, attributeFilterPolicy.getAttributeRules().size());
+        attributeFilterPolicy = filterPolicyManager.getFilterPolicy(filterPolicyGroup,
+                "https://jpf.cac.washington.edu/shibboleth");
+        Assert.assertNull(attributeFilterPolicy);
     }
 }

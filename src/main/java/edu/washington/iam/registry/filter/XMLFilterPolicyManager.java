@@ -17,10 +17,7 @@
 
 package edu.washington.iam.registry.filter;
 
-import java.util.List;
-import java.util.Vector;
-import java.util.Collections;
-import java.util.Properties;
+import java.util.*;
 import java.io.File;
 import java.net.URI;
 import java.io.IOException;
@@ -56,12 +53,22 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private List<FilterPolicyGroup> filterPolicyGroups;
+    private List<XMLFilterPolicyGroup> filterPolicyGroups;
 
     @Autowired
     private AttributeDAO attributeDAO;
 
     private List<Properties> policyGroupSources;
+
+    @Override
+    public AttributeFilterPolicy getFilterPolicy(FilterPolicyGroup filterPolicyGroup, String rpid){
+        log.debug(String.format("getting filter policy: pgid: %s; rpid: %s",
+                filterPolicyGroup != null ? filterPolicyGroup.getId() : "null",
+                rpid));
+        XMLFilterPolicyGroup xmlFilterPolicyGroup = getXMLFilterPolicyGroup(filterPolicyGroup.getId());
+        AttributeFilterPolicy attributeFilterPolicy = xmlFilterPolicyGroup.getFilterPolicy(rpid);
+        return attributeFilterPolicy;
+    }
 
     public List<AttributeFilterPolicy> getFilterPolicies(RelyingParty rp) {
        log.debug("looking for fps for " + rp.getEntityId());
@@ -119,7 +126,7 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
 
        log.info("rp update attr doc for " + pgid);
 
-       FilterPolicyGroup policyGroup = getPolicyGroup(pgid);
+       XMLFilterPolicyGroup policyGroup = getXMLFilterPolicyGroup(pgid);
        if (policyGroup==null) throw new FilterPolicyException("policy group not found");
        if (!policyGroup.isEditable()) throw new FilterPolicyException("policy group not editable");
        
@@ -136,7 +143,7 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
           log.debug("attr update, pol=" + pgid + ", rp=" + rpid);
           AttributeFilterPolicy afp = policyGroup.getFilterPolicy(rpid);
           if (afp==null) {
-              afp = new AttributeFilterPolicy(policyGroup, rpid);
+              afp = new AttributeFilterPolicy(policyGroup.toFilterPolicyGroup(), rpid);
               policyGroup.getFilterPolicies().add(afp);
           }
 
@@ -161,26 +168,35 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
 
     public int removeRelyingParty(String entityId, String pgid)
          throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
-       FilterPolicyGroup policyGroup = getPolicyGroup(pgid);
+       XMLFilterPolicyGroup policyGroup = getXMLFilterPolicyGroup(pgid);
        return policyGroup.removeFilterPolicy(entityId);
     }
 
     public void addAttributeRule(String policyGroupId, String entityId, String attributeId, String type, String value, String remoteUser)
            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
        Attribute attribute = attributeDAO.getAttribute(attributeId);
-       FilterPolicyGroup pg = getPolicyGroup(policyGroupId);
+       XMLFilterPolicyGroup pg = getXMLFilterPolicyGroup(policyGroupId);
        pg.addAttribute(entityId, attributeId, type, value);
     }
 
     public void removeAttributeRule(String pgid, String entityId, String attributeId, String type, String value, String remoteUser)
          throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
        Attribute attribute = attributeDAO.getAttribute(attributeId);
-       FilterPolicyGroup pg = getPolicyGroup(pgid);
+       XMLFilterPolicyGroup pg = getXMLFilterPolicyGroup(pgid);
        pg.removeAttribute(entityId, attributeId, type, value);
     }
 
+    private XMLFilterPolicyGroup getXMLFilterPolicyGroup(String pgid){
+        for (XMLFilterPolicyGroup filterPolicyGroup : filterPolicyGroups)
+            if (filterPolicyGroup.getId().equals(pgid))
+                return filterPolicyGroup;
+        return null;
+    }
+
     public FilterPolicyGroup getPolicyGroup(String pgid) {
-       for (int g=0; g<filterPolicyGroups.size(); g++) if (filterPolicyGroups.get(g).getId().equals(pgid)) return filterPolicyGroups.get(g);
+       for (XMLFilterPolicyGroup filterPolicyGroup : filterPolicyGroups)
+           if (filterPolicyGroup.getId().equals(pgid))
+               return filterPolicyGroup.toFilterPolicyGroup();
        return null;
     }
 
@@ -192,7 +208,7 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        // load policyGroups from each source
        for (int p=0; p<policyGroupSources.size(); p++) {
           try {
-             FilterPolicyGroup pg = new FilterPolicyGroup(policyGroupSources.get(p));
+             XMLFilterPolicyGroup pg = new XMLFilterPolicyGroup(policyGroupSources.get(p));
              filterPolicyGroups.add(pg);
           } catch (FilterPolicyException e) {
              log.error("could not load policy group ");
@@ -207,8 +223,17 @@ public class XMLFilterPolicyManager implements FilterPolicyManager {
        policyGroupSources = v;
     }
 
-    public List<FilterPolicyGroup> getFilterPolicyGroups() {
+    public List<XMLFilterPolicyGroup> getXMLFilterPolicyGroups() {
        return filterPolicyGroups;
+    }
+
+    @Override
+    public List<FilterPolicyGroup> getFilterPolicyGroups()
+    {
+        List<FilterPolicyGroup> filterPolicyGroupList = new ArrayList<>();
+        for(XMLFilterPolicyGroup xmlFilterPolicyGroup : filterPolicyGroups)
+        filterPolicyGroupList.add(xmlFilterPolicyGroup.toFilterPolicyGroup());
+        return filterPolicyGroupList;
     }
 
 /**

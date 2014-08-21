@@ -36,6 +36,7 @@ public interface FilterPolicyManager extends Serializable {
    public List<Attribute> getAttributes();
    public List<Attribute> getAttributes(RelyingParty rp);
    public List<AttributeFilterPolicy> getFilterPolicies(RelyingParty rp);
+    public AttributeFilterPolicy getFilterPolicy(FilterPolicyGroup filterPolicyGroup, String rpid);
 
     public int removeRelyingParty(String entityId, String pgid)
            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException;
