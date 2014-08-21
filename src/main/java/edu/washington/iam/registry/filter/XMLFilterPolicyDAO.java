@@ -77,20 +77,6 @@ public class XMLFilterPolicyDAO implements FilterPolicyDAO {
         return this.getXMLFilterPolicyGroup(filterPolicyGroup).removeFilterPolicy(entityId);
     }
 
-    @Override
-    public void addAttributeRule(FilterPolicyGroup filterPolicyGroup, String entityId, Attribute attribute,
-                                 String type, String value)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
-        this.getXMLFilterPolicyGroup(filterPolicyGroup).addAttribute(entityId, attribute.getId(), type, value);
-    }
-
-    @Override
-    public void removeAttributeRule(FilterPolicyGroup filterPolicyGroup, String entityId, Attribute attribute,
-                                    String type, String value)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
-        this.getXMLFilterPolicyGroup(filterPolicyGroup).removeAttribute(entityId, attribute.getId(), type, value);
-    }
-
     private XMLFilterPolicyGroup getXMLFilterPolicyGroup(FilterPolicyGroup filterPolicyGroup){
         for(XMLFilterPolicyGroup xmlFilterPolicyGroup : filterPolicyGroups){
             if(xmlFilterPolicyGroup.getId().equals(filterPolicyGroup.getId())){

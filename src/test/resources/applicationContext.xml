@@ -10,20 +10,7 @@
 
     <context:annotation-config />
 
-    <bean id="spfpManager" init-method="init" destroy-method="cleanup" class="edu.washington.iam.registry.filter.XMLFilterPolicyManager">
-        <property name="policyGroupSources">
-            <list>
-                <props>
-                    <prop key="id">UW</prop>
-                    <prop key="description">UW ad-hoc filter policies</prop>
-                    <prop key="uri">file:target/test-classes/test-rp-filter.xml</prop>
-                    <prop key="editable">true</prop>
-                    <prop key="refresh">600</prop>
-                    <prop key="tempUri">file:target/test-classes/test-tmp-filter-uw.xml</prop>
-                </props>
-            </list>
-        </property>
-    </bean>
+    <bean id="spfpManager" class="edu.washington.iam.registry.filter.FilterPolicyManagerImpl" />
 
     <bean id="attributeDAO"
           class="edu.washington.iam.registry.filter.AttributeDAOXML">

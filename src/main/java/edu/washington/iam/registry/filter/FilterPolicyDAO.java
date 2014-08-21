@@ -22,18 +22,4 @@ public interface FilterPolicyDAO {
     int removeRelyingParty(FilterPolicyGroup filterPolicyGroup,
                            String entityId)
             throws FilterPolicyException, AttributeNotFoundException, NoPermissionException;
-    // slated for demolition
-    void addAttributeRule(FilterPolicyGroup filterPolicyGroup,
-                             String entityId,
-                             Attribute attribute,
-                             String type,
-                             String value)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException;
-    // deathwatch
-    void removeAttributeRule(FilterPolicyGroup filterPolicyGroup,
-                            String entityId,
-                            Attribute attribute,
-                            String type,
-                            String value)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException;
 }

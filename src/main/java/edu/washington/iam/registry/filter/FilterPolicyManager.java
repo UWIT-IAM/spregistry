@@ -41,11 +41,6 @@ public interface FilterPolicyManager extends Serializable {
     public int removeRelyingParty(String entityId, String pgid)
            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException;
 
-    public void addAttributeRule(String pgid, String entityId, String attributeId, String attrType, String attributeValue, String user)
-           throws FilterPolicyException, AttributeNotFoundException, NoPermissionException;
-    public void removeAttributeRule(String pgid, String entityId, String attributeId, String attrType, String value, String user)
-           throws FilterPolicyException, AttributeNotFoundException, NoPermissionException;
-
     public List<FilterPolicyGroup> getFilterPolicyGroups();
     public void updateRelyingParty(String pgid, Document doc, String remoteUser)
              throws FilterPolicyException, AttributeNotFoundException, NoPermissionException;

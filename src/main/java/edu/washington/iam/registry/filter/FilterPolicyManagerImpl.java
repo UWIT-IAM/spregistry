@@ -100,6 +100,7 @@ public class FilterPolicyManagerImpl implements FilterPolicyManager {
      * Update policies from an API PUT. 
      * simplified document
      */
+    @Override
     public void updateRelyingParty(String pgid, Document doc, String remoteUser)
             throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
 
@@ -149,29 +150,6 @@ public class FilterPolicyManagerImpl implements FilterPolicyManager {
                 filterPolicyDAO.getFilterPolicyGroup(pgid),
                 entityId
         );
-    }
-
-    @Override
-    public void addAttributeRule(String policyGroupId, String entityId, String attributeId, String type, String value, String remoteUser)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
-        filterPolicyDAO.addAttributeRule(
-                filterPolicyDAO.getFilterPolicyGroup(policyGroupId),
-                entityId,
-                attributeDAO.getAttribute(attributeId),
-                type,
-                value
-        );
-    }
-
-    @Override
-    public void removeAttributeRule(String pgid, String entityId, String attributeId, String type, String value, String remoteUser)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
-        filterPolicyDAO.removeAttributeRule(
-                filterPolicyDAO.getFilterPolicyGroup(pgid),
-                entityId,
-                attributeDAO.getAttribute(attributeId),
-                type,
-                value);
     }
 
     @Override

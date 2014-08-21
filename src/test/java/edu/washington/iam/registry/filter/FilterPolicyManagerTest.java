@@ -11,9 +11,9 @@ import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext.xml")
-public class XMLFilterPolicyManagerTest {
+public class FilterPolicyManagerTest {
     @Autowired
-    private XMLFilterPolicyManager filterPolicyManager;
+    private FilterPolicyManager filterPolicyManager;
 
     @Test
     public void testGetAttributes() throws Exception {
