@@ -30,4 +30,20 @@
         <property name="attributeUri" value="file:target/test-classes/test-attributes.xml" />
         <property name="attributeRefresh" value="600" />
     </bean>
+
+    <bean id="filterPolicyDAO"
+          class="edu.washington.iam.registry.filter.XMLFilterPolicyDAO">
+        <property name="policyGroupSources">
+            <list>
+                <props>
+                    <prop key="id">UW</prop>
+                    <prop key="description">UW ad-hoc filter policies</prop>
+                    <prop key="uri">file:target/test-classes/test-rp-filter.xml</prop>
+                    <prop key="editable">true</prop>
+                    <prop key="refresh">600</prop>
+                    <prop key="tempUri">file:target/test-classes/test-tmp-filter-uw.xml</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
 </beans>

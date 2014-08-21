@@ -41,9 +41,6 @@ public class FilterPolicyManagerDB implements FilterPolicyManager {
     private FilterPolicyDAO filterPolicyDAO;
 
     @Autowired
-    private FilterPolicyGroupDAO filterPolicyGroupDAO;
-
-    @Autowired
     private AttributeDAO attributeDAO;
 
     @Override
@@ -59,7 +56,7 @@ public class FilterPolicyManagerDB implements FilterPolicyManager {
         log.debug("looking for fps for " + rp.getEntityId());
         List<AttributeFilterPolicy> list = new Vector();
 
-        for(FilterPolicyGroup filterPolicyGroup : filterPolicyGroupDAO.getFilterPolicyGroups()){
+        for(FilterPolicyGroup filterPolicyGroup : filterPolicyDAO.getFilterPolicyGroups()){
             for(AttributeFilterPolicy attributeFilterPolicy : filterPolicyDAO.getFilterPolicies(filterPolicyGroup)){
                 if(attributeFilterPolicy.matches(rp)){
                     list.add(attributeFilterPolicy);
@@ -108,12 +105,10 @@ public class FilterPolicyManagerDB implements FilterPolicyManager {
 
         log.info("rp update attr doc for " + pgid);
 
-        FilterPolicyGroup policyGroup = filterPolicyGroupDAO.getFilterPolicyGroup(pgid);
+        FilterPolicyGroup policyGroup = filterPolicyDAO.getFilterPolicyGroup(pgid);
         if (policyGroup==null) throw new FilterPolicyException("policy group not found");
         if (!policyGroup.isEditable()) throw new FilterPolicyException("policy group not editable");
 
-        // TODO: if we use this for xml figure what to do here
-        // policyGroup.refreshPolicyIfNeeded();
         // process each policy ( will be only one requirement rule )
         List<AttributeFilterPolicy> attributeFilterPolicies = new ArrayList<>();
         for(Element policy : XMLHelper.getElementsByName(doc.getDocumentElement(), "AttributeFilterPolicy")){
@@ -151,7 +146,7 @@ public class FilterPolicyManagerDB implements FilterPolicyManager {
     public int removeRelyingParty(String entityId, String pgid)
             throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
         return filterPolicyDAO.removeRelyingParty(
-                filterPolicyGroupDAO.getFilterPolicyGroup(pgid),
+                filterPolicyDAO.getFilterPolicyGroup(pgid),
                 entityId
         );
     }
@@ -160,7 +155,7 @@ public class FilterPolicyManagerDB implements FilterPolicyManager {
     public void addAttributeRule(String policyGroupId, String entityId, String attributeId, String type, String value, String remoteUser)
             throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
         filterPolicyDAO.addAttributeRule(
-                filterPolicyGroupDAO.getFilterPolicyGroup(policyGroupId),
+                filterPolicyDAO.getFilterPolicyGroup(policyGroupId),
                 entityId,
                 attributeDAO.getAttribute(attributeId),
                 type,
@@ -172,7 +167,7 @@ public class FilterPolicyManagerDB implements FilterPolicyManager {
     public void removeAttributeRule(String pgid, String entityId, String attributeId, String type, String value, String remoteUser)
             throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
         filterPolicyDAO.removeAttributeRule(
-                filterPolicyGroupDAO.getFilterPolicyGroup(pgid),
+                filterPolicyDAO.getFilterPolicyGroup(pgid),
                 entityId,
                 attributeDAO.getAttribute(attributeId),
                 type,
@@ -181,13 +176,13 @@ public class FilterPolicyManagerDB implements FilterPolicyManager {
 
     @Override
     public FilterPolicyGroup getPolicyGroup(String pgid) {
-        return filterPolicyGroupDAO.getFilterPolicyGroup(pgid);
+        return filterPolicyDAO.getFilterPolicyGroup(pgid);
     }
 
     @Override
     public List<FilterPolicyGroup> getFilterPolicyGroups()
     {
-        return filterPolicyGroupDAO.getFilterPolicyGroups();
+        return filterPolicyDAO.getFilterPolicyGroups();
     }
 
 }
