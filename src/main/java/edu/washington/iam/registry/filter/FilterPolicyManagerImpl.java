@@ -33,7 +33,7 @@ import edu.washington.iam.registry.exception.FilterPolicyException;
 import edu.washington.iam.registry.exception.AttributeNotFoundException;
 import edu.washington.iam.registry.exception.NoPermissionException;
 
-public class FilterPolicyManagerDB implements FilterPolicyManager {
+public class FilterPolicyManagerImpl implements FilterPolicyManager {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 

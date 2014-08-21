@@ -59,6 +59,8 @@ public class XMLFilterPolicyDAO implements FilterPolicyDAO {
                                      List<AttributeFilterPolicy> attributeFilterPolicies)
             throws FilterPolicyException, AttributeNotFoundException, NoPermissionException
     {
+        // updates against AttributeFilterPolicy mean that existing afps are already updated in memory
+        // this means that it's updated the moment we do writePolicyGroup()
         XMLFilterPolicyGroup xmlFilterPolicyGroup = this.getXMLFilterPolicyGroup(filterPolicyGroup);
         for(AttributeFilterPolicy attributeFilterPolicy : attributeFilterPolicies){
             if(xmlFilterPolicyGroup.getFilterPolicy(attributeFilterPolicy.getEntityId()) == null){

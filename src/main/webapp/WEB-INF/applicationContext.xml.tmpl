@@ -37,31 +37,32 @@
           </list>
         </property>
     </bean>
+    <bean id="spfpManager" class="edu.washington.iam.registry.filter.FilterPolicyManagerImpl" />
 
-    <bean id="spfpManager" init-method="init" destroy-method="cleanup" class="edu.washington.iam.registry.filter.XMLFilterPolicyManager">
+    <bean id="filterPolicyDAO" class="edu.washington.iam.registry.filter.XMLFilterPolicyDAO">
         <property name="policyGroupSources">
-          <list>
-            <props>
-              <prop key="id">UWcore</prop>
-              <prop key="description">UW core filter policies</prop>
-              <prop key="uri">file:/data/local/sp-registry/core-filter.xml</prop>
-              <prop key="editable">false</prop>
-            </props>
-            <props>
-              <prop key="id">UWrands</prop>
-              <prop key="description">UW R&amp;S filter policies</prop>
-              <prop key="uri">file:/data/local/sp-registry/rs-filter.xml</prop>
-              <prop key="editable">false</prop>
-            </props>
-            <props>
-              <prop key="id">UW</prop>
-              <prop key="description">UW ad-hoc filter policies</prop>
-              <prop key="uri">file:/data/local/sp-registry/rp-filter.xml</prop>
-              <prop key="editable">true</prop>
-              <prop key="refresh">600</prop>
-              <prop key="tempUri">file:/data/local/sp-registry/tmp-filter-uw.xml</prop>
-            </props>
-          </list>
+            <list>
+                <props>
+                    <prop key="id">UWcore</prop>
+                    <prop key="description">UW core filter policies</prop>
+                    <prop key="uri">file:/data/local/sp-registry/core-filter.xml</prop>
+                    <prop key="editable">false</prop>
+                </props>
+                <props>
+                    <prop key="id">UWrands</prop>
+                    <prop key="description">UW R&amp;S filter policies</prop>
+                    <prop key="uri">file:/data/local/sp-registry/rs-filter.xml</prop>
+                    <prop key="editable">false</prop>
+                </props>
+                <props>
+                    <prop key="id">UW</prop>
+                    <prop key="description">UW ad-hoc filter policies</prop>
+                    <prop key="uri">file:/data/local/sp-registry/rp-filter.xml</prop>
+                    <prop key="editable">true</prop>
+                    <prop key="refresh">600</prop>
+                    <prop key="tempUri">file:/data/local/sp-registry/tmp-filter-uw.xml</prop>
+                </props>
+            </list>
         </property>
     </bean>
 
