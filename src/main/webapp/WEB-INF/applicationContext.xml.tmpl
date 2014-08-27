@@ -75,6 +75,12 @@
             <property name="attributeRefresh" value="600" />
     </bean>
 
+    <bean id="attributeDAO"
+              class="edu.washington.iam.registry.filter.AttributeDAOXML">
+            <property name="attributeUri" value="file:/data/local/sp-registry/attribute.xml" />
+            <property name="attributeRefresh" value="600" />
+    </bean>
+
     <bean id="spprManager" init-method="init" destroy-method="cleanup" class="edu.washington.iam.registry.proxy.XMLProxyManager">
         <property name="proxyUri" value="file:{{spreg_root}}/rp-proxy.xml" />
         <property name="tempUri" value="file:{{spreg_root}}/rp-proxy.xml.tmp" />
