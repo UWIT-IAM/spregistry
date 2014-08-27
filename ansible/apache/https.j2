@@ -1,0 +1,93 @@
+########
+##
+
+{% set self = ansible_nodename %}
+{% set selfck = self.split(".")[0] %}
+
+# ----------------------------------------------------------------------
+# local spreg apache port 443 config for {{ self }}  -  {{ selfck }}
+# ----------------------------------------------------------------------
+#
+
+# rewrite sp-registry -> spreg
+RewriteCond %{REQUEST_URI} ^/sp-registry*
+RewriteRule ^/* /spreg/ [R=301,L]
+
+# if login and user's session starter is on remote host, proxy there
+{% for host in cluster_hosts %}
+{% if host == ansible_nodename %}
+{% else %}
+{% set ck = host.split(".")[0] %} 
+# sessions on {{ host }}
+RewriteCond %{REQUEST_URI} /login-iam [OR]
+RewriteCond %{REQUEST_URI} /securelogin-iam
+RewriteCond %{HTTP_COOKIE} uwsphost={{ ck }}x
+RewriteRule ^/(.*)$ https://{{ host }}/$1 [P]
+
+{% endif %}
+{% endfor %}
+
+# else maybe set session to us
+RewriteCond %{REQUEST_URI} /Shibboleth.sso
+RewriteRule ^(.*)$  - [CO=uwsphost:{{ selfck }}x:{{ cluster_name }}:3:/:secure]
+
+
+ProxyPass /spreg ajp://localhost:8009/spreg
+
+# browser authn
+<LocationMatch /spreg/login>
+  RequestHeader set Content-type application/xml
+  AuthType shibboleth
+  ShibRequireSession On
+  require valid-user
+  require user fox
+  order allow,deny
+  allow from all
+</LocationMatch>
+
+# browser authn secure
+<LocationMatch /spreg/securelogin>
+  RequestHeader set Content-type application/xml
+  AuthType shibboleth
+  ShibRequireSessionWith UWSECURE
+  require valid-user
+  order allow,deny
+  allow from all
+</LocationMatch>
+
+# browser authn via google
+<LocationMatch /spreg/googlelogin>
+  RequestHeader set Content-type application/xml
+  AuthType shibboleth
+  ShibRequireSession On
+  shibRequireSessionWith UWGOOGLE
+  require valid-user
+  order allow,deny
+  allow from all
+</LocationMatch>
+
+# browser authn via incommon
+<LocationMatch /spreg/incommonlogin>
+  RequestHeader set Content-type application/xml
+  AuthType shibboleth
+  ShibRequireSession On
+  shibRequireSessionWith DSBASIC
+  require valid-user
+  order allow,deny
+  allow from all
+</LocationMatch>
+
+# cert client authn
+<Location /spreg/ws/>
+RequestHeader set Content-type application/xml
+SSLRequireSSL
+SSLVerifyClient require
+SSLVerifyDepth 5
+SSLOptions +StdEnvVars +ExportCertData
+Options -MultiViews
+order allow,deny
+allow from all
+</Location>
+
+
+

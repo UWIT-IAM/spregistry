@@ -1,7 +1,23 @@
 # SP Registry
 
-## Building SP Registry
+
+## Configure
+
+$> cp spreg.yml.tmpl spreg.yml 
+$> vi spreg.yml 
+$> bin/mkconfig
 
 ```
-$> mvn compile war:exploded
+
+## Building SP Registry
+
+$> mvn compile package
 ```
+
+## Install
+
+```
+$> cd ansible
+$> ./install.sh -h (target)
+
+##

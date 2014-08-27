@@ -1,0 +1,34 @@
+
+---
+- hosts: "{{ target }}"
+  serial: 1
+  max_fail_percentage: 10
+
+  tasks:
+  - include_vars: "{{ config }}"
+  - include: "tasks/apache_config.yml file=https"
+  - include: "tasks/apache_config.yml file=http"
+  
+  - name: copy crt
+    copy: "src={{ local_crt_file }} dest={{ crt_file }} group=pubcookie mode=660 "
+    when: local_crt_file is defined
+  - name: copy key
+    copy: "src={{ local_key_file }} dest={{ key_file }} group=pubcookie mode=660"
+    when: local_key_file is defined
+  - name: copy ca
+    copy: "src={{ local_ca_file }} dest={{ ca_file }} group=pubcookie mode=664"
+    when: local_ca_file is defined
+
+  - name: copy war
+    copy: "src=../target/spreg.war dest=/data/webapps/spreg.war group=pubcookie mode=664"
+    notify:
+      - restart tomcat
+
+  handlers:
+    - include: "tasks/iam_handlers.yml"
+
+    - name: verify installation
+      shell: echo verify
+      notify:
+        - restart loadr
+  
