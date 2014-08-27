@@ -36,7 +36,7 @@
 <ul class="iamlist">
 
   #set ( $policy = false )
-  #set ( $policy = $group.getFilterPolicy($relyingPartyId) )
+  #set ( $policy = $filterPolicyManager.getFilterPolicy($group, $relyingPartyId))
   #foreach ( $attr in $attributes )
     #set ($chk = '')
     #set ($pattr = false )

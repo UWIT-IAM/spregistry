@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AttributeFilterPolicyGroup id="ServerRegPolicy"
+  xmlns="urn:mace:shibboleth:2.0:afp"
+  xmlns:basic="urn:mace:shibboleth:2.0:afp:mf:basic"
+  xmlns:saml="urn:mace:shibboleth:2.0:afp:mf:saml"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="urn:mace:shibboleth:2.0:afp classpath:/schema/shibboleth-2.0-afp.xsd
+    urn:mace:shibboleth:2.0:afp:mf:basic classpath:/schema/shibboleth-2.0-afp-mf-basic.xsd
+    urn:mace:shibboleth:2.0:afp:mf:saml classpath:/schema/shibboleth-2.0-afp-mf-saml.xsd">
+
+ <AttributeFilterPolicy id="https___diafine3_cac_washington_edu_shibboleth">
+  <PolicyRequirementRule xsi:type="basic:AttributeRequesterString" value="https://diafine3.cac.washington.edu/shibboleth"/>
+  <AttributeRule attributeID="cn">
+    <PermitValueRule xsi:type="basic:ANY"/>
+  </AttributeRule>
+  <AttributeRule attributeID="displayName">
+    <PermitValueRule xsi:type="basic:ANY"/>
+  </AttributeRule>
+  <AttributeRule attributeID="email">
+    <PermitValueRule xsi:type="basic:ANY"/>
+  </AttributeRule>
+  <AttributeRule attributeID="employeeNumber">
+    <PermitValueRule xsi:type="basic:ANY"/>
+  </AttributeRule>
+  <AttributeRule attributeID="givenName">
+    <PermitValueRule xsi:type="basic:ANY"/>
+  </AttributeRule>
+  <AttributeRule attributeID="gws_groups">
+    <PermitValueRule xsi:type="basic:OR">
+     <basic:Rule xsi:type="basic:AttributeValueString" value="urn:mace:washington.edu:groups:u_mbrogan"/>
+     <basic:Rule xsi:type="basic:AttributeValueRegex" regex="urn:mace:washington.edu:groups:u_mbrogan_.*"/>
+    </PermitValueRule>
+  </AttributeRule>
+  <AttributeRule attributeID="surname">
+    <PermitValueRule xsi:type="basic:ANY"/>
+  </AttributeRule>
+  <AttributeRule attributeID="uwRegID">
+    <PermitValueRule xsi:type="basic:ANY"/>
+  </AttributeRule>
+ </AttributeFilterPolicy>
+
+</AttributeFilterPolicyGroup>
