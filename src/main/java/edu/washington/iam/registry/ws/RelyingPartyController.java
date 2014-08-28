@@ -1504,6 +1504,20 @@ public class RelyingPartyController {
        return emptyMV();
     }
 
+    /* status  */
+
+    @RequestMapping(value="/status", method=RequestMethod.GET)
+    public ModelAndView gettatus(
+               HttpServletRequest request,
+               HttpServletResponse response) {
+
+       RPSession session = processRequestInfo(request, response);
+       response.setStatus(200);
+       log.info("status request");
+       adminGroup = groupManager.getGroup(adminGroupName);
+       return emptyMV();
+    }
+
     // diagnostic
     @RequestMapping(value="/**", method=RequestMethod.GET)
     public ModelAndView homePageStar(HttpServletRequest request, HttpServletResponse response) {

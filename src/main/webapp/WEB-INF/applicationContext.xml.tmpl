@@ -64,15 +64,11 @@
             </props>
           </list>
         </property>
-        <property name="attributeUri" value="file:{{spreg_root}}/attribute.xml" />
-        <property name="attributeRefresh" value="600" />
+        <!--
+        <property name="attributeUri" value="file:{{spreg_root}}/attribute.xml" /> 
+        <property name="attributeRefresh" value="600" /> 
         <property name="tempUri" value="file:{{spreg_root}}/filter-policy.xml.tmp" />
-    </bean>
-
-    <bean id="attributeDAO"
-              class="edu.washington.iam.registry.filter.AttributeDAOXML">
-            <property name="attributeUri" value="file:/data/local/sp-registry/attribute.xml" />
-            <property name="attributeRefresh" value="600" />
+        -->
     </bean>
 
     <bean id="attributeDAO"

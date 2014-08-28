@@ -28,6 +28,7 @@ do
     -i=*|--inventory=*)  key="-i";     value="${keyValue#*=}";; 
     -n*|--no_update)      key="-n";    value="";;
     -v*|--verbose)      key="-v";    value="";;
+    -d*|--debug)      key="-d";    value="";;
     *)       value=$keyValue;;
   esac
   case $key in
@@ -36,6 +37,7 @@ do
     -t) target="${value}";          prefix=""; key="";;
     -i) inventory="${value}";          prefix=""; key="";;
     -v) verbose="-v";           prefix=""; key="";;
+    -d) verbose="-vvvv";           prefix=""; key="";;
     -n) TEST=1;           prefix=""; key="";;
     *)   prefix="${keyValue}=";;
   esac
