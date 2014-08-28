@@ -9,7 +9,13 @@ function usage {
   exit 1
 }
 
-config="../spreg.yml"
+# get the base path
+dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+base=${dir%/ansible}
+
+cd $dir
+
+config="${base}/spreg.yml"
 target=
 verbose=
 playbook=install.yml
@@ -59,7 +65,7 @@ done
 [[ -n "$target" ]] || usage
 [[ -z $inventory ]] && inventory=${iam_ansible}/hosts
 
-[[ -f ../target/spreg.war ]] || {
+[[ -f ${base}/target/spreg.war ]] || {
    echo "use 'mvn package' to make the war file first"
    exit 1
 }

@@ -1,14 +1,20 @@
 
----
+#
+# spreg install playbook
+#
+
 - hosts: "{{ target }}"
   serial: 1
   max_fail_percentage: 10
 
   tasks:
   - include_vars: "{{ config }}"
+
+  # update http and https config
   - include: "tasks/apache_config.yml file=https"
   - include: "tasks/apache_config.yml file=http"
   
+  # update certs and keys
   - name: copy crt
     copy: "src={{ local_crt_file }} dest={{ crt_file }} group=pubcookie mode=660 "
     when: local_crt_file is defined
@@ -19,6 +25,7 @@
     copy: "src={{ local_ca_file }} dest={{ ca_file }} group=pubcookie mode=664"
     when: local_ca_file is defined
 
+  # update the spreg.war file
   - name: copy war
     copy: "src=../target/spreg.war dest=/data/webapps/spreg.war group=pubcookie mode=664"
     notify:
@@ -27,8 +34,3 @@
   handlers:
     - include: "tasks/iam_handlers.yml"
 
-    - name: verify installation
-      shell: echo verify
-      notify:
-        - restart loadr
-  
