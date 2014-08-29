@@ -31,7 +31,7 @@
   <property name="host" value="appsubmit.cac.washington.edu"/>
 </bean>
 <bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
-  <property name="from" value="SP registry &lt;somebody@hostname.edu&gt;"/>
+  <property name="from" value="SP registry &lt;somebody@iam-tools.u.washington.edu&gt;"/>
   <property name="subject" value="SP updated"/>
 </bean>
 
@@ -39,25 +39,24 @@
         <property name="relyingPartyManager" ref="sprpManager"/>
         <property name="filterPolicyManager" ref="spfpManager"/>
         <property name="proxyManager" ref="spprManager"/>
-        <property name="mailSender" ref="mailSender"/>
-        <property name="templateMessage" ref="templateMessage"/>
-        <property name="mailTo" value="pubcookie@u.washington.edu"/>
-        <property name="requestMailTo" value="iam-support@u.washington.edu"/>
-        <property name="adminGroupName" value="u_weblogin_admins"/>
+         <property name="mailSender" ref="mailSender"/>
+         <property name="templateMessage" ref="templateMessage"/>
+         <property name="mailTo" value="pubcookie@uw.edu"/>
+         <property name="requestMailTo" value="help@uw.edu"/>
 
         <property name="dnsVerifier" ref="comboDnsVerifier" />
         <property name="groupManager" ref="gwsGroupManager" />
 
-
+        <property name="adminGroupName" value="u_weblogin_admins" />
 
        <property name="browserRootPath" value="/spreg"/>
         <property name="certRootPath" value="/spreg-s"/>
-        <property name="loginCookie" value="sprsession"/>
+        <property name="loginCookie" value="sprsession1"/>
         <property name="logoutUrl" value="https://idp.u.washington.edu/idp/logout"/>
-        <property name="cryptKey" value="some-string-of-chars"/>
+        <property name="cryptKey" value="{{crypt_key}}"/>
 
-        <property name="myEntityId" value="https://urizen4.cac.washington.edu/"/>
-        <property name="spRegistryUrl" value="https://urizen4.cac.washington.edu/spreg/"/>
+        <property name="myEntityId" value="https://iam-tools.u.washington.edu/shibboleth"/>
+        <property name="spRegistryUrl" value="https://iam-tools.u.washington.edu/spreg/"/>
         <property name="googleIdentityProvider" value="https://idp.u.washington.edu/google"/>
 
     </bean>
