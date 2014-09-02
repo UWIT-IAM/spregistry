@@ -87,9 +87,9 @@
 
 
     <bean id="webClient" init-method="init" class="edu.washington.iam.tools.WebClient">
-        <property name="certFile" value="${spreg.webclient.certfile}" />
-        <property name="keyFile" value="${spreg.webclient.keyfile}" />
-        <property name="caFile" value="${spreg.webclient.cafile}" />
+        <property name="certFile" value="${spreg.webclient.certFile}" />
+        <property name="keyFile" value="${spreg.webclient.keyFile}" />
+        <property name="caFile" value="${spreg.webclient.caFile}" />
     </bean>
 
     <bean id="netactDnsVerifier" init-method="init" class="edu.washington.iam.tools.netact.NetactDNSVerifier">
@@ -97,7 +97,7 @@
     </bean>
     <bean id="gwsDnsVerifier" init-method="init" class="edu.washington.iam.tools.gws.GWSDNSVerifier">
         <property name="webClient" ref="webClient"/>
-        <property name="gwsMemberBase" value="${spreg.gws.baseurl}${spreg.gws.memberbase}"/>
+        <property name="gwsMemberBase" value="${spreg.gws.baseUrl}${spreg.gws.memberBase}"/>
     </bean>
     <bean id="comboDnsVerifier" init-method="init" class="edu.washington.iam.tools.ComboDNSVerifier">
         <property name="netVerifier" ref="netactDnsVerifier"/>
@@ -105,11 +105,11 @@
     </bean>
     <bean id="gwsGroupManager" init-method="init" class="edu.washington.iam.tools.gws.GWSGroupManager">
         <property name="webClient" ref="webClient"/>
-        <property name="gwsBase" value="${spreg.gws.baseurl}"/>
+        <property name="gwsBase" value="${spreg.gws.baseUrl}"/>
     </bean>
 
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <property name="dataSource" ref="postgresDataSource"></property>
+        <property name="dataSource" ref="postgresDataSource" />
     </bean>
 
     <bean id="postgresDataSource"

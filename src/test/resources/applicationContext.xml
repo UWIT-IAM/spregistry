@@ -26,7 +26,7 @@
                 <props>
                     <prop key="id">UW</prop>
                     <prop key="description">UW ad-hoc filter policies</prop>
-                    <prop key="uri">${spreg.testvalue}</prop>
+                    <prop key="uri">${spreg.testValue}</prop>
                     <prop key="editable">true</prop>
                     <prop key="refresh">600</prop>
                     <prop key="tempUri">file:target/test-classes/test-tmp-filter-uw.xml</prop>
