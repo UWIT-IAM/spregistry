@@ -14,7 +14,7 @@
         http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
     <context:annotation-config />
-    <context:property-placeholder location="/WEB-INF/spreg.properties"/>
+    <context:property-placeholder location="${spreg.properties:/WEB-INF/spreg.properties}"/>
 
   <!-- the application context definition for the springapp DispatcherServlet -->
     <bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">

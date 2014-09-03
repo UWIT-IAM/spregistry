@@ -9,7 +9,7 @@
 	       http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
     <context:annotation-config />
-    <context:property-placeholder location="/WEB-INF/spreg.properties"/>
+    <context:property-placeholder location="${spreg.properties:/WEB-INF/spreg.properties}"/>
 
     <bean id="sprpManager" init-method="init" destroy-method="cleanup" class="edu.washington.iam.registry.rp.XMLRelyingPartyManager">
         <property name="metadataSources">
