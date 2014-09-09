@@ -8,7 +8,7 @@ spreg.root=/data/local/sp-registry
 # database parameters
 spreg.db.url=iamdbdev01.s.uw.edu/spregistry
 spreg.db.username=spreg
-spreg.db.password=mcwlo09234mfkw
+spreg.db.password=some_password
 
 # web service parameters
 spreg.gws.baseUrl=https://group_ws.u.washington.edu:7443/group_sws/v2
@@ -33,10 +33,16 @@ spreg.smtp.requestMailTo=fox@uw.edu
 
 spreg.uwLogoutp=https://idp.u.washington.edu/idp/logout
 spreg.googleEntityId=https://idp.u.washington.edu/google
-spreg.cookieCryptKey=spud987abc1
+spreg.cookieCryptKey=some_string
 
 spreg.entityId=https://iam-tools.u.washington.edu/shibboleth
 spreg.registryUrl=https://iam-tools.u.washington.edu/spreg/
 
+
+# the ansible installer needs to know the path to your iam-ansible directory
+iam.ansible=/home/fox/src/iam-ansible
+
+# static files to install
+static_js=src/main/webapp/sp.js
 
 
