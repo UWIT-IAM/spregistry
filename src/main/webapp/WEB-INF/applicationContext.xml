@@ -17,7 +17,7 @@
             <props>
               <prop key="id">IC</prop>
               <prop key="description">InCommon</prop>
-              <prop key="uri">file:${spreg.root}InCommon-metadata.xml</prop>
+              <prop key="uri">file:${incommon.metadata.path}</prop>
               <prop key="editable">false</prop>
               <prop key="refresh">600</prop>
             </props>

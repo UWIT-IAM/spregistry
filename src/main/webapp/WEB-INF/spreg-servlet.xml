@@ -52,12 +52,12 @@
        <property name="browserRootPath" value="/spreg"/>
         <property name="certRootPath" value="/spreg-s"/>
         <property name="loginCookie" value="sprsession"/>
-        <property name="logoutUrl" value="${spreg.idp.host}logout"/>
-        <property name="cryptKey" value="${spreg.idp.cryptKey}"/>
+        <property name="logoutUrl" value="${spreg.uwLogout"/>
+        <property name="cryptKey" value="${spreg.cookieCryptKey}"/>
 
-        <property name="myEntityId" value="${spreg.myEntityId}"/>
-        <property name="spRegistryUrl" value="${spreg.spRegistryUrl}"/>
-        <property name="googleIdentityProvider" value="${spreg.idp.host}google"/>
+        <property name="entityId" value="${spreg.myEntityId}"/>
+        <property name="registryUrl" value="${spreg.spRegistryUrl}"/>
+        <property name="googleIdentityProvider" value="${spreg.googleEntityId}"/>
 
     </bean>
 

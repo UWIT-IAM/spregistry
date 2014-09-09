@@ -62,7 +62,7 @@ dojoConfig = {
 </script>
 
 <script type="text/javascript" src="/js/iam-dojo.js"></script>
-<script type="text/javascript" src="/sp_static/sp.js"></script>
+<script type="text/javascript" src="/js/sp.js"></script>
 
 <script>
     require(["dojo/dom",
