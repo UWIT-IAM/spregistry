@@ -24,16 +24,16 @@
             <props>
               <prop key="id">UWfixed</prop>
               <prop key="description">UW fixed non-federation peers</prop>
-              <prop key="uri">file:${spreg.root}UW-base-metadata.xml</prop>
+              <prop key="uri">file:${spreg.root}/UW-base-metadata.xml</prop>
               <prop key="editable">false</prop>
             </props>
             <props>
               <prop key="id">UW</prop>
               <prop key="description">UW non-federation peers</prop>
-              <prop key="uri">file:${spreg.root}UW-rp-metadata.xml</prop>
+              <prop key="uri">file:${spreg.root}/UW-rp-metadata.xml</prop>
               <prop key="editable">true</prop>
               <prop key="refresh">600</prop>
-              <prop key="tempUri">file:${spreg.root}tmp-rp-uw.xml</prop>
+              <prop key="tempUri">file:${spreg.root}/tmp-rp-uw.xml</prop>
             </props>
           </list>
         </property>
@@ -47,22 +47,22 @@
                 <props>
                     <prop key="id">UWcore</prop>
                     <prop key="description">UW core filter policies</prop>
-                    <prop key="uri">file:${spreg.root}core-filter.xml</prop>
+                    <prop key="uri">file:${spreg.root}/core-filter.xml</prop>
                     <prop key="editable">false</prop>
                 </props>
                 <props>
                     <prop key="id">UWrands</prop>
                     <prop key="description">UW R&amp;S filter policies</prop>
-                    <prop key="uri">file:${spreg.root}rs-filter.xml</prop>
+                    <prop key="uri">file:${spreg.root}/rs-filter.xml</prop>
                     <prop key="editable">false</prop>
                 </props>
                 <props>
                     <prop key="id">UW</prop>
                     <prop key="description">UW ad-hoc filter policies</prop>
-                    <prop key="uri">file:${spreg.root}rp-filter.xml</prop>
+                    <prop key="uri">file:${spreg.root}/rp-filter.xml</prop>
                     <prop key="editable">true</prop>
                     <prop key="refresh">600</prop>
-                    <prop key="tempUri">file:${spreg.root}tmp-filter-uw.xml</prop>
+                    <prop key="tempUri">file:${spreg.root}/tmp-filter-uw.xml</prop>
                 </props>
             </list>
         </property>
@@ -70,7 +70,7 @@
 
     <bean id="attributeDAO"
           class="edu.washington.iam.registry.filter.AttributeDAOXML">
-        <property name="attributeUri" value="file:${spreg.root}attribute.xml" />
+        <property name="attributeUri" value="file:${spreg.root}/attribute.xml" />
         <property name="attributeRefresh" value="600" />
     </bean>
 
@@ -97,7 +97,7 @@
     </bean>
     <bean id="gwsDnsVerifier" init-method="init" class="edu.washington.iam.tools.gws.GWSDNSVerifier">
         <property name="webClient" ref="webClient"/>
-        <property name="gwsMemberBase" value="${spreg.gws.baseUrl}${spreg.gws.memberBase}"/>
+        <property name="gwsOwnerBase" value="${spreg.gws.baseUrl}${spreg.gws.ownerBase}"/>
     </bean>
     <bean id="comboDnsVerifier" init-method="init" class="edu.washington.iam.tools.ComboDNSVerifier">
         <property name="netVerifier" ref="netactDnsVerifier"/>
@@ -105,7 +105,7 @@
     </bean>
     <bean id="gwsGroupManager" init-method="init" class="edu.washington.iam.tools.gws.GWSGroupManager">
         <property name="webClient" ref="webClient"/>
-        <property name="gwsBase" value="${spreg.gws.baseUrl}"/>
+        <property name="gwsBase" value="${spreg.gws.baseUrl}/group/"/>
     </bean>
 
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">

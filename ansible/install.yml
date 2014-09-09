@@ -9,6 +9,12 @@
   tasks:
   - include_vars: "properties.yml"
 
+  # spreg properties file
+  - name: copy properties file
+    copy: "src=../spreg.properties dest={{ spreg_root }}/spreg.properties group=pubcookie mode=664"
+    notify:
+      - restart tomcat
+
   # update http and https config
   - include: "tasks/apache_config.yml file=https"
   - include: "tasks/apache_config.yml file=http"

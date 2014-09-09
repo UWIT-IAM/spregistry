@@ -38,7 +38,7 @@ public class GWSDNSVerifier implements DNSVerifier {
    private final Logger log =   LoggerFactory.getLogger(getClass());
 
    private WebClient webClient;
-   private String gwsMemberBase = null;
+   private String gwsOwnerBase = null;  // base url for dns owner group lookup
 
    /**
     * Test if a user has ownership of a domain
@@ -58,7 +58,7 @@ public class GWSDNSVerifier implements DNSVerifier {
        log.debug("looking for gws owner (" + id + ") in " + dns);
 
        try {
-          String url = gwsMemberBase + dns + "/effective_member";
+          String url = gwsOwnerBase + dns + "/effective_member";
           Element resp = webClient.doRestGet(url);
           if (resp!=null) {
              Element grpE = XMLHelper.getElementByName(resp, "group");
@@ -102,8 +102,8 @@ public class GWSDNSVerifier implements DNSVerifier {
        webClient = v;
     }
 
-    public void setGwsMemberBase(String v) {
-       gwsMemberBase = v;
+    public void setGwsOwnerBase(String v) {
+       gwsOwnerBase = v;
     }
 
 

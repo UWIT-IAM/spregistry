@@ -55,8 +55,8 @@
         <property name="logoutUrl" value="${spreg.uwLogout"/>
         <property name="cryptKey" value="${spreg.cookieCryptKey}"/>
 
-        <property name="entityId" value="${spreg.myEntityId}"/>
-        <property name="registryUrl" value="${spreg.spRegistryUrl}"/>
+        <property name="myEntityId" value="${spreg.myEntityId}"/>
+        <property name="spRegistryUrl" value="${spreg.spRegistryUrl}"/>
         <property name="googleIdentityProvider" value="${spreg.googleEntityId}"/>
 
     </bean>
