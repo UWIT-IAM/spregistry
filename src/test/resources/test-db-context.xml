@@ -39,6 +39,10 @@
         <property name="dataSource" ref="dataSource"></property>
     </bean>
 
+    <bean id="dbFilterPolicyDAO"
+          class="edu.washington.iam.registry.filter.DBFilterPolicyDAO">
+    </bean>
+
     <bean id="proxyManagerDB" class="edu.washington.iam.registry.proxy.ProxyManagerDB">
         <property name="template" ref="jdbcTemplate"></property>
     </bean>

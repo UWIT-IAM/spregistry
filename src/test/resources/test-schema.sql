@@ -30,6 +30,12 @@ CREATE TABLE filter_group (
 ALTER TABLE filter_group
     ADD PRIMARY KEY (id);
 
+insert into filter_group (id, header_xml, footer_xml, status, update_time, edit_mode)
+  values ('uwrp', '<head>', '</head>', 1, now(), 1);
+  insert into filter_group (id, header_xml, footer_xml, status, update_time, edit_mode)
+    values ('fakenoedit', '<head>', '</head>', 1, now(), 0);
+
+
 drop table if exists filter;
 CREATE TABLE filter (
     entity_id character varying(128) NOT NULL,
