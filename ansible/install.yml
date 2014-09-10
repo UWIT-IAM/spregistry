@@ -1,4 +1,3 @@
-
 #
 # spreg install playbook
 #
@@ -8,12 +7,24 @@
   max_fail_percentage: 10
 
   tasks:
-  - include_vars: "{{ config }}"
+  - include_vars: "properties.yml"
+
+  # spreg properties file
+  - name: copy properties file
+    copy: "src=../spreg.properties dest={{ spreg_root }}/spreg.properties group=pubcookie mode=664"
+    notify:
+      - restart tomcat
 
   # update http and https config
   - include: "tasks/apache_config.yml file=https"
   - include: "tasks/apache_config.yml file=http"
-  
+
+  # copy js files
+  - name: copy js files
+    copy: "src=../src/main/webapp/sp.js dest=/www/js/sp.js group=pubcookie mode=664"
+    notify:
+      - restart apache
+
   # update certs and keys
   - name: copy crt
     copy: "src={{ local_crt_file }} dest={{ crt_file }} group=pubcookie mode=660 "

@@ -1430,12 +1430,14 @@ public class RelyingPartyController {
     }
 
     public void setMailTo(String v) {
+        log.debug("mailTo = " + v);
         mailTo = v;
     }
     public void setRequestMailTo(String v) {
         requestMailTo = v;
     }
     public void setAdminGroupName(String v) {
+        log.debug("admin group = " + v);
         adminGroupName = v;
     }
     public void setStandardLoginSec(long v) {

@@ -15,7 +15,6 @@ base=${dir%/ansible}
 
 cd $dir
 
-config="${base}/spreg.yml"
 target=
 verbose=
 playbook=install.yml
@@ -28,7 +27,6 @@ inventory=""
 for keyValue in "$@"
 do
   case "${prefix}${keyValue}" in
-    -c=*|--config_filename=*)  key="-c";     value="${keyValue#*=}";; 
     -p=*|--playbook=*)  key="-p";     value="${keyValue#*=}";; 
     -t=*|--target=*)  key="-t";     value="${keyValue#*=}";; 
     -i=*|--inventory=*)  key="-i";     value="${keyValue#*=}";; 
@@ -38,7 +36,6 @@ do
     *)       value=$keyValue;;
   esac
   case $key in
-    -c) config=${value};  prefix=""; key="";;
     -p) playbook=${value}; echo "p=$playbook";  prefix=""; key="";;
     -t) target="${value}";          prefix=""; key="";;
     -i) inventory="${value}";          prefix=""; key="";;
@@ -51,28 +48,57 @@ done
 
 target=$target
 
-# scan the config file
-[[ -f "$config" ]] || {
-  echo "$config not found"
-  exit 1
-}
-exec 4<$config
-while read -u4 yline
+[[ -n "$target" ]] || usage
+
+# convert the spring properties file to a config yml
+properties="${base}/spreg.properties"
+config=properties.yml
+echo "# don't edit.  This is a binary created by install.sh" > $config
+echo "" >> $config
+exec 0<$properties
+while read line
 do
-   eval `echo "$yline"| sed -e 's/: */=/'`
+    case $line in
+     \#* ) echo "$line" >> $config
+           ;;
+     *=*) 
+       key=${line%=*}
+       val=${line##*=}
+       fixkey="`echo $key|sed -e 's/\./_/g'`"
+       fixval="`echo $val | sed -e '
+         s/\&/\\\&/g
+         s/\;/\\\;/g
+         s/\${\([a-z]*\)\.\([a-z]*\)}/\${\1_\2}/g
+       '`"
+       # write the yml config
+       echo "$fixkey: `eval echo $fixval`" >> $config
+       # set the key=value
+       eval "`eval echo ${fixkey}`=\"${fixval}\""
+       ;;
+    esac
 done
 
-[[ -n "$target" ]] || usage
-[[ -z $inventory ]] && inventory=${iam_ansible}/hosts
 
+# make sure the war file was generated
 [[ -f ${base}/target/spreg.war ]] || {
    echo "use 'mvn package' to make the war file first"
    exit 1
 }
 
+# check ansible vars
+[[ -z $iam_ansible ]] && {
+   echo "iam.ansible property is missing from spreg.properties"
+   exit 1
+}
+
+[[ -L tasks ]] || {
+  echo "creating tasks link"
+  ln -s ${iam_ansible}/tasks .
+}
+
 # assemble vars
 
-vars="target=${target} config=${config}"
+vars="target=${target} "
 
-ansible-playbook ${playbook} $verbose -i $inventory  --extra-vars "${vars}"
+ansible-playbook ${playbook} $verbose  -i ${iam_ansible}/hosts  --extra-vars "${vars}"
 
