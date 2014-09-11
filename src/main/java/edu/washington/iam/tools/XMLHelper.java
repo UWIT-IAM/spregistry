@@ -18,6 +18,7 @@
 
 package edu.washington.iam.tools;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -61,13 +62,28 @@ public final class XMLHelper {
         }
         return (list);
     }
-               
 
+    /**
+     * Get all child elements
+     * @param ele parent element
+     * @return list of child elements
+     */
+    public static List<Element> getChildElements(Element ele){
+        List<Element> list = new ArrayList<>();
+        NodeList childNodes = ele.getChildNodes();
+        for(int i = 0; i < childNodes.getLength(); i++){
+            if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                list.add((Element)childNodes.item(i));
+            }
+        }
+        return list;
+    }
+               
     /**
      * Get child element by classname
      *
      * @param ele parent element
-     * @param classname of elements to find
+     * @param name of elements to find
      */
     public static Element getElementByClass(Element ele, String name) {
        List<Element> list = getElementsByClass(ele, name);
@@ -79,7 +95,7 @@ public final class XMLHelper {
      * Get child elements by classname
      *
      * @param ele parent element
-     * @param classname of elements to find
+     * @param cname of elements to find
      */
     public static List<Element> getElementsByClass(Element ele, String cname) {
         Vector<Element> list = new Vector();
