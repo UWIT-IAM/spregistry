@@ -9,9 +9,14 @@
   tasks:
   - include_vars: "properties.yml"
 
-  # spreg properties file
+  # configure spreg properties file
   - name: copy properties file
     copy: "src=../spreg.properties dest={{ spreg_root }}/spreg.properties group=pubcookie mode=664"
+    notify:
+      - restart tomcat
+ 
+  - name: tomcat startup params
+    daemon_config: "service=tomcat key=spreg.properties value=file:{{ spreg_root }}/spreg.properties"
     notify:
       - restart tomcat
 
@@ -22,8 +27,6 @@
   # copy js files
   - name: copy js files
     copy: "src=../src/main/webapp/sp.js dest=/www/js/sp.js group=pubcookie mode=664"
-    notify:
-      - restart apache
 
   # update certs and keys
   - name: copy crt
