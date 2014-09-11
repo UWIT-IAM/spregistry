@@ -3,21 +3,21 @@
 
 ## Configure
 
-$> cp spreg.yml.tmpl spreg.yml 
-$> vi spreg.yml 
-$> bin/mkconfig
+Create spreg.properties.dev and spreg.properties.prod  from spreg.properties.tmpl
 
 ```
+## Build
 
-## Building SP Registry
-
-$> mvn compile package
+$> mvn clean compile package
 ```
 
 ## Install
 
 ```
 $> cd ansible
+
+see the README for configuration steps
+
 $> ./install.sh -h (target)
 
 ##
