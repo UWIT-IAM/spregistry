@@ -50,44 +50,10 @@ target=$target
 
 [[ -n "$target" ]] || usage
 
-# convert the spring properties file to a config yml
-properties="${base}/spreg.properties"
-config=properties.yml
-echo "# don't edit.  This is a binary created by install.sh" > $config
-echo "" >> $config
-exec 0<$properties
-while read line
-do
-    case $line in
-     \#* ) echo "$line" >> $config
-           ;;
-     *=*) 
-       key=${line%=*}
-       val=${line##*=}
-       fixkey="`echo $key|sed -e 's/\./_/g'`"
-       fixval="`echo $val | sed -e '
-         s/\&/\\\&/g
-         s/\;/\\\;/g
-         s/\${\([a-z]*\)\.\([a-z]*\)}/\${\1_\2}/g
-       '`"
-       # write the yml config
-       echo "$fixkey: `eval echo $fixval`" >> $config
-       # set the key=value
-       eval "`eval echo ${fixkey}`=\"${fixval}\""
-       ;;
-    esac
-done
-
-
-# make sure the war file was generated
-[[ -f ${base}/target/spreg.war ]] || {
-   echo "use 'mvn package' to make the war file first"
-   exit 1
-}
-
-# check ansible vars
-[[ -z $iam_ansible ]] && {
-   echo "iam.ansible property is missing from spreg.properties"
+# get iam-ansible location
+. ./install.properties
+[[ -z $iam_ansible/hosts ]] && {
+   echo "iam_ansible installation directory is missing from install.properties"
    exit 1
 }
 
@@ -97,10 +63,14 @@ done
 }
 export ANSIBLE_LIBRARY=${iam_ansible}/modules:/usr/share/ansible
 
+# make sure the war file was generated
+[[ -f ../target/spreg.war ]] || {
+   echo "use 'mvn clean package' to make the war file first"
+   exit 1
+}
 
-# assemble vars
+# run the installer 
 
 vars="target=${target} "
-
 ansible-playbook ${playbook} $verbose  -i ${iam_ansible}/hosts  --extra-vars "${vars}"
 

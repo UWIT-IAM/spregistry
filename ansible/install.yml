@@ -7,11 +7,14 @@
   max_fail_percentage: 10
 
   tasks:
+  - name: create properties yml file
+    local_action: mk_property_yml spreg {{ cluster_type }}
+
   - include_vars: "properties.yml"
 
   # configure spreg properties file
   - name: copy properties file
-    copy: "src=../spreg.properties dest={{ spreg_root }}/spreg.properties group=pubcookie mode=664"
+    copy: "src=../spreg.properties.{{ cluster_type }}  dest={{ spreg_root }}/spreg.properties group=pubcookie mode=664"
     notify:
       - restart tomcat
  
