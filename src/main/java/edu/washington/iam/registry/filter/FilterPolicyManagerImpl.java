@@ -57,7 +57,8 @@ public class FilterPolicyManagerImpl implements FilterPolicyManager {
         List<AttributeFilterPolicy> list = new Vector();
 
         for(FilterPolicyGroup filterPolicyGroup : filterPolicyDAO.getFilterPolicyGroups()){
-            for(AttributeFilterPolicy attributeFilterPolicy : filterPolicyDAO.getFilterPolicies(filterPolicyGroup)){
+            List<AttributeFilterPolicy> attributeFilterPolicies = filterPolicyDAO.getFilterPolicies(filterPolicyGroup);
+            for(AttributeFilterPolicy attributeFilterPolicy : attributeFilterPolicies){
                 if(attributeFilterPolicy.matches(rp)){
                     list.add(attributeFilterPolicy);
                 }

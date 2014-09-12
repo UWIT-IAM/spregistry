@@ -41,32 +41,7 @@
 
     <bean id="spfpManager" class="edu.washington.iam.registry.filter.FilterPolicyManagerImpl" />
 
-    <bean id="filterPolicyDAO" class="edu.washington.iam.registry.filter.XMLFilterPolicyDAO">
-        <property name="policyGroupSources">
-            <list>
-                <props>
-                    <prop key="id">UWcore</prop>
-                    <prop key="description">UW core filter policies</prop>
-                    <prop key="uri">file:${spreg.root}/core-filter.xml</prop>
-                    <prop key="editable">false</prop>
-                </props>
-                <props>
-                    <prop key="id">UWrands</prop>
-                    <prop key="description">UW R&amp;S filter policies</prop>
-                    <prop key="uri">file:${spreg.root}/rs-filter.xml</prop>
-                    <prop key="editable">false</prop>
-                </props>
-                <props>
-                    <prop key="id">UW</prop>
-                    <prop key="description">UW ad-hoc filter policies</prop>
-                    <prop key="uri">file:${spreg.root}/rp-filter.xml</prop>
-                    <prop key="editable">true</prop>
-                    <prop key="refresh">600</prop>
-                    <prop key="tempUri">file:${spreg.root}/tmp-filter-uw.xml</prop>
-                </props>
-            </list>
-        </property>
-    </bean>
+    <bean id="filterPolicyDAO" class="edu.washington.iam.registry.filter.DBFilterPolicyDAO" />
 
     <bean id="attributeDAO"
           class="edu.washington.iam.registry.filter.AttributeDAOXML">

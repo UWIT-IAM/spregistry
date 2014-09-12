@@ -25,10 +25,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.util.*;
 
 public class DBFilterPolicyDAO implements FilterPolicyDAO {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -37,8 +35,9 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
     private JdbcTemplate template;
 
     private List<FilterPolicyGroup> filterPolicyGroups;
+    private FilterPolicyGetter filterPolicyGetter = new FilterPolicyGetter();
 
-    private Map<String, List<AttributeFilterPolicy>> attributeFilterListMap = new HashMap<>();
+    //private Map<String, List<AttributeFilterPolicy>> attributeFilterListMap = new HashMap<>();
 
     @Override
     public List<FilterPolicyGroup> getFilterPolicyGroups() {
@@ -67,41 +66,88 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
         return null;
     }
 
-    @Override
-    public List<AttributeFilterPolicy> getFilterPolicies(final FilterPolicyGroup filterPolicyGroup) {
-        if(attributeFilterListMap.containsKey(filterPolicyGroup.getId())){
-            return attributeFilterListMap.get(filterPolicyGroup.getId());
+    private class AttributeFilterPolicyEntries {
+        private List<AttributeFilterPolicy> attributeFilterPolicies;
+
+        public Timestamp getLastFetchTime() {
+            return lastFetchTime;
         }
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        List<AttributeFilterPolicy> attributeFilterPolicies =
-                template.query("select * from filter where group_id = ? and status = 1",
-                        new Object[] {filterPolicyGroup.getId()},
-                        new RowMapper<AttributeFilterPolicy>() {
-                            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
-                            @Override
-                            public AttributeFilterPolicy mapRow(ResultSet resultSet, int i) throws SQLException {
-                                Document document;
-                                try {
-                                    DocumentBuilder builder = dbf.newDocumentBuilder();
-                                    document = builder.parse(resultSet.getAsciiStream("xml"));
+        public void setLastFetchTime(Timestamp lastFetchTime) {
+            this.lastFetchTime = lastFetchTime;
+        }
+
+        public List<AttributeFilterPolicy> getAttributeFilterPolicies() {
+            return attributeFilterPolicies;
+        }
+
+        public void setAttributeFilterPolicies(List<AttributeFilterPolicy> attributeFilterPolicies) {
+            this.attributeFilterPolicies = attributeFilterPolicies;
+        }
+
+        private Timestamp lastFetchTime;
+    }
+
+    private class FilterPolicyGetter {
+        //private final Logger log = LoggerFactory.getLogger(getClass());
+
+        private Map<String, AttributeFilterPolicyEntries> attributeFiltersMap = new HashMap<>();
+
+        public List<AttributeFilterPolicy> getFilterPolicies(final FilterPolicyGroup filterPolicyGroup)
+        {
+            if(attributeFiltersMap.containsKey(filterPolicyGroup.getId())){
+                log.debug("checking filter table for updates to " + filterPolicyGroup.getId());
+                Timestamp lastUpdateTime =
+                        template.queryForObject("select max(update_time) from filter where group_id = ?",
+                            new Object[]{filterPolicyGroup.getId()},
+                            Timestamp.class);
+                if(lastUpdateTime.after(attributeFiltersMap.get(filterPolicyGroup.getId()).getLastFetchTime())){
+                    log.info("attribute filter policy has been updated, rebuilding for " + filterPolicyGroup.getId());
+                    attributeFiltersMap.remove(filterPolicyGroup.getId());
+                }
+                else {
+                    return attributeFiltersMap.get(filterPolicyGroup.getId()).getAttributeFilterPolicies();
+                }
+            }
+            Timestamp fetchTime = new Timestamp(new Date().getTime());
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            List<AttributeFilterPolicy> attributeFilterPolicies =
+                    template.query("select * from filter where group_id = ? and status = 1",
+                            new Object[] {filterPolicyGroup.getId()},
+                            new RowMapper<AttributeFilterPolicy>() {
+                                DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
+                                @Override
+                                public AttributeFilterPolicy mapRow(ResultSet resultSet, int i) throws SQLException {
+                                    Document document;
+                                    try {
+                                        DocumentBuilder builder = dbf.newDocumentBuilder();
+                                        document = builder.parse(resultSet.getAsciiStream("xml"));
+                                    }
+                                    catch(Exception e){
+                                        return null;
+                                    }
+
+                                    AttributeFilterPolicy attributeFilterPolicy =
+                                            attributeFilterPolicyFromElement(
+                                                    document.getDocumentElement(),
+                                                    filterPolicyGroup);
+
+                                    return attributeFilterPolicy;
                                 }
-                                catch(Exception e){
-                                    return null;
-                                }
+                            });
+            log.info("got the following attributeFilterPolicies: " + attributeFilterPolicies.size());
+            AttributeFilterPolicyEntries newEntry = new AttributeFilterPolicyEntries();
+            newEntry.setLastFetchTime(fetchTime);
+            newEntry.setAttributeFilterPolicies(attributeFilterPolicies);
+            attributeFiltersMap.put(filterPolicyGroup.getId(), newEntry);
+            return attributeFilterPolicies;
+        }
+    }
 
-                                AttributeFilterPolicy attributeFilterPolicy =
-                                        attributeFilterPolicyFromElement(
-                                                document.getDocumentElement(),
-                                                filterPolicyGroup);
-
-                                return attributeFilterPolicy;
-                            }
-                        });
-        log.info("got the following attributeFilterPolicies: " + attributeFilterPolicies.size());
-        attributeFilterListMap.put(filterPolicyGroup.getId(), attributeFilterPolicies);
-        // TODO: this caches forever. Work out what this should be.
-        return attributeFilterPolicies;
+    @Override
+    public List<AttributeFilterPolicy> getFilterPolicies(FilterPolicyGroup filterPolicyGroup) {
+        return filterPolicyGetter.getFilterPolicies(filterPolicyGroup);
     }
 
     @Override

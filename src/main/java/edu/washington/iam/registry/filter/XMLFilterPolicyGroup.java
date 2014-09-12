@@ -208,7 +208,10 @@ public class XMLFilterPolicyGroup {
                 }
              }
           }
+          log.info(String.format("load policy group for %s from %s yields %d results",
+                  id, uri, filterPolicies.size()));
        }
+
    }
 
    private void addOrUpdatePolicy(Element rr, Element ele) {

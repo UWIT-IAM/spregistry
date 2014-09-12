@@ -63,6 +63,27 @@ public class DBFilterPolicyDAOTest {
     }
 
     @Test
+    public void testGetFilterPoliciesCaching() throws  Exception {
+        FilterPolicyGroup filterPolicyGroup = new FilterPolicyGroup();
+        filterPolicyGroup.setId("uwrp");
+        List<String> fakeEntityIds = Arrays.asList("testsp1", "testsp2", "testsp3", "testsp4");
+        for(String fakeId : fakeEntityIds){
+            template.update("insert into filter (group_id, entity_id, xml, status, update_time) " +
+                    "values (?, ?, ?, 1, now())",
+                    new Object[] {filterPolicyGroup.getId(), fakeId, fakeAttributeFilterPolicyXml(fakeId)});
+        }
+
+        List<AttributeFilterPolicy> afps = dao.getFilterPolicies(filterPolicyGroup);
+        Assert.assertEquals(fakeEntityIds.size(), afps.size());
+        // get it again to test that update check works
+        afps = dao.getFilterPolicies(filterPolicyGroup);
+        Assert.assertEquals(fakeEntityIds.size(), afps.size());
+        NamedParameterJdbcTemplate namedTemplate = new NamedParameterJdbcTemplate(template);
+        namedTemplate.update("delete from filter where entity_id in (:entityIds)",
+                new MapSqlParameterSource().addValue("entityIds", fakeEntityIds));
+    }
+
+    @Test
     public void testAttributeFilterPolicyFromElement() throws Exception {
         String inFilterPolicyXml = fakeAttributeFilterPolicyXml("https://example.com/shibboleth");
         FilterPolicyGroup filterPolicyGroup = new FilterPolicyGroup();
@@ -83,6 +104,35 @@ public class DBFilterPolicyDAOTest {
         Assert.assertEquals(inFilterPolicyXml.replaceAll("\\s+", ""),
                 sw.toString().replaceAll("\\s+", ""));
 
+    }
+
+    @Test
+    public void testAttributeFilterPolicyFromElementRuleAndNotParses() throws  Exception {
+        String inFilterPolicyXml = "<AttributeFilterPolicy id=\"releaseTransientIdToAnyone\"> " +
+                " <PolicyRequirementRule xsi:type=\"basic:AND\">" +
+                "  <basic:Rule xsi:type=\"basic:NOT\"> " +
+                "   <basic:Rule xsi:type=\"basic:AttributeRequesterString\" value=\"google.com\" /> " +
+                "  </basic:Rule> " +
+                "  <basic:Rule xsi:type=\"basic:NOT\"> " +
+                "   <basic:Rule xsi:type=\"basic:AttributeRequesterString\" value=\"https://hmcpark.t2hosted.com/cmn/auth.aspx\" /> " +
+                "  </basic:Rule> <basic:Rule xsi:type=\"basic:NOT\">" +
+                "  <basic:Rule xsi:type=\"basic:AttributeRequesterString\" value=\"http://www.instructure.com/saml2\" /> </basic:Rule> " +
+                " </PolicyRequirementRule> " +
+                " <AttributeRule attributeID=\"transientId\"> " +
+                "  <PermitValueRule xsi:type=\"basic:ANY\" /> " +
+                " </AttributeRule> " +
+                "</AttributeFilterPolicy>";
+        FilterPolicyGroup filterPolicyGroup = new FilterPolicyGroup();
+        filterPolicyGroup.setId("uwcore");
+        Element afpElement = DocumentBuilderFactory
+                .newInstance()
+                .newDocumentBuilder()
+                .parse(new ByteArrayInputStream(inFilterPolicyXml.getBytes()))
+                .getDocumentElement();
+        AttributeFilterPolicy afp = dao.attributeFilterPolicyFromElement(
+                afpElement,
+                filterPolicyGroup);
+        Assert.assertNotNull(afp);
     }
 
     @Test
