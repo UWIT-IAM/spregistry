@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# basic installation script
+# basic installation script for idp tools
 
 # parse args
 
@@ -62,12 +62,6 @@ target=$target
   ln -s ${iam_ansible}/tasks .
 }
 export ANSIBLE_LIBRARY=${iam_ansible}/modules:/usr/share/ansible
-
-# make sure the war file was generated
-[[ -f ../target/spreg.war ]] || {
-   echo "use 'mvn clean package' to make the war file first"
-   exit 1
-}
 
 # run the installer 
 

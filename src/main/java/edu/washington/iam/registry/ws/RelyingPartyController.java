@@ -221,8 +221,8 @@ public class RelyingPartyController {
             if (cookies[i].getName().equals(loginCookie)) {
                log.debug("got cookie " + cookies[i].getName());
                String cookieStr = RPCrypt.decode(cookies[i].getValue());
+               if (cookieStr==null) continue;
                String[] cookieData = cookieStr.split(";");
-
                if (cookieData.length==5) {
 
                   if (cookieData[3].charAt(0)=='2') session.authn2 = true;
@@ -257,8 +257,6 @@ public class RelyingPartyController {
                      else if (cookieData[1].indexOf("gmail.com")>0) reloginPath = browserRootPath + request.getServletPath() + googleLoginPath;
                      // let others choose
                   }
-               } else {
-                  log.info("bogus cookie ignored");
                }
             } else if (cookies[i].getName().equals(roleCookie) && cookies[i].getValue().equals("a")) {
                log.debug("got role=admin cookie");

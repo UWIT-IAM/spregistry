@@ -67,6 +67,7 @@ dojoConfig = {
     require(["dojo/dom",
      "dojo/parser",
      "dijit/Dialog",
+     "dijit/form/Button",
      "dijit/layout/ContentPane",
      "iam/Dialog",
      "dojo/domReady!"], function(dom,parser) {
