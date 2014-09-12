@@ -30,6 +30,7 @@
   # copy js files
   - name: copy js files
     copy: "src=../src/main/webapp/sp.js dest=/www/js/sp.js group=pubcookie mode=664"
+    when: non_standard_apache is not defined
 
   # update certs and keys
   - name: copy crt
