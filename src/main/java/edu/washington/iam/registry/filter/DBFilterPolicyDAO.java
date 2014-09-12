@@ -111,7 +111,7 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
             }
             Timestamp fetchTime = new Timestamp(new Date().getTime());
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            List<AttributeFilterPolicy> attributeFilterPolicies =
+            List<AttributeFilterPolicy> tmpAttributeFilterPolicies =
                     template.query("select * from filter where group_id = ? and status = 1",
                             new Object[] {filterPolicyGroup.getId()},
                             new RowMapper<AttributeFilterPolicy>() {
@@ -120,9 +120,12 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
                                 @Override
                                 public AttributeFilterPolicy mapRow(ResultSet resultSet, int i) throws SQLException {
                                     Document document;
+                                    String entityId = resultSet.getString("entity_id");
+                                    String groupId = resultSet.getString("group_id");
                                     try {
                                         DocumentBuilder builder = dbf.newDocumentBuilder();
                                         document = builder.parse(resultSet.getAsciiStream("xml"));
+
                                     }
                                     catch(Exception e){
                                         return null;
@@ -133,9 +136,22 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
                                                     document.getDocumentElement(),
                                                     filterPolicyGroup);
 
+                                    if(attributeFilterPolicy == null){
+                                        log.info(String.format("unparseable attribute filter for entity: %s in group: %s",
+                                                entityId, groupId));
+                                    }
+
                                     return attributeFilterPolicy;
                                 }
                             });
+
+            // TODO: figure if this next block should come out. Only if we're confident there could never be nulls
+            List<AttributeFilterPolicy> attributeFilterPolicies = new ArrayList<>();
+            for(AttributeFilterPolicy attributeFilterPolicy : tmpAttributeFilterPolicies){
+                if(attributeFilterPolicy != null)
+                    attributeFilterPolicies.add(attributeFilterPolicy);
+            }
+
             log.info("got the following attributeFilterPolicies: " + attributeFilterPolicies.size());
             AttributeFilterPolicyEntries newEntry = new AttributeFilterPolicyEntries();
             newEntry.setLastFetchTime(fetchTime);
