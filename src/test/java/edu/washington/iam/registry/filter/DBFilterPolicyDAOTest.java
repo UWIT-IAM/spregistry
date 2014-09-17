@@ -1,6 +1,7 @@
 package edu.washington.iam.registry.filter;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +107,7 @@ public class DBFilterPolicyDAOTest {
     }
 
     @Test
+    @Ignore("The possibility of a null AttributeFilterPolicy is understood, consider removing this test")
     public void testAttributeFilterPolicyFromElementRuleAndNotParses() throws  Exception {
         String inFilterPolicyXml = "<AttributeFilterPolicy id=\"releaseTransientIdToAnyone\"> " +
                 " <PolicyRequirementRule xsi:type=\"basic:AND\">" +
