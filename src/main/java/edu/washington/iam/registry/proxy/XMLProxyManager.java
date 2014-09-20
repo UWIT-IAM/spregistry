@@ -284,7 +284,6 @@ public class XMLProxyManager implements ProxyManager {
 
       log.debug("saving proxy md");
       RelyingPartyManager rpManager = RelyingPartyController.getRelyingPartyManager();
-      List<Metadata> mds = rpManager.getMetadata();
       try {
          URI xUri = new URI(proxyMdUri);
          File xfile = new File(xUri);
@@ -292,16 +291,16 @@ public class XMLProxyManager implements ProxyManager {
          BufferedWriter xout = new BufferedWriter(xstream);
 
          // write header
-         xout.write(mds.get(0).getXmlStart());
+         xout.write(proxyMdXmlStart);
 
          // write policies
          for (int i=0; i<proxys.size();i++) {
             String pid = proxys.get(i).getEntityId();
             log.debug("looking for " + pid);
-            for (int m=0; m<mds.size();m++) {
+            for (String metadataId : rpManager.getMetadataIds()) {
                try {
-                  RelyingParty rp = mds.get(m).getRelyingPartyById(pid);
-                  log.debug("found in " + mds.get(m).getId());
+                  RelyingParty rp = rpManager.getRelyingPartyById(pid, metadataId);
+                  log.debug("found in " + metadataId);
                   rp.writeXml(xout);
                } catch (RelyingPartyException e) {
                }
@@ -309,7 +308,7 @@ public class XMLProxyManager implements ProxyManager {
          }
    
          // write trailer
-         xout.write(mds.get(0).getXmlEnd());
+         xout.write(proxyMdXmlEnd);
          xout.close();
       } catch (IOException e) {
          log.error("write io error: " + e);
@@ -321,6 +320,19 @@ public class XMLProxyManager implements ProxyManager {
 
       return 0;
    }
+
+   // These are direct copies from the metadata class, which is no longer accessible (except through rpManager).
+   // Since XMLProxyManager should be switched off in place of DB access, this whole class should no longer be
+   // reached. I've added this just to stay compatible until we're comfortable enough with the DB version
+   // that we feel we can delete this entirely.
+   private String proxyMdXmlStart = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+           "<EntitiesDescriptor Name=\"urn:washington.edu:rpedit\"\n" +
+           "    xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\"\n" +
+           "    xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"\n" +
+           "    xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\"\n" +
+           "    xmlns:xml=\"http://www.w3.org/XML/1998/namespace\"\n" +
+           "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n";
+   private String proxyMdXmlEnd = "</EntitiesDescriptor>";
 
    private void writeProxyFiles() {
        writeProxys();

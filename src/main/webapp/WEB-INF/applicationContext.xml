@@ -49,13 +49,6 @@
         <property name="attributeRefresh" value="600" />
     </bean>
 
-    <!--<bean id="spprManager" init-method="init" destroy-method="cleanup" class="edu.washington.iam.registry.proxy.XMLProxyManager">
-        <property name="proxyUri" value="file:/data/local/sp-registry/rp-proxy.xml" />
-        <property name="tempUri" value="file:/data/local/sp-registry/rp-proxy.xml.tmp" />
-        <property name="pyUri" value="file:/data/local/sp-registry/sp-secrets" />
-        <property name="tempPyUri" value="file:/data/local/sp-registry/rp-secrets.tmp" />
-        <property name="proxyMdUri" value="file:/data/local/sp-registry/rp-proxy-metadata.xml" />
-    </bean>-->
     <bean id="spprManager" class="edu.washington.iam.registry.proxy.ProxyManagerDB">
         <property name="template" ref="jdbcTemplate" />
     </bean>

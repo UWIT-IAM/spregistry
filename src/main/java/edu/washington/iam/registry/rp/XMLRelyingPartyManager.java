@@ -17,10 +17,7 @@
 
 package edu.washington.iam.registry.rp;
 
-import java.util.List;
-import java.util.Vector;
-import java.util.Collections;
-import java.util.Properties;
+import java.util.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.BufferedWriter;
@@ -65,34 +62,33 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private List<RelyingParty> relyingParties;
-    private List<Metadata> metadata;
+    //private List<RelyingParty> relyingParties;
+    //private List<Metadata> metadata;
 
+    private Map<String, MetadataDAO> metadataDAOs;
     private List<Properties> metadataSources;
 
     static {
-       // org.apache.xml.security.Init.init();
        Security.addProvider(new BouncyCastleProvider());
     }
 
+    @Override
     public void init() {
        loadMetadata();
     }
+    @Override
     public void cleanup() {
-       for (int i=0;i<metadata.size();i++) {
-          metadata.get(i).cleanup();
-       }
+        for(MetadataDAO metadataDAO : metadataDAOs.values()){
+            metadataDAO.cleanup();
+        }
     }
 
     // get selected list of rps
+    @Override
     public List<RelyingParty> getRelyingParties(String sel, String mdid) {
        log.debug("rp search: " + sel + ", md=" + mdid);
-       List<RelyingParty> list = new Vector();
 
-       for (int i=0;i<metadata.size();i++) {
-          if (mdid!=null && !mdid.equals(metadata.get(i).getId())) continue;
-          metadata.get(i).addSelectRelyingParties(sel, list);
-       }
+       List<RelyingParty> list = metadataDAOs.get(mdid).addSelectRelyingParties(sel);
 
        Collections.sort(list, new RelyingPartyComparator());
        log.info("rp search found "+list.size());
@@ -100,27 +96,30 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
     }
 
     // get rp by id
+    @Override
     public RelyingParty getRelyingPartyById(String id, String mdid) throws RelyingPartyException {
-       log.debug("rp search: " + id + ", md=" + mdid);
-       if (mdid==null) return getRelyingPartyById(id);
-       Metadata md = getMetadataById(mdid);
-       if (md != null) return md.getRelyingPartyById(id);
-       throw new RelyingPartyException("not found");
+        log.debug("rp search: " + id + ", md=" + mdid);
+        if (mdid==null)
+            return this.getRelyingPartyById(id);
+        return metadataDAOs.get(mdid).getRelyingPartyById(id);
     }
 
+    @Override
     public RelyingParty getRelyingPartyById(String id) throws RelyingPartyException {
-       log.debug("rp search: " + id);
-       for (int i=0;i<metadata.size();i++) {
-          try {
-             return metadata.get(i).getRelyingPartyById(id);
-          } catch (RelyingPartyException e) {
-             // log.debug("not that one");
-          }
-       }
-       throw new RelyingPartyException("not found");
+        log.debug("rp search: " + id);
+        for (MetadataDAO metadataDAO : metadataDAOs.values()){
+            try {
+                return metadataDAO.getRelyingPartyById(id);
+            }
+            catch (RelyingPartyException e){
+
+            }
+        }
+        throw new RelyingPartyException("not found");
     }
     
      private HostnameVerifier hostv = new HostnameVerifier() {
+        @Override
         public boolean verify(String urlhost, SSLSession session) {
             log.info("verify host: "+urlhost+" vs. "+session.getPeerHost());
             return true;
@@ -128,9 +127,10 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
      };
 
     // create RP by copy of another
+    @Override
     public RelyingParty genRelyingPartyByCopy(String dns, String id) {
        try {
-          RelyingParty rp = getRelyingPartyById(id);
+          RelyingParty rp = this.getRelyingPartyById(id);
           return rp.replicate(dns);
        } catch (RelyingPartyException e) {
              // log.debug("not that one");
@@ -139,7 +139,8 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
     }
     
 
-    // create RP by dns lookup 
+    // create RP by dns lookup
+    @Override
     public RelyingParty genRelyingPartyByLookup(String dns) throws RelyingPartyException {
        
        RelyingParty rp = null;
@@ -185,95 +186,78 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
     }
 
     // create RP with defaults
+    @Override
     public RelyingParty genRelyingPartyByName(String entityId, String dns) {
          return new RelyingParty(entityId, dns);
     }
 
+    @Override
     public List<String> getRelyingPartyIds() {
-       log.info("spm: getRelyingPartyIds");
-       Vector<String> list = new Vector();
-       for (int m=0; m<metadata.size(); m++) {
-          List<RelyingParty> rps = metadata.get(m).getRelyingParties();
-          for (int i=0; i<rps.size(); i++) {
-             list.add(rps.get(i).getEntityId());
-          }
-       }
-       Collections.sort(list);
-       return list;
+        log.info("spm: getRelyingPartyIds");
+        List<String> list = new ArrayList<>();
+        for(MetadataDAO metadataDAO : metadataDAOs.values()){
+            list.addAll(metadataDAO.getRelyingPartyIds());
+        }
+        Collections.sort(list);
+        return list;
     }
+
+    @Override
+    public List<String> getMetadataIds() {
+        return new ArrayList<>(metadataDAOs.keySet());
+    }
+
 
 
     /* load metadata from the xml metadata file */
-
     protected void loadMetadata() {
-
-       metadata = new Vector();
-       relyingParties = new Vector();
-       DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-       builderFactory.setNamespaceAware(true);
-
-       // load metadata from each source
-       for (int m=0; m<metadataSources.size(); m++) {
-          try {
-             Metadata md = new Metadata(metadataSources.get(m));
-             metadata.add(md);
-          } catch (RelyingPartyException e) {
-             log.error("could not load metadata: " + e);
-          }
-       }
+        // TODO: Let's see what happens when we comment this out
+//       metadata = new Vector();
+//       relyingParties = new Vector();
+//
+//       // load metadata from each source
+//       for (int m=0; m<metadataSources.size(); m++) {
+//          try {
+//             Metadata md = new Metadata(metadataSources.get(m));
+//             metadata.add(md);
+//          } catch (RelyingPartyException e) {
+//             log.error("could not load metadata: " + e);
+//          }
+//       }
     }
 
-    /* load relyingParty from posted xml */
+    public int updateRelyingParty(RelyingParty relyingParty, String mdid) throws RelyingPartyException {
+        int status = 200;
+        log.info(String.format("rp update doc, source=%s; rpid=%s", mdid, relyingParty.getEntityId()));
 
-    public int updateRelyingParty(Document indoc, String mdid) throws RelyingPartyException {
-
-       int status = 200;
-       log.info("rp update doc, source=" + mdid);
-      
-       Metadata md = getMetadataById(mdid);
-       if (!md.isEditable()) return 403;
-
-       md.updateRelyingParty(indoc);
-       return (status);
-
+        metadataDAOs.get(mdid).updateRelyingParty(relyingParty);
+        return (status);
     }
 
 
     /* delete relyingParty */
-
+    @Override
     public int removeRelyingParty(String id, String mdid) {
+        log.info("rp delete doc " + id);
 
-       log.info("rp delete doc");
-      
-       Metadata md = getMetadataById(mdid);
-       if (!md.isEditable()) return 403;
-
-       md.removeRelyingParty(id);
-       return (200);
+        metadataDAOs.get(mdid).removeRelyingParty(id);
+        return (200);
     }
 
-
-    /* update relyingParty from fresh copy */
-
-    public RelyingParty updateRelyingPartyMD(RelyingParty rp, RelyingParty frp) {
-
-       int status = 200;
-       log.info("rp update rp");
-      
-       // later
-       return rp;
-
+    @Override
+    public boolean isMetadataEditable(String mdid){
+        return (metadataDAOs.containsKey(mdid) && metadataDAOs.get(mdid).isEditable());
     }
 
-    public Metadata getMetadataById(String mdid) {
-       for (int i=0; i<metadata.size(); i++) if (metadata.get(i).getId().equals(mdid)) return metadata.get(i);
-       return null;
-    }
+    //public Metadata getMetadataById(String mdid) {
+    //   for (int i=0; i<metadata.size(); i++) if (metadata.get(i).getId().equals(mdid)) return metadata.get(i);
+    //   return null;
+    //}
         
 
-    public List<Metadata> getMetadata() {
-       return (metadata);
-    }
+    //public List<Metadata> getMetadata() {
+    //   return (metadata);
+    //}
 
     public void setMetadataSources(List<Properties> v) {
        metadataSources = v;

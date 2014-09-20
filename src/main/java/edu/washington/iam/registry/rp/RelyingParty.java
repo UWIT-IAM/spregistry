@@ -76,9 +76,9 @@ public class RelyingParty implements Serializable  {
     }
 
     // create from document element
-    public RelyingParty (Element ele, Metadata md) throws RelyingPartyException {
-       this(ele, md.getId(), md.isEditable());
-    }
+//    public RelyingParty (Element ele, Metadata md) throws RelyingPartyException {
+//       this(ele, md.getId(), md.isEditable());
+//    }
 
     // create from document element
     public RelyingParty (Element ele, String mdid, boolean edit) throws RelyingPartyException {
