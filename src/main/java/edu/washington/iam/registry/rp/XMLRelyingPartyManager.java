@@ -62,11 +62,12 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    //private List<RelyingParty> relyingParties;
-    //private List<Metadata> metadata;
+
+    public void setMetadataDAOs(Map<String, MetadataDAO> metadataDAOs) {
+        this.metadataDAOs = metadataDAOs;
+    }
 
     private Map<String, MetadataDAO> metadataDAOs;
-    private List<Properties> metadataSources;
 
     static {
        Security.addProvider(new BouncyCastleProvider());
@@ -74,7 +75,7 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
 
     @Override
     public void init() {
-       loadMetadata();
+       //loadMetadata();
     }
     @Override
     public void cleanup() {
@@ -88,7 +89,15 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
     public List<RelyingParty> getRelyingParties(String sel, String mdid) {
        log.debug("rp search: " + sel + ", md=" + mdid);
 
-       List<RelyingParty> list = metadataDAOs.get(mdid).addSelectRelyingParties(sel);
+       List<RelyingParty> list = new ArrayList<>();
+       if(sel == null){
+           for(String metadataId : metadataDAOs.keySet()){
+               list.addAll(metadataDAOs.get(metadataId).addSelectRelyingParties(sel));
+           }
+       }
+       else {
+              list.addAll(metadataDAOs.get(mdid).addSelectRelyingParties(sel));
+       }
 
        Collections.sort(list, new RelyingPartyComparator());
        log.info("rp search found "+list.size());
@@ -207,25 +216,6 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
         return new ArrayList<>(metadataDAOs.keySet());
     }
 
-
-
-    /* load metadata from the xml metadata file */
-    protected void loadMetadata() {
-        // TODO: Let's see what happens when we comment this out
-//       metadata = new Vector();
-//       relyingParties = new Vector();
-//
-//       // load metadata from each source
-//       for (int m=0; m<metadataSources.size(); m++) {
-//          try {
-//             Metadata md = new Metadata(metadataSources.get(m));
-//             metadata.add(md);
-//          } catch (RelyingPartyException e) {
-//             log.error("could not load metadata: " + e);
-//          }
-//       }
-    }
-
     public int updateRelyingParty(RelyingParty relyingParty, String mdid) throws RelyingPartyException {
         int status = 200;
         log.info(String.format("rp update doc, source=%s; rpid=%s", mdid, relyingParty.getEntityId()));
@@ -247,23 +237,6 @@ public class XMLRelyingPartyManager implements RelyingPartyManager {
     @Override
     public boolean isMetadataEditable(String mdid){
         return (metadataDAOs.containsKey(mdid) && metadataDAOs.get(mdid).isEditable());
-    }
-
-    //public Metadata getMetadataById(String mdid) {
-    //   for (int i=0; i<metadata.size(); i++) if (metadata.get(i).getId().equals(mdid)) return metadata.get(i);
-    //   return null;
-    //}
-        
-
-    //public List<Metadata> getMetadata() {
-    //   return (metadata);
-    //}
-
-    public void setMetadataSources(List<Properties> v) {
-       metadataSources = v;
-    }
-    public List<Properties> getMetadataSources() {
-       return metadataSources;
     }
 
 }

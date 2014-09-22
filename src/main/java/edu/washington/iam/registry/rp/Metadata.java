@@ -32,8 +32,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
@@ -50,13 +53,33 @@ public class Metadata implements  MetadataDAO {
    private final Logger log = LoggerFactory.getLogger(getClass());
    private final ReentrantReadWriteLock locker = new ReentrantReadWriteLock();
 
-   private String id;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public void setRefresh(int refresh) {
+        this.refresh = refresh;
+    }
+
+    private String id;
    private String description;
    private boolean editable;
    private String uri;
    private String sourceName;
    private String tempUri;
-   private int refreshInterval = 0;
+   private int refresh = 0;
    private List<RelyingParty> relyingParties;
 
    Thread reloader = null;
@@ -94,7 +117,7 @@ public class Metadata implements  MetadataDAO {
     class MetadataReloader extends Thread {
         
         public void run() {
-           log.debug("reloader running: interval = " + refreshInterval);
+           log.debug("reloader running: interval = " + refresh);
            
            // loop on checking the source
 
@@ -105,7 +128,7 @@ public class Metadata implements  MetadataDAO {
                     log.info("interrupted during processing");
                     break;
                  }
-                 Thread.sleep(refreshInterval * 1000);
+                 Thread.sleep(refresh * 1000);
               } catch (InterruptedException e) {
                  log.info("sleep interrupted");
                  break;
@@ -115,34 +138,20 @@ public class Metadata implements  MetadataDAO {
        
     }
 
-   // create from properties
 
-   public Metadata(Properties prop) throws RelyingPartyException {
-       id = prop.getProperty("id");
-       description = prop.getProperty("description");
-       uri = prop.getProperty("uri");
-       sourceName = uri.replaceFirst("file:","");
-       tempUri = prop.getProperty("tempUri");
-       String v = prop.getProperty("editable");
-       if (v.equalsIgnoreCase("true")) editable = true;
-       else editable = false;
-       v = prop.getProperty("refresh");
-       try {
-          if (v!=null) refreshInterval = Integer.parseInt(v); // seconds
-       } catch (NumberFormatException e) {
-          log.error("invalid refresh arg " + v);
-       }
-       loadMetadata();
-
-       if (refreshInterval>0) {
-          reloader = new Thread(new MetadataReloader());
-          reloader.start();
-       }
-   }
-
+    @PostConstruct
+    private void init() throws RelyingPartyException {
+        sourceName = uri.replaceFirst("file:","");
+        loadMetadata();
+        if(refresh > 0){
+            reloader = new Thread(new MetadataReloader());
+            reloader.start();
+        }
+    }
    // load metadata from the url
    private void loadMetadata() throws RelyingPartyException {
       log.info("load relyingParties for " + id + " from " + uri);
+
       relyingParties = new Vector();
       Document doc;
       try {

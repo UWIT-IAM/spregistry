@@ -1020,17 +1020,9 @@ public class RelyingPartyController {
                 mv.addObject("alert", "You are not the owner.");
             } else {
                 status = proxyManager.removeRelyingParty(id);
-                status = filterPolicyManager.removeRelyingParty(id, mdid);
+                status = filterPolicyManager.removeEditableRelyingParty(id);
                 status = rpManager.removeRelyingParty(id, mdid);
             }
-        } catch (NoPermissionException e) {
-           mv.addObject("alert", "No permission to delete the relying party\n" + e.getCause());
-           response.setStatus(403);
-           return mv;
-        } catch (AttributeNotFoundException e) {
-           mv.addObject("alert", "delete of filter policy failed:\n" + e.getCause());
-           response.setStatus(500);
-           return mv;
         } catch (FilterPolicyException e) {
            mv.addObject("alert", "delete of filter policy failed:\n" + e.getCause());
            response.setStatus(500);
@@ -1146,17 +1138,11 @@ public class RelyingPartyController {
         }
         if (doc!=null) {
            try {
-              filterPolicyManager.updateRelyingParty(policyId, doc, session.remoteUser);
+              filterPolicyManager.updateRelyingParty(policyId, doc);
               status = 200;
            } catch (FilterPolicyException e) {
               status = 400;
               mv.addObject("alert", "Update of the entity failed:" + e);
-           } catch (AttributeNotFoundException e) {
-              status = 403;
-              mv.addObject("alert", "attribute not found:" + e);
-           } catch (NoPermissionException e) {
-              status = 401;
-              mv.addObject("alert", "no permission" + e);
            }
         }
 

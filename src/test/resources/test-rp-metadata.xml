@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EntitiesDescriptor Name="urn:washington.edu:rpedit"
+    xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+    xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+ <EntityDescriptor entityID="https://jpf.cac.washington.edu/shibboleth">
+  <SPSSODescriptor  protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol">
+   <KeyDescriptor>
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+     <ds:KeyName>jpf.cac.washington.edu</ds:KeyName>
+     <ds:X509Data><ds:X509Certificate>MIIDCTCCAfGgAwIBAgIJAJIAIvu7kLkbMA0GCSqGSIb3DQEBBQUAMCExHzAdBgNV
+BAMTFmpwZi5jYWMud2FzaGluZ3Rvbi5lZHUwHhcNMTMwNTAxMjMxMjM5WhcNMjMw
+NDI5MjMxMjM5WjAhMR8wHQYDVQQDExZqcGYuY2FjLndhc2hpbmd0b24uZWR1MIIB
+IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw3FUrdPvtvkExwWAky2Tc5TV
+V/F7qvN9cnnuOei9ZBVJajOrUgwPDMLFN1FD5fFvBbeHUthEarg9q2d3Pt2T37BZ
+tJwrkzkqAdHKXh1NdYMAtc7L5lMFo7DZfwwzWcebJBiy0aa0a3myiqMGd+UYTn++
+FKwm18tF/GOtRL6czCaC7fKkR0HTwLCosGgiAuea/m8nMp5hwo4CHr0LXEFDc4N7
+UHOpCjL1SVYy/85Te8hzWHN8aOGXCK9aY/Py/xmOFvxXHEY/uLvA1yNfWxdNzvA+
+p8eJkn7m1ejh086oWAUF49HYx5wCvEphgpxZQveF1x1oowF95/XKlBRmr94rvwID
+AQABo0QwQjAhBgNVHREEGjAYghZqcGYuY2FjLndhc2hpbmd0b24uZWR1MB0GA1Ud
+DgQWBBRHy8cVC/b8XTHDz3Ee2utRYAqYijANBgkqhkiG9w0BAQUFAAOCAQEAfFHi
+/7oewH3+Gg4erElYLg6taa/z9Rw04BkpWB/gmanXVEnvy1MqYvA1MRsa5zHjpQDM
+JrxOQ+3KeBej3Bk35mAXEG3GINTywrtk2bxhyL7DswIedwKxHujoMKjd+QyYvTd5
+wF1mrVSRgtbF80Zr4TQMhOFZNvNUQI9eO+0w06bWZBv5EF2+XtazZ3ezS/LWnQFZ
+6Am7v690tjSOUReT2xUNyYPKyz/OugeiuBueyn+5r4dv23RyZcsxLJUiEb9LpPYx
+YhKI0miROTmqyI9wBsLZGe/tv0YSR/b2Gzsfh46wAcBNgttBxA47Fng4Uk0/Xt/b
+AaPEqKUTImmm8ThVAw==</ds:X509Certificate></ds:X509Data>
+    </ds:KeyInfo>
+   </KeyDescriptor>
+   <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://jpf.cac.washington.edu/Shibboleth.sso/SAML2/POST" index="1"/>
+   <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign" Location="https://jpf.cac.washington.edu/Shibboleth.sso/SAML2/POST-SimpleSign" index="2"/>
+   <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact" Location="https://jpf.cac.washington.edu/Shibboleth.sso/SAML2/Artifact" index="3"/>
+   <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:PAOS" Location="https://jpf.cac.washington.edu/Shibboleth.sso/SAML2/ECP" index="4"/>
+   <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:1.0:profiles:browser-post" Location="https://jpf.cac.washington.edu/Shibboleth.sso/SAML/POST" index="5"/>
+   <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:1.0:profiles:artifact-01" Location="https://jpf.cac.washington.edu/Shibboleth.sso/SAML/Artifact" index="6"/>
+  </SPSSODescriptor>
+  <Organization>
+   <OrganizationName xml:lang="en">f</OrganizationName>
+   <OrganizationDisplayName xml:lang="en">a</OrganizationDisplayName>
+   <OrganizationURL xml:lang="en">r</OrganizationURL>
+  </Organization>
+  <ContactPerson contactType="technical">
+   <GivenName>t</GivenName>
+   <EmailAddress>e</EmailAddress>
+   <TelephoneNumber>r</TelephoneNumber>
+  </ContactPerson>
+ </EntityDescriptor>
+
+ <EntityDescriptor entityID="web.createtest.example.com">
+  <SPSSODescriptor  protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol">
+   <KeyDescriptor>
+    <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+     <ds:KeyName>web.createtest.example.com</ds:KeyName>
+    </ds:KeyInfo>
+   </KeyDescriptor>
+   <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:1.0:profiles:browser-post" Location="https://web.createtest.example.com/Shibboleth.sso/SAML/POST" index="1"/>
+   <AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://web.createtest.example.com/Shibboleth.sso/SAML2/POST" index="2"/>
+  </SPSSODescriptor>
+  <Organization>
+   <OrganizationName xml:lang="en">Joe Blow</OrganizationName>
+   <OrganizationDisplayName xml:lang="en">ADisplay</OrganizationDisplayName>
+   <OrganizationURL xml:lang="en">http://example.com</OrganizationURL>
+  </Organization>
+  <ContactPerson contactType="administrative">
+   <GivenName>The Boss</GivenName>
+   <EmailAddress>bossman@example.com</EmailAddress>
+   <TelephoneNumber>867-5309</TelephoneNumber>
+  </ContactPerson>
+ </EntityDescriptor>
+
+</EntitiesDescriptor>
