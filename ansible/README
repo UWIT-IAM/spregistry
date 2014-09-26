@@ -17,6 +17,10 @@ On your build host:
 
 3) echo "iam_ansible=<your ansibletools install path>" > install.properties
 
+4) httest
+
+   see: http://htt.sourceforge.net/cgi-bin/cwiki/bin/public
+
 
 
 On the target:
@@ -52,7 +56,7 @@ Install
 
 3) Run installer.  In this directory:
 
-   $ ./install.sh -t <host_type>
+   $ ./install.sh <host_type>
 
    host_type = tools_dev | tools_eval | tools_prod
 

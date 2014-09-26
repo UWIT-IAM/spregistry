@@ -1,0 +1,18 @@
+#
+# basic spreg API tester
+#
+# retrieves metadata for https://iam-ws.u.washington.edu/
+#
+# HOST, CERT, KEY, and CA must be defined on the httest command line
+#
+
+SET PORT=443
+
+CLIENT
+_REQ $HOST SSL:$PORT  $CERT $KEY $CA
+__GET /spreg/ws/metadata?mdid=UW&id=https://iam-ws.u.washington.edu/ HTTP/1.1
+__Host: $HOST
+__
+_EXPECT . "HTTP/1.1 200 OK"
+_WAIT
+END

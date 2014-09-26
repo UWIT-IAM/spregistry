@@ -65,7 +65,7 @@ public class AttributeFilterPolicy implements Serializable  {
        else if (type.equals("saml:AttributeRequesterEntityAttributeExactMatch")) category = true;
        else throw new FilterPolicyException("cant use type " + type);
 
-       log.debug("create filter policy for " + entityId + " regex?" + regex + " cat?" + category );
+       // log.debug("create filter policy for " + entityId + " regex?" + regex + " cat?" + category );
        addAttributeRules(ele, edit, policyGroupId);
     }
 

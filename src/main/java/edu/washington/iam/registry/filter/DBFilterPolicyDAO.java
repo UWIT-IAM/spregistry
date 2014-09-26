@@ -101,7 +101,10 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
                         template.queryForObject("select max(update_time) from filter where group_id = ?",
                             new Object[]{filterPolicyGroup.getId()},
                             Timestamp.class);
-                if(lastUpdateTime.after(attributeFiltersMap.get(filterPolicyGroup.getId()).getLastFetchTime())){
+                log.debug("last update = " + lastUpdateTime.toString());
+             
+                Timestamp ft = attributeFiltersMap.get(filterPolicyGroup.getId()).getLastFetchTime();
+                if(ft==null || lastUpdateTime.after(ft)){
                     log.info("attribute filter policy has been updated, rebuilding for " + filterPolicyGroup.getId());
                     attributeFiltersMap.remove(filterPolicyGroup.getId());
                 }

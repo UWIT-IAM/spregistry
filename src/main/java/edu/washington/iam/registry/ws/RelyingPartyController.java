@@ -87,6 +87,9 @@ import javax.xml.parsers.DocumentBuilder;
 import java.security.cert.X509Certificate;
 import java.security.cert.CertificateParsingException;
 
+import org.springframework.mobile.device.Device;
+import org.springframework.mobile.device.DeviceUtils;
+
 
 @Controller
 public class RelyingPartyController {
@@ -175,10 +178,11 @@ public class RelyingPartyController {
        private boolean isProxy;
        private List altNames;
        private boolean adminRole;
+       private boolean isMobile;
     }
 
     /* send user to login chooser page */ 
-    private ModelAndView loginChooserMV(HttpServletRequest request, HttpServletResponse response) {
+    private ModelAndView loginChooserMV(RPSession session, HttpServletRequest request, HttpServletResponse response) {
 
        String rp = "";
        if (request.getPathInfo()!=null) rp = request.getPathInfo();
@@ -187,10 +191,11 @@ public class RelyingPartyController {
        String red = browserRootPath + request.getServletPath() + rp + rqs;
        log.debug("no user yet: final path=" + red);
 
-       ModelAndView mv = new ModelAndView("browser/chooser");
+       String view = "browser";
+       if (session.isMobile) view = "mobile";
+       ModelAndView mv = new ModelAndView(view + "/chooser");
        mv.addObject("root", browserRootPath);
        mv.addObject("vers", request.getServletPath());
-       mv.addObject("pagetype", "browser/home");
        mv.addObject("pathextra", rp + rqs);
        mv.addObject("uwloginpath", standardLoginPath);
        mv.addObject("googleloginpath", googleLoginPath); 
@@ -211,6 +216,11 @@ public class RelyingPartyController {
         String reloginPath = null;
 
         log.info("RP new session =============== path=" + request.getPathInfo());
+
+        session.isMobile = false;
+        Device currentDevice = DeviceUtils.getCurrentDevice(request);
+        if (currentDevice!=null) session.isMobile = currentDevice.isMobile();
+        log.debug("mobile? " + session.isMobile);
 
         // see if logged in (browser has login cookie; cert user has cert)
 
@@ -326,7 +336,7 @@ public class RelyingPartyController {
                   }
               }
               log.debug("no user yet:  send to choose");
-              session.mv = loginChooserMV(request, response);
+              session.mv = loginChooserMV(session, request, response);
               return session;
            }
            return null;
@@ -351,6 +361,7 @@ public class RelyingPartyController {
         response.setHeader("X-UA-Compatible", "IE=7");
 
         log.info("user: " + session.remoteUser);
+        if (session.viewType.equals("browser") && session.isMobile) session.viewType = "mobile";
         return session;
     }
 
@@ -471,7 +482,9 @@ public class RelyingPartyController {
               // no longer allow google's @uw to be same as UW login
               // remoteUser = remoteUser.substring(0, remoteUser.lastIndexOf("@uw.edu"));
               // log.info("dropped @uw.edu to get id = " + remoteUser);
-              return loginChooserMV(request, response);  // return to login chooser
+              ////return loginChooserMV(session, request, response);  // return to login chooser
+              // until we can report some misuse
+              return emptyMV("invalid social login");
            }
 
            double dbl = Math.random();
@@ -559,7 +572,10 @@ public class RelyingPartyController {
         }
         return emptyMV("configuration error");
  **/
-       ModelAndView mv = new ModelAndView("browser/chooser");
+       String view = "browser";
+       Device currentDevice = DeviceUtils.getCurrentDevice(request);
+       if (currentDevice!=null && currentDevice.isMobile()) view = "mobile";
+       ModelAndView mv = new ModelAndView(view + "/chooser");
        mv.addObject("root", browserRootPath);
        mv.addObject("vers", request.getServletPath());
        mv.addObject("pagetype", "browser/loggedout");
@@ -729,6 +745,7 @@ public class RelyingPartyController {
         try {
            rp = rpManager.getRelyingPartyById(id, mdid);
         } catch (RelyingPartyException e) {
+           response.setStatus(404);
            return emptyMV("not found");
         }
         log.info("returning metadata id=" + id );
@@ -740,6 +757,7 @@ public class RelyingPartyController {
            mv.addObject("metadata", writer.toString());
         } catch (IOException e) {
            log.error("string writer errro: " + e);
+           response.setStatus(500);
            return emptyMV("internal error");
         }
 

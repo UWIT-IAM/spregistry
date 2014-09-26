@@ -86,7 +86,7 @@ public class RelyingParty implements Serializable  {
        localInit();
        entityId = ele.getAttribute("entityID");
        if (entityId==null) throw new RelyingPartyException("No entity id attribute");
-       log.debug("create from doc: " + entityId);
+       // log.debug("create from doc: " + entityId);
 
        metadataId = mdid;
        editable = edit;

@@ -13,17 +13,19 @@
   - include_vars: "properties.yml"
 
   # configure spreg properties file
+  # change restarts tomcat
   - name: copy properties file
     copy: "src=../spreg.properties.{{ cluster_type }}  dest={{ spreg_root }}/spreg.properties group=pubcookie mode=664"
-    notify:
-      - restart tomcat
+    notify: restart tomcat
  
+  # configure tomcat startup properties
+  # change restarts tomcat
   - name: tomcat startup params
     daemon_config: "service=tomcat key=spreg.properties value=file:{{ spreg_root }}/spreg.properties"
-    notify:
-      - restart tomcat
+    notify: restart tomcat
 
   # update http and https config
+  # change restarts apache
   - include: "tasks/apache_config.yml file=https"
   - include: "tasks/apache_config.yml file=http"
 
@@ -32,23 +34,56 @@
     copy: "src=../src/main/webapp/sp.js dest=/www/js/sp.js group=pubcookie mode=664"
     when: non_standard_apache is not defined
 
-  # update certs and keys
+  # update certs and keys (used by spreg)
+  # change restarts tomcat
   - name: copy crt
     copy: "src={{ local_crt_file }} dest={{ crt_file }} group=pubcookie mode=660 "
     when: local_crt_file is defined
+    notify: restart tomcat
+
   - name: copy key
     copy: "src={{ local_key_file }} dest={{ key_file }} group=pubcookie mode=660"
     when: local_key_file is defined
+    notify: restart tomcat
+
   - name: copy ca
     copy: "src={{ local_ca_file }} dest={{ ca_file }} group=pubcookie mode=664"
     when: local_ca_file is defined
+    notify: restart tomcat
 
   # update the spreg.war file
   - name: copy war
     copy: "src=../target/spreg.war dest=/data/webapps/spreg.war group=pubcookie mode=664"
-    notify:
-      - restart tomcat
+    notify: restart tomcat
+
+  # run any handlers 
+  - meta: flush_handlers
+
+  # always run the test
+  - name: run service tests
+    local_action:  "command httest -s
+           -D HOST={{inventory_hostname}}
+           -D CERT={{local_webclient_certFile}}
+           -D KEY={{local_webclient_keyFile}}
+           -D CA={{local_webclient_caFile}}
+           iam-ws-test.htt"
+    register: httest_result
+    changed_when: "httest_result.rc != 0"
+
+  # idle loadr if test fails
+  - name: idle loadr on test fail
+    command: /usr/bin/nohup /data/local/bin/ansible_command loadr idle
+    when: "httest_result.rc != 0"
+      
+  # fail if test fails
+  - name: fail on test fail
+    fail: msg="API service test fails after install"
+    when: "httest_result.rc != 0"
+      
+
+  # handlers mostly standard from iam-ansible
 
   handlers:
     - include: "tasks/iam_handlers.yml"
+
 

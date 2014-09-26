@@ -1,8 +1,6 @@
 #!/bin/bash
 
-# basic installation script
-
-# parse args
+# spreg ansible installation script
 
 function usage {
   echo "usage: $0 [-c local_config] [-v] [-p playbook] [-t] target "
@@ -42,15 +40,15 @@ do
     -v) verbose="-v";           prefix=""; key="";;
     -d) verbose="-vvvv";           prefix=""; key="";;
     -n) TEST=1;           prefix=""; key="";;
-    *)   prefix="${keyValue}=";;
+    *)  prefix="${keyValue}=";;
   esac
 done
 
-target=$target
-
+[[ -z $target ]] && target=$value
 [[ -n "$target" ]] || usage
 
 # get iam-ansible location
+
 . ./install.properties
 [[ -z $iam_ansible/hosts ]] && {
    echo "iam_ansible installation directory is missing from install.properties"
