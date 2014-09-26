@@ -634,14 +634,14 @@ public class RelyingPartyController {
         relyingParties = rpManager.getRelyingParties(selRp, selType);
         log.info("found " + relyingParties.size() + " rps" );
  
-        List<Metadata> metadata = rpManager.getMetadata();
-        log.info("found " + metadata.size() + " mds" );
+        //List<Metadata> metadata = rpManager.getMetadata();
+        //log.info("found " + metadata.size() + " mds" );
   
         ModelAndView mv = basicModelAndView(session, "json", "rps");
         mv.addObject("selectrp", selRp==null?"":selRp);
         mv.addObject("selecttype", selType==null?"all":selType);
         mv.addObject("relyingParties", relyingParties);
-        mv.addObject("metadata", metadata);
+        //mv.addObject("metadata", metadata);
 
         return (mv);
     }
@@ -667,8 +667,6 @@ public class RelyingPartyController {
         RelyingParty rrp = null;
 
         boolean canEdit = false;
-        boolean refreshOpt = false;
-        if (view!=null && view.equals("refresh")) refreshOpt = true;
  
         String errmsg = null;
 
@@ -678,18 +676,6 @@ public class RelyingPartyController {
            rp = rpManager.getRelyingPartyById(id, mdid);
         } catch (RelyingPartyException e) {
            return emptyMV("not found");
-        }
-        if (refreshOpt) {
-           try {
-              rrp = rpManager.genRelyingPartyByLookup(dns);
-           } catch (RelyingPartyException e) {
-              errmsg = "Metadata could not be obtained";
-           }
-           if (rrp.getEntityId().equals(rp.getEntityId())) {
-                rp = rpManager.updateRelyingPartyMD(rp, rrp);
-           } else {
-              errmsg = "Lookup returned a different entity ID";
-           }
         }
         session.pageTitle = rp.getEntityId();
         try {
@@ -901,11 +887,13 @@ public class RelyingPartyController {
            return mv;
         }
 
-        Document doc = null;
+        RelyingParty relyingParty = null;
         try {
+            Document doc = null;
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
             doc = builder.parse (in);
+            relyingParty = new RelyingParty(doc.getDocumentElement(), mdid, rpManager.isMetadataEditable(mdid));
         } catch (Exception e) {
             log.info("parse error: " + e);
             status = 400;
@@ -913,15 +901,14 @@ public class RelyingPartyController {
             response.setStatus(status);
             return mv;
         }
-        if (doc!=null) {
-           try {
-              status = rpManager.updateRelyingParty(doc, mdid);
-           } catch (RelyingPartyException e) {
-              status = 400;
-              mv.addObject("alert", "Update failed:\n" + e.getMessage());
-              response.setStatus(status);
-              return mv;
-           }
+
+        try {
+            status = rpManager.updateRelyingParty(relyingParty, mdid);
+        } catch (RelyingPartyException e) {
+            status = 400;
+            mv.addObject("alert", "Update failed:\n" + e.getMessage());
+            response.setStatus(status);
+            return mv;
         }
 
         SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
@@ -970,19 +957,20 @@ public class RelyingPartyController {
            response.setStatus(status);
            return mv;
         }
-        Metadata md = rpManager.getMetadataById(mdid);
-        if (md==null || !md.isEditable()) {
+        if (!rpManager.isMetadataEditable(mdid)) {
            status = 400;
            mv.addObject("alert", "The metadata was not found or is not editable");
            response.setStatus(status);
            return mv;
         }
 
-        Document doc = null;
+        RelyingParty rp = null;
         try {
+            Document doc = null;
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
             doc = builder.parse (in);
+            rp = new RelyingParty(doc.getDocumentElement(), mdid, rpManager.isMetadataEditable(mdid));
         } catch (Exception e) {
             log.info("parse error: " + e);
             status = 400;
@@ -990,13 +978,17 @@ public class RelyingPartyController {
             response.setStatus(status);
             return mv;
         }
-        if (doc!=null) {
+        if(rp.getEntityId().equals(id)){
            try {
-              md.updateRelyingParty(doc, id);
+               rpManager.updateRelyingParty(rp, mdid);
            } catch (RelyingPartyException e) {
               status = 400;
               mv.addObject("alert", "Update of the metadata failed:\n" + e);
            }
+        }
+        else{
+            mv.addObject("alert", String.format("Id %s doesn't match %s",
+                    rp.getEntityId(), id));
         }
 
         SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
@@ -1046,17 +1038,9 @@ public class RelyingPartyController {
                 mv.addObject("alert", "You are not the owner.");
             } else {
                 status = proxyManager.removeRelyingParty(id);
-                status = filterPolicyManager.removeRelyingParty(id, mdid);
+                status = filterPolicyManager.removeEditableRelyingParty(id);
                 status = rpManager.removeRelyingParty(id, mdid);
             }
-        } catch (NoPermissionException e) {
-           mv.addObject("alert", "No permission to delete the relying party\n" + e.getCause());
-           response.setStatus(403);
-           return mv;
-        } catch (AttributeNotFoundException e) {
-           mv.addObject("alert", "delete of filter policy failed:\n" + e.getCause());
-           response.setStatus(500);
-           return mv;
         } catch (FilterPolicyException e) {
            mv.addObject("alert", "delete of filter policy failed:\n" + e.getCause());
            response.setStatus(500);
@@ -1172,17 +1156,11 @@ public class RelyingPartyController {
         }
         if (doc!=null) {
            try {
-              filterPolicyManager.updateRelyingParty(policyId, doc, session.remoteUser);
+              filterPolicyManager.updateRelyingParty(policyId, doc);
               status = 200;
            } catch (FilterPolicyException e) {
               status = 400;
               mv.addObject("alert", "Update of the entity failed:" + e);
-           } catch (AttributeNotFoundException e) {
-              status = 403;
-              mv.addObject("alert", "attribute not found:" + e);
-           } catch (NoPermissionException e) {
-              status = 401;
-              mv.addObject("alert", "no permission" + e);
            }
         }
 

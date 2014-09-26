@@ -12,30 +12,36 @@
     <context:property-placeholder location="${spreg.properties:/WEB-INF/spreg.properties}"/>
 
     <bean id="sprpManager" init-method="init" destroy-method="cleanup" class="edu.washington.iam.registry.rp.XMLRelyingPartyManager">
-        <property name="metadataSources">
-          <list>
-            <props>
-              <prop key="id">IC</prop>
-              <prop key="description">InCommon</prop>
-              <prop key="uri">file:${incommon.metadata.path}</prop>
-              <prop key="editable">false</prop>
-              <prop key="refresh">600</prop>
-            </props>
-            <props>
-              <prop key="id">UWfixed</prop>
-              <prop key="description">UW fixed non-federation peers</prop>
-              <prop key="uri">file:${spreg.root}/UW-base-metadata.xml</prop>
-              <prop key="editable">false</prop>
-            </props>
-            <props>
-              <prop key="id">UW</prop>
-              <prop key="description">UW non-federation peers</prop>
-              <prop key="uri">file:${spreg.root}/UW-rp-metadata.xml</prop>
-              <prop key="editable">true</prop>
-              <prop key="refresh">600</prop>
-              <prop key="tempUri">file:${spreg.root}/tmp-rp-uw.xml</prop>
-            </props>
-          </list>
+        <property name="metadataDAOs">
+            <map>
+                <entry key="IC">
+                    <bean class="edu.washington.iam.registry.rp.Metadata">
+                        <property name="id" value="IC"/>
+                        <property name="description" value="InCommon"/>
+                        <property name="uri" value="file:${incommon.metadata.path}"/>
+                        <property name="editable" value="false"/>
+                        <property name="refresh" value="600"/>
+                    </bean>
+                </entry>
+                <entry key="UWfixed">
+                    <bean class="edu.washington.iam.registry.rp.Metadata">
+                        <property name="id" value="UWfixed"/>
+                        <property name="description" value="UW fixed non-federation peers"/>
+                        <property name="uri" value="file:${spreg.root}/UW-base-metadata.xml"/>
+                        <property name="editable" value="false"/>
+                    </bean>
+                </entry>
+                <entry key="UW">
+                    <bean class="edu.washington.iam.registry.rp.Metadata">
+                        <property name="id" value="UW"/>
+                        <property name="description" value="UW non-federation peers"/>
+                        <property name="uri" value="file:${spreg.root}/UW-rp-metadata.xml"/>
+                        <property name="editable" value="true"/>
+                        <property name="refresh" value="600"/>
+                        <property name="tempUri" value="file:${spreg.root}/tmp-rp-uw.xml"/>
+                    </bean>
+                </entry>
+            </map>
         </property>
     </bean>
 
@@ -49,13 +55,6 @@
         <property name="attributeRefresh" value="600" />
     </bean>
 
-    <!--<bean id="spprManager" init-method="init" destroy-method="cleanup" class="edu.washington.iam.registry.proxy.XMLProxyManager">
-        <property name="proxyUri" value="file:/data/local/sp-registry/rp-proxy.xml" />
-        <property name="tempUri" value="file:/data/local/sp-registry/rp-proxy.xml.tmp" />
-        <property name="pyUri" value="file:/data/local/sp-registry/sp-secrets" />
-        <property name="tempPyUri" value="file:/data/local/sp-registry/rp-secrets.tmp" />
-        <property name="proxyMdUri" value="file:/data/local/sp-registry/rp-proxy-metadata.xml" />
-    </bean>-->
     <bean id="spprManager" class="edu.washington.iam.registry.proxy.ProxyManagerDB">
         <property name="template" ref="jdbcTemplate" />
     </bean>

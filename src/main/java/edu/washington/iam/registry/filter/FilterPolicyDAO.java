@@ -18,8 +18,8 @@ public interface FilterPolicyDAO {
     // add new or update existing filterPolicies
     void updateFilterPolicies(FilterPolicyGroup filterPolicyGroup,
                               List<AttributeFilterPolicy> attributeFilterPolicies)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException;
+            throws FilterPolicyException;
     int removeRelyingParty(FilterPolicyGroup filterPolicyGroup,
                            String entityId)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException;
+            throws FilterPolicyException;
 }

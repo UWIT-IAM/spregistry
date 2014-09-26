@@ -1,6 +1,7 @@
 package edu.washington.iam.registry.filter;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,6 +106,35 @@ public class DBFilterPolicyDAOTest {
 
     }
 
+    @Test
+    @Ignore("The possibility of a null AttributeFilterPolicy is understood, consider removing this test")
+    public void testAttributeFilterPolicyFromElementRuleAndNotParses() throws  Exception {
+        String inFilterPolicyXml = "<AttributeFilterPolicy id=\"releaseTransientIdToAnyone\"> " +
+                " <PolicyRequirementRule xsi:type=\"basic:AND\">" +
+                "  <basic:Rule xsi:type=\"basic:NOT\"> " +
+                "   <basic:Rule xsi:type=\"basic:AttributeRequesterString\" value=\"google.com\" /> " +
+                "  </basic:Rule> " +
+                "  <basic:Rule xsi:type=\"basic:NOT\"> " +
+                "   <basic:Rule xsi:type=\"basic:AttributeRequesterString\" value=\"https://hmcpark.t2hosted.com/cmn/auth.aspx\" /> " +
+                "  </basic:Rule> <basic:Rule xsi:type=\"basic:NOT\">" +
+                "  <basic:Rule xsi:type=\"basic:AttributeRequesterString\" value=\"http://www.instructure.com/saml2\" /> </basic:Rule> " +
+                " </PolicyRequirementRule> " +
+                " <AttributeRule attributeID=\"transientId\"> " +
+                "  <PermitValueRule xsi:type=\"basic:ANY\" /> " +
+                " </AttributeRule> " +
+                "</AttributeFilterPolicy>";
+        FilterPolicyGroup filterPolicyGroup = new FilterPolicyGroup();
+        filterPolicyGroup.setId("uwcore");
+        Element afpElement = DocumentBuilderFactory
+                .newInstance()
+                .newDocumentBuilder()
+                .parse(new ByteArrayInputStream(inFilterPolicyXml.getBytes()))
+                .getDocumentElement();
+        AttributeFilterPolicy afp = dao.attributeFilterPolicyFromElement(
+                afpElement,
+                filterPolicyGroup);
+        Assert.assertNotNull(afp);
+    }
 
     @Test
     public void testCreateFilterPolicy() throws Exception {

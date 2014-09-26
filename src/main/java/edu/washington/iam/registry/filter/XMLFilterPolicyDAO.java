@@ -57,7 +57,7 @@ public class XMLFilterPolicyDAO implements FilterPolicyDAO {
     @Override
     public void updateFilterPolicies(FilterPolicyGroup filterPolicyGroup,
                                      List<AttributeFilterPolicy> attributeFilterPolicies)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException
+            throws FilterPolicyException
     {
         // updates against AttributeFilterPolicy mean that existing afps are already updated in memory
         // this means that it's updated the moment we do writePolicyGroup()
@@ -73,7 +73,7 @@ public class XMLFilterPolicyDAO implements FilterPolicyDAO {
 
     @Override
     public int removeRelyingParty(FilterPolicyGroup filterPolicyGroup, String entityId)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
+            throws FilterPolicyException {
         return this.getXMLFilterPolicyGroup(filterPolicyGroup).removeFilterPolicy(entityId);
     }
 

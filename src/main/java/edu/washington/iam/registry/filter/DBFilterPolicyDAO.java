@@ -181,7 +181,7 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
     @Override
     public void updateFilterPolicies(FilterPolicyGroup filterPolicyGroup,
                                      List<AttributeFilterPolicy> attributeFilterPolicies)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
+            throws FilterPolicyException {
         Map<String, AttributeFilterPolicy> afpMap = new HashMap<>();
         for(AttributeFilterPolicy attributeFilterPolicy : attributeFilterPolicies){
             afpMap.put(attributeFilterPolicy.getEntityId(), attributeFilterPolicy);
@@ -249,8 +249,8 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
 
     @Override
     public int removeRelyingParty(FilterPolicyGroup filterPolicyGroup, String entityId)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
-        log.info("removing fp for " + entityId);
+            throws FilterPolicyException {
+        log.info("removing fp for " + entityId  + " in " + filterPolicyGroup.getId());
         template.update("update filter set status = 0, update_time = now() where group_id = ? and entity_id = ?",
                 filterPolicyGroup.getId(),
                 entityId);

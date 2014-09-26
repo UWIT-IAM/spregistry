@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,6 @@ import edu.washington.iam.registry.rp.RelyingParty;
 import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.registry.exception.FilterPolicyException;
 import edu.washington.iam.registry.exception.AttributeNotFoundException;
-import edu.washington.iam.registry.exception.NoPermissionException;
 
 public class FilterPolicyManagerImpl implements FilterPolicyManager {
 
@@ -102,8 +100,8 @@ public class FilterPolicyManagerImpl implements FilterPolicyManager {
      * simplified document
      */
     @Override
-    public void updateRelyingParty(String pgid, Document doc, String remoteUser)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
+    public void updateRelyingParty(String pgid, Document doc)
+            throws FilterPolicyException {
 
         log.info("rp update attr doc for " + pgid);
 
@@ -128,7 +126,12 @@ public class FilterPolicyManagerImpl implements FilterPolicyManager {
             for (Element attributeRule : XMLHelper.getElementsByName(policy, "AttributeRule")) {
                 String attributeId = attributeRule.getAttribute("attributeID");
                 String act = attributeRule.getAttribute("action");
-                Attribute attribute = attributeDAO.getAttribute(attributeId);
+                Attribute attribute;
+                try {
+                    attribute = attributeDAO.getAttribute(attributeId);
+                } catch (AttributeNotFoundException e){
+                    throw new FilterPolicyException(String.format("attribute not found: %s", attributeId), e);
+                }
 
                 log.debug(".." + act + " " + attributeId);
 
@@ -145,8 +148,22 @@ public class FilterPolicyManagerImpl implements FilterPolicyManager {
     }
 
     @Override
+    public int removeEditableRelyingParty(String entityId)
+            throws FilterPolicyException {
+        int status = 200;
+        for (FilterPolicyGroup filterPolicyGroup : this.getFilterPolicyGroups()){
+            if(filterPolicyGroup.isEditable()){
+                log.info(String.format("Removing %s from policy group %s", entityId, filterPolicyGroup.getId()));
+                status = filterPolicyDAO.removeRelyingParty(filterPolicyGroup, entityId);
+            }
+        }
+        return status;
+    }
+
+    @Override
     public int removeRelyingParty(String entityId, String pgid)
-            throws FilterPolicyException, AttributeNotFoundException, NoPermissionException {
+            throws FilterPolicyException {
+
         return filterPolicyDAO.removeRelyingParty(
                 filterPolicyDAO.getFilterPolicyGroup(pgid),
                 entityId

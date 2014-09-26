@@ -17,6 +17,7 @@
 
 package edu.washington.iam.registry.rp;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import java.io.File;
@@ -31,8 +32,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import java.util.Properties;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import javax.annotation.PostConstruct;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,18 +48,38 @@ import org.slf4j.LoggerFactory;
 import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.registry.exception.RelyingPartyException;
 
-public class Metadata {
+public class Metadata implements  MetadataDAO {
  
    private final Logger log = LoggerFactory.getLogger(getClass());
    private final ReentrantReadWriteLock locker = new ReentrantReadWriteLock();
 
-   private String id;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public void setRefresh(int refresh) {
+        this.refresh = refresh;
+    }
+
+    private String id;
    private String description;
    private boolean editable;
    private String uri;
    private String sourceName;
    private String tempUri;
-   private int refreshInterval = 0;
+   private int refresh = 0;
    private List<RelyingParty> relyingParties;
 
    Thread reloader = null;
@@ -93,7 +117,7 @@ public class Metadata {
     class MetadataReloader extends Thread {
         
         public void run() {
-           log.debug("reloader running: interval = " + refreshInterval);
+           log.debug("reloader running: interval = " + refresh);
            
            // loop on checking the source
 
@@ -104,7 +128,7 @@ public class Metadata {
                     log.info("interrupted during processing");
                     break;
                  }
-                 Thread.sleep(refreshInterval * 1000);
+                 Thread.sleep(refresh * 1000);
               } catch (InterruptedException e) {
                  log.info("sleep interrupted");
                  break;
@@ -114,34 +138,20 @@ public class Metadata {
        
     }
 
-   // create from properties
 
-   public Metadata(Properties prop) throws RelyingPartyException {
-       id = prop.getProperty("id");
-       description = prop.getProperty("description");
-       uri = prop.getProperty("uri");
-       sourceName = uri.replaceFirst("file:","");
-       tempUri = prop.getProperty("tempUri");
-       String v = prop.getProperty("editable");
-       if (v.equalsIgnoreCase("true")) editable = true;
-       else editable = false;
-       v = prop.getProperty("refresh");
-       try {
-          if (v!=null) refreshInterval = Integer.parseInt(v); // seconds
-       } catch (NumberFormatException e) {
-          log.error("invalid refresh arg " + v);
-       }
-       loadMetadata();
-
-       if (refreshInterval>0) {
-          reloader = new Thread(new MetadataReloader());
-          reloader.start();
-       }
-   }
-
+    @PostConstruct
+    private void init() throws RelyingPartyException {
+        sourceName = uri.replaceFirst("file:","");
+        loadMetadata();
+        if(refresh > 0){
+            reloader = new Thread(new MetadataReloader());
+            reloader.start();
+        }
+    }
    // load metadata from the url
    private void loadMetadata() throws RelyingPartyException {
       log.info("load relyingParties for " + id + " from " + uri);
+
       relyingParties = new Vector();
       Document doc;
       try {
@@ -166,7 +176,7 @@ public class Metadata {
           Element rpe = list.get(i);
           if (XMLHelper.getElementByName(rpe, "SPSSODescriptor")==null) continue;
           try {
-             RelyingParty rp = new RelyingParty(rpe, this);
+             RelyingParty rp = new RelyingParty(rpe, id, editable);
              relyingParties.add(rp);
           } catch (RelyingPartyException e) {
              log.error("load of element failed: " + e);
@@ -175,15 +185,9 @@ public class Metadata {
        }
    }
 
-
-   // load a single rp (from posted xml)
-   public void updateRelyingParty(Document doc) throws RelyingPartyException {
-      updateRelyingParty(doc, null);
-   }
-   public void updateRelyingParty(Document doc, String id) throws RelyingPartyException {
-      if (!editable) throw new RelyingPartyException("not editable");
-      RelyingParty rp = new RelyingParty(doc.getDocumentElement(), this);
-      if (id!=null && !rp.getEntityId().equals(id)) throw new RelyingPartyException("Id doesn't match");
+   @Override
+   public void updateRelyingParty(RelyingParty rp) {
+      if (!editable) return;
 
       refreshMetadataIfNeeded();
       locker.readLock().lock();
@@ -202,7 +206,8 @@ public class Metadata {
       writeMetadata();
    }
 
-   // remove a single rp 
+   // remove a single rp
+   @Override
    public void removeRelyingParty(String id) {
       if (!editable) return;
       refreshMetadataIfNeeded();
@@ -219,6 +224,7 @@ public class Metadata {
    }
 
    // get rp by id
+   @Override
    public RelyingParty getRelyingPartyById(String rpid) throws RelyingPartyException {
       log.debug("md " + id + " looking for " + rpid);
       refreshMetadataIfNeeded();
@@ -233,20 +239,30 @@ public class Metadata {
       throw new RelyingPartyException("not found");
    }
 
-   // select rps by match
-   public int addSelectRelyingParties(String sel, List<RelyingParty> list) {
-      refreshMetadataIfNeeded();
-      int nrp = 0;
-      refreshMetadataIfNeeded();
-      locker.readLock().lock();
-      for (int i=0; i<relyingParties.size(); i++) {
-         RelyingParty rp = relyingParties.get(i);
-         if (sel!=null && !rp.getEntityId().matches(".*" + sel + ".*")) continue;
-         list.add(rp);
-         nrp += 1;
-      }
-      locker.readLock().unlock();
-      return nrp;
+    @Override
+    public List<String> getRelyingPartyIds() {
+        List<String> relyingPartyIds = new ArrayList<>();
+        for(RelyingParty relyingParty : relyingParties){
+            relyingPartyIds.add(relyingParty.getEntityId());
+        }
+        return relyingPartyIds;
+    }
+
+    // select rps by match
+   @Override
+   public List<RelyingParty> addSelectRelyingParties(String sel) {
+       refreshMetadataIfNeeded();
+       // twice?
+       refreshMetadataIfNeeded();
+       List<RelyingParty> list = new ArrayList<>();
+       locker.readLock().lock();
+       for (int i=0; i<relyingParties.size(); i++) {
+           RelyingParty rp = relyingParties.get(i);
+           if (sel!=null && !rp.getEntityId().matches(".*" + sel + ".*")) continue;
+           list.add(rp);
+       }
+       locker.readLock().unlock();
+       return list;
    }
 
    // write the metadata
