@@ -58,7 +58,7 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.registry.exception.RelyingPartyException;
 
-public class XMLRelyingPartyManager implements RelyingPartyManager {
+public class RelyingPartyManagerImpl implements RelyingPartyManager {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 

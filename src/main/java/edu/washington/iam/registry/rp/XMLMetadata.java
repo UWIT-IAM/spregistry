@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.registry.exception.RelyingPartyException;
 
-public class Metadata implements  MetadataDAO {
+public class XMLMetadata implements  MetadataDAO {
  
    private final Logger log = LoggerFactory.getLogger(getClass());
    private final ReentrantReadWriteLock locker = new ReentrantReadWriteLock();

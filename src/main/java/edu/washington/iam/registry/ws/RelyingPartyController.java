@@ -55,7 +55,6 @@ import javax.servlet.http.Cookie;
 
 import edu.washington.iam.registry.rp.RelyingParty;
 import edu.washington.iam.registry.rp.RelyingPartyManager;
-import edu.washington.iam.registry.rp.Metadata;
 import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.tools.DNSVerifier;
 import edu.washington.iam.tools.DNSVerifyException;

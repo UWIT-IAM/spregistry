@@ -9,9 +9,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:applicationContext.xml")
-public class XMLRelyingPartyManagerTest {
+public class RelyingPartyManagerImplTest {
     @Autowired
-    private XMLRelyingPartyManager rpManager;
+    private RelyingPartyManagerImpl rpManager;
 
     @org.junit.Before
     public void setUp() throws Exception {
@@ -25,8 +25,7 @@ public class XMLRelyingPartyManagerTest {
 
     @Test
     public void testGenRelyingPartyByName() throws Exception {
-        XMLRelyingPartyManager rpm = new XMLRelyingPartyManager();
-        RelyingParty rp = rpm.genRelyingPartyByName("https://www.example.com", "www.example.com");
+        RelyingParty rp = rpManager.genRelyingPartyByName("https://www.example.com", "www.example.com");
         Assert.assertEquals("https://www.example.com", rp.getEntityId());
     }
 

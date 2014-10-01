@@ -11,11 +11,11 @@
     <context:annotation-config />
     <context:property-placeholder location="${spreg.properties:/WEB-INF/spreg.properties}"/>
 
-    <bean id="sprpManager" init-method="init" destroy-method="cleanup" class="edu.washington.iam.registry.rp.XMLRelyingPartyManager">
+    <bean id="sprpManager" init-method="init" destroy-method="cleanup" class="edu.washington.iam.registry.rp.RelyingPartyManagerImpl">
         <property name="metadataDAOs">
             <map>
                 <entry key="IC">
-                    <bean class="edu.washington.iam.registry.rp.Metadata">
+                    <bean class="edu.washington.iam.registry.rp.XMLMetadata">
                         <property name="id" value="IC"/>
                         <property name="description" value="InCommon"/>
                         <property name="uri" value="file:${incommon.metadata.path}"/>
@@ -24,7 +24,7 @@
                     </bean>
                 </entry>
                 <entry key="UWfixed">
-                    <bean class="edu.washington.iam.registry.rp.Metadata">
+                    <bean class="edu.washington.iam.registry.rp.XMLMetadata">
                         <property name="id" value="UWfixed"/>
                         <property name="description" value="UW fixed non-federation peers"/>
                         <property name="uri" value="file:${spreg.root}/UW-base-metadata.xml"/>
@@ -32,7 +32,7 @@
                     </bean>
                 </entry>
                 <entry key="UW">
-                    <bean class="edu.washington.iam.registry.rp.Metadata">
+                    <bean class="edu.washington.iam.registry.rp.XMLMetadata">
                         <property name="id" value="UW"/>
                         <property name="description" value="UW non-federation peers"/>
                         <property name="uri" value="file:${spreg.root}/UW-rp-metadata.xml"/>

@@ -50,7 +50,6 @@ import edu.washington.iam.registry.exception.ProxyException;
 import edu.washington.iam.registry.exception.NoPermissionException;
 
 import edu.washington.iam.registry.rp.RelyingPartyManager;
-import edu.washington.iam.registry.rp.Metadata;
 import edu.washington.iam.registry.rp.RelyingParty;
 import edu.washington.iam.registry.exception.RelyingPartyException;
 
