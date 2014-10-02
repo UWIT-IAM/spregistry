@@ -50,6 +50,7 @@
     <bean class="edu.washington.iam.registry.rp.DBMetadata">
         <property name="id" value="UW"/>
         <property name="groupId" value="uwrp" />
+        <property name="editable" value = "true" />
     </bean>
 
 </beans>

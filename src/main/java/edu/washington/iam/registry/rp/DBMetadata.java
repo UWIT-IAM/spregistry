@@ -24,13 +24,25 @@ public class DBMetadata implements MetadataDAO {
 
     private String id;
     private String groupId;
+    private boolean editable;
 
     @Autowired
     private JdbcTemplate template;
 
     @Override
     public List<RelyingParty> addSelectRelyingParties(String sel) {
-        return null;
+        List<RelyingParty> rps = template.query(
+                "select * from metadata where status = 1 and group_id = ? and entity_id like ?",
+                new Object[] { groupId, '%' + sel + '%'},
+                new RelyingPartyMapper()
+        );
+        List<RelyingParty> rpsNoNulls = new ArrayList<>();
+        for(RelyingParty relyingParty : rps){
+            if(relyingParty != null){
+                rpsNoNulls.add(relyingParty);
+            }
+        }
+        return rpsNoNulls;
     }
 
     @Override
@@ -69,7 +81,7 @@ public class DBMetadata implements MetadataDAO {
 
     @Override
     public boolean isEditable() {
-        return false;
+        return editable;
     }
 
     @Override
@@ -80,10 +92,8 @@ public class DBMetadata implements MetadataDAO {
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
-
-    public void setId(String id) {
-        this.id = id;
-    }
+    public void setId(String id) { this.id = id; }
+    public void setEditable(boolean editable) { this.editable = editable; }
 
     private class RelyingPartyMapper implements RowMapper<RelyingParty> {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
