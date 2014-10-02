@@ -86,6 +86,13 @@ public class DBMetadataTest {
         Assert.assertEquals(2, relyingParties.size());
     }
 
+    @Test
+    public void testRemoveRelyingParty(){
+        dao.removeRelyingParty(fakeEntityIds.get(0));
+        List<String> ids = dao.getRelyingPartyIds();
+        Assert.assertEquals(fakeEntityIds.size() - 1, ids.size());
+    }
+
     private void setupWithRPs(List<String> entityIds){
         String groupId = "uwrp";
         for (String entityId : entityIds) {

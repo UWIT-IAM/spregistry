@@ -4,7 +4,6 @@ import edu.washington.iam.registry.exception.RelyingPartyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.w3c.dom.Document;
@@ -76,7 +75,8 @@ public class DBMetadata implements MetadataDAO {
 
     @Override
     public void removeRelyingParty(String rpid) {
-
+        template.update("update metadata set status = 0, update_time = now() where entity_id = ?",
+                new Object[] {rpid});
     }
 
     @Override
