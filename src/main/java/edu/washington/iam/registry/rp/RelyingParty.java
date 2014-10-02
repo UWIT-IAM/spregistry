@@ -18,7 +18,6 @@
 
 package edu.washington.iam.registry.rp;
 
-import java.io.Serializable;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
@@ -26,6 +25,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Arrays;
 
+import edu.washington.iam.tools.XMLSerializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +41,7 @@ import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.registry.exception.RelyingPartyException;
 
 
-public class RelyingParty implements Serializable  {
+public class RelyingParty implements XMLSerializable {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -190,6 +190,7 @@ public class RelyingParty implements Serializable  {
        contactPersons.add(new ContactPerson("administrative"));
     }
 
+    @Override
     public void writeXml(BufferedWriter xout) throws IOException {
         xout.write(" <EntityDescriptor entityID=\"" + XMLHelper.safeXml(entityId) + "\">\n");
         String ars = "";

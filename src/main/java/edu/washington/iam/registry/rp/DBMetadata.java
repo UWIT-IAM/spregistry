@@ -1,6 +1,7 @@
 package edu.washington.iam.registry.rp;
 
 import edu.washington.iam.registry.exception.RelyingPartyException;
+import edu.washington.iam.tools.XMLHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ public class DBMetadata implements MetadataDAO {
                 rpsNoNulls.add(relyingParty);
             }
         }
+        log.info(String.format("metadata search for %s yields %d results", sel, rpsNoNulls.size()));
         return rpsNoNulls;
     }
 
@@ -62,21 +64,41 @@ public class DBMetadata implements MetadataDAO {
 
     @Override
     public List<String> getRelyingPartyIds() {
-        List<String> ids = template.queryForList("select entity_id from metadata where status = 1 and group_id = ?",
+        return template.queryForList("select entity_id from metadata where status = 1 and group_id = ?",
                 String.class,
-                new Object[]{groupId});
-        return ids;
+                groupId);
     }
 
     @Override
-    public void updateRelyingParty(RelyingParty rp) {
-
+    public void updateRelyingParty(RelyingParty relyingParty) {
+        log.info(String.format("updating metadata for rp %s in %s", relyingParty.getEntityId(), groupId));
+        try {
+            String xml = XMLHelper.serializeXmlToString(relyingParty);
+            List<String> existingIds = template.queryForList(
+                    "select entity_id from metadata where group_id = ? and entity_id = ?",
+                    String.class,
+                    groupId, relyingParty.getEntityId());
+            if (existingIds.size() == 0) {
+                template.update(
+                        "insert into metadata (group_id, entity_id, xml, status, update_time) values (?, ?, ?, 1, now())",
+                        groupId, relyingParty.getEntityId(), xml);
+            } else {
+                template.update("update metadata set xml = ?, status = 1, update_time = now() where " +
+                        " entity_id = ? and group_id = ? ",
+                        xml, relyingParty.getEntityId(), groupId);
+            }
+        } catch (Exception e) {
+            log.info("update metadata trouble: " + e.getMessage());
+            // just eat it - don't know the repercussions
+        }
     }
+
 
     @Override
     public void removeRelyingParty(String rpid) {
-        template.update("update metadata set status = 0, update_time = now() where entity_id = ?",
-                new Object[] {rpid});
+        log.info(String.format("removing metadata for rp %s in %s", rpid, groupId));
+        template.update("update metadata set status = 0, update_time = now() where entity_id = ? and group_id = ?",
+                rpid, groupId);
     }
 
     @Override
@@ -89,9 +111,7 @@ public class DBMetadata implements MetadataDAO {
 
     }
 
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
-    }
+    public void setGroupId(String groupId) { this.groupId = groupId; }
     public void setId(String id) { this.id = id; }
     public void setEditable(boolean editable) { this.editable = editable; }
 

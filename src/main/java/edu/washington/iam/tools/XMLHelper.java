@@ -18,6 +18,9 @@
 
 package edu.washington.iam.tools;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -140,6 +143,14 @@ public final class XMLHelper {
     public static String safeJson(String in) {
        if (in==null) return null;
        return in.replaceAll("'","").replaceAll("\n","");
+    }
+
+    public static String serializeXmlToString(XMLSerializable obj) throws IOException {
+        StringWriter sw = new StringWriter();
+        BufferedWriter xout = new BufferedWriter(sw);
+        obj.writeXml(xout);
+        xout.close();
+        return sw.toString();
     }
 }
 
