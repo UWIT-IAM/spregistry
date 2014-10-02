@@ -211,16 +211,11 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
                                    AttributeFilterPolicy attributeFilterPolicy) throws FilterPolicyException {
         log.info(String.format("updating %s for %s", attributeFilterPolicy.getEntityId(), filterPolicyGroup.getId()));
         try {
-            StringWriter sw = new StringWriter();
-            BufferedWriter xout = new BufferedWriter(sw);
-            attributeFilterPolicy.writeXml(xout);
-            xout.close();
+            String xml = XMLHelper.serializeXmlToString(attributeFilterPolicy);
             template.update("update filter set xml = ?, status = 1, update_time = now() where entity_id = ? and group_id = ? ",
-                    new Object[]{
-                            sw.toString(),
-                            attributeFilterPolicy.getEntityId(),
-                            filterPolicyGroup.getId()}
-            );
+                    xml,
+                    attributeFilterPolicy.getEntityId(),
+                    filterPolicyGroup.getId());
         } catch (Exception e) {
             log.info("update trouble: " + e.getMessage());
             throw(new FilterPolicyException(e));
@@ -231,16 +226,11 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
                                    AttributeFilterPolicy attributeFilterPolicy) throws FilterPolicyException {
         log.info(String.format("creating %s for %s", attributeFilterPolicy.getEntityId(), filterPolicyGroup.getId()));
         try {
-            StringWriter sw = new StringWriter();
-            BufferedWriter xout = new BufferedWriter(sw);
-            attributeFilterPolicy.writeXml(xout);
-            xout.close();
+            String xml = XMLHelper.serializeXmlToString(attributeFilterPolicy);
             template.update("insert into filter (group_id, entity_id, xml, status, update_time) values (?, ?, ?, 1, now())",
-                    new Object[]{
-                            filterPolicyGroup.getId(),
-                            attributeFilterPolicy.getEntityId(),
-                            sw.toString()}
-            );
+                   filterPolicyGroup.getId(),
+                   attributeFilterPolicy.getEntityId(),
+                   xml);
         } catch (Exception e) {
             log.info("create trouble: " + e.getMessage());
             throw(new FilterPolicyException(e));

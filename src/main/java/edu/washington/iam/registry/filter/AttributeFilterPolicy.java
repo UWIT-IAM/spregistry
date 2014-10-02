@@ -18,18 +18,16 @@
 
 package edu.washington.iam.registry.filter;
 
-import java.io.Serializable;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
 import java.util.List;
 import java.util.Vector;
-import java.util.Arrays;
 
+import edu.washington.iam.tools.XMLSerializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
@@ -39,7 +37,7 @@ import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.registry.exception.FilterPolicyException;
 import edu.washington.iam.registry.rp.RelyingParty;
 
-public class AttributeFilterPolicy implements Serializable  {
+public class AttributeFilterPolicy implements XMLSerializable {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
