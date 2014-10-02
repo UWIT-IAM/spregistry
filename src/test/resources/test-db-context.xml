@@ -47,4 +47,9 @@
         <property name="template" ref="jdbcTemplate"></property>
     </bean>
 
+    <bean class="edu.washington.iam.registry.rp.DBMetadata">
+        <property name="id" value="UW"/>
+        <property name="groupId" value="uwrp" />
+    </bean>
+
 </beans>

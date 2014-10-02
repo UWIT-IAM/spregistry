@@ -261,14 +261,14 @@ public class DBFilterPolicyDAOTest {
 
     private String fakeAttributeFilterPolicyXml(String entityId){
         return String.format(
-                "<AttributeFilterPolicy id=\"%s\">                                                                                                                                            \n" +
-                        "  <PolicyRequirementRule xsi:type=\"basic:AttributeRequesterString\" value=\"%s\"/>                                                                                             \n" +
-                        "  <AttributeRule attributeID=\"assurance\">                                                                                                                                                                          \n" +
-                        "    <PermitValueRule xsi:type=\"basic:ANY\"/>                                                                                                                                                                        \n" +
-                        "  </AttributeRule>                                                                                                                                                                                                 \n" +
-                        "  <AttributeRule attributeID=\"cn\">                                                                                                                                                                                 \n" +
-                        "    <PermitValueRule xsi:type=\"basic:ANY\"/>                                                                                                                                                                        \n" +
-                        "  </AttributeRule>                                                                                                                                                                                                 \n" +
+                "<AttributeFilterPolicy id=\"%s\">\n" +
+                        "  <PolicyRequirementRule xsi:type=\"basic:AttributeRequesterString\" value=\"%s\"/>\n" +
+                        "  <AttributeRule attributeID=\"assurance\">\n" +
+                        "    <PermitValueRule xsi:type=\"basic:ANY\"/>\n" +
+                        "  </AttributeRule>\n" +
+                        "  <AttributeRule attributeID=\"cn\">\n" +
+                        "    <PermitValueRule xsi:type=\"basic:ANY\"/>\n" +
+                        "  </AttributeRule>\n" +
                         " </AttributeFilterPolicy>",
                 entityId.replaceAll("[:/.]", "_"),
                 entityId);
