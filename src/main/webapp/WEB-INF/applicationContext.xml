@@ -32,13 +32,10 @@
                     </bean>
                 </entry>
                 <entry key="UW">
-                    <bean class="edu.washington.iam.registry.rp.XMLMetadata">
+                    <bean class="edu.washington.iam.registry.rp.DBMetadata">
                         <property name="id" value="UW"/>
-                        <property name="description" value="UW non-federation peers"/>
-                        <property name="uri" value="file:${spreg.root}/UW-rp-metadata.xml"/>
-                        <property name="editable" value="true"/>
-                        <property name="refresh" value="600"/>
-                        <property name="tempUri" value="file:${spreg.root}/tmp-rp-uw.xml"/>
+                        <property name="groupId" value="uwrp" />
+                        <property name="editable" value = "true" />
                     </bean>
                 </entry>
             </map>

@@ -83,6 +83,12 @@ public class DBMetadataTest {
     }
 
     @Test
+    public void testAddSelectRelyingPartiesNullSearch(){
+        List<RelyingParty> relyingParties = dao.addSelectRelyingParties(null);
+        Assert.assertTrue(relyingParties.size() > 2);
+    }
+
+    @Test
     public void testAddSelectRelyingPartiesNoDeleted(){
         template.update("update metadata set status = 0 where entity_id = ?",
                 "https://searchdbmetadatatest2.s.uw.edu");
