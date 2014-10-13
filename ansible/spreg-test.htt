@@ -1,5 +1,5 @@
 #
-# basic spreg API tester
+# basic certservice API tester
 #
 # retrieves metadata for https://iam-ws.u.washington.edu/
 #
@@ -16,3 +16,4 @@ __
 _EXPECT . "HTTP/1.1 200 OK"
 _WAIT
 END
+

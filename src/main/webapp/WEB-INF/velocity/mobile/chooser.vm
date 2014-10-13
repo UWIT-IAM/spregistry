@@ -1,0 +1,144 @@
+#* ========================================================================
+ * Copyright (c) 2014 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ *#
+## sp registry mobile chooser
+
+#parse ( 'definitions.vm' )
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no"/>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Service Provider Registry</title>
+<script>
+dojoConfig = {
+   "async": true,
+   "parseOnLoad": false,
+   "isDebug": true,
+   packages: [{
+      name: "iam",
+      location: "/js"
+   }]
+};
+</script>
+
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/dojo.js" data-dojo-config="async: true"></script>
+  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/resources/dojo.css"/>
+  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/claro/claro.css"/>
+<link rel="stylesheet" type="text/css" href="/css/iam-dojo-2.css"/>
+
+
+<script type="text/javascript" src="/js/iam-dojo.js"></script>
+<script type="text/javascript" src="/js/sp.js"></script>
+
+<script>
+    require(["dojo/dom",
+             "dojox/mobile/parser",
+             "dojox/mobile",
+             "dojox/mobile/deviceTheme",
+             "dojox/mobile/compat",
+             "dojox/mobile/TextBox",
+             "dojox/mobile/Button",
+             "dojox/mobile/ContentPane",
+             "dojox/mobile/RoundRectList",
+             "dojox/mobile/ScrollableView",
+             "dojox/mobile/TabBar",
+             "dojox/mobile/Overlay",
+             "dojo/domReady!"], function(dom,parser) {
+               parser.parse();
+               onLoad();
+    });
+
+</script>
+
+<style><!--
+  .listlabel {
+      font-size:smaller;font-style:italic;font-family:serif;
+     }
+  .listcontent {
+      margin: 0px 0px 0px 12px;
+     }
+  .mblButton {
+      margin-top: 5px;
+     }
+--></style>
+
+<script>
+
+require(["dojo/_base/Deferred", "dojo/_base/xhr", "dojo/_base/array", "dojo/dom-construct", "dojo/dom", "dojo/domReady!"]);
+
+function redirectToLogin(path) {
+   var url = '$root' + '$vers' + path + '$pathextra';
+   document.location = url;
+}
+
+</script>
+
+</head>
+
+<body id="documentbody">
+
+
+##  <div id="waitview" align="center"><img src="/img/circle_loader.gif"/></div>
+
+## Home page
+
+<div id="homeview" dojoType="dojox.mobile.View" data-dojo-props="selected: true" style="display:none">
+
+    <h1 data-dojo-type="dojox.mobile.Heading" fixed="top">
+       Groups Service
+     </h1>
+
+
+       Please Login.
+
+
+     <div dojoType="dojox.mobile.RoundRect" shadow="true">
+        <ul id="realhome" data-dojo-type="dojox.mobile.RoundRectList" shadow="false">
+             <li data-dojo-type="dojox.mobile.ListItem" >
+                    <div data-dojo-type="dojox.mobile.Button" data-dojo-props="onClick:function(){redirectToLogin('$uwloginpath');}"
+                       value="UW NetID">UWNetID</div>
+            </li>
+
+            <li data-dojo-type="dojox.mobile.ListItem" >
+                    <div data-dojo-type="dojox.mobile.Button" data-dojo-props="onClick:function(){redirectToLogin('$googleloginpath');}"
+                       value="Google">Google</div>
+            </li>
+            <li data-dojo-type="dojox.mobile.ListItem" >
+                    <div data-dojo-type="dojox.mobile.Button" data-dojo-props="onClick:function(){redirectToLogin('$incommonloginpath');}"
+                       value="InCommon">InCommon</div>
+            </li>
+        </ul>
+    </div>
+
+<p>
+#*
+     <div dojoType="dojox.mobile.RoundRect" shadow="false">
+      For features and capabilities not available on your phone, please visit the site with your browser.
+    </div>
+ *#
+
+      
+    <h4 data-dojo-type="dojox.mobile.Heading" fixed="bottom">
+##        <div dojoType="dojox.mobile.ToolBarButton" style="padding: 0px 2px;float:right"
+##             onClick="document.location='${root}${vers}/logout/'">Logout</div>
+         UW-IT
+    </h4>
+</div>
+
+</body>
+</html>
+

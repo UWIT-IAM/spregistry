@@ -7,6 +7,8 @@
   max_fail_percentage: 10
 
   tasks:
+  - include_vars: "local_vars.yml"
+
   - name: create properties yml file
     local_action: mk_property_yml spreg {{ cluster_type }}
 
@@ -15,7 +17,7 @@
   # configure spreg properties file
   # change restarts tomcat
   - name: copy properties file
-    copy: "src=../spreg.properties.{{ cluster_type }}  dest={{ spreg_root }}/spreg.properties group=pubcookie mode=664"
+    copy: "src=../spreg.properties.{{ cluster_type }}  dest={{ spreg_root }}/spreg.properties group=iam-dev mode=664"
     notify: restart tomcat
  
   # configure tomcat startup properties
@@ -31,29 +33,23 @@
 
   # copy js files
   - name: copy js files
-    copy: "src=../src/main/webapp/sp.js dest=/www/js/sp.js group=pubcookie mode=664"
+    copy: "src=../src/main/webapp/sp.js dest=/www/js/sp.js group=iam-dev mode=664"
     when: non_standard_apache is not defined
 
   # update certs and keys (used by spreg)
   # change restarts tomcat
-  - name: copy crt
-    copy: "src={{ local_crt_file }} dest={{ crt_file }} group=pubcookie mode=660 "
-    when: local_crt_file is defined
-    notify: restart tomcat
-
-  - name: copy key
-    copy: "src={{ local_key_file }} dest={{ key_file }} group=pubcookie mode=660"
-    when: local_key_file is defined
-    notify: restart tomcat
-
-  - name: copy ca
-    copy: "src={{ local_ca_file }} dest={{ ca_file }} group=pubcookie mode=664"
-    when: local_ca_file is defined
+  - name: copy certs and keys
+    copy: "src={{ item.src }} dest={{ item.dest }} group=iam-dev mode=664 "
+    with_items:
+       - { src: '{{local_webclient_certFile}}', dest: '{{spreg_webclient_certFile}}' }
+       - { src: '{{local_webclient_keyFile}}', dest: '{{spreg_webclient_keyFile}}' }
+       - { src: '{{local_webclient_caFile}}', dest: '{{spreg_webclient_caFile}}' }
+    when: have_local_certs is defined and item.src != ""
     notify: restart tomcat
 
   # update the spreg.war file
   - name: copy war
-    copy: "src=../target/spreg.war dest=/data/webapps/spreg.war group=pubcookie mode=664"
+    copy: "src=../target/spreg.war dest=/data/webapps/spreg.war group=iam-dev mode=664"
     notify: restart tomcat
 
   # run any handlers 
@@ -66,7 +62,7 @@
            -D CERT={{local_webclient_certFile}}
            -D KEY={{local_webclient_keyFile}}
            -D CA={{local_webclient_caFile}}
-           iam-ws-test.htt"
+           spreg-test.htt"
     register: httest_result
     changed_when: "httest_result.rc != 0"
 
