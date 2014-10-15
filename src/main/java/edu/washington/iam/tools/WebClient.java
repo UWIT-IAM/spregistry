@@ -20,6 +20,8 @@ package edu.washington.iam.tools;
 
 import java.io.Serializable;
 import java.io.InputStream;
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 
 import java.util.List;
 import java.util.Vector;
@@ -56,10 +58,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -77,6 +81,7 @@ public class WebClient {
     private String certFile = null;
     private String keyFile = null;
     private String caFile = null;
+    private int queryTimeLimit = 15000;  // fifteen seconds default
 
     private ClientConnectionManager connectionManager;
     private boolean initialized = false;
@@ -84,6 +89,8 @@ public class WebClient {
 
     DefaultHttpClient soapclient = null;
     DefaultHttpClient restclient = null;
+
+    HttpParams httpParams = null;
 
     // 
     private String soapHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + 
@@ -240,6 +247,41 @@ public class WebClient {
        return ele;
     }
 
+   // simple rest get
+    public String simpleRestGet(String url)
+           throws SocketTimeoutException, WebClientException {
+
+       closeIdleConnections();
+
+       log.debug("simple rest get");
+       try {
+          HttpParams httpParams = new BasicHttpParams();
+          HttpConnectionParams.setConnectionTimeout(httpParams, queryTimeLimit);
+          HttpConnectionParams.setSoTimeout(httpParams, queryTimeLimit);
+          DefaultHttpClient httpclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, httpParams);
+
+          log.debug(" url: " + url);
+
+          HttpGet httpget = new HttpGet(url);
+          HttpResponse response = httpclient.execute(httpget);
+          log.debug("resp: " + response.getStatusLine().getStatusCode() + " = " + response.getStatusLine().getReasonPhrase());
+
+          HttpEntity entity = response.getEntity();
+
+          // null is error - should get something
+          if (entity == null) {
+             throw new WebClientException("httpclient post exception");
+          }
+          String resp = EntityUtils.toString(entity);
+          log.debug(" got: " + resp);
+          return (resp);
+       } catch (IOException e) {
+          log.error("io error " + e.getMessage());
+       }
+       return null;
+    }
+
+
     // initialize
 
     public void init() {
@@ -273,6 +315,10 @@ public class WebClient {
  **/
          }
 
+         httpParams = new BasicHttpParams();
+         HttpConnectionParams.setConnectionTimeout(httpParams, queryTimeLimit);
+         HttpConnectionParams.setSoTimeout(httpParams, queryTimeLimit);
+
          initialized = true;
 
        } catch (Exception e) {
@@ -290,6 +336,10 @@ public class WebClient {
     public void setCaFile(String v) {
        caFile = v;
     }
+    public void setQueryTimeLimit(int t) {
+       queryTimeLimit = t;
+    }
+
 
 }
 

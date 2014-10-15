@@ -23,20 +23,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
     
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.conn.scheme.Scheme;
@@ -49,22 +41,23 @@ import org.apache.http.params.BasicHttpParams;
 import edu.washington.iam.tools.DNSVerifier;
 import edu.washington.iam.tools.DNSVerifyException;
 import edu.washington.iam.tools.WebClient;
-import edu.washington.iam.tools.XMLHelper;
+
+// google-gson
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonPrimitive;
 
 
 public class NetactDNSVerifier implements DNSVerifier {
 
-    private final Logger log =   LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
-    /* Netact soap service provides ownership list */
+    /* Netact rest service provides ownership list */
 
-    private static String netactUrl = "https://netman.cac.washington.edu/sslr/mod_soap/Net/Contacts/soap_dish/index.cgi";
-    private static String netactAction = "https://netman.cac.washington.edu/Net/Contacts#get_uwnetids_from_hostname";
-    private static boolean initialized = false;
-
-    private static String soapBody = "<get_uwnetids_from_hostname xmlns=\"https://netman.cac.washington.edu/Net/Contacts\">" +
-       "<c-gensym3 xsi:type=\"xsd:string\">HOST</c-gensym3></get_uwnetids_from_hostname>";
-
+    private static String hostUrl = null;
+    private static String domainUrl = null;
     private WebClient webClient;
 
     /**
@@ -76,28 +69,50 @@ public class NetactDNSVerifier implements DNSVerifier {
      */
 
     public boolean isOwner(String dns, String id, List<String> owners) throws DNSVerifyException  {
+       return _isOwner(true, dns, id, owners);
+    }
+
+    private boolean _isOwner(boolean ishost, String dns, String id, List<String> owners) throws DNSVerifyException  {
 
        boolean isOwner = false;
        if (id==null) id = "";
        log.debug("looking for owner (" + id + ") in " + dns);
 
        try {
-          // format and make the request
-          String body = soapBody.replaceFirst("HOST", dns);
-          Element resp = webClient.doSoapRequest(netactUrl, netactAction, body);
-          Element r1 = XMLHelper.getElementByName(resp, "get_uwnetids_from_hostnameResponse");
-          Element r2 = XMLHelper.getElementByName(r1, "Array");
-          NodeList nl = r2.getChildNodes();
-          for (int i=0;i<nl.getLength(); i++) {
-             Node n = nl.item(i);
-             if (n.getNodeName().equals("item")) {
-                if (n.getTextContent().equals(id)) {
-                   if (owners==null) return true;  // done
-                   isOwner = true;
-                }
-                if (owners!=null && !owners.contains(n.getTextContent())) owners.add(n.getTextContent());
-             }
-          }
+          String url = (ishost? hostUrl:domainUrl) + dns;
+          String respString = webClient.simpleRestGet(url);
+          log.debug("got: " + respString);
+
+          JsonParser parser = new JsonParser();
+          JsonElement ele = parser.parse(respString);
+          if (ele.isJsonObject()) {
+            JsonObject resp = ele.getAsJsonObject();
+            if (resp.get("table").isJsonObject()) {
+               JsonObject tbl = resp.getAsJsonObject("table");
+               if (tbl.get("row").isJsonArray()) {
+                  JsonArray ids = tbl.getAsJsonArray("row");
+                  for (int i = 0; i < ids.size(); i++) {
+                     JsonObject idi = ids.get(i).getAsJsonObject();
+                     JsonPrimitive oidu = idi.getAsJsonPrimitive("uwnetid");
+                     if (oidu==null) continue;
+                     String oid = oidu.getAsString();
+                     if (oid.equals(id)) {
+                        if (owners==null) return true;  // done
+                        isOwner = true;
+                     }
+                     if (owners!=null && !owners.contains(oid)) owners.add(oid);
+                  }
+               } else {
+                  String oid = tbl.getAsJsonObject("row").getAsJsonPrimitive("uwnetid").getAsString();
+                  if (oid.equals(id)) {
+                     if (owners==null) return true;  // done
+                     isOwner = true;
+                  }
+                  if (owners!=null && !owners.contains(oid)) owners.add(oid);
+               }
+            }
+         }
+
        } catch (Exception e) {
           log.debug("netact dns lookup error: " + e);
           throw new DNSVerifyException(e.getMessage() + " : " + e.getCause());
@@ -108,7 +123,7 @@ public class NetactDNSVerifier implements DNSVerifier {
        // log.debug("do substrings: " + dns);
        int p = dns.indexOf(".");
        if (p>0) { 
-          if (isOwner(dns, id, owners)) {
+          if (_isOwner(false, dns, id, owners)) {
              if (owners==null) return true;  // done
              isOwner = true;
           }
@@ -117,11 +132,17 @@ public class NetactDNSVerifier implements DNSVerifier {
     }
 
     public boolean isOwner(String dns, String id) throws DNSVerifyException  {
-        return isOwner(dns, id, null);
+        return _isOwner(true, dns, id, null);
     } 
 
     public void setWebClient(WebClient v) {
        webClient = v;
+    }
+    public void setHostUrl(String v) {
+       hostUrl = v;
+    }
+    public void setDomainUrl(String v) {
+       domainUrl = v;
     }
 
     public void init() {
