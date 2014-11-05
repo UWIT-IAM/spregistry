@@ -46,14 +46,13 @@ do
   esac
 done
 
-target=$target
-
+[[ -z $target ]] && target=$value
 [[ -n "$target" ]] || usage
 
-# get iam-ansible location
-. ./install.properties
+# get iam-ansible location ( use main prod config )
+[[ -r install.properties ]] && . install.properties || . ../../ansible/install.properties
 [[ -z $iam_ansible/hosts ]] && {
-   echo "iam_ansible installation directory is missing from install.properties"
+   echo "iam_ansible installation directory is missing from ../ansible/install.properties"
    exit 1
 }
 

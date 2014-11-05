@@ -1,7 +1,7 @@
 #####
 ##
 
-{% set self = ansible_nodename %}
+{% set self = ansible_hostname %}
 {% set selfck = self.split(".")[0] %}
 
 # ----------------------------------------------------------------------
@@ -15,7 +15,7 @@ RewriteRule ^/* /spreg/ [R=301,L]
 
 # if login and user's session starter is on remote host, proxy there
 {% for host in cluster_hosts %}
-{% if host == ansible_nodename %}
+{% if host == ansible_hostname %}
 {% else %}
 {% set ck = host.split(".")[0] %} 
 # sessions on {{ host }}
@@ -38,7 +38,11 @@ ProxyPass /spreg ajp://localhost:8009/spreg
 <LocationMatch /spreg/login>
   RequestHeader set Content-type application/xml
   AuthType shibboleth
+{% if cluster_type == 'eval' %}
+  ShibRequireSessionWith UWDEV
+{% else %}
   ShibRequireSession On
+{% endif %}
   require valid-user
   require user fox
   order allow,deny
@@ -49,7 +53,11 @@ ProxyPass /spreg ajp://localhost:8009/spreg
 <LocationMatch /spreg/securelogin>
   RequestHeader set Content-type application/xml
   AuthType shibboleth
+{% if cluster_type == 'eval' %}
+  ShibRequireSessionWith UWDEVSECURE
+{% else %}
   ShibRequireSessionWith UWSECURE
+{% endif %}
   require valid-user
   order allow,deny
   allow from all

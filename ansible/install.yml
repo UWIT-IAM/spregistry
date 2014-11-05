@@ -10,11 +10,11 @@
   - include_vars: "local_vars.yml"
 
   - name: create properties yml file
-    local_action: mk_property_yml spreg {{ cluster_type }}
+    local_action: property_to_yml spreg {{ cluster_type }}
 
   - include_vars: "properties.yml"
 
-  # configure spreg properties file
+  # copy spreg properties file
   # change restarts tomcat
   - name: copy properties file
     copy: "src=../spreg.properties.{{ cluster_type }}  dest={{ spreg_root }}/spreg.properties group=iam-dev mode=664"
@@ -62,24 +62,24 @@
 
   # always run the test
   - name: run service tests
-    local_action:  "command httest -s
-           -D HOST={{inventory_hostname}}
-           -D CERT={{local_webclient_certFile}}
-           -D KEY={{local_webclient_keyFile}}
-           -D CA={{local_webclient_caFile}}
-           spreg-test.htt"
-    register: httest_result
-    changed_when: "httest_result.rc != 0"
+    local_action:  "command wget  -O /dev/null
+           --certificate={{ local_webclient_certFile }}
+           --private-key={{ local_webclient_keyFile }}
+           --ca-certificate={{ local_webclient_caFile }}
+           --no-check-certificate
+            'https://{{inventory_hostname}}/spreg/ws/metadata?mdid=UW&id=https://iam-ws.u.washington.edu/'"
+    register: wget_result
+    changed_when: "wget_result.rc != 0"
 
   # idle loadr if test fails
-  - name: idle loadr on test fail
+  - name: idle loadr if test fail
     command: /usr/bin/nohup /data/local/bin/ansible_command loadr idle
-    when: "httest_result.rc != 0"
+    when: "wget_result.rc != 0"
       
   # fail if test fails
-  - name: fail on test fail
+  - name: fail if test fail
     fail: msg="API service test fails after install"
-    when: "httest_result.rc != 0"
+    when: "wget_result.rc != 0"
       
 
   # handlers mostly standard from iam-ansible

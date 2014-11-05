@@ -1,0 +1,20 @@
+#
+# spreg idp tools install playbook
+#
+
+- hosts: "{{ target }}"
+  serial: 1
+  max_fail_percentage: 10
+
+  tasks:
+  - name: create conf yml file
+    local_action: pyconf_to_yml spreg_idp {{ cluster_type }}
+
+  - include_vars: "conf.yml"
+
+  - name: copy config file
+    copy: "src=../spreg_idp.conf.{{ cluster_type }}  dest={{ idp_base }}/bin/spreg_idp.conf group=iam-dev mode=660"
+ 
+  - name: copy program file
+    copy: "src=../spreg_idp.py  dest={{ idp_base }}/bin/spreg_idp.py group=iam-dev mode=664"
+ 

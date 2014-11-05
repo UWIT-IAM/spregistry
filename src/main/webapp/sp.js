@@ -287,7 +287,7 @@ function showSpList(e) {
   for (i=0; i<nsp; i++) {
     if ((txsp.length>0) && spList[i].id.indexOf(txsp)<0) continue;
     ndsp += 1;
-    if (ndsp>10) {
+    if (ndsp>10000) {  // the 10000 effectively disables this ... feature
        htm += '<span class="listitem dim4"><i>.&nbsp;.&nbsp;.&nbsp;</i></span>';
        break;
     }
@@ -311,6 +311,8 @@ function showSpList(e) {
   }
  
   dijitRegistry.byId('spIndexPane').set('content',htm);
+  adjustSPIndexSize();
+  
 }
 
 // load the list of SPs.  API call to server.
@@ -331,8 +333,6 @@ function loadSpList()
 
 function setPaneSizes() {
    console.log('Set pane sizes.....');
-   var ih = dojo.position(dojo.byId('indexPanel'),true).h;
-   var h = ih - 20;
 
    var dh = dojo.position(dojo.byId('displayPanel'),true).h;
    var dw = dojo.position(dojo.byId('displayPanel'),true).w;
@@ -358,18 +358,17 @@ function setPaneSizes() {
 
 }
 
-// presently deactivated
+// set the index list to correct size 
 function adjustSPIndexSize() {
-return 0;
-   var pane = dojo.byId('spIndexPane');
-   var pHeight = dojo.position(pane,true).h;
-   var tHeight = dojo.position(dojo.byId('indexTitlebar'),true).h;
-   var sHeight = dojo.position(dojo.byId('indexSubtitlebar'),true).h;
-   var bHeight = dojo.position(dojo.byId('indexPanel'),true).h;
-   var h = bHeight - tHeight -sHeight - 40 ;
-   dojo.style(pane, {
-     height: h + 'px'
-   });
+   var ih = dojo.position(dojo.byId('indexPanel'),true).h;
+   var iy = dojo.position(dojo.byId('indexPanel'),true).y;
+   var spiy = dojo.position(dojo.byId('spIndexPane'),true).y;
+   var spih = ih - (spiy - iy) - 20;
+
+   console.log('set sp ind ht = ' + spih);
+     dojo.style(dojo.byId('spIndexPane'), {
+        height: spih + 'px'
+      });
 }
 
 // Size the SP ddetail isplay

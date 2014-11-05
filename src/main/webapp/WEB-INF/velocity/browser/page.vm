@@ -251,7 +251,7 @@ function openNewSPForm() {
  </label><input id="filterSpList"  data-dojo-type="dijit.form.TextBox" />
 <br>
  <div class="spList" id="spIndexPane" data-dojo-type="dijit.layout.ContentPane"
-         onLoad="adjustSPIndexSize()"  style="margin-top:6px;overflow:auto">
+         style="margin-top:6px;overflow:auto">
      <i role="presentation">Retrieving the list of service providers</i>
   </div>
 
