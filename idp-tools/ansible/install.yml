@@ -18,3 +18,6 @@
   - name: copy program file
     copy: "src=../spreg_idp.py  dest={{ idp_base }}/bin/spreg_idp.py group=iam-dev mode=664"
  
+  - name: copy filter scanner
+    copy: "src=../filter_scan.py  dest={{ idp_base }}/bin/filter_scan.py group=iam-dev mode=664"
+ 

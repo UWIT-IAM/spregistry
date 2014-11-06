@@ -52,6 +52,12 @@
     when: have_local_certs is defined and item.src != ""
     notify: restart tomcat
 
+  # copy the attributes data file
+  # until this is in the dataabse 
+  - name: copy attribute data
+    copy: "src=../attribute.xml dest={{ spreg_root }}/attribute.xml group=iam-dev mode=664"
+    notify: restart tomcat
+
   # update the spreg.war file
   - name: copy war
     copy: "src=../target/spreg.war dest=/data/webapps/spreg.war group=iam-dev mode=664"
