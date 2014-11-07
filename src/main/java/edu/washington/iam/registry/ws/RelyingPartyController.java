@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.text.SimpleDateFormat;
 
+import edu.washington.iam.registry.rp.RelyingPartyEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -627,11 +628,11 @@ public class RelyingPartyController {
         }
         if (session.mv!=null) return (session.mv);
 
-        List<RelyingParty> relyingParties = null;
+        List<RelyingPartyEntry> relyingPartyIds = null;
 
         if (selType!=null && selType.equalsIgnoreCase("all")) selType = null;
-        relyingParties = rpManager.getRelyingParties(selRp, selType);
-        log.info("found " + relyingParties.size() + " rps" );
+        relyingPartyIds = rpManager.searchRelyingPartyIds(selRp, selType);
+        log.info("found " + relyingPartyIds.size() + " rps" );
  
         //List<Metadata> metadata = rpManager.getMetadata();
         //log.info("found " + metadata.size() + " mds" );
@@ -639,7 +640,7 @@ public class RelyingPartyController {
         ModelAndView mv = basicModelAndView(session, "json", "rps");
         mv.addObject("selectrp", selRp==null?"":selRp);
         mv.addObject("selecttype", selType==null?"all":selType);
-        mv.addObject("relyingParties", relyingParties);
+        mv.addObject("relyingParties", relyingPartyIds);
         //mv.addObject("metadata", metadata);
 
         return (mv);

@@ -42,9 +42,15 @@ public class DBMetadataTest {
     }
 
     @Test
-    public void testGetRelyingPartyIds() throws Exception {
-        List<String> ids = dao.getRelyingPartyIds();
-        Assert.assertTrue(ids.size() > 2);
+    public void testSearchRelyingPartyIdsNullSearch() throws Exception {
+        List<String> ids = dao.searchRelyingPartyIds(null);
+        Assert.assertTrue(ids.size() > 5);
+    }
+
+    @Test
+    public void testSearchRelyingPartyIds() throws Exception {
+        List<String> ids = dao.searchRelyingPartyIds("searchdbmetadatatest");
+        Assert.assertEquals(3, ids.size());
     }
 
     @Test
@@ -68,7 +74,7 @@ public class DBMetadataTest {
     @Test
     public void testGetRelyingPartyByIdBigTest() throws Exception {
         boolean atLeastOnce = false;
-        for(String rpId : dao.getRelyingPartyIds()){
+        for(String rpId : dao.searchRelyingPartyIds(null)){
             atLeastOnce = true;
             RelyingParty relyingParty = dao.getRelyingPartyById(rpId);
             Assert.assertNotNull(relyingParty);
@@ -99,7 +105,7 @@ public class DBMetadataTest {
     @Test
     public void testRemoveRelyingParty(){
         dao.removeRelyingParty(fakeEntityIds.get(0));
-        List<String> ids = dao.getRelyingPartyIds();
+        List<String> ids = dao.searchRelyingPartyIds(null);
         Assert.assertEquals(fakeEntityIds.size() - 1, ids.size());
     }
 
@@ -110,7 +116,7 @@ public class DBMetadataTest {
 
         dao.updateRelyingParty(relyingParty);
 
-        List<String> ids = dao.getRelyingPartyIds();
+        List<String> ids = dao.searchRelyingPartyIds(null);
         Assert.assertEquals(fakeEntityIds.size() + 1, ids.size());
         Assert.assertTrue(String.format("list of entity ids contains %s", entityId), ids.contains(entityId));
     }
@@ -119,26 +125,26 @@ public class DBMetadataTest {
     public void testUpdateRelyingPartyExistingRP() throws Exception {
         Timestamp preUpdateTime = new Timestamp(new Date().getTime());
         Assert.assertTrue(getTimestampForRP(fakeEntityIds.get(0)).before(preUpdateTime));
-        int preUpdateSize = dao.getRelyingPartyIds().size();
+        int preUpdateSize = dao.searchRelyingPartyIds(null).size();
 
         dao.updateRelyingParty(fakeRelyingParty(fakeEntityIds.get(0)));
 
         Assert.assertTrue(String.format("update time for %s has changed", fakeEntityIds.get(0)),
                 getTimestampForRP(fakeEntityIds.get(0)).after(preUpdateTime));
-        Assert.assertEquals(preUpdateSize, dao.getRelyingPartyIds().size());
+        Assert.assertEquals(preUpdateSize, dao.searchRelyingPartyIds(null).size());
     }
 
     @Test
     public void testUpdateRelyingPartyDeletedRP() throws Exception {
         template.update("update metadata set status = 0 where entity_id = ? ", fakeEntityIds.get(0));
         Timestamp preUpdateTime = new Timestamp(new Date().getTime());
-        int preUpdateSize = dao.getRelyingPartyIds().size();
+        int preUpdateSize = dao.searchRelyingPartyIds(null).size();
 
         dao.updateRelyingParty(fakeRelyingParty(fakeEntityIds.get(0)));
 
         Assert.assertTrue(String.format("update time for %s has changed", fakeEntityIds.get(0)),
                 getTimestampForRP(fakeEntityIds.get(0)).after(preUpdateTime));
-        Assert.assertEquals(preUpdateSize + 1, dao.getRelyingPartyIds().size());
+        Assert.assertEquals(preUpdateSize + 1, dao.searchRelyingPartyIds(null).size());
     }
 
     private Timestamp getTimestampForRP(String entityId){

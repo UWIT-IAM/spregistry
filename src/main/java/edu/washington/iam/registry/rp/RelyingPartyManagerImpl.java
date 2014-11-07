@@ -84,6 +84,33 @@ public class RelyingPartyManagerImpl implements RelyingPartyManager {
         }
     }
 
+    @Override
+    public List<RelyingPartyEntry> searchRelyingPartyIds(String searchStr, String metadataId){
+        log.debug("rp search: " + searchStr + ", md=" + metadataId);
+        List<RelyingPartyEntry> list = new ArrayList<>();
+        Map<String, List<String>> idsMap = new HashMap<>();
+        if(metadataId == null){
+            for(String mdid : metadataDAOs.keySet()){
+                idsMap.put(mdid, metadataDAOs.get(mdid).searchRelyingPartyIds(searchStr));
+            }
+        }
+        else if(metadataDAOs.containsKey(metadataId)){
+            idsMap.put(metadataId, metadataDAOs.get(metadataId).searchRelyingPartyIds(searchStr));
+        }
+
+        for(String mdid : idsMap.keySet()){
+            for(String entityId : idsMap.get(mdid)) {
+                RelyingPartyEntry rpEntry = new RelyingPartyEntry();
+                rpEntry.setRelyingPartyId(entityId);
+                rpEntry.setMetadataId(mdid);
+                list.add(rpEntry);
+            }
+        }
+
+        Collections.sort(list, new RelyingPartyEntryComparator());
+        return list;
+    }
+
     // get selected list of rps
     @Override
     public List<RelyingParty> getRelyingParties(String sel, String mdid) {
@@ -198,17 +225,6 @@ public class RelyingPartyManagerImpl implements RelyingPartyManager {
     @Override
     public RelyingParty genRelyingPartyByName(String entityId, String dns) {
          return new RelyingParty(entityId, dns);
-    }
-
-    @Override
-    public List<String> getRelyingPartyIds() {
-        log.info("spm: getRelyingPartyIds");
-        List<String> list = new ArrayList<>();
-        for(MetadataDAO metadataDAO : metadataDAOs.values()){
-            list.addAll(metadataDAO.getRelyingPartyIds());
-        }
-        Collections.sort(list);
-        return list;
     }
 
     @Override

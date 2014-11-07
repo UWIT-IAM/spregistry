@@ -71,10 +71,22 @@ public class DBMetadata implements MetadataDAO {
     }
 
     @Override
-    public List<String> getRelyingPartyIds() {
-        return template.queryForList("select entity_id from metadata where status = 1 and group_id = ?",
-                String.class,
-                groupId);
+    public List<String> searchRelyingPartyIds(String searchStr){
+        String sql;
+        List<String> results;
+        if(searchStr != null) {
+            results = template.queryForList(
+                    "select entity_id from metadata where status = 1 and group_id = ? and entity_id like ?",
+                    new Object[]{groupId, '%' + searchStr + '%'},
+                    String.class);
+        }
+        else {
+            results = template.queryForList(
+                    "select entity_id from metadata where status = 1 and group_id = ?",
+                    new Object[]{groupId},
+                    String.class);
+        }
+        return results;
     }
 
     @Override

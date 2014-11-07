@@ -240,12 +240,21 @@ public class XMLMetadata implements  MetadataDAO {
    }
 
     @Override
-    public List<String> getRelyingPartyIds() {
-        List<String> relyingPartyIds = new ArrayList<>();
-        for(RelyingParty relyingParty : relyingParties){
-            relyingPartyIds.add(relyingParty.getEntityId());
+    public List<String> searchRelyingPartyIds(String searchStr) {
+        refreshMetadataIfNeeded();
+        List<String> list = new ArrayList<>();
+        locker.readLock().lock();
+        try {
+            for(RelyingParty rp : relyingParties){
+                if(searchStr == null || rp.getEntityId().matches(String.format(".*{0}.*", searchStr))){
+                    list.add(rp.getEntityId());
+                }
+            }
         }
-        return relyingPartyIds;
+        finally {
+            locker.readLock().unlock();
+        }
+        return list;
     }
 
     // select rps by match

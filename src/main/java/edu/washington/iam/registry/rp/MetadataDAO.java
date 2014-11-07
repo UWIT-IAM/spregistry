@@ -7,7 +7,7 @@ import java.util.List;
 public interface MetadataDAO {
     public List<RelyingParty> addSelectRelyingParties(String sel);
     public RelyingParty getRelyingPartyById(String id) throws RelyingPartyException;
-    public List<String> getRelyingPartyIds();
+    public List<String> searchRelyingPartyIds(String searchStr);
     public void updateRelyingParty(RelyingParty rp);
     public void removeRelyingParty(String rpid);
     public boolean isEditable();
