@@ -141,14 +141,14 @@ public class RelyingParty implements XMLSerializable {
                  if (nl2.item(j).getNodeType()!=Node.ELEMENT_NODE) continue;
                  Element e2 = (Element)nl2.item(j);
                  String name2 = e2.getNodeName();
-                 log.debug("ext name2: " + name2);
+                 // log.debug("ext name2: " + name2);
                  if (XMLHelper.matches(name2,"EntityAttributes")) {
                     NodeList nl3 = e2.getChildNodes();
                     for (int k=0; k<nl3.getLength(); k++) {
                        if (nl3.item(k).getNodeType()!=Node.ELEMENT_NODE) continue;
                        Element e3 = (Element)nl3.item(k);
                        String name3 = e3.getNodeName();
-                       log.debug("ext name3: " + name3);
+                       // log.debug("ext name3: " + name3);
                        if (XMLHelper.matches(name3,"Attribute")) {
                           String aname = e3.getAttribute("Name");
                           if (!aname.equals("http://macedir.org/entity-category")) continue;
@@ -157,10 +157,10 @@ public class RelyingParty implements XMLSerializable {
                              if (nl4.item(l).getNodeType()!=Node.ELEMENT_NODE) continue;
                              Element e4 = (Element)nl4.item(k);
                              String name4 = e4.getNodeName();
-                             log.debug("ext name4: " + name4);
+                             // log.debug("ext name4: " + name4);
                              if (!XMLHelper.matches(name4,"AttributeValue")) continue;
                              entityCategory = e4.getTextContent();
-                             log.debug("cat: " + entityCategory);
+                             // log.debug("cat: " + entityCategory);
                           }
                        }
                     }

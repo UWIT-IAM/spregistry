@@ -253,14 +253,14 @@ public class WebClient {
 
        closeIdleConnections();
 
-       log.debug("simple rest get");
+       // log.debug("simple rest get");
        try {
           HttpParams httpParams = new BasicHttpParams();
           HttpConnectionParams.setConnectionTimeout(httpParams, queryTimeLimit);
           HttpConnectionParams.setSoTimeout(httpParams, queryTimeLimit);
           DefaultHttpClient httpclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, httpParams);
 
-          log.debug(" url: " + url);
+          // log.debug(" url: " + url);
 
           HttpGet httpget = new HttpGet(url);
           HttpResponse response = httpclient.execute(httpget);
@@ -273,7 +273,7 @@ public class WebClient {
              throw new WebClientException("httpclient post exception");
           }
           String resp = EntityUtils.toString(entity);
-          log.debug(" got: " + resp);
+          // log.debug(" got: " + resp);
           return (resp);
        } catch (IOException e) {
           log.error("io error " + e.getMessage());
