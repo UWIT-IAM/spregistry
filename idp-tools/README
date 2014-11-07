@@ -1,5 +1,9 @@
 This the utility that converts the database info into the various xml files on the idp.
 
+This should probably be packaged closer to the idp itself.
+Here for now just for safekeeping.
+
+
 
 
 
