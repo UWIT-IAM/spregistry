@@ -15,10 +15,6 @@ public interface RelyingPartyManager extends Serializable {
 
    public List<String> getMetadataIds();
    public List<RelyingPartyEntry> searchRelyingPartyIds(String searchStr, String metadataId);
-
-   // TODO: unused- consider removing
-   public List<RelyingParty> getRelyingParties(String sel, String type);
-
    public RelyingParty getRelyingPartyById(String id) throws RelyingPartyException;
    public RelyingParty getRelyingPartyById(String id, String mdid) throws RelyingPartyException;
 

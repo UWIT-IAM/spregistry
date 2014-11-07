@@ -257,23 +257,6 @@ public class XMLMetadata implements  MetadataDAO {
         return list;
     }
 
-    // select rps by match
-   @Override
-   public List<RelyingParty> addSelectRelyingParties(String sel) {
-       refreshMetadataIfNeeded();
-       // twice?
-       refreshMetadataIfNeeded();
-       List<RelyingParty> list = new ArrayList<>();
-       locker.readLock().lock();
-       for (int i=0; i<relyingParties.size(); i++) {
-           RelyingParty rp = relyingParties.get(i);
-           if (sel!=null && !rp.getEntityId().matches(".*" + sel + ".*")) continue;
-           list.add(rp);
-       }
-       locker.readLock().unlock();
-       return list;
-   }
-
    // write the metadata
     public int writeMetadata() {
 
