@@ -259,7 +259,7 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
 
             if (XMLHelper.matches(name, "PolicyRequirementRule")) {
                 String type = childElement.getAttribute("xsi:type");
-                if (type.equals("basic:AttributeRequesterString"))
+                if (type.equals("basic:AttributeRequesterString") || type.equals("basic:AttributeRequesterRegex"))
                     attributeFilterPolicy = addOrUpdatePolicy(
                             attributeFilterPolicy,
                             childElement,

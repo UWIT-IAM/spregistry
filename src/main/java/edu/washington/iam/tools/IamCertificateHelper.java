@@ -188,7 +188,7 @@ public final class IamCertificateHelper {
                   if (an.size()==2) {
                      // log.debug("an0="+an.get(0).toString() + " an1=" + an.get(1).toString());
                      if (an.get(0) instanceof Integer && an.get(1) instanceof String ) {
-                        cert.names.add((String)an.get(1));
+                        if ((Integer)an.get(0)==2) cert.names.add((String)an.get(1));
                      }
                   }
                }
