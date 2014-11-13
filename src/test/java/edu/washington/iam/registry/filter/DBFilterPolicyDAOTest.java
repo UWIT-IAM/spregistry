@@ -107,6 +107,39 @@ public class DBFilterPolicyDAOTest {
     }
 
     @Test
+    public void testAttributeFilterPolicyParseComplexRegex() throws Exception {
+        String inFilterPolicyXml = "<AttributeFilterPolicy id=\"releaseStuffToUW\"> " +
+                "<PolicyRequirementRule xsi:type=\"basic:AttributeRequesterRegex\" " +
+                " regex=\"^https://[^/]*\\.(uw|washington)\\.edu(/.*)?$\" /> " +
+                "<AttributeRule attributeID=\"uwNetID\"> <PermitValueRule xsi:type=\"basic:ANY\" /> </AttributeRule> " +
+                "<AttributeRule attributeID=\"ePPN\"> <PermitValueRule xsi:type=\"basic:ANY\" /> </AttributeRule> " +
+                "<AttributeRule attributeID=\"affiliation\"> <PermitValueRule xsi:type=\"basic:ANY\"/> </AttributeRule> " +
+                "<AttributeRule attributeID=\"scopedAffiliation\"> <PermitValueRule xsi:type=\"basic:ANY\"/> </AttributeRule> " +
+                "</AttributeFilterPolicy>";
+        FilterPolicyGroup filterPolicyGroup = new FilterPolicyGroup();
+        filterPolicyGroup.setId("uwcore");
+        Element afpElement = DocumentBuilderFactory
+                .newInstance()
+                .newDocumentBuilder()
+                .parse(new ByteArrayInputStream(inFilterPolicyXml.getBytes()))
+                .getDocumentElement();
+        AttributeFilterPolicy afp = dao.attributeFilterPolicyFromElement(
+                afpElement,
+                filterPolicyGroup);
+
+        Assert.assertNotNull(afp);
+        Assert.assertTrue(afp.matches("https://foo.washington.edu/shibboleth"));
+        Assert.assertTrue(afp.matches("https://foo.uw.edu/shibboleth"));
+        Assert.assertTrue(afp.matches("https://foo.washington.edu"));
+        Assert.assertTrue(afp.matches("https://foo.uw.edu"));
+        Assert.assertFalse(afp.matches("https://foo.uw.edu.haxxorz.ru/shibboleth"));
+        Assert.assertFalse(afp.matches("https://haxxorz.ru/foo.washington.edu/shibboleth"));
+        Assert.assertFalse(afp.matches("https://foo.notwashington.edu/shibboleth"));
+
+        Assert.assertEquals(4, afp.getAttributeRules().size());
+    }
+
+    @Test
     @Ignore("The possibility of a null AttributeFilterPolicy is understood, consider removing this test")
     public void testAttributeFilterPolicyFromElementRuleAndNotParses() throws  Exception {
         String inFilterPolicyXml = "<AttributeFilterPolicy id=\"releaseTransientIdToAnyone\"> " +
