@@ -111,26 +111,6 @@ public class RelyingPartyManagerImpl implements RelyingPartyManager {
         return list;
     }
 
-    // get selected list of rps
-    @Override
-    public List<RelyingParty> getRelyingParties(String sel, String mdid) {
-       log.debug("rp search: " + sel + ", md=" + mdid);
-
-       List<RelyingParty> list = new ArrayList<>();
-       if(sel == null){
-           for(String metadataId : metadataDAOs.keySet()){
-               list.addAll(metadataDAOs.get(metadataId).addSelectRelyingParties(sel));
-           }
-       }
-       else {
-              list.addAll(metadataDAOs.get(mdid).addSelectRelyingParties(sel));
-       }
-
-       Collections.sort(list, new RelyingPartyComparator());
-       log.info("rp search found "+list.size());
-       return list;
-    }
-
     // get rp by id
     @Override
     public RelyingParty getRelyingPartyById(String id, String mdid) throws RelyingPartyException {

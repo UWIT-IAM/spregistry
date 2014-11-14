@@ -54,6 +54,14 @@ public class DBMetadataTest {
     }
 
     @Test
+    public void testSearchRelyingPartyIdsNoDeleted() throws Exception {
+        template.update("update metadata set status = 0 where entity_id = ?",
+                "https://searchdbmetadatatest2.s.uw.edu");
+        List<String> relyingParties = dao.searchRelyingPartyIds("searchdbmetadatatest");
+        Assert.assertEquals(2, relyingParties.size());
+    }
+
+    @Test
     public void testGetRelyingPartyById() throws Exception {
         RelyingParty relyingParty = dao.getRelyingPartyById("https://dbmetadatatest.s.uw.edu/shibboleth");
         Assert.assertNotNull(relyingParty);
@@ -80,26 +88,6 @@ public class DBMetadataTest {
             Assert.assertNotNull(relyingParty);
         }
         Assert.assertTrue(atLeastOnce);
-    }
-
-    @Test
-    public void testAddSelectRelyingParties(){
-        List<RelyingParty> relyingParties = dao.addSelectRelyingParties("searchdbmetadatatest");
-        Assert.assertEquals(3, relyingParties.size());
-    }
-
-    @Test
-    public void testAddSelectRelyingPartiesNullSearch(){
-        List<RelyingParty> relyingParties = dao.addSelectRelyingParties(null);
-        Assert.assertTrue(relyingParties.size() > 2);
-    }
-
-    @Test
-    public void testAddSelectRelyingPartiesNoDeleted(){
-        template.update("update metadata set status = 0 where entity_id = ?",
-                "https://searchdbmetadatatest2.s.uw.edu");
-        List<RelyingParty> relyingParties = dao.addSelectRelyingParties("searchdbmetadatatest");
-        Assert.assertEquals(2, relyingParties.size());
     }
 
     @Test

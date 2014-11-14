@@ -30,31 +30,6 @@ public class DBMetadata implements MetadataDAO {
     private JdbcTemplate template;
 
     @Override
-    public List<RelyingParty> addSelectRelyingParties(String sel) {
-        List<RelyingParty> rps;
-        if (sel != null) {
-            rps = template.query(
-                    "select * from metadata where status = 1 and group_id = ? and entity_id like ?",
-                    new Object[]{groupId, '%' + sel + '%'},
-                    new RelyingPartyMapper());
-        } else {
-            rps = template.query(
-                    "select * from metadata where status = 1 and group_id = ?",
-                    new Object[]{groupId},
-                    new RelyingPartyMapper());
-        }
-        List<RelyingParty> rpsNoNulls = new ArrayList<>();
-        for (RelyingParty relyingParty : rps) {
-            if (relyingParty != null) {
-                rpsNoNulls.add(relyingParty);
-            }
-        }
-        // bold this until we work out better caching efficiency
-        log.info(String.format("metadata SEARCH FOR %s YIELDS %d RESULTS", sel, rpsNoNulls.size()));
-        return rpsNoNulls;
-    }
-
-    @Override
     public RelyingParty getRelyingPartyById(String id) throws RelyingPartyException {
         List<RelyingParty> rps = template.query(
                 "select * from metadata where status = 1 and group_id = ? and entity_id = ?",
