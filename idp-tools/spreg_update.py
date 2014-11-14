@@ -67,7 +67,7 @@ def countNewRows(group):
  
   if group['type']=='proxy': mtime = mTime(config['proxy_base'] + group['metadata_filename'])
   else: mtime = mTime(config['idp_base'] + group['dir'] + '/' + group['filename'])
-  c1.execute("select count(*) from %s where update_time > '%s';" % (group['type'], mtime))
+  c1.execute("select count(*) from %s where status=1 and update_time > '%s';" % (group['type'], mtime))
   row = c1.fetchone()
   c1.close()
   # print 'num new = ', row[0]
@@ -76,7 +76,7 @@ def countNewRows(group):
 def copyRow(table, row, id, f):
    global db
    c1 = db.cursor()
-   c1.execute("select %s from %s where id='%s'" % (row, table, id))
+   c1.execute("select %s from %s where status=1 and id='%s'" % (row, table, id))
    rows = c1.fetchall()
    for row in rows:
       f.write(row[0] + '\n')
@@ -86,7 +86,7 @@ def copyData(table, id, f):
    global db
    num = 0
    c1 = db.cursor()
-   c1.execute("select xml from %s where group_id='%s'" % (table, id))
+   c1.execute("select xml from %s where status=1 and group_id='%s'" % (table, id))
    rows = c1.fetchall()
    for row in rows:
       f.write(row[0] + '\n')
@@ -143,11 +143,11 @@ def updateIdpConfig(group):
    return True
    
 
-def findGroup(id):
+def findGroup(type, id):
    for g in config['idp_config']['groups']: 
-      if g['id'] == id: return g
+      if g['type']==type and g['id']==id: return g
    for g in config['proxy_config']['groups']: 
-      if g['id'] == id: return g
+      if g['type']==type and g['id']==id: return g
    return None
 
 #
@@ -273,6 +273,7 @@ parser = OptionParser()
 parser.add_option('-v', '--verbose', action='store_true', dest='verbose', help='?')
 parser.add_option('-c', '--conf', action='store', type='string', dest='config', help='config file')
 parser.add_option('-f', '--force', action='store_true', dest='force', help='force update')
+parser.add_option('-t', '--type', action='store', type='string', dest='type', help='type to update (filter|metadata)')
 parser.add_option('-g', '--group', action='store', type='string', dest='group', help='group to update')
 options, args = parser.parse_args()
 config_file = 'spreg_update.conf'
@@ -301,11 +302,10 @@ log(log_info, "starting.  (conf='%s')" % (config_file))
 
 openDb()
 
-if options.group != None: 
-   log(log_info, "just for'%s'" % (options.group))
-   group = findGroup(options.group)
+if options.group != None or options.type!=None: 
+   log(log_info, "just for'%s' in '%s'" % (options.group, options.type))
+   group = findGroup(options.type, options.group)
    if group != None:
-      print 'doing group ' + options.group
       if options.force or countNewRows(group)>0:  updateFiles(group)
       else: log(log_info, 'no changes')
    else:

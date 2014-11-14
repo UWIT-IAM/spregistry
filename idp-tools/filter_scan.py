@@ -191,7 +191,7 @@ def outputNameidFilter():
    shutil.copy2(tgt_file, sav)
    os.rename(tmp_file, tgt_file)
    log(log_info, "Created new nameid filter file")
-  
+   return True
 
 # write a new gws activator file
 
@@ -217,7 +217,8 @@ def outputGwsActivators():
    shutil.copy2(tgt_file, sav)
    os.rename(tmp_file, tgt_file)
    log(log_info, "Created new gws activators file")
-  
+   return True
+
 def sendNotice(sub):
    msg = MIMEText(sub)
    msg['Subject'] = sub

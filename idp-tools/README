@@ -4,6 +4,36 @@ This should probably be packaged closer to the idp itself.
 Here for now just for safekeeping.
 
 
+Scan database and update local xml conf as needed
+
+  spreg_update.py
+
+Scan the local xml configs and create auto confs as needed
+
+ filter_scan.py  
+
+creates 
+
+ new tgtid db entries   -> updates tgtid database
+ gws activators         -> new gws-activators.xml file
+ nameid exceptions      -> new nameid-filter.xml
+
+
+
+Also here are a couple of tools for loading the database
+from xml files
+
+Load from local xml
+
+  loaddb.sh
+
+Keep the database up-to-date until the database
+version goes production
+
+  updatedb.sh
+
+
+
 
 
 
