@@ -113,9 +113,9 @@ v_xsrf = '${xsrf}';
   <div class="dijitDialogPaneContentArea">
     Identity and Access Management
     <br/>
-    Service Provider Registry 2.1.2
+    Service Provider Registry 2.2.0
     <br/>
-    Revision 06/17/2014
+    Revision 11/19/2014
     <p>
     <a href="https://wiki.cac.washington.edu/x/gjyoAQ">Learn more about the registry</a>
   </div>
@@ -299,7 +299,7 @@ function openNewSPForm() {
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li><a href="javascript:iam_showTheDialog('helpAbout');">SPReg 2.1</a></li>
+        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.2</a></li>
     </ul>
     </span>
 </div>

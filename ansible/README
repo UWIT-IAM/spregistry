@@ -17,10 +17,10 @@ On your build host:
 
 3) echo "iam_ansible=<your ansibletools install path>" > install.properties
 
-4) httest
-
-   see: http://htt.sourceforge.net/cgi-bin/cwiki/bin/public
-
+## 4) httest
+## 
+##    see: http://htt.sourceforge.net/cgi-bin/cwiki/bin/public
+## 
 
 
 On the target:
@@ -32,10 +32,10 @@ On the target:
    see: iam-ansible tools / host-tools
 
 
-2) Directories to be chgrp to 'pubcookie' and chmod g+w
+2) Directories to be chgrp to 'iam-dev' and chmod g+w
 
    /etc/daemons/tomcat
-   /data/local/sp-registry
+   /data/local/spreg
    /data/webapps
    /data/conf
    /data/conf/apache-http.d/

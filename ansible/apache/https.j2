@@ -38,11 +38,7 @@ ProxyPass /spreg ajp://localhost:8009/spreg
 <LocationMatch /spreg/login>
   RequestHeader set Content-type application/xml
   AuthType shibboleth
-{% if cluster_type == 'eval' %}
-  ShibRequireSessionWith UWDEV
-{% else %}
   ShibRequireSession On
-{% endif %}
   require valid-user
   require user fox
   order allow,deny
@@ -53,11 +49,7 @@ ProxyPass /spreg ajp://localhost:8009/spreg
 <LocationMatch /spreg/securelogin>
   RequestHeader set Content-type application/xml
   AuthType shibboleth
-{% if cluster_type == 'eval' %}
-  ShibRequireSessionWith UWDEVSECURE
-{% else %}
   ShibRequireSessionWith UWSECURE
-{% endif %}
   require valid-user
   order allow,deny
   allow from all

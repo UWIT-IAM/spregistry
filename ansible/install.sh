@@ -16,6 +16,7 @@ cd $dir
 target=
 verbose=
 playbook=install.yml
+force=""
 
 # generic parser
 prefix=""
@@ -31,6 +32,7 @@ do
     -n*|--no_update)      key="-n";    value="";;
     -v*|--verbose)      key="-v";    value="";;
     -d*|--debug)      key="-d";    value="";;
+    -f*|--force)      key="-f";    value="";;
     *)       value=$keyValue;;
   esac
   case $key in
@@ -40,6 +42,7 @@ do
     -v) verbose="-v";           prefix=""; key="";;
     -d) verbose="-vvvv";           prefix=""; key="";;
     -n) TEST=1;           prefix=""; key="";;
+    -f) force="f";           prefix=""; key="";;
     *)  prefix="${keyValue}=";;
   esac
 done
@@ -63,9 +66,21 @@ export ANSIBLE_LIBRARY=${iam_ansible}/modules:/usr/share/ansible
 
 # make sure the war file was generated
 [[ -f ../target/spreg.war ]] || {
+   echo "spreg war file not found"
    echo "use 'mvn clean package' to make the war file first"
    exit 1
 }
+
+# make sure the war file is up-to-date
+[[ -z $force ]] && {
+   mod="`find ../src -newer ../target/spreg.war`"
+   [[ -n $mod ]] && {
+      echo "spreg war file appears out of date"
+      echo "use 'mvn clean package' to update the war file first"
+      exit 1
+   }
+}
+
 
 # run the installer 
 

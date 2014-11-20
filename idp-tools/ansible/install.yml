@@ -12,12 +12,13 @@
 
   - include_vars: "conf.yml"
 
-  - name: copy config file
-    copy: "src=../spreg_idp.conf.{{ cluster_type }}  dest={{ idp_base }}/bin/spreg_idp.conf group=iam-dev mode=660"
- 
-  - name: copy program file
-    copy: "src=../spreg_idp.py  dest={{ idp_base }}/bin/spreg_idp.py group=iam-dev mode=664"
- 
-  - name: copy filter scanner
-    copy: "src=../filter_scan.py  dest={{ idp_base }}/bin/filter_scan.py group=iam-dev mode=664"
+  - name: copy programs  and configs
+    copy: "src={{ item.src }} dest={{ item.dest }} group=iam-dev mode=664 "
+    with_items:
+       - { src: '../spreg_update.py', dest: '{{ idp_base }}/bin/spreg_update.py' }
+       - { src: '../spreg_update.conf.{{ cluster_type }}', dest: '{{ idp_base }}/bin/spreg_update.conf' }
+       - { src: '../filter_scan.py', dest: '{{ idp_base }}/bin/filter_scan.py' }
+       - { src: '../filter_scan.conf.{{ cluster_type }}', dest: '{{ idp_base }}/bin/filter_scan.conf' }
+    when: item.src != ""
+
  
