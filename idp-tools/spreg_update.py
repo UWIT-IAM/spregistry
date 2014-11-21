@@ -65,9 +65,12 @@ def countNewRows(group):
   c1 = db.cursor()
   mtime = None
  
-  if group['type']=='proxy': mtime = mTime(config['proxy_base'] + group['metadata_filename'])
-  else: mtime = mTime(config['idp_base'] + group['dir'] + '/' + group['filename'])
-  c1.execute("select count(*) from %s where status=1 and update_time > '%s';" % (group['type'], mtime))
+  if group['type']=='proxy':
+     mtime = mTime(config['proxy_base'] + group['metadata_filename'])
+     c1.execute("select count(*) from %s where status=1 and update_time > '%s';" % (group['type'], mtime))
+  else:
+     mtime = mTime(config['idp_base'] + group['dir'] + '/' + group['filename'])
+     c1.execute("select count(*) from %s where status=1 and group_id='%s' and update_time > '%s';" % (group['type'], group['id'], mtime))
   row = c1.fetchone()
   c1.close()
   # print 'num new = ', row[0]
@@ -134,7 +137,7 @@ def updateIdpConfig(group):
 
    # is ok, replace original
    
-   sav = config['idp_base'] + config['archive_dir'] + filename + time.strftime('%d')
+   sav = config['idp_base'] + config['archive_dir'] + filename + time.strftime('%d%H%M%S')
    shutil.copy2(file_path, sav)
    os.rename(tmp_path, file_path)
    
@@ -230,12 +233,12 @@ def updateProxyConfig(group):
    # all ok, replace originals
    
    # md
-   sav = config['proxy_base'] + config['archive_dir'] + m_name + time.strftime('%d')
+   sav = config['proxy_base'] + config['archive_dir'] + m_name + time.strftime('%d%H%M%S')
    shutil.copy2(m_file_path, sav)
    os.rename(m_tmp_path, m_file_path)
 
    # secret
-   sav = config['proxy_base'] + config['archive_dir'] + s_name + time.strftime('%d')
+   sav = config['proxy_base'] + config['archive_dir'] + s_name + time.strftime('%d%H%M%S')
    shutil.copy2(s_file_path, sav)
    os.rename(s_tmp_path, s_file_path)
    
@@ -314,7 +317,7 @@ if options.group != None or options.type!=None:
 else:
 
    for group in config['idp_config']['groups']:
-      log(log_info, "checking '%s'" % (group['id']))
+      log(log_info, "checking '%s %s'" % (group['type'], group['id']))
       if options.force or countNewRows(group)>0:  updateFiles(group)
 
    for group in config['proxy_config']['groups']:

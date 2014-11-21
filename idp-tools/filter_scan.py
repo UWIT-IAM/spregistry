@@ -49,9 +49,11 @@ import smtplib
 from email.mime.text import MIMEText
 
 nameidEntities = set([])
+nameidEntitiesX = set([])
 nameidNeedsUpdate = False
 
 gwsEntities = set([])
+gwsEntitiesX = set([])
 gwsNeedsUpdate = False
 
 db = None
@@ -67,12 +69,14 @@ def openDb():
 ## load the existing activators
 def getGwsActivators():
    global gwsEntities
+   global gwsEntitiesX
 
    doc = ET.parse(config['conf_dir'] + config['gws_activators'])
    acts = doc.getroot().findall('ActivationRequirement')
    for act in acts:
       # print 'adding existing gws for ' + act.get('entityId')
       gwsEntities.add(act.get('entityId'))
+   gwsEntitiesX = gwsEntities.copy()
 
 
 ## load the existing nameid exceptions
@@ -84,6 +88,7 @@ def getGwsActivators():
 
 def getNameidEntities():
    global nameidEntities
+   global nameidEntitiesX
 
    doc = ET.parse(config['conf_dir'] + config['nameid_filter'])
    afps = doc.getroot().findall('{urn:mace:shibboleth:2.0:afp}AttributeFilterPolicy')
@@ -95,6 +100,7 @@ def getNameidEntities():
             if r.get('value'):
                # print('loading nameid exception for ' + r.get('value'))
                nameidEntities.add(r.get('value'))
+   nameidEntitiesX = nameidEntities.copy()
          
 
 # parse a filter file, recording interesting info
@@ -103,8 +109,10 @@ def parseFilter(file):
 
    global db
    global nameidEntities
+   global nameidEntitiesX
    global nameidNeedsUpdate
    global gwsEntities
+   global gwsEntitiesX
    global gwsNeedsUpdate
 
    doc=ET.parse(file)
@@ -122,12 +130,19 @@ def parseFilter(file):
          id = ar.get('attributeID')
          if id=='idNameId' or id=='nameIDPersistentID' or id=='eppnNameId': 
             if eid not in nameidEntities:
+               print 'adding nameid exception: ' + eid
                nameidNeedsUpdate = True
                nameidEntities.add(eid)
+            else:
+               nameidEntitiesX.discard(eid)
+
          if id=='gws_groups' or id=='entitlement_gartner': 
             if eid not in gwsEntities:
+               print 'adding gws trigger: ' + eid
                gwsNeedsUpdate = True
                gwsEntities.add(eid)
+            else:
+               gwsEntitiesX.discard(eid)
 
          if id=='ePTID' or id=='attributePersistentID' or id=='nameIDPersistentID' or id=='saml2PersistentID': 
             # print eid + ' used tgtid'
@@ -141,6 +156,14 @@ def parseFilter(file):
                c1.execute("insert into rp values ( (select max(rpno) from rp)+1, '%s');" % (eid))
                c1.close()
                db.commit()
+
+   # remove any entity no longer special
+   for e in nameidEntitiesX: 
+      nameidNeedsUpdate = True
+      nameidEntities.remove(e)
+   for e in gwsEntitiesX: 
+      gwsNeedsUpdate = True
+      gwsEntities.remove(e)
 
 # verify a saml xml file
 def verifySaml(prog, file):
