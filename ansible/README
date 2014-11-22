@@ -11,9 +11,12 @@ On your build host:
 
    via git:  git clone https://github.com/ansible/ansible.git
 
+   via pip:  pip install ansible
+     (python-dev package required)
+
 2) iam-ansible tools
 
-   git clone ssh://git@git.s.uw.edu/iam/ansibletools.git
+   git clone ssh://git@git.s.uw.edu/iam/ansible-tools.git
 
 3) echo "iam_ansible=<your ansibletools install path>" > install.properties
 
@@ -49,12 +52,16 @@ Install
 
 1) Be sure there is a spreg.properties.xxx file for the type of host
    you're installing.  xxx = prod | eval | dev
-   
-2) Make the package.  In base product directory: 
+
+2) Also edit your ansible/local_vars.yml to point to a valid ca and cert/key pair.
+   Clear the line with "have_local_certs" if you don't want your cert/key copied
+   over to the target.
+
+3) Make the package.  In base product directory:
 
    $ mvn clean package
 
-3) Run installer.  In this directory:
+4) Run installer.  In this directory:
 
    $ ./install.sh <host_type>
 

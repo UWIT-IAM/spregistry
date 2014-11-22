@@ -62,7 +62,11 @@ done
   echo "creating tasks link"
   ln -s ${iam_ansible}/tasks .
 }
-export ANSIBLE_LIBRARY=${iam_ansible}/modules:/usr/share/ansible
+
+[[ -L library ]] || {
+  echo "creating modules link"
+  ln -s ${iam_ansible}/modules library
+}
 
 # make sure the war file was generated
 [[ -f ../target/spreg.war ]] || {

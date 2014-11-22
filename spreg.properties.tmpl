@@ -4,7 +4,10 @@
 # spreg will look for this file first in the spreg directory
 # if that is undefined or not found this installed copy will be used
 #
-spreg.root=/data/local/sp-registry
+spreg.version=2.2.0
+spreg.versionDate=11/19/2014
+
+spreg.root=/data/local/spreg
 
 # database parameters
 spreg.db.url=iamdbdev01.s.uw.edu/spregistry
@@ -36,14 +39,11 @@ spreg.cookieCryptKey=some_string
 
 spreg.myEntityId=https://iam-tools.u.washington.edu/shibboleth
 spreg.spRegistryUrl=https://iam-tools.u.washington.edu/spreg/
+spreg.browserRoot=/spreg
+spreg.certRoot=/spreg/ws
 
 # location of incommon metadata
 incommon.metadata.path=/usr/local/etc/shibboleth/InCommon-metadata.xml
 
-# the ansible installer needs to know the path to your iam-ansible directory
-iam.ansible=/home/fox/src/iam-ansible
-
-# static files to install
-static_js=src/main/webapp/sp.js
 
 
