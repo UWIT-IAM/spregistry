@@ -1,0 +1,10 @@
+*~
+.idea
+spreg.iml
+target
+src/main/webapp/WEB-INF/spreg.properties
+src/main/webapp/WEB-INF/spreg-secrets.properties
+ansible/library
+ansible/tasks
+ansible/properties.yml
+

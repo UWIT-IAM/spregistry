@@ -14,7 +14,15 @@
         http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
     <context:annotation-config />
-    <context:property-placeholder location="${spreg.properties:/WEB-INF/spreg.properties}"/>
+    <bean id="spregPropertiesPlaceholder"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>${spreg.properties.path:/WEB-INF}/spreg.properties</value>
+                <value>${spreg.properties.path:/WEB-INF}/spreg-secrets.properties</value>
+            </list>
+        </property>
+    </bean>
 
   <!-- the application context definition for the springapp DispatcherServlet -->
     <bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">

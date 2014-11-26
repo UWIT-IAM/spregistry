@@ -14,6 +14,12 @@
 
   - include_vars: "properties.yml"
 
+  - name: check for secrets file
+    stat: path={{ spreg_root }}/spreg-secrets.properties
+    register: spregsecrets
+  - fail: msg="secrets file not preloaded on target"
+    when: not spregsecrets.stat.exists
+
   # copy spreg properties file
   # change restarts tomcat
   - name: copy properties file
@@ -23,7 +29,7 @@
   # configure tomcat startup properties
   # change restarts tomcat
   - name: tomcat startup params
-    daemon_config: "service=tomcat key=spreg.properties value=file:{{ spreg_root }}/spreg.properties"
+    daemon_config: "service=tomcat key=spreg.properties.path value=file:{{ spreg_root }}"
     notify: restart tomcat
 
   # update http and https config
