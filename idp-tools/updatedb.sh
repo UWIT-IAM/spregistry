@@ -3,9 +3,9 @@
 # keep the spregistry database up-to-date with the filesystem 'database'
 # necessary until we switch to the database for production
 
-
-[[ "$1" = "--help" || "$1" = "-?" ]] && {
+[[ "$1" = "" || "$1" = "--help" || "$1" = "-?" ]] && {
   echo "usage: $0 [file_name] [password_file]"
+  echo "file_name = /data/local/sp-registry/UW-rp-metadata.xml  /data/local/sp-registry/rp-filter.xml  /data/local/sp-registry/sp-secrets"
   exit 1
 }
 filename="$1"

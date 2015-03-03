@@ -27,9 +27,12 @@
  <Attribute id="scopedAffiliation" description="affiliation with '@washington.edu'"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="surname" description="Last name (PDS: sn)"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="title" description="Title (PDS: uwEWPTitle1)"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="uwEduEmail" description="UW.edu email"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="uwEduEmailNameId" description="UW.edu email as a SAML nameid"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="uwNetID" description="UW NetID"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="uwRegID" description="UW registry id"  authorizingGroup="u_weblogin_admins" />
- <Attribute id="uwStudentID" description="UW Student ID"  authorizingGroup="u_weblogin_admins" /> 
+ <Attribute id="uwStudentID" description="UW student ID"  authorizingGroup="u_weblogin_admins" /> 
+ <Attribute id="uwStudentSystemKey" description="UW student system key"  authorizingGroup="u_weblogin_admins" /> 
 
 <!--
  <Attribute id="NIHePPN" description="ePPN coded for NIH"  authorizingGroup="u_weblogin_admins" />

@@ -41,8 +41,7 @@ On the target:
    /data/local/spreg
    /data/webapps
    /data/conf
-   /data/conf/apache-http.d/
-   /data/conf/apache-https.d/
+   /data/conf/apache.conf.d/
    /logs/spreg (writeable by tomcat)
 
 ---------------------

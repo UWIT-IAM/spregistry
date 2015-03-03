@@ -86,10 +86,11 @@ def copyRow(table, row, id, f):
    return
 
 def copyData(table, id, f):
+   print 'table=%s, id=%s, f=%s' % (table, id, f)
    global db
    num = 0
    c1 = db.cursor()
-   c1.execute("select xml from %s where status=1 and group_id='%s'" % (table, id))
+   c1.execute("select xml,entity_id from %s where status=1 and group_id='%s'" % (table, id))
    rows = c1.fetchall()
    for row in rows:
       f.write(row[0] + '\n')
@@ -178,8 +179,8 @@ def updateProxyConfig(group):
       num += 1
    # print '%d social keys found' % num
    
-   if num<5:
-      log(log_err, '%s document is too short: %d<%d' % (group['type'], num, 5))
+   if num < group['min_rows']:
+      log(log_err, '%s document is too short: %d<%d' % (group['type'], num, group['min_rows']))
       return False
      
    s_file_path = config['proxy_base'] + s_name
@@ -263,7 +264,9 @@ def updateFiles(group):
    if group['type']=='proxy': ret = updateProxyConfig(group)
    else: ret = updateIdpConfig(group)
    if not ret:
-      sendNotice('idp file %s is not valid!')
+      print 'update files end: ' + group['type']
+      print group
+      sendNotice('idp file is not valid!' )
 
 
 #---------

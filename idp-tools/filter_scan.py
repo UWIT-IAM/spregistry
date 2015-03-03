@@ -128,7 +128,7 @@ def parseFilter(file):
       # scan rules
       for ar in afp.findall('{urn:mace:shibboleth:2.0:afp}AttributeRule'):
          id = ar.get('attributeID')
-         if id=='idNameId' or id=='nameIDPersistentID' or id=='eppnNameId': 
+         if id=='idNameId' or id=='nameIDPersistentID' or id=='eppnNameId' or id=='uwEduEmailNameId': 
             if eid not in nameidEntities:
                print 'adding nameid exception: ' + eid
                nameidNeedsUpdate = True
