@@ -4,7 +4,7 @@
 # if that is undefined or not found this installed copy will be used
 #
 spreg.version=2.2.0
-spreg.versionDate=11/19/2014
+spreg.versionDate=05/05/2105
 
 spreg.root=/data/local/spreg
 
@@ -22,14 +22,14 @@ spreg.gws.adminGroupName=u_weblogin_admins
 
 # mail settings
 spreg.smtp.host=appsubmit.cac.washington.edu
-spreg.smtp.from=SP registry &lt;somebody@iam-tools.u.washington.edu&gt;
+spreg.smtp.from=SP registry <somebody@iam-tools.u.washington.edu>
 spreg.smtp.to=fox@uw.edu
 spreg.smtp.requestMailTo=fox@uw.edu
 
 spreg.uwLogoutp=https://idp.u.washington.edu/idp/logout
 spreg.googleEntityId=https://idp.u.washington.edu/google
 
-spreg.myEntityId=https://iam-tools.u.washington.edu/shibboleth
+spreg.myEntityId=https://iam-tools-test.u.washington.edu/shibboleth
 spreg.spRegistryUrl=https://iam-tools-test.u.washington.edu/spreg/
 spreg.browserRoot=/spreg
 spreg.certRoot=/spreg/ws

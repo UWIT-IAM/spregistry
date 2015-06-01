@@ -21,25 +21,22 @@
  <Attribute id="idNameId" description="The uwNetID as a SAML nameid"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="mailstop" description="Mail stop (PDS: uwEmployeeMailstop)"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="nameIDPersistentID" description="The persistent id as a SAML nameid"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="NIHePPN" description="ePPN with inline scoping (for NIH)"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="NIHePTID" description="persistent ID with inline scoping (for NIH)"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="phone" description="Employee phone (PDS: uwEWPPhone1)"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="saml1PersistentID" description="ePTID (saml1 only)"  authorizingGroup="u_weblogin_admins" /> 
  <Attribute id="saml2PersistentID" description="persistent ID (saml2 only)"  authorizingGroup="u_weblogin_admins" /> 
  <Attribute id="scopedAffiliation" description="affiliation with '@washington.edu'"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="surname" description="Last name (PDS: sn)"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="title" description="Title (PDS: uwEWPTitle1)"  authorizingGroup="u_weblogin_admins" />
- <Attribute id="uwEduEmail" description="UW.edu email"  authorizingGroup="u_weblogin_admins" />
- <Attribute id="uwEduEmailNameId" description="UW.edu email as a SAML nameid"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="uwEduEmail" description="UW.EDU email (netid@uw.edu)" authorizingGroup="u_weblogin_admins" />
+ <Attribute id="uwEduEmailNameId" description="UW.EDU email as a nameid" authorizingGroup="u_weblogin_admins" />
  <Attribute id="uwNetID" description="UW NetID"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="uwRegID" description="UW registry id"  authorizingGroup="u_weblogin_admins" />
- <Attribute id="uwStudentID" description="UW student ID"  authorizingGroup="u_weblogin_admins" /> 
- <Attribute id="uwStudentSystemKey" description="UW student system key"  authorizingGroup="u_weblogin_admins" /> 
+ <Attribute id="uwStudentID" description="UW Student ID"  authorizingGroup="u_weblogin_admins" /> 
+ <Attribute id="uwStudentSystemKey" description="UW Student System Key"  authorizingGroup="u_weblogin_admins" /> 
 
-<!--
- <Attribute id="NIHePPN" description="ePPN coded for NIH"  authorizingGroup="u_weblogin_admins" />
- <Attribute id="NIHePTID" description="UW NetID"  authorizingGroup="u_weblogin_admins" />
- <Attribute id="uwEmployeeID" description="UW NetID"  authorizingGroup="u_weblogin_admins" />
- <Attribute id="nsc_pid" description="D"  authorizingGroup="u_weblogin_admins" />
- <Attribute id="nsc_opeid" description="D"  authorizingGroup="u_weblogin_admins" />
- -->
+ <Attribute id="nsc_pid" description="Student ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="nsc_opeid" description="UW's ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins" />
 
 </Attributes>

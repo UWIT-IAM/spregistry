@@ -1,9 +1,15 @@
 #!/bin/bash
 
-# spreg ansible installation script
+# spregistry ansible installation script
 
 function usage {
-  echo "usage: $0 [-c local_config] [-v] [-p playbook] [-t] target "
+  echo "usage: $0 [options] target "
+  echo "       [-p playbook]  ( default: install.yml )"
+  echo "       [-v]           ( verbose )"
+  echo "       [-d]           ( very verbose )"
+  echo "       [-i inventory] ( default:  ansible-tools/hosts )"
+  echo "       [-q]           ( quick:  do not refresh ansible-toools )"
+  echo "       targets: rivera_dev | rivera_prod"
   exit 1
 }
 
@@ -15,6 +21,8 @@ cd $dir
 
 target=
 verbose=
+quick=
+list_opt=
 playbook=install.yml
 force=""
 
@@ -27,46 +35,62 @@ for keyValue in "$@"
 do
   case "${prefix}${keyValue}" in
     -p=*|--playbook=*)  key="-p";     value="${keyValue#*=}";; 
-    -t=*|--target=*)  key="-t";     value="${keyValue#*=}";; 
     -i=*|--inventory=*)  key="-i";     value="${keyValue#*=}";; 
     -n*|--no_update)      key="-n";    value="";;
     -v*|--verbose)      key="-v";    value="";;
     -d*|--debug)      key="-d";    value="";;
+    -q*|--quick)      key="-q";    value="";;
     -f*|--force)      key="-f";    value="";;
+    -l*|--list)      key="-l";    value="";;
+    -h*|-?|--help)             usage;;
     *)       value=$keyValue;;
   esac
   case $key in
     -p) playbook=${value}; echo "p=$playbook";  prefix=""; key="";;
-    -t) target="${value}";          prefix=""; key="";;
     -i) inventory="${value}";          prefix=""; key="";;
     -v) verbose="-v";           prefix=""; key="";;
     -d) verbose="-vvvv";           prefix=""; key="";;
-    -n) TEST=1;           prefix=""; key="";;
+    -q) quick=q;           prefix=""; key="";;
+    -l) list_opt="--list-hosts";           prefix=""; key="";;
     -f) force="f";           prefix=""; key="";;
     *)  prefix="${keyValue}=";;
   esac
 done
 
 [[ -z $target ]] && target=$value
-[[ -n "$target" ]] || usage
+[[ -z "$target"  || "$target" == "-"* ]] && usage
 
-# get iam-ansible location
+# get ansible-tools
 
-. ./install.properties
-[[ -z $iam_ansible/hosts ]] && {
-   echo "iam_ansible installation directory is missing from install.properties"
-   exit 1
+[[ -d ansible-tools ]] || {
+   echo "installing ansible-tools tools"
+   git clone ssh://git@git.s.uw.edu/iam/ansible-tools.git
+} || {
+   [[ -z $quick ]] && {
+      cd ansible-tools
+      git pull origin master
+      cd ..
+   }
 }
 
-[[ -L tasks ]] || {
-  echo "creating tasks link"
-  ln -s ${iam_ansible}/tasks .
-}
+export ANSIBLE_LIBRARY=ansible-tools/modules:/usr/share/ansible
 
-[[ -L library ]] || {
-  echo "creating modules link"
-  ln -s ${iam_ansible}/modules library
-}
+
+# store current status
+cat > "install.status" << END
+SP Registry project (spreg) install
+
+by: `whoami`
+on: `date`
+
+target: $target
+
+branch:
+`git branch -v| grep '^\*'`
+
+status:
+`git status -uno --porcelain`
+END
 
 # make sure the war file was generated
 [[ -f ../target/spreg.war ]] || {
@@ -89,5 +113,5 @@ done
 # run the installer 
 
 vars="target=${target} "
-ansible-playbook ${playbook} $verbose  -i ${iam_ansible}/hosts  --extra-vars "${vars}"
+ansible-playbook ${playbook} $verbose  -i ansible-tools/hosts  --extra-vars "${vars}" $list_opt
 

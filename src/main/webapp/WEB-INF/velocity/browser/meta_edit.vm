@@ -101,7 +101,8 @@
      #set ( $count = $count + 1)
    #end
 
-   #foreach ( $i in [ $count .. 4 ] )
+  #if ($count<20) 
+   #foreach ( $i in [ $count .. 19 ] )
    <fieldset>
    <legend class="accessibility">contact number $i</legend>
         <ul class="iamlist">
@@ -140,6 +141,7 @@
        <button dojoType="dijit.form.Button" class="ddbutton" onClick="meta_showMoreFields('ct', 'ct_more')">Add contact</button>
     </span>
    </div>
+  #end
   </li>
 </ul>
 
@@ -200,7 +202,8 @@
      #set ( $count = $count + 1)
    #end
 
-   #foreach ( $i in [ $count .. 3 ] )
+  #if ($count<10)
+   #foreach ( $i in [ $count .. 10 ] )
    
       <li id="ki${i}_0" ${hide}>
       <span class="dt dt3" >Name</span>
@@ -218,6 +221,7 @@
        <button dojoType="dijit.form.Button" class="ddbutton" onClick="meta_showMoreFields('ki', 'ki_more')">Add keyinfo</button>
     </span>
    </li>
+  #end
     </ul></div>
    </li>
 
@@ -237,6 +241,7 @@
      #set ( $count = $count + 1)
    #end
 
+  #if ($count<5)
    #foreach ( $i in [ $count .. 4 ] )
      <li id="ni${i}_0" ${hide}>
       <input class="dd" data-dojo-type="dijit.form.TextBox" name="nameId_${xtra}" id="ni_${i}" value="" aria-label="nameid"/></td>
@@ -247,6 +252,7 @@
        <button dojoType="dijit.form.Button" class="ddbutton" onClick="meta_showMoreFields('ni', 'ni_more')">Add nameinfo</button>
     </span>
    </li>
+  #end
     </ul></div>
    </li>
 *#
@@ -295,6 +301,7 @@
      #set ( $count = $count + 1)
    #end
 
+  #if ($count<50)
    #foreach ( $i in [ $count .. 49 ] )
      <li id="acs${i}_0" ${hide}>
         <input class="dt dt2" data-dojo-type="dijit.form.TextBox" size="2" id="acsi_${i}"
@@ -320,7 +327,7 @@
        <button dojoType="dijit.form.Button" class="ddbutton" onClick="meta_showMoreFields('acs', 'acs_more')">Add ACS</button>
     </span>
    </li>
-
+  #end
     </ul></div>
    </li>
 </div>

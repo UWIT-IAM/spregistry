@@ -5,13 +5,16 @@
 - hosts: "{{ target }}"
   serial: 1
   max_fail_percentage: 10
+  gather_facts: false
+  vars:
+    app_name: spreg
 
   tasks:
   - include_vars: "local_vars.yml"
 
   - name: create properties yml file
     local_action: property_to_yml spreg {{ cluster_type }}
-
+ 
   - include_vars: "properties.yml"
 
   - name: check for secrets file
@@ -34,8 +37,8 @@
 
   # update http and https config
   # change restarts apache
-  - include: "tasks/apache_config.yml file=https prod=spreg"
-  - include: "tasks/apache_config.yml file=http prod=spreg"
+  - include: "ansible-tools/tasks/apache_config.yml file=https prod=spreg"
+  - include: "ansible-tools/tasks/apache_config.yml file=http prod=spreg"
 
   # copy js files
   - name: copy js files
@@ -97,6 +100,6 @@
   # handlers mostly standard from iam-ansible
 
   handlers:
-    - include: "tasks/iam_handlers.yml"
+    - include: "ansible-tools/tasks/iam_handlers.yml"
 
 

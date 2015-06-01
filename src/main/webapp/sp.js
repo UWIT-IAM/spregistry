@@ -445,7 +445,7 @@ function meta_clearCT(i) {
 // respond to one of the 'add xxx' buttons
 meta_showMoreFields = function(name, id) {
    // show the first of the hidden ones
-   for (e=0; e<20; e++) {
+   for (e=0; e<50; e++) {
       var enam = name + e;
       list = _getElementsByIdname(name+e);
       if (list.length==0) break;
@@ -562,7 +562,8 @@ function assembleRPMetadata(entityId) {
 
    // keyinfo
    hadKi = false;
-   for (i=0; i<4; i++) {
+   for (i=0; i<10; i++) {
+      console.log('ki: ' + i);
       knv = dojoDom.byId('kn_' + i).value.trim();
       kcv = dojoDom.byId('kc_' + i).value.trim();
       if (knv=='' && kcv=='') continue;
@@ -645,7 +646,7 @@ function assembleRPMetadata(entityId) {
    hadOne = false;
    hadName = false;
    hadMail = false;
-   for (i=0; i<5; i++) {
+   for (i=0; i<20; i++) {
       hadName = false;
       hadMail = false;
       var v = dijitRegistry.byId('ctt_' + i).get('value').trim();
