@@ -8,6 +8,8 @@
  <Attribute id="displayName" description="Full name (PDS: displayName)"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="email" description="email (uwEWPEmail1 or uwSWPEmail or id@uw.edu)" authorizingGroup="u_weblogin_admins" />
  <Attribute id="employeeNumber" description="Employee id (PDS: uwEmployeeID)" authorizingGroup="u_weblogin_admins" />
+ <Attribute id="entitlement_dlt_a" description="DLT Portal admin"  authorizingGroup="u_weblogin_admins" />
+ <Attribute id="entitlement_dlt_u" description="DLT Portal user"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="entitlement_gartner" description="Gartner entitlement"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="entitlement_lib" description="basic library entitlement"  authorizingGroup="u_weblogin_admins" />
  <Attribute id="entitlement_sln" description="Course enrolement by SLN"  authorizingGroup="u_weblogin_admins" />
