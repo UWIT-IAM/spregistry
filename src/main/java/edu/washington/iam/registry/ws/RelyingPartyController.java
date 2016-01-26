@@ -946,10 +946,11 @@ public class RelyingPartyController {
         ModelAndView mv = basicModelAndView(session, "xml", "empty");
 
         String dns = dnsFromEntityId(id);
-        for (int i=0; i<session.altNames.size(); i++) {
-           if (dns.equals(session.altNames.get(i))) {
+        for  (String alt : (List<String>) session.altNames) {
+           if (dns.equals(alt) || (alt.startsWith("*.") && dns.endsWith(alt.substring(1))) ) {
               log.info("dns match found for " + dns);
               status = 200;
+              break;
            }
         }
         if (status==403) {

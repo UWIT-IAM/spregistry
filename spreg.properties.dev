@@ -1,0 +1,45 @@
+# spreg properties file for DEV system
+#
+# spreg will look for this file first in the spreg directory
+# if that is undefined or not found this installed copy will be used
+#
+spreg.version=2.1.2
+spreg.versionDate=05/05/2105
+
+spreg.root=/data/local/spreg
+
+# database parameters
+spreg.db.url=iamdbdev01.s.uw.edu/spregistry
+spreg.db.username=spreg
+spreg.db.password=mcwlo09234mfkw
+
+# web service parameters
+spreg.gws.baseUrl=https://iam-ws.u.washington.edu:7443/group_sws/v2
+spreg.gws.ownerBase=/group/u_weblogin_dns-owners_
+spreg.webclient.certFile=/data/local/etc/urizen3.crt
+spreg.webclient.keyFile=/data/local/etc/urizen3.key
+spreg.webclient.caFile=/data/local/etc/uwca.crt
+spreg.gws.adminGroupName=u_weblogin_admins
+
+# local locations 
+local.webclient.certFile=/home/fox/certs/urizen3.crt
+local.webclient.keyFile=/home/fox/certs/urizen3.key
+local.webclient.caFile=/home/fox/certs/uwca.crt
+
+# mail settings
+spreg.smtp.host=appsubmit.cac.washington.edu
+spreg.smtp.from=SP registry <somebody@iam-tools.u.washington.edu>
+spreg.smtp.to=fox@uw.edu
+spreg.smtp.requestMailTo=fox@uw.edu
+
+spreg.uwLogoutp=https://idp.u.washington.edu/idp/logout
+spreg.googleEntityId=https://idp.u.washington.edu/google
+spreg.cookieCryptKey=spud987was23f
+
+spreg.myEntityId=https://urizen4.cac.washington.edu/
+spreg.spRegistryUrl=https://urizen4.cac.washington.edu/spreg/
+
+# location of incommon metadata
+incommon.metadata.path=/usr/local/etc/shibboleth/InCommon-metadata.xml
+
+
