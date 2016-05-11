@@ -135,6 +135,7 @@ public class RelyingParty implements XMLSerializable {
            if (XMLHelper.matches(name,"ContactPerson")) contactPersons.add(new ContactPerson(e1));
 
            // we're just looking for the category
+         try {
            if (XMLHelper.matches(name,"Extensions")) {
               NodeList nl2 = e1.getChildNodes();
               for (int j=0; j<nl2.getLength(); j++) {
@@ -167,6 +168,9 @@ public class RelyingParty implements XMLSerializable {
                  }
               }
            }
+         } catch (NullPointerException e) {
+            entityCategory = null;
+         }
        }
     }
 
