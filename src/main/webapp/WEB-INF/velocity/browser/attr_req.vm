@@ -27,9 +27,10 @@ Check the attributes you need. Uncheck those you no longer want.
 ## <div id="attrrnotice" class="rnotice">(<span class="rstar">*</span> denotes required field)</div>
 
 <form action="">
-<ul class="iamlist">
+<table class="iamtable ">
 
 #foreach ( $attr in $attributes )
+ #if ($attr.type == 'attribute')
   ## we need to know if the attribute is already selected or can be edited
   #set ( $chk = '' )
   #set ( $dis = '' )
@@ -50,28 +51,29 @@ Check the attributes you need. Uncheck those you no longer want.
     #end  ## if
   #end ## afp
 
-  <li><div class="dt dtcb"><input data-dojo-type="dijit.form.CheckBox" id="attr_req_${attr.id}"
+  <tr><td class="dt dtcb"><input data-dojo-type="dijit.form.CheckBox" id="attr_req_${attr.id}"
          $chk $dis value="${attr.id}" 
        #if ($attr.id == 'gws_groups') 
         onChange="local_check_gws()"
        #end
          class="attr_req_chk" aria-label="${attr.id}"/>
-      </div>
       <div class="dd dd2" style="overflow:hidden"><label for="attr_req_${attr.id}" title="#X($!{attr.description})" >${attr.id}</label>
         <input id="attr_req_${attr.id}_in" value="$chk" type="hidden" aria-hidden="true"></input>
+      </td>
 
        #if ($attr.id == 'gws_groups') 
-         <br>
+         <td>
          <div id="attr_req_gws_text_tr" #if ($grps!='')#else $hide #end>
            <label for="attr_req_gws_text">Which groups?$rstar</label><br>
              <textarea style="font-size:smaller" data-dojo-type="dijit.form.Textarea"
                   id="attr_req_gws_text" rows="2" cols="40" aria-label="which groups, required">#X($grps)</textarea>
              <textarea data-dojo-type="dijit.form.Textarea" id="attr_req_gws_text_in" $hide >#X($grps)</textarea>
           </div>
+         </td>
        #end
-      </div>
-   </li>
+   </tr>
 
+ #end # if
 #end
 </ul>
 <label for="attr_req_exptext">Explain your need for the attributes.$rstar</label>

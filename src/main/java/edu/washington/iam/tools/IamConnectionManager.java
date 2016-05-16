@@ -82,6 +82,7 @@ public class IamConnectionManager {
          SSLContext ctx = SSLContext.getInstance("TLS");
          ctx.init(keyManagers, trustManagers, null);
          socketFactory = new SSLSocketFactory(ctx);
+         socketFactory.setHostnameVerifier(org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
          Scheme scheme = new Scheme(protocol, socketFactory, port);
          schemeRegistry = new SchemeRegistry();
          schemeRegistry.register(scheme);
@@ -120,6 +121,7 @@ public class IamConnectionManager {
            }
 
            public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            log.debug("Trusting server cert");
                return;
            }
        }};
@@ -164,6 +166,7 @@ public class IamConnectionManager {
         }
 
         public void checkServerTrusted(X509Certificate[] certs, String authType) {
+            log.debug("trusting server cert");
             return;
         }
     }};

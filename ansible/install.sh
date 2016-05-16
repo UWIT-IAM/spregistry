@@ -3,13 +3,10 @@
 # spregistry ansible installation script
 
 function usage {
-  echo "usage: $0 [options] target "
-  echo "       [-p playbook]  ( default: install.yml )"
+  echo "usage: $0  [-v] [-l limit_host] target "
+  echo "       $0 -H  target (shows hostnames)"
   echo "       [-v]           ( verbose )"
-  echo "       [-d]           ( very verbose )"
-  echo "       [-i inventory] ( default:  ansible-tools/hosts )"
-  echo "       [-q]           ( quick:  do not refresh ansible-toools )"
-  echo "       targets: rivera_dev | rivera_prod"
+  echo "       targets: tools_eval | tools_prod"
   exit 1
 }
 
@@ -19,54 +16,48 @@ base=${dir%/ansible}
 
 cd $dir
 
+playbook="install-app.yml"
+list_hosts=0
+verb=0
+debug=0
 target=
-verbose=
-quick=
-list_opt=
-playbook=install.yml
-force=""
+limit=
+gettools=1
 
-# generic parser
-prefix=""
-key=""
-value=""
-inventory=""
-for keyValue in "$@"
-do
-  case "${prefix}${keyValue}" in
-    -p=*|--playbook=*)  key="-p";     value="${keyValue#*=}";; 
-    -i=*|--inventory=*)  key="-i";     value="${keyValue#*=}";; 
-    -n*|--no_update)      key="-n";    value="";;
-    -v*|--verbose)      key="-v";    value="";;
-    -d*|--debug)      key="-d";    value="";;
-    -q*|--quick)      key="-q";    value="";;
-    -f*|--force)      key="-f";    value="";;
-    -l*|--list)      key="-l";    value="";;
-    -h*|-?|--help)             usage;;
-    *)       value=$keyValue;;
-  esac
-  case $key in
-    -p) playbook=${value}; echo "p=$playbook";  prefix=""; key="";;
-    -i) inventory="${value}";          prefix=""; key="";;
-    -v) verbose="-v";           prefix=""; key="";;
-    -d) verbose="-vvvv";           prefix=""; key="";;
-    -q) quick=q;           prefix=""; key="";;
-    -l) list_opt="--list-hosts";           prefix=""; key="";;
-    -f) force="f";           prefix=""; key="";;
-    *)  prefix="${keyValue}=";;
+# limited args to playbook
+OPTIND=1
+while getopts 'h?l:Hvdp:' opt; do
+  case "$opt" in
+    h) usage
+       ;;
+    \?) usage
+       ;;
+    l) limit=$OPTARG
+       ;;
+    p) playbook=$OPTARG
+       ;;
+    H) listhosts=1
+       ;;
+    v) verb=1
+       ;;
+    d) debug=1
+       ;;
+    q) gettools=0
+       ;;
   esac
 done
 
-[[ -z $target ]] && target=$value
-[[ -z "$target"  || "$target" == "-"* ]] && usage
+eval target="\${$OPTIND}"
+[[ -z $target ]] && usage
 
 # get ansible-tools
 
 [[ -d ansible-tools ]] || {
    echo "installing ansible-tools tools"
    git clone ssh://git@git.s.uw.edu/iam/ansible-tools.git
+   gettools=0
 } || {
-   [[ -z $quick ]] && {
+(( getools>0 )) && {
       cd ansible-tools
       git pull origin master
       cd ..
@@ -74,6 +65,11 @@ done
 }
 
 export ANSIBLE_LIBRARY=ansible-tools/modules:/usr/share/ansible
+
+((listhosts>0)) && {
+   ansible-playbook ${playbook} --list-hosts -i ansible-tools/hosts  --extra-vars "target=${target}"
+   exit 0
+}
 
 
 # store current status
@@ -112,6 +108,10 @@ END
 
 # run the installer 
 
-vars="target=${target} "
-ansible-playbook ${playbook} $verbose  -i ansible-tools/hosts  --extra-vars "${vars}" $list_opt
+vars=
+(( verb>0 )) && vars="$vars -v "
+(( debug>0 )) && vars="$vars -vvvv "
+[[ -n $limit ]] && vars="$vars -l $limit "
+ansible-playbook ${playbook} $vars -i ansible-tools/hosts  --extra-vars "target=${target}"
+
 

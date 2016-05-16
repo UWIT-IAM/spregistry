@@ -887,6 +887,19 @@ public class RelyingPartyController {
            return mv;
         }
 
+        // if new, check for URL entityid
+        try {
+           rpManager.getRelyingPartyById(id, mdid);
+        } catch (RelyingPartyException e) {
+           if (!isProperEntityId(session, id)) {
+               log.info("improper entity id");
+               status = 400;
+               mv.addObject("alert", "The posted entityid was not a URL\n");
+               response.setStatus(status);
+               return mv;
+           }
+        }
+
         RelyingParty relyingParty = null;
         try {
             Document doc = null;
@@ -898,6 +911,14 @@ public class RelyingPartyController {
             log.info("parse error: " + e);
             status = 400;
             mv.addObject("alert", "The posted document was not valid:\n" + e);
+            response.setStatus(status);
+            return mv;
+        }
+
+        if (!relyingParty.getEntityId().equals(id)) {
+            log.info("entity id mismatch");
+            status = 400;
+            mv.addObject("alert", "The posted entityid did not match the request\n");
             response.setStatus(status);
             return mv;
         }
@@ -963,6 +984,19 @@ public class RelyingPartyController {
            mv.addObject("alert", "The metadata was not found or is not editable");
            response.setStatus(status);
            return mv;
+        }
+
+        // if new, check for URL entityid
+        try {
+           rpManager.getRelyingPartyById(id, mdid);
+        } catch (RelyingPartyException e) {
+           if (!isProperEntityId(session, id)) {
+               log.info("improper entity id");
+               status = 400;
+               mv.addObject("alert", "The posted entityid was not a URL\n");
+               response.setStatus(status);
+               return mv;
+           }
         }
 
         RelyingParty rp = null;
@@ -1371,6 +1405,10 @@ public class RelyingPartyController {
     private boolean userCanEdit(RPSession session, String entityId)
         throws DNSVerifyException {
         return session.adminRole || dnsVerifier.isOwner(entityId, session.remoteUser, null);
+    }
+
+    private boolean isProperEntityId(RPSession session, String id) {
+        return (session.adminRole || id.startsWith("http://") || id.startsWith("https://"));
     }
 
     private long getLongHeader(HttpServletRequest request, String name) {

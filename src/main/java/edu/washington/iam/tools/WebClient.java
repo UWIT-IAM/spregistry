@@ -212,39 +212,28 @@ public class WebClient {
        return doRestGet(url, null);
     }
 
-    public Element doRestPut(String url, List<NameValuePair> data, String auth) {
+    // return status
+    public int simpleRestPut(String url, List<NameValuePair> data) {
 
        closeIdleConnections();
-
-       log.debug("do rest put");
+       log.debug("simple rest put");
+       int status = 0;
        Element ele = null;
        if (restclient==null) restclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
        try {
 
-          log.debug(" rest url: " + url);
-
           HttpPut httpput = new HttpPut(url);
-          if (auth!=null) httpput.addHeader("Authorization", auth);
           httpput.setEntity(new UrlEncodedFormEntity(data));
 
           CloseableHttpResponse response = restclient.execute(httpput);
+           
           log.debug("resp: " + response.getStatusLine().getStatusCode() + " = " + response.getStatusLine().getReasonPhrase());
-          HttpEntity entity = response.getEntity();
-
-          // null is error - should get something
-          if (entity == null) {
-             response.close();
-             throw new WebClientException("restclient post exception");
-          }
-
-          // parse response text
-          Document doc = documentBuilder.parse(entity.getContent());
-          ele = doc.getDocumentElement();
+          status = response.getStatusLine().getStatusCode();
           response.close();
        } catch (Exception e) {
           log.error("exception " + e);
        }
-       return ele;
+       return status;
     }
 
    // simple rest get

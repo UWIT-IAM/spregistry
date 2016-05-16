@@ -50,18 +50,20 @@
 
 
 <h3 class="hidden">Released attributes</h3>
-<p>These attribute are released to this service provider.</i>
+<p>These attribute are released to this service provider.
 <p>
 
-<ul class="iamlist">
+<table class="iamtable">
  
   #foreach ( $attr in $attributes )
 
    #if ($attr.attributeFilterPolicy )
-      <li><div class="dt dt9" title="$!{attr.attributeFilterPolicy.policyGroupDescription}">$!{attr.id}</div>
+    #if ($attr.type == 'attribute')
+      <tr><td class="dt dt9" title="$!{attr.attributeFilterPolicy.policyGroupDescription}"><b>$!{attr.id}</b></td>
+        <td class="dt">$!{attr.description}</td>
       #set ($ar = $attr.attributeRule)
       #foreach ( $value in $ar.valueRules )
-          <div class="dd">
+          <td class="dd">
          #if ( $value.type == "basic:ANY" )
 ##           All values
          #else
@@ -75,9 +77,32 @@
              #set ($c = $c + 1)
            #end
          #end
-         </div>
+         </td>
       #end ## value
-      </li>
+      </tr>
+    #end
+   #end  ## fpolicy
+
+ #end  ## attrs
+
+
+</table>
+
+<h3 class="hidden">Released nameid</h3>
+<p>NameId format for this service provider.
+<p>
+
+
+<table class="iamtable">
+ 
+  #foreach ( $attr in $attributes )
+
+   #if ($attr.attributeFilterPolicy )
+    #if ($attr.type == 'nameid')
+      <tr><td class="dt dt9" title="$!{attr.attributeFilterPolicy.policyGroupDescription}"><b>$!{attr.id}</b></td>
+        <td class="dt">$!{attr.description}</td>
+      </tr>
+    #end
    #end  ## fpolicy
 
  #end  ## attrs

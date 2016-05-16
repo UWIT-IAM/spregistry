@@ -50,7 +50,7 @@ Enter the EntityId of your Service Provider.
 <input dojoType="dijit.form.TextBox" size="60" id="new_entity" value="" />
 <input id="manidButton" type="button" name="lookup" value="Do it the hard way" onClick="meta_nolookupSp()" />
 <ul>
-<li>Your entity id must start with: <b>https://</b><i>its_dns_name</i>
+<li>Your entity id must start with: <b>http://<i>its_dns_name</i>/</b> or <b>https://<i>its_dns_name</i>/</b>
    <br>(For example: https://spud.example.uw.edu/Shibboleth is a valid entity id.)</li>
 <li>You must be the registered owner of the DNS portion of the entity id. </li>
 </ul>

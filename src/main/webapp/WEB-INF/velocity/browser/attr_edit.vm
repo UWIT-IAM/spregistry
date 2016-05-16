@@ -94,7 +94,7 @@
      </li>
     #end
 
-    #set ( $ecount = $count + 5 )
+    #set ( $ecount = $count + 20 )
     #foreach ( $i in [ $count .. $ecount] )
        <li $hide id="${gid}_attr_edit_tr_v_${i}_$!{attr.id}">
             <div class="dt dt2" role="presentation"></div>

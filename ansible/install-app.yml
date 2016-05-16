@@ -18,7 +18,7 @@
     when: local_vars_stat.stat.exists
 
   - name: create properties yml file
-    local_action: property_to_yml spreg {{ cluster_type }}
+    local_action: "property_to_yml name=spreg type={{ cluster_type }}"
  
   - include_vars: "properties.yml"
 
@@ -77,6 +77,10 @@
     copy: "src=../target/spreg.war dest=/data/webapps/spreg.war group=iam-dev mode=664"
     notify: restart tomcat
 
+  # copy xmlsectool
+  - name: copy xmlsectool
+    synchronize: "src=../xmlsectool  dest={{ spreg_root }} "
+
   # run any handlers 
   - meta: flush_handlers
 
@@ -104,7 +108,40 @@
 
   # handlers mostly standard from iam-ansible
 
-  handlers:
-    - include: "ansible-tools/tasks/iam_handlers.yml"
+##  handlers:
+##    - include: "ansible-tools/tasks/iam_handlers.yml"
+
+
+  - name: idle wait
+    pause: "seconds={{ idle_wait_sec |default(30) }}"
+    when: " cluster_hosts|length>1 "
+
+  # restart tomcat ( 1. dle loadr,  2. wait xxx seconds  )
+  - name: do echo
+    debug: msg="restart tomcat handler"
+
+  - name: restart tomcat
+    command: /usr/bin/nohup /data/local/bin/ansible_command loadr idle
+    notify:
+      - idle wait
+      - continue restart tomcat
+
+  # restart tomcat ( 3. actual restart )
+  - name: continue restart tomcat
+    command: /usr/bin/nohup /data/local/bin/ansible_command tomcat restart
+    notify:
+      - wait_for_tomcat
+
+  # restart tomcat ( 4. wait for apps to start )
+  - name: wait_for_tomcat
+    shell: "c=0;while [ $c -lt 20 ]; do wget -O /dev/null -q  http://localhost/tomcatmanager/text/serverinfo;[ $? -eq 0 ] && exit 0;let c=c+1;sleep 5; done;exit 1"
+    register: wait_result
+    failed_when: "wait_result.rc != 0"
+    notify:
+      - restart loadr
+
+  # restart tomcat ( 5. restart loadr )
+  - name: restart loadr
+    command: /usr/bin/nohup /data/local/bin/ansible_command loadr start
 
 

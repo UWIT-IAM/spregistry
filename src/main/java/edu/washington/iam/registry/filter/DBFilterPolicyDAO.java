@@ -4,6 +4,7 @@ import edu.washington.iam.registry.exception.AttributeNotFoundException;
 import edu.washington.iam.registry.exception.FilterPolicyException;
 import edu.washington.iam.registry.exception.NoPermissionException;
 import edu.washington.iam.tools.XMLHelper;
+import edu.washington.iam.tools.IdpHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,11 @@ import java.util.*;
 
 public class DBFilterPolicyDAO implements FilterPolicyDAO {
     private final Logger log = LoggerFactory.getLogger(getClass());
+
+    private IdpHelper idpHelper = null;
+    public void setIdpHelper(IdpHelper v) {
+        idpHelper = v;
+    }
 
     @Autowired
     private JdbcTemplate template;
@@ -216,6 +222,7 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
                     xml,
                     attributeFilterPolicy.getEntityId(),
                     filterPolicyGroup.getId());
+            if (idpHelper!=null) idpHelper.notifyIdps("filter");
         } catch (Exception e) {
             log.info("update trouble: " + e.getMessage());
             throw(new FilterPolicyException(e));
@@ -231,6 +238,7 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
                    filterPolicyGroup.getId(),
                    attributeFilterPolicy.getEntityId(),
                    xml);
+            if (idpHelper!=null) idpHelper.notifyIdps("filter");
         } catch (Exception e) {
             log.info("create trouble: " + e.getMessage());
             throw(new FilterPolicyException(e));
@@ -244,6 +252,7 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
         template.update("update filter set status = 0, update_time = now() where group_id = ? and entity_id = ?",
                 filterPolicyGroup.getId(),
                 entityId);
+        if (idpHelper!=null) idpHelper.notifyIdps("filter");
         // TODO: DB error handling
         // one way to clear the cache
         //attributeFilterListMap.remove(filterPolicyGroup.getId());
