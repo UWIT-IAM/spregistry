@@ -776,7 +776,7 @@ function attr_requestAttrs(entityId) {
      wid = w.get('id');
      aid = wid.replace('attr_req_','');
      inn = dojoDom.byId(w.get('id') + '_in');
-     console.log(aid + ' in value ' + inn.value);
+     // console.log(aid + ' in value ' + inn.value);
      if (w.get('checked')) {
         if (aid=='gws_groups') {
            var grpsin = dijitRegistry.byId('attr_req_gws_text_in').get('value').trim();
@@ -859,11 +859,11 @@ function attr_showNext(gid, i, id) {
 
 // format an attribute
 function _attributeXml (gid, id) {
-   console.log('atr: ' + gid + '_attr_edit_chk_' + id);
+   console.log('attr: ' + gid + '_attr_edit_chk_' + id);
    chk = dijitRegistry.byId(gid + '_attr_edit_chk_' + id);
    if (chk.get('checked')) {
       all = dijitRegistry.byId(gid + '_attr_edit_all_' + id);
-     if (all.get('checked')) return '<AttributeRule attributeID="'+id+'" action="replace"><PermitValueRule xsi:type="basic:ANY"/></AttributeRule>';
+     if (all == null || all.get('checked')) return '<AttributeRule attributeID="'+id+'" action="replace"><PermitValueRule xsi:type="basic:ANY"/></AttributeRule>';
       nv = 0;
      txt = '<PermitValueRule xsi:type="basic:OR">';
      for (i=0;i<99;i++) {

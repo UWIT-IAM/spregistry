@@ -27,7 +27,10 @@ Check the attributes you need. Uncheck those you no longer want.
 ## <div id="attrrnotice" class="rnotice">(<span class="rstar">*</span> denotes required field)</div>
 
 <form action="">
-<table class="iamtable ">
+
+<h3>Assertion attributes</h3>
+
+<ul class="iamlist ">
 
 #foreach ( $attr in $attributes )
  #if ($attr.type == 'attribute')
@@ -51,34 +54,96 @@ Check the attributes you need. Uncheck those you no longer want.
     #end  ## if
   #end ## afp
 
-  <tr><td class="dt dtcb"><input data-dojo-type="dijit.form.CheckBox" id="attr_req_${attr.id}"
-         $chk $dis value="${attr.id}" 
-       #if ($attr.id == 'gws_groups') 
+  <li><div class="dt dtcb"><input data-dojo-type="dijit.form.CheckBox" id="attr_req_${attr.id}"
+         $chk $dis value="${attr.id}"
+       #if ($attr.id == 'gws_groups')
         onChange="local_check_gws()"
        #end
          class="attr_req_chk" aria-label="${attr.id}"/>
-      <div class="dd dd2" style="overflow:hidden"><label for="attr_req_${attr.id}" title="#X($!{attr.description})" >${attr.id}</label>
+      </div>
+      <h4 class="dd dt12" style="overflow:hidden"><label for="attr_req_${attr.id}" >${attr.id}</label>
         <input id="attr_req_${attr.id}_in" value="$chk" type="hidden" aria-hidden="true"></input>
-      </td>
-
-       #if ($attr.id == 'gws_groups') 
-         <td>
+      </h4>
+      <div class="dd dd2">$!{attr.description}
+       #if ($attr.id == 'gws_groups')
+         <br>
          <div id="attr_req_gws_text_tr" #if ($grps!='')#else $hide #end>
            <label for="attr_req_gws_text">Which groups?$rstar</label><br>
              <textarea style="font-size:smaller" data-dojo-type="dijit.form.Textarea"
                   id="attr_req_gws_text" rows="2" cols="40" aria-label="which groups, required">#X($grps)</textarea>
              <textarea data-dojo-type="dijit.form.Textarea" id="attr_req_gws_text_in" $hide >#X($grps)</textarea>
-          </div>
-         </td>
+         </div>
        #end
    </tr>
 
- #end # if
+ #end ## if
 #end
 </ul>
+
+<h3>NameId format</h3>
+
+<ul class="iamlist ">
+
+#set ( $chkdef = $checked )
+## see if this sp gets the default
+#foreach ( $attr in $attributes )
+ #if ($attr.type == 'nameid')
+  #if (${attr.attributeFilterPolicy})
+    #set ($chkdef='')
+  #end
+ #end
+#end
+  <li>
+     <div class="dt dtcb"><input data-dojo-type="dijit.form.RadioButton" name="nameidbtn" id="attr_req_default"
+         $chkdef value="default"
+         class="attr_req_chk" aria-label="default"/>
+     </div>
+     <h4 class="dd dt12" style="overflow:hidden"><label for="attr_req_default" >default</label>
+        <input id="attr_req_default_in" value="$chk" type="hidden" aria-hidden="true"></input>
+     </h4>
+     <div class="dd dd2">Transient NameId
+     </div>
+  </li>
+
+#foreach ( $attr in $attributes )
+ #if ($attr.type == 'nameid')
+  ## we need to know if the attribute is already selected or can be edited
+  #set ( $chk = '' )
+  #set ( $dis = '' )
+  #if (${attr.attributeFilterPolicy})
+    #set ($ar = $attr.attributeRule )
+    #set ($chk=$checked)
+    #if (!$attr.attributeFilterPolicy.editable) #set ($dis = $disable) #end
+  #end ## afp
+
+  <li>
+     <div class="dt dtcb"><input data-dojo-type="dijit.form.RadioButton" name="nameidbtn" id="attr_req_${attr.id}"
+         $chk $dis value="${attr.id}"
+         class="attr_req_chk" aria-label="${attr.id}"/>
+     </div>
+     <h4 class="dd dt12"><label for="attr_req_${attr.id}" >${attr.id}</label>
+        <input id="attr_req_${attr.id}_in" value="$chk" type="hidden" aria-hidden="true"></input>
+     </h4>
+     <div class="dd dd">$!{attr.description}
+     </div>
+   </li>
+
+ #end ## if
+#end
+</ul>
+
+<hr>
+
 <label for="attr_req_exptext">Explain your need for the attributes.$rstar</label>
 <br>
-<textarea data-dojo-type="dijit.form.Textarea" id="attr_req_exptext" rows="10" cols="50" aria-label="reason for attributes, required"></textarea>
+<textarea data-dojo-type="dijit.form.Textarea" cols="50" rows="10" id="attr_req_exptext" aria-label="reason for attributes, required">
+
+
+
+
+
+
+</textarea>
 
 </form>
 </div>

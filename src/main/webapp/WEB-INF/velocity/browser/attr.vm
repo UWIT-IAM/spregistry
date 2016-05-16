@@ -47,10 +47,10 @@
 <div id="attrViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false"
    style="overflow:auto;" onShow="adjustSpPaneSize('attrViewPane')" >
 
-
-
-<h3 class="hidden">Released attributes</h3>
 <p>These attribute are released to this service provider.
+
+
+<h3>Assertion attributes</h3>
 <p>
 
 <table class="iamtable">
@@ -59,53 +59,46 @@
 
    #if ($attr.attributeFilterPolicy )
     #if ($attr.type == 'attribute')
-      <tr><td class="dt dt9" title="$!{attr.attributeFilterPolicy.policyGroupDescription}"><b>$!{attr.id}</b></td>
-        <td class="dt">$!{attr.description}</td>
+      <li><h4 class="dt dt12" title="$!{attr.attributeFilterPolicy.policyGroupDescription}">$!{attr.id}</h4>
+        <div class="dd">$!{attr.description}
       #set ($ar = $attr.attributeRule)
       #foreach ( $value in $ar.valueRules )
-          <td class="dd">
-         #if ( $value.type == "basic:ANY" )
-##           All values
-         #else
-           #set ($c=0)
+         #if ( $value.type != "basic:ANY" )
            #foreach ( $rule in $value.rules )
-             #if ($c>0)
               <br>
-             #end
              #if ($rule.regex)<span class="subtitle">(regex)</span>#end
                <tt>#X(${rule.value.replaceFirst("urn:mace:washington.edu:groups:","")})</tt>
-             #set ($c = $c + 1)
            #end
          #end
          </td>
       #end ## value
-      </tr>
+      </li>
     #end
    #end  ## fpolicy
 
  #end  ## attrs
 
+</ul>
 
-</table>
+<ul class="iamlist">
+ <h3>NameId format</h3>
 
-<h3 class="hidden">Released nameid</h3>
-<p>NameId format for this service provider.
-<p>
-
-
-<table class="iamtable">
- 
+  #set ( $needdef = 1 )
   #foreach ( $attr in $attributes )
-
    #if ($attr.attributeFilterPolicy )
     #if ($attr.type == 'nameid')
-      <tr><td class="dt dt9" title="$!{attr.attributeFilterPolicy.policyGroupDescription}"><b>$!{attr.id}</b></td>
-        <td class="dt">$!{attr.description}</td>
+      <li><h4 class="dt dt12" title="$!{attr.attributeFilterPolicy.policyGroupDescription}">$!{attr.id}</h4>
+        <div class="dd">$!{attr.description}</div>
       </tr>
+      #set ( $needdef = 0 )
     #end
    #end  ## fpolicy
-
- #end  ## attrs
+  #end 
+  #if ($needdef == 1 )
+      <li><h4 class="dt dt12" title="default nameid">default</h4>
+        <div class="dd">Transient NameId</div>
+      </tr>
+  #end
 
 
 </ul>
