@@ -140,6 +140,17 @@ v_xsrf = '${xsrf}';
 #end
 
 
+<div id="invalidEntityId" data-dojo-type="dijit/Dialog" title="Invalid EntityId" $hide >
+  <div class="dijitDialogPaneContentArea">
+    An EntityId must be a valid URL.  The one you specified may not be accepted.
+  </div>
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('invalidEntityId')">Try again</button>
+    <button dojoType="dijit.form.Button" type="button" onClick="meta_lookupSp(1)">Continue anyway</button>
+ </div>
+</div>
+
+
 
 ## page
 ## loader flash
@@ -240,7 +251,7 @@ function openNewSPForm() {
       <label for="newSpLookup">Get metadata from the SP</label></span>
    <br>
    <button style="font-size:smaller" type="button"
-            data-dojo-type="dijit/form/Button" onClick="javascript:meta_lookupSp()">Continue</button>
+            data-dojo-type="dijit/form/Button" onClick="javascript:meta_lookupSp(0)">Continue</button>
   </div>
 
 <p>
@@ -299,7 +310,7 @@ function openNewSPForm() {
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.2</a></li>
+        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.3</a></li>
     </ul>
     </span>
 </div>

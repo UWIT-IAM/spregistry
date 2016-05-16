@@ -74,7 +74,8 @@ Check the attributes you need. Uncheck those you no longer want.
              <textarea data-dojo-type="dijit.form.Textarea" id="attr_req_gws_text_in" $hide >#X($grps)</textarea>
          </div>
        #end
-   </tr>
+      </div>
+   </li>
 
  #end ## if
 #end

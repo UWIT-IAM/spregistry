@@ -198,7 +198,7 @@ function showCurrentSp() {
 function checkNewSp(e) {
   console.log(e);
   if (e.keyCode==13) {  // enter
-     meta_lookupSp();
+     meta_lookupSp(0);
      return;
   }
 }
@@ -492,12 +492,18 @@ function _lookupSp(rpid, lookup) {
 
 // start a lookup of a new SP from the textbox
 
-function meta_lookupSp() {
+function meta_lookupSp(override) {
    var dns = dijitRegistry.byId('newSp').get('value').trim();
+   console.log('entityid=' + dns + ', override=' + override)
    if (dns==null || dns=='') {
       iam_showTheNotice('you must provide an entityid');
       return;
    }
+   if ( ! (override>0 || dns.indexOf('http://')==0 || dns.indexOf('https://')==0) ) { 
+      iam_showTheDialog('invalidEntityId');
+      return;
+   }
+   iam_hideTheDialog('invalidEntityId');
    var lookup = dijitRegistry.byId('newSpLookup').get('checked');
    return _lookupSp(dns, lookup);
 }  

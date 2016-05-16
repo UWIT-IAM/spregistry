@@ -108,7 +108,7 @@
 
   # handlers mostly standard from iam-ansible
 
-##  handlers:
+  handlers:
 ##    - include: "ansible-tools/tasks/iam_handlers.yml"
 
 

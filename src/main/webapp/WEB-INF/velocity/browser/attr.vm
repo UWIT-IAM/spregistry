@@ -53,7 +53,7 @@
 <h3>Assertion attributes</h3>
 <p>
 
-<table class="iamtable">
+<ul class="iamlist">
  
   #foreach ( $attr in $attributes )
 
@@ -70,7 +70,7 @@
                <tt>#X(${rule.value.replaceFirst("urn:mace:washington.edu:groups:","")})</tt>
            #end
          #end
-         </td>
+         </div>
       #end ## value
       </li>
     #end
