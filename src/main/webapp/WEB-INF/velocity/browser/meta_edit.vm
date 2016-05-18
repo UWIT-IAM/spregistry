@@ -358,7 +358,7 @@
           ### showHomePage();
         </script>
     </button>
-    <button dojoType="dijit.form.Button" type="button">No, go back
+    <button dojoType="dijit.form.Button" type="button">No, continue editing
         <script type="dojo/on" data-dojo-event="click">
            iam_hideTheDialog('metaNotSavedDialog');
            iam_showTheDialog('metaEditDialog');

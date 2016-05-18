@@ -31,6 +31,67 @@
 ## <h3 style="margin-left:50px;margin-right:50px;">Attributes by $group.description</h3>
 <form action="">
 
+<h3>NameId format</h3>
+
+<ul class="iamlist">
+
+#set ( $policy = $filterPolicyManager.getFilterPolicy($group, $relyingPartyId))
+#set ( $chkdef = $checked )
+#foreach ( $attr in $attributes )
+  #if ($attr.type == 'nameid' )
+    ## see if policy exists for this sp and attr
+    #if ($policy)
+      #foreach ( $p in $policy.attributeRules )
+       #if ($attr.id==$p.id) 
+         #set ($chkdef = '')
+       #end
+      #end
+    #end ## if policy
+ #end ## if
+#end ## foreach attr
+
+  <li>
+    <div class="dt dtcb"><input data-dojo-type="dijit.form.RadioButton" $chk  name="nameidb2" value="default" id="${gid}_attr_edit_chk_default"
+           class="${gid}_attr_edit_chk" />
+    </div>
+    <h4 class="dd dt12" style="overflow:hidden"><label for="${gid}_attr_edit_chk_default">default</label>
+       <input tabindex="-1" id="${gid}_attr_edit_chk_default_in" value="$chk" type="hidden" aria-hidden="true"></input>
+    </h4>
+    <div class="dd">
+       Transient NameId
+    </div>
+  </li>
+   
+
+
+
+#foreach ( $attr in $attributes )
+  #if ($attr.type == 'nameid' )
+    #set ($chk = '')
+    ## see if policy exists for this sp and attr
+    #if ($policy)
+      #foreach ( $p in $policy.attributeRules )
+       #if ($attr.id==$p.id) 
+         #set ($chk = 'checked="checked"')
+       #end
+      #end
+    #end ## if policy
+
+  <li>
+    <div class="dt dtcb"><input data-dojo-type="dijit.form.RadioButton" $chk  name="nameidb2" value="${attr.id}" id="${gid}_attr_edit_chk_${attr.id}"
+           class="${gid}_attr_edit_chk" />
+    </div>
+    <h4 class="dd dt12" style="overflow:hidden"><label for="${gid}_attr_edit_chk_${attr.id}">$!{attr.id}</label>
+       <input tabindex="-1" id="${gid}_attr_edit_chk_${attr.id}_in" value="$chk" type="hidden" aria-hidden="true"></input>
+    </h4>
+    <div class="dd">
+       $!{attr.description}
+    </div>
+   
+ #end ## if
+#end ## foreach attr
+</ul>
+
 <h3>Assertion attributes</h3>
 
 <ul class="iamlist">
@@ -112,67 +173,6 @@
    </ul>
   </div>
   </li>
- #end ## if
-#end ## foreach attr
-</ul>
-
-<h3>NameId format</h3>
-
-<ul class="iamlist">
-
-#set ( $policy = $filterPolicyManager.getFilterPolicy($group, $relyingPartyId))
-#set ( $chkdef = $checked )
-#foreach ( $attr in $attributes )
-  #if ($attr.type == 'nameid' )
-    ## see if policy exists for this sp and attr
-    #if ($policy)
-      #foreach ( $p in $policy.attributeRules )
-       #if ($attr.id==$p.id) 
-         #set ($chkdef = '')
-       #end
-      #end
-    #end ## if policy
- #end ## if
-#end ## foreach attr
-
-  <li>
-    <div class="dt dtcb"><input data-dojo-type="dijit.form.RadioButton" $chk  name="nameidb2" value="default" id="${gid}_attr_edit_chk_default"
-           class="${gid}_attr_edit_chk" />
-    </div>
-    <h4 class="dd dt12" style="overflow:hidden"><label for="${gid}_attr_edit_chk_default">default</label>
-       <input tabindex="-1" id="${gid}_attr_edit_chk_default_in" value="$chk" type="hidden" aria-hidden="true"></input>
-    </h4>
-    <div class="dd">
-       Transient NameId
-    </div>
-  </li>
-   
-
-
-
-#foreach ( $attr in $attributes )
-  #if ($attr.type == 'nameid' )
-    #set ($chk = '')
-    ## see if policy exists for this sp and attr
-    #if ($policy)
-      #foreach ( $p in $policy.attributeRules )
-       #if ($attr.id==$p.id) 
-         #set ($chk = 'checked="checked"')
-       #end
-      #end
-    #end ## if policy
-
-  <li>
-    <div class="dt dtcb"><input data-dojo-type="dijit.form.RadioButton" $chk  name="nameidb2" value="${attr.id}" id="${gid}_attr_edit_chk_${attr.id}"
-           class="${gid}_attr_edit_chk" />
-    </div>
-    <h4 class="dd dt12" style="overflow:hidden"><label for="${gid}_attr_edit_chk_${attr.id}">$!{attr.id}</label>
-       <input tabindex="-1" id="${gid}_attr_edit_chk_${attr.id}_in" value="$chk" type="hidden" aria-hidden="true"></input>
-    </h4>
-    <div class="dd">
-       $!{attr.description}
-    </div>
-   
  #end ## if
 #end ## foreach attr
 </ul>

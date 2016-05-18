@@ -146,7 +146,41 @@ v_xsrf = '${xsrf}';
   </div>
  <div class="dijitDialogPaneActionBar">
     <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('invalidEntityId')">Try again</button>
-    <button dojoType="dijit.form.Button" type="button" onClick="meta_lookupSp(1)">Continue anyway</button>
+    <button dojoType="dijit.form.Button" type="button" onClick="meta_newSp(1)">Continue anyway</button>
+ </div>
+</div>
+
+
+
+<div id="newSpChooser" data-dojo-type="dijit/Dialog" title="Register a new Service Provider" $hide >
+  <div class="dijitDialogPaneContentArea">
+    <h3>Adding a Service Provider to the Registry.</h3>
+   <p>
+    You have three choices to load initial medata information.
+   <p>
+   <ol>
+    <li>If it is a Shibboleth SP, and is not on a private network, you can load metadata
+         directly from the SP.
+    <br>
+    <button dojoType="dijit.form.Button" type="button" onClick="meta_lookupSp(1)">Get metadata from the SP</button>
+    </li>
+    <p>
+    <li>If you have the metadata available at a web URL you can load it from there.
+    <br>
+    Metadata URL: <input dojoType="dijit.form.TextBox" id="newSpUrl" style="width:300px" value="" />
+    <br>
+    <button dojoType="dijit.form.Button" type="button" onClick="meta_lookupUrl()">Get metadata from this URL</button>
+    </li>
+    <p>
+    <li>If all else fails you can enter the data manually.
+    <br>
+    <button dojoType="dijit.form.Button" type="button" onClick="meta_manualSp()">Do it the hard way</button>
+    </li>
+   </ol>
+  </div>
+   
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('newSpChooser')">Cancel</button>
  </div>
 </div>
 
@@ -212,6 +246,7 @@ v_xsrf = '${xsrf}';
       loadSpList();
       on(dom.byId('filterSpList'), 'keyup', checkSpFilter);
       on(dom.byId('newSp'), 'keyup', checkNewSp);
+      on(dom.byId('newSpUrl'), 'keyup', checkNewUrl);
       #if ($timeLeft)
       to_interval = setInterval(function(){dijitRegistry.byId('helpTimeout').show();clearInterval(to_interval);}, ${timeLeft}000);
       console.log('session timeout in  ${timeLeft}000 ms');
@@ -241,18 +276,14 @@ function openNewSPForm() {
   </div>
 
  <div id="newSpForm" $hide>
- <h3>Register a New Service Provider</h3>
+  <h3>Register a New Service Provider</h3>
 
    Enter your SP's entityId
-    <input dojoType="dijit.form.TextBox" size="60" id="newSp" value="" />
-   <br>
-    <span style="font-size:smaller">
-        <input data-dojo-type="dijit.form.CheckBox" id="newSpLookup" checked="checked"</input>
-      <label for="newSpLookup">Get metadata from the SP</label></span>
+    <input dojoType="dijit.form.TextBox" id="newSp" value="" />
    <br>
    <button style="font-size:smaller" type="button"
-            data-dojo-type="dijit/form/Button" onClick="javascript:meta_lookupSp(0)">Continue</button>
-  </div>
+            data-dojo-type="dijit/form/Button" onClick="javascript:meta_newSp(0)">Continue</button>
+ </div>
 
 <p>
 

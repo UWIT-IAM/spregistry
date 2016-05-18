@@ -757,7 +757,7 @@ public class RelyingPartyController {
             @RequestParam(value="mdid", required=false) String mdid,
             @RequestParam(value="view", required=false) String view,
             @RequestParam(value="role", required=false) String role,
-            @RequestParam(value="nolook", required=false) String nolook, // enter manual data for this entity
+            @RequestParam(value="lookup", required=false) String lookup, // enter manual data for this entity
             HttpServletRequest request,
             HttpServletResponse response) {
 
@@ -767,8 +767,7 @@ public class RelyingPartyController {
 
         session.pageType = "rp";
         session.pageTitle = "New service provider";
-        boolean lookup = true;
-        if (nolook!=null && nolook.startsWith("y")) lookup = false;
+        if (lookup!=null) lookup = java.net.URLDecoder.decode(lookup);
         
         String dns = dnsFromEntityId(rpid);
 
@@ -804,10 +803,12 @@ public class RelyingPartyController {
 
         mv.addObject("newEntity", true);
 
-        if (lookup) {
+        if (lookup!=null) {
            mv.addObject("newByLookup", true);
            try {
-              rp = rpManager.genRelyingPartyByLookup(hostPortFromEntityId(rpid));
+              if (lookup.equals("sp")) lookup = "https://" + hostPortFromEntityId(rpid) +  "/Shibboleth.sso/Metadata";
+              log.debug("SP by lookup:  " + lookup);
+              rp = rpManager.genRelyingPartyByLookup(lookup);
               if (rp!=null) log.debug("rp: " + rp.getEntityId());
               try {
                   RelyingParty orp = rpManager.getRelyingPartyById(rp.getEntityId(), "UW");
@@ -837,7 +838,7 @@ public class RelyingPartyController {
            }
         }
         if (rp==null) {
-           if (lookup) return emptyMV(rpid + " did not respond with metadata");
+           if (lookup!=null) return emptyMV("URL did not respond with metadata");
            rp = rpManager.genRelyingPartyByName(rpid, dns);
            mv.addObject("relyingParty", rp);
            mv.addObject("relyingPartyId", rpid);

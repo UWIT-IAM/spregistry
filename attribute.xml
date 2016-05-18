@@ -14,15 +14,15 @@
  <Attribute id="entitlement_lib" description="basic library entitlement"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="entitlement_sln" description="Course enrolement by SLN"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="ePPN" description="uwnetid (PDS: uwNetID + @washington.edu)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="eppnNameId" description="eppn as nameid"  authorizingGroup="u_weblogin_admins"  type="nameid" />
+ <Attribute id="eppnNameId" description="&lt;i&gt;uwnetid&lt;/i&gt;@washington.edu"  authorizingGroup="u_weblogin_admins"  type="nameid" />
  <Attribute id="ePTID" description="The persistent id as a SAML1 targeted id"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="givenName" description="First and middle names (PDS: uwPersonRegisteredFirstMiddle)" 
       authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="gws_groups" description="GWS group effective memberships"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="homedept" description="Home department (PDS: uwEmployeeHomeDepartment)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="idNameId" description="The uwNetID as a SAML nameid"  authorizingGroup="u_weblogin_admins"  type="nameid" />
+ <Attribute id="idNameId" description="&lt;i&gt;uwnetid&lt;/i&gt;"  authorizingGroup="u_weblogin_admins"  type="nameid" />
  <Attribute id="mailstop" description="Mail stop (PDS: uwEmployeeMailstop)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="nameIDPersistentID" description="The persistent id as a SAML nameid"  authorizingGroup="u_weblogin_admins"  type="nameid" />
+ <Attribute id="nameIDPersistentID" description="Opaque, persistent identifier"  authorizingGroup="u_weblogin_admins"  type="nameid" />
  <Attribute id="NIHePPN" description="ePPN with inline scoping (for NIH)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="NIHePTID" description="persistent ID with inline scoping (for NIH)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="phone" description="Employee phone (PDS: uwEWPPhone1)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
@@ -32,7 +32,7 @@
  <Attribute id="surname" description="Last name (PDS: sn)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="title" description="Title (PDS: uwEWPTitle1)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="uwEduEmail" description="UW.EDU email (netid@uw.edu)" authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="uwEduEmailNameId" description="UW.EDU email as a nameid" authorizingGroup="u_weblogin_admins"  type="nameid" />
+ <Attribute id="uwEduEmailNameId" description="&lt;i&gt;uwnetid&lt;/i&gt;@uw.edu" authorizingGroup="u_weblogin_admins"  type="nameid" />
  <Attribute id="uwNetID" description="UW NetID"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="uwRegID" description="UW registry id"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="uwStudentID" description="UW Student ID"  authorizingGroup="u_weblogin_admins"  type="attribute" /> 

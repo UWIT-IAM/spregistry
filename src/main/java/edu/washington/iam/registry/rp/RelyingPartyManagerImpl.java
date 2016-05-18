@@ -162,11 +162,9 @@ public class RelyingPartyManagerImpl implements RelyingPartyManager {
 
     // create RP by dns lookup
     @Override
-    public RelyingParty genRelyingPartyByLookup(String dns) throws RelyingPartyException {
+    public RelyingParty genRelyingPartyByLookup(String url) throws RelyingPartyException {
        
        RelyingParty rp = null;
-       String url = "https://" + dns + "/Shibboleth.sso/Metadata";
-
        log.info("getrpmd: genRelyingPartyByLookup: " + url);
 
        // install the all trusting trust manager
