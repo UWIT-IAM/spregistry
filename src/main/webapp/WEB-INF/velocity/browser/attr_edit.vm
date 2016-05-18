@@ -15,11 +15,9 @@
  * ========================================================================
  *#
 
-## This edits only one editable policy
-## For more policies, use more of these
+## This edits only one editable policy  
 
 #parse ( 'definitions.vm' )
-
 
 #foreach ( $grp in $filterPolicyGroups )
  #if ( $grp.editable )
@@ -30,14 +28,78 @@
 
 <div id="attrEditDialog" dojoType="dijit/Dialog" title="Edit attributes for ${relyingPartyId}" $hide >
 
-## <p>Allow 40 minutes for our IdP to acquire the changes to this service provider's attribute release policy.
-<h3 style="margin-left:50px;margin-right:50px;">Attributes by $group.description</h3>
+## <h3 style="margin-left:50px;margin-right:50px;">Attributes by $group.description</h3>
 <form action="">
+
+<h3>NameId format</h3>
+
 <ul class="iamlist">
 
-  #set ( $policy = false )
-  #set ( $policy = $filterPolicyManager.getFilterPolicy($group, $relyingPartyId))
-  #foreach ( $attr in $attributes )
+#set ( $policy = $filterPolicyManager.getFilterPolicy($group, $relyingPartyId))
+#set ( $chkdef = $checked )
+#foreach ( $attr in $attributes )
+  #if ($attr.type == 'nameid' )
+    ## see if policy exists for this sp and attr
+    #if ($policy)
+      #foreach ( $p in $policy.attributeRules )
+       #if ($attr.id==$p.id) 
+         #set ($chkdef = '')
+       #end
+      #end
+    #end ## if policy
+ #end ## if
+#end ## foreach attr
+
+  <li>
+    <div class="dt dtcb"><input data-dojo-type="dijit.form.RadioButton" $chk  name="nameidb2" value="default" id="${gid}_attr_edit_chk_default"
+           class="${gid}_attr_edit_chk" />
+    </div>
+    <h4 class="dd dt12" style="overflow:hidden"><label for="${gid}_attr_edit_chk_default">default</label>
+       <input tabindex="-1" id="${gid}_attr_edit_chk_default_in" value="$chk" type="hidden" aria-hidden="true"></input>
+    </h4>
+    <div class="dd">
+       Transient NameId
+    </div>
+  </li>
+   
+
+
+
+#foreach ( $attr in $attributes )
+  #if ($attr.type == 'nameid' )
+    #set ($chk = '')
+    ## see if policy exists for this sp and attr
+    #if ($policy)
+      #foreach ( $p in $policy.attributeRules )
+       #if ($attr.id==$p.id) 
+         #set ($chk = 'checked="checked"')
+       #end
+      #end
+    #end ## if policy
+
+  <li>
+    <div class="dt dtcb"><input data-dojo-type="dijit.form.RadioButton" $chk  name="nameidb2" value="${attr.id}" id="${gid}_attr_edit_chk_${attr.id}"
+           class="${gid}_attr_edit_chk" />
+    </div>
+    <h4 class="dd dt12" style="overflow:hidden"><label for="${gid}_attr_edit_chk_${attr.id}">$!{attr.id}</label>
+       <input tabindex="-1" id="${gid}_attr_edit_chk_${attr.id}_in" value="$chk" type="hidden" aria-hidden="true"></input>
+    </h4>
+    <div class="dd">
+       $!{attr.description}
+    </div>
+   
+ #end ## if
+#end ## foreach attr
+</ul>
+
+<h3>Assertion attributes</h3>
+
+<ul class="iamlist">
+
+#set ( $policy = false )
+#set ( $policy = $filterPolicyManager.getFilterPolicy($group, $relyingPartyId))
+#foreach ( $attr in $attributes )
+  #if ($attr.type == 'attribute' )
     #set ($chk = '')
     #set ($pattr = false )
     ## see if policy exists for this sp and attr
@@ -48,14 +110,17 @@
          #set ($pattr = $p )
        #end
       #end
-    #end
+    #end ## if policy
 
   <li>
     <div class="dt dtcb"><input data-dojo-type="dijit.form.CheckBox" $chk  value="${attr.id}" id="${gid}_attr_edit_chk_${attr.id}"
            class="${gid}_attr_edit_chk" onClick="attr_checkAttr('$gid', '$!{attr.id}')"></input>
     </div>
-    <div class="dd dd2" style="overflow:hidden"><label for="${gid}_attr_edit_chk_${attr.id}">$!{attr.id}</label>
+    <h4 class="dd dt12" style="overflow:hidden"><label for="${gid}_attr_edit_chk_${attr.id}">$!{attr.id}</label>
        <input tabindex="-1" id="${gid}_attr_edit_chk_${attr.id}_in" value="$chk" type="hidden" aria-hidden="true"></input>
+    </h4>
+    <div class="dd">
+       $!{attr.description}
    
     ## show any existing releases
     #set ($count=0)
@@ -94,7 +159,7 @@
      </li>
     #end
 
-    #set ( $ecount = $count + 5 )
+    #set ( $ecount = $count + 20 )
     #foreach ( $i in [ $count .. $ecount] )
        <li $hide id="${gid}_attr_edit_tr_v_${i}_$!{attr.id}">
             <div class="dt dt2" role="presentation"></div>
@@ -106,11 +171,13 @@
        </li>
     #end  ## xtra counts
    </ul>
-    </div>
+  </div>
   </li>
-  #end ## attr
-
+ #end ## if
+#end ## foreach attr
 </ul>
+
+
 </form>
     <div class="dijitDialogPaneActionBar">
         <button dojoType="dijit.form.Button" type="button" onClick="attr_saveAttrs('${gid}', '${relyingPartyId}')">Save changes</button>

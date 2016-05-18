@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.washington.iam.tools.IdpHelper;
+
 public class DBMetadata implements MetadataDAO {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -25,6 +27,10 @@ public class DBMetadata implements MetadataDAO {
     private String id;
     private String groupId;
     private boolean editable;
+    private IdpHelper idpHelper = null;
+    public void setIdpHelper(IdpHelper v) {
+        idpHelper = v;
+    }
 
     @Autowired
     private JdbcTemplate template;
@@ -82,6 +88,7 @@ public class DBMetadata implements MetadataDAO {
                         " entity_id = ? and group_id = ? ",
                         xml, relyingParty.getEntityId(), groupId);
             }
+            if (idpHelper!=null) idpHelper.notifyIdps("metadata");
         } catch (Exception e) {
             log.info("update metadata trouble: " + e.getMessage());
             // just eat it - don't know the repercussions

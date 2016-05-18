@@ -194,15 +194,6 @@ function showCurrentSp() {
    window.focus();
 }
 
-// Catch 'enter' in the new-sp textbox.  Act as if 'Continue'
-function checkNewSp(e) {
-  console.log(e);
-  if (e.keyCode==13) {  // enter
-     meta_lookupSp();
-     return;
-  }
-}
-
 /*
  * SP list tools
  */
@@ -472,14 +463,51 @@ function postLoadNewSp() {
    iam_showTheDialog('metaEditDialog',[]);
 }
 
+// Catch 'enter' in the new-sp entityid textbox.  Act as if 'Continue'
+function checkNewSp(e) {
+  if (e.keyCode==13) {  // enter
+     meta_newSp(0);
+     return;
+  }
+}
+// Catch 'enter' in the new-sp url textbox.  Act as if 'Continue'
+function checkNewUrl(e) {
+  if (e.keyCode==13) {  // enter
+     meta_lookupUrl();
+     return;
+  }
+}
+
+
+// Catch 'check' in the new-sp get-from-sp.
+function checkNewSpFromSp() {
+   if (dijitRegistry.byId('newSpLookup').get('checked')) {
+      console.log('got a check show on sp');
+      dijitRegistry.byId('newSpLookupUrl').set('checked', false);
+      iam_hideShow(['newSpUrlBox'],[]);
+   }
+}
+// Catch 'check' in the new-sp get-from-url.
+function checkNewSpFromUrl() {
+   if (dijitRegistry.byId('newSpLookupUrl').get('checked')) {
+      console.log('got a check show on url');
+      dijitRegistry.byId('newSpLookup').set('checked', false);
+      iam_hideShow([], ['newSpUrlBox']);
+   } else {
+      console.log('got a check hide on url');
+      iam_hideShow(['newSpUrlBox'],[]);
+   }
+}
+
+
 // API call to fetch or generate metadata for a new SP
-function _lookupSp(rpid, lookup) {
+function _newSp(rpid, lookup) {
    currentSp = null
    newSpId = rpid;
    v_spLoading = true;
    if (dijitRegistry.byId('spPane')!=null)  dijitRegistry.byId('spPane').destroyRecursive();
    var url = v_root + v_vers + '/new?rpid=' + rpid + adminQS;
-   if (!lookup) url += '&nolook=y';
+   if (lookup) url += '&lookup=' + lookup;
    console.log(url);
    dijitRegistry.byId('spDisplay').set('errorMessage', 'Request for metadata failed.  Is the SP online?');
    if (lookup) dijitRegistry.byId('spDisplay').set('loadingMessage', 'Searching for ' + rpid + ' . . .' );
@@ -492,15 +520,44 @@ function _lookupSp(rpid, lookup) {
 
 // start a lookup of a new SP from the textbox
 
-function meta_lookupSp() {
+function meta_newSp(override) {
    var dns = dijitRegistry.byId('newSp').get('value').trim();
+   console.log('entityid=' + dns + ', override=' + override)
    if (dns==null || dns=='') {
       iam_showTheNotice('you must provide an entityid');
       return;
    }
-   var lookup = dijitRegistry.byId('newSpLookup').get('checked');
-   return _lookupSp(dns, lookup);
+   if ( ! (override>0 || dns.indexOf('http://')==0 || dns.indexOf('https://')==0) ) { 
+      iam_showTheDialog('invalidEntityId');
+      return;
+   }
+   iam_hideTheDialog('invalidEntityId');
+   iam_showTheDialog('newSpChooser');
+}
+
+function meta_lookupSp() {
+   var dns = dijitRegistry.byId('newSp').get('value').trim();
+   iam_hideTheDialog('newSpChooser');
+   return _newSp(dns, 'sp');
+}
+
+function meta_lookupUrl() {
+   var dns = dijitRegistry.byId('newSp').get('value').trim();
+   var url = dijitRegistry.byId('newSpUrl').get('value').trim();
+   if (url=='') {
+      iam_showTheNotice('You must provide a URL');
+      return;
+   }
+   iam_hideTheDialog('newSpChooser');
+   return _newSp(dns, url);
 }  
+
+function meta_manualSp() {
+   var dns = dijitRegistry.byId('newSp').get('value').trim();
+   iam_hideTheDialog('newSpChooser');
+   return _newSp(dns, null);
+}
+
 
 /* 
  * tools to handle save of metadata
@@ -776,7 +833,7 @@ function attr_requestAttrs(entityId) {
      wid = w.get('id');
      aid = wid.replace('attr_req_','');
      inn = dojoDom.byId(w.get('id') + '_in');
-     console.log(aid + ' in value ' + inn.value);
+     // console.log(aid + ' in value ' + inn.value);
      if (w.get('checked')) {
         if (aid=='gws_groups') {
            var grpsin = dijitRegistry.byId('attr_req_gws_text_in').get('value').trim();
@@ -859,11 +916,11 @@ function attr_showNext(gid, i, id) {
 
 // format an attribute
 function _attributeXml (gid, id) {
-   console.log('atr: ' + gid + '_attr_edit_chk_' + id);
+   console.log('attr: ' + gid + '_attr_edit_chk_' + id);
    chk = dijitRegistry.byId(gid + '_attr_edit_chk_' + id);
    if (chk.get('checked')) {
       all = dijitRegistry.byId(gid + '_attr_edit_all_' + id);
-     if (all.get('checked')) return '<AttributeRule attributeID="'+id+'" action="replace"><PermitValueRule xsi:type="basic:ANY"/></AttributeRule>';
+     if (all == null || all.get('checked')) return '<AttributeRule attributeID="'+id+'" action="replace"><PermitValueRule xsi:type="basic:ANY"/></AttributeRule>';
       nv = 0;
      txt = '<PermitValueRule xsi:type="basic:OR">';
      for (i=0;i<99;i++) {

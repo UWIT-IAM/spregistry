@@ -47,6 +47,7 @@ public class Attribute implements Serializable  {
     private boolean ferpa;
     private boolean hippa;
     private String authorizingGroup;
+    private String type;
     private boolean editable = false;
     AttributeFilterPolicy attributeFilterPolicy;
     AttributeRule attributeRule;
@@ -58,6 +59,7 @@ public class Attribute implements Serializable  {
        if (id==null) throw new AttributeException("No id for attribute");
        name = ele.getAttribute("name");
        description = ele.getAttribute("description");
+       type = ele.getAttribute("type");
 
        log.debug("create from doc: " + id);
 
@@ -72,6 +74,7 @@ public class Attribute implements Serializable  {
        id = src.getId();
        name = src.getName();
        description = src.getDescription();
+       type = src.getType();
        editable = src.isEditable();
     }
 
@@ -87,6 +90,9 @@ public class Attribute implements Serializable  {
     }
     public String getDescription() {
        return description;
+    }
+    public String getType() {
+       return type;
     }
     public String getAuthorizingGroup() {
        return authorizingGroup;

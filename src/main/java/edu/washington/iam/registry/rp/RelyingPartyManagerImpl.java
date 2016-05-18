@@ -69,6 +69,11 @@ public class RelyingPartyManagerImpl implements RelyingPartyManager {
 
     private Map<String, MetadataDAO> metadataDAOs;
 
+    private SchemaVerifier schemaVerifier = null;
+    public void setSchemaVerifier(SchemaVerifier v) {
+        this.schemaVerifier = v;
+    }
+    
     static {
        Security.addProvider(new BouncyCastleProvider());
     }
@@ -157,11 +162,9 @@ public class RelyingPartyManagerImpl implements RelyingPartyManager {
 
     // create RP by dns lookup
     @Override
-    public RelyingParty genRelyingPartyByLookup(String dns) throws RelyingPartyException {
+    public RelyingParty genRelyingPartyByLookup(String url) throws RelyingPartyException {
        
        RelyingParty rp = null;
-       String url = "https://" + dns + "/Shibboleth.sso/Metadata";
-
        log.info("getrpmd: genRelyingPartyByLookup: " + url);
 
        // install the all trusting trust manager
@@ -215,6 +218,8 @@ public class RelyingPartyManagerImpl implements RelyingPartyManager {
     public int updateRelyingParty(RelyingParty relyingParty, String mdid) throws RelyingPartyException {
         int status = 200;
         log.info(String.format("rp update doc, source=%s; rpid=%s", mdid, relyingParty.getEntityId()));
+        // do a final verification of the new metadata
+        if (schemaVerifier!=null && ! schemaVerifier.testSchemaValid(relyingParty)) throw new RelyingPartyException("schema verify fails");
 
         metadataDAOs.get(mdid).updateRelyingParty(relyingParty);
         return (status);
