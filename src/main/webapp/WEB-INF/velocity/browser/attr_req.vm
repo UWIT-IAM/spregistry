@@ -47,7 +47,7 @@ If you're not sure, keep the default NameId.
          class="attr_req_chk" aria-label="default"/>
      </div>
      <h4 class="dd dt12" style="overflow:hidden"><label for="attr_req_default" >default</label>
-        <input id="attr_req_default_in" value="$chk" type="hidden" aria-hidden="true"></input>
+        <input id="attr_req_default_in" value="$chkdef" type="hidden" aria-hidden="true"></input>
      </h4>
      <div class="dd dd2">Transient NameId
      </div>

@@ -26,8 +26,6 @@
  <Attribute id="NIHePPN" description="ePPN with inline scoping (for NIH)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="NIHePTID" description="persistent ID with inline scoping (for NIH)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="phone" description="Employee phone (PDS: uwEWPPhone1)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="saml1PersistentID" description="ePTID (saml1 only)"  authorizingGroup="u_weblogin_admins"  type="attribute" /> 
- <Attribute id="saml2PersistentID" description="persistent ID (saml2 only)"  authorizingGroup="u_weblogin_admins"  type="attribute" /> 
  <Attribute id="scopedAffiliation" description="affiliation with '@washington.edu'"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="surname" description="Last name (PDS: sn)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="title" description="Title (PDS: uwEWPTitle1)"  authorizingGroup="u_weblogin_admins"  type="attribute" />

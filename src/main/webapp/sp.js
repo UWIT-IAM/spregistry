@@ -832,6 +832,7 @@ function attr_requestAttrs(entityId) {
      wname = w.get('value');
      wid = w.get('id');
      aid = wid.replace('attr_req_','');
+     if (aid=='default') continue;  // not a real attribute
      inn = dojoDom.byId(w.get('id') + '_in');
      // console.log(aid + ' in value ' + inn.value);
      if (w.get('checked')) {
@@ -966,7 +967,9 @@ function attr_saveAttrs(gid, entityId) {
    alist = dojoQuery('.' + gid + '_attr_edit_chk');
    for (a=0; a<alist.length; a++) {
        w = dijitRegistry.byNode(alist[a]);
-       xml += _attributeXml(gid, w.get('id').replace(gid+'_attr_edit_chk_',''));
+       aid = w.get('id').replace(gid+'_attr_edit_chk_','');
+       if (aid=='default') continue;  // not a real attribute
+       xml += _attributeXml(gid, aid);
    }
    xml = xml + '</AttributeFilterPolicy></FilterPolicyModification>';
    action = v_root + v_vers + '/rp/attr?id=' + entityId + '&policyId=' + gid + '&xsrf=' + v_xsrf  + adminQS;
