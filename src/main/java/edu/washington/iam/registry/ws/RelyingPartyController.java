@@ -356,7 +356,6 @@ public class RelyingPartyController {
         session.ifNoneMatch = getLongHeader(request, "If-None-Match");
         log.info("tags: match=" + session.ifMatch + ", nonematch=" + session.ifNoneMatch);
 
-        log.info("user: " + session.remoteUser);
         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max_age=1");
         response.setHeader("X-UA-Compatible", "IE=7");
 

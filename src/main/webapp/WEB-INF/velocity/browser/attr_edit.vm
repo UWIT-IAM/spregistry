@@ -51,11 +51,11 @@
 #end ## foreach attr
 
   <li>
-    <div class="dt dtcb"><input data-dojo-type="dijit.form.RadioButton" $chk  name="nameidb2" value="default" id="${gid}_attr_edit_chk_default"
+    <div class="dt dtcb"><input data-dojo-type="dijit.form.RadioButton" $chkdef  name="nameidb2" value="default" id="${gid}_attr_edit_chk_default"
            class="${gid}_attr_edit_chk" />
     </div>
     <h4 class="dd dt12" style="overflow:hidden"><label for="${gid}_attr_edit_chk_default">default</label>
-       <input tabindex="-1" id="${gid}_attr_edit_chk_default_in" value="$chk" type="hidden" aria-hidden="true"></input>
+       <input tabindex="-1" id="${gid}_attr_edit_chk_default_in" value="$chkdef" type="hidden" aria-hidden="true"></input>
     </h4>
     <div class="dd">
        Transient NameId

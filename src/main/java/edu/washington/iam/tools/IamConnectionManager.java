@@ -166,7 +166,6 @@ public class IamConnectionManager {
         }
 
         public void checkServerTrusted(X509Certificate[] certs, String authType) {
-            log.debug("trusting server cert");
             return;
         }
     }};
