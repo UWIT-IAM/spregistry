@@ -38,6 +38,8 @@ var newSpId = '';
 var numMetaEditKey = 0;
 var numProxyEditKey = 0;
 
+var spListMine = false;  // set to list only user's sps
+
 iam_set('rightSide', 'spDisplay');
 
 
@@ -180,7 +182,7 @@ function showSp(i, tab) {
 function showCurrentSp() {
    v_spLoading = true;
    if (currentSp!=null) {
-      console.log('showcur ' + v_currentSpTab + '!' + currentSp.id);
+      console.log('showcur ' + v_currentSpTab + '!' + currentSp.id + ' admins=' + currentSp.admins);
       iam_hashSetCurrent(v_currentSpTab,currentSp.id);
    } else console.log('showCur no sur');
    if (dijitRegistry.byId('spPane')!=null)  dijitRegistry.byId('spPane').destroyRecursive();
@@ -252,11 +254,19 @@ function checkSpFilter(e) {
 
 // display the filtered sp list
 
-function showSpList(e) {
+function _isadmin(sp) {
+   for (a in sp.admins) {
+     admin = sp.admins[a];
+     if (v_remoteUser.indexOf('@')>0 && admin==v_remoteUser) return true;
+     if (admin==v_remoteUser+'@uw.edu' || admin==v_remoteUser+'@washington.edu') return true;
+   }
+   return false;
+}
+
+function showSpList() {
   
   curselsp = (-1);
   nsp = spList.length;
-  console.log(nsp + ' service providers loaded');
 
   var txsp = dijitRegistry.byId('filterSpList').get('value');
 
@@ -265,6 +275,7 @@ function showSpList(e) {
   var dc = 'dim0';
   for (i=0; i<nsp; i++) {
     if ((txsp.length>0) && spList[i].id.indexOf(txsp)<0) continue;
+    if (spListMine && !_isadmin(spList[i])) continue;
     ndsp += 1;
     if (ndsp==5) dc = 'dim1';
     if (ndsp==10) dc = 'dim2';
@@ -277,6 +288,7 @@ function showSpList(e) {
   ndsp = 0;
   for (i=0; i<nsp; i++) {
     if ((txsp.length>0) && spList[i].id.indexOf(txsp)<0) continue;
+    if (spListMine && !_isadmin(spList[i])) continue;
     ndsp += 1;
     if (ndsp>10000) {  // the 10000 effectively disables this ... feature
        htm += '<span class="listitem dim4"><i>.&nbsp;.&nbsp;.&nbsp;</i></span>';
@@ -284,7 +296,7 @@ function showSpList(e) {
     }
    
     // decorate the link with org and federation
-    ttl = spList[i].org;
+    ttl = '';
     if (spList[i].meta.substring(0,2)=='UW') ttl += ' (UW)';
     else ttl += ' (InCommon)';
    
@@ -310,11 +322,26 @@ function showSpList(e) {
 function loadSpList()
 {
    var url = v_root + v_vers + '/rps';
+   if (dojoCookie('sp-mine')=='m') {
+      dijitRegistry.byId('justmine').set('checked', 1);
+      spListMine = true;
+   }
    iam_getRequest(url, null, 'json', function(data, args) {
         spList = data.rps;
         showSpList();
         iam_hashHandler();
       });
+}
+
+function toggleListMine () {
+  if (dijitRegistry.byId('justmine').get('checked')) {
+     dojoCookie('sp-mine', 'm');
+     spListMine = true;
+  } else {
+     dojoCookie('sp-mine', 'a');
+     spListMine = false;
+  }
+  showSpList();
 }
 
 

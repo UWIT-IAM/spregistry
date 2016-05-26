@@ -42,4 +42,6 @@ spreg.spRegistryUrl=https://urizen4.cac.washington.edu/spreg/
 # location of incommon metadata
 incommon.metadata.path=/usr/local/etc/shibboleth/InCommon-metadata.xml
 
+# idp notifications
+spreg.idphosts=
 

@@ -98,7 +98,7 @@
         <property name="gwsBase" value="${spreg.gws.baseUrl}/group/"/>
     </bean>
     <bean id="idpHelper" init-method="init" class="edu.washington.iam.tools.IdpHelper">
-        <property name="idpHosts" value="idp01.s.uw.edu,idp02.s.uw.edu"/>
+        <property name="idpHosts" value="${spreg.idphosts}"/>
         <property name="webClient" ref="webClient"/>
         <property name="refreshUrl" value="https://%s/refresh_uw/"/>
     </bean>

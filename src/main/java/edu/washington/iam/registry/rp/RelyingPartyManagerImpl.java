@@ -90,6 +90,16 @@ public class RelyingPartyManagerImpl implements RelyingPartyManager {
     }
 
     @Override
+    public List<RelyingParty> getRelyingParties(){
+        List<RelyingParty> list = new ArrayList<>();
+        for(String mdid : metadataDAOs.keySet()){
+            list.addAll(metadataDAOs.get(mdid).getRelyingParties());
+        }
+        Collections.sort(list, new RelyingPartyComparator());
+        return list;
+    }
+
+    @Override
     public List<RelyingPartyEntry> searchRelyingPartyIds(String searchStr, String metadataId){
         log.debug("rp search: " + searchStr + ", md=" + metadataId);
         List<RelyingPartyEntry> list = new ArrayList<>();

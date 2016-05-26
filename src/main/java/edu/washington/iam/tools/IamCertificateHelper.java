@@ -195,7 +195,7 @@ public final class IamCertificateHelper {
             }
             if (cert.cn.equals("") && cert.names.size()>0) cert.cn = cert.names.get(0);
          } catch (CertificateParsingException e) {
-           log.info("parse error on alt names: " + e);
+           log.debug("parse error on alt names: " + e);
          }
  
             

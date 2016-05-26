@@ -22,9 +22,14 @@
 {
 rps:[
 #foreach ( $rp in $relyingParties )
-$sep { 'id':'$rp.relyingPartyId', 'meta':'$rp.metadataId'}
+$sep { 'id':'$rp.entityId', 'meta':'$rp.metadataId', 'admins':[
+ #set ($csep='')
+ #foreach ( $cp in $rp.contactPersons )
+  $csep '$cp.email'
+  #set ($csep=',')
+ #end
+]}
 #set ($sep=',')
 #end
 ]
 }
-## $sep { 'id':'$rp.relyingPartyId', 'meta':'$rp.metadataId'}

@@ -552,7 +552,7 @@ public class RelyingPartyController {
         if (cookies!=null) {
           for (int i=0; i<cookies.length; i++) {
             String ckName = cookies[i].getName();
-            if (ckName.equals(loginCookie) || ckName.startsWith("_shib")) {
+            if (ckName.equals(loginCookie) || ckName.equals(roleCookie) || ckName.startsWith("_shib")) {
                log.debug("cookie to clear " + ckName);
                Cookie c = new Cookie(ckName, "void");
                c.setSecure(true);
@@ -620,6 +620,7 @@ public class RelyingPartyController {
             @RequestParam(value="selecttype", required=false) String selType,
             HttpServletRequest request, HttpServletResponse response) {
 
+
         RPSession session = processRequestInfo(request, response, false);
         if (session==null) {
            response.setStatus(418);
@@ -627,20 +628,19 @@ public class RelyingPartyController {
         }
         if (session.mv!=null) return (session.mv);
 
+      
+        /** The optional args are actually ignored 
         List<RelyingPartyEntry> relyingPartyIds = null;
-
         if (selType!=null && selType.equalsIgnoreCase("all")) selType = null;
         relyingPartyIds = rpManager.searchRelyingPartyIds(selRp, selType);
+         **/
+        List<RelyingParty> relyingPartyIds = rpManager.getRelyingParties();
         log.info("found " + relyingPartyIds.size() + " rps" );
  
-        //List<Metadata> metadata = rpManager.getMetadata();
-        //log.info("found " + metadata.size() + " mds" );
-  
         ModelAndView mv = basicModelAndView(session, "json", "rps");
-        mv.addObject("selectrp", selRp==null?"":selRp);
-        mv.addObject("selecttype", selType==null?"all":selType);
+        // mv.addObject("selectrp", selRp==null?"":selRp);
+        // mv.addObject("selecttype", selType==null?"all":selType);
         mv.addObject("relyingParties", relyingPartyIds);
-        //mv.addObject("metadata", metadata);
 
         return (mv);
     }

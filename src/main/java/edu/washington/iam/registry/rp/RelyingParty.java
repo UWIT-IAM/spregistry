@@ -102,13 +102,15 @@ public class RelyingParty implements XMLSerializable {
               authnRequestsSigned = ele.getAttribute("AuthnRequestsSigned");
               protocolSupportEnumerationsUnsplit = e1.getAttribute("protocolSupportEnumeration");
               protocolSupportEnumerations = Arrays.asList(protocolSupportEnumerationsUnsplit.split(" "));
+       /***
               for (int j=0; j<protocolSupportEnumerations.size(); j++) {
                  String psev = protocolSupportEnumerations.get(j);
                  if (!(psev.equals("urn:mace:shibboleth:1.0") ||
                        psev.equals("urn:oasis:names:tc:SAML:1.0:protocol") ||
                        psev.equals("urn:oasis:names:tc:SAML:1.1:protocol") ||
-                       psev.equals("urn:oasis:names:tc:SAML:2.0:protocol"))) throw new RelyingPartyException("bad protocol support");
+                       psev.equals("urn:oasis:names:tc:SAML:2.0:protocol"))) throw new RelyingPartyException("bad protocol " + psev);
               }
+       ***/
 
               NodeList nl2 = e1.getChildNodes();
               for (int j=0; j<nl2.getLength(); j++) {
