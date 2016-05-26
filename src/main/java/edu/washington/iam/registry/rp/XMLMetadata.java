@@ -179,7 +179,7 @@ public class XMLMetadata implements  MetadataDAO {
              RelyingParty rp = new RelyingParty(rpe, id, editable);
              relyingParties.add(rp);
           } catch (RelyingPartyException e) {
-             log.error("load of element failed: " + e);
+             log.error("load of element failed for (" + i + " : " + e);
           }
 
        }

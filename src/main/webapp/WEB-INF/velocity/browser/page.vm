@@ -113,9 +113,9 @@ v_xsrf = '${xsrf}';
   <div class="dijitDialogPaneContentArea">
     Identity and Access Management
     <br/>
-    Service Provider Registry 2.2.0
+    Service Provider Registry 2.3.0
     <br/>
-    Revision 01/26/2016
+    Revision 05/19/2016
     <p>
     <a href="https://wiki.cac.washington.edu/x/gjyoAQ">Learn more about the registry</a>
   </div>
@@ -128,7 +128,7 @@ v_xsrf = '${xsrf}';
 <div id="roleChooser" data-dojo-type="dijit/Dialog" title="Role" $hide>
  <div class="dijitDialogPaneContentArea">
  </div>
-   Choose the role you want to work as:
+   Choose the role you want to work in.
    <p>
     <button dojoType="dijit.form.Button" type="button" onClick="setRole('u', 'roleChooser')">user</button>
     <button dojoType="dijit.form.Button" type="button" onClick="setRole('a', 'roleChooser')">administrator</button>
@@ -289,9 +289,13 @@ function openNewSPForm() {
 
 
  <h3 style="clear:both;padding-top:25px">Update an Existing Service Provider</h3>
- <label for="filterSpList">Enter part of your SP's entityId
+ <label for="filterSpList">Enter part of the SP's entityId
  </label><input id="filterSpList"  data-dojo-type="dijit.form.TextBox" />
 <br>
+ <div><input data-dojo-type="dijit.form.CheckBox" id="justmine" value="1" aria-label="justmine" onClick="toggleListMine()"/>
+      <label for="justmine" >Show only my SPs</label>
+ </div>
+
  <div class="spList" id="spIndexPane" data-dojo-type="dijit.layout.ContentPane"
          style="margin-top:6px;overflow:auto">
      <i role="presentation">Retrieving the list of service providers</i>

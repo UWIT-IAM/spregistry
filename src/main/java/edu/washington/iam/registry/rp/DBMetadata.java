@@ -36,6 +36,15 @@ public class DBMetadata implements MetadataDAO {
     private JdbcTemplate template;
 
     @Override
+    public List<RelyingParty> getRelyingParties() {
+        List<RelyingParty> rps = template.query(
+                "select * from metadata where status = 1 and group_id = ?",
+                new Object[] {groupId},
+                new RelyingPartyMapper());
+        return rps;
+    }
+
+    @Override
     public RelyingParty getRelyingPartyById(String id) throws RelyingPartyException {
         List<RelyingParty> rps = template.query(
                 "select * from metadata where status = 1 and group_id = ? and entity_id = ?",

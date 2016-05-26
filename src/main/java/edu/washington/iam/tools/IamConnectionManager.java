@@ -20,6 +20,9 @@ package edu.washington.iam.tools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import java.net.URL;
 import java.net.MalformedURLException;
 
@@ -39,6 +42,11 @@ import java.security.cert.CertificateException;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.Key;
+import java.security.KeyStoreException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+
 
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -54,9 +62,9 @@ import org.apache.http.params.BasicHttpParams;
 
 public class IamConnectionManager {
 
-   private String caFilename;
-   private String certFilename;
-   private String keyFilename;
+   private String caCertificateFile;
+   private String certificateFile;
+   private String keyFile;
 
    private SSLSocketFactory socketFactory;
    private TrustManager[] trustManagers;
@@ -68,11 +76,11 @@ public class IamConnectionManager {
 
    private static Logger log = LoggerFactory.getLogger(IamConnectionManager.class);
    
-   public IamConnectionManager(String caFile, String certFile, String keyFile) {
+   public IamConnectionManager(String cafile, String certfile, String keyfile) {
       log.debug("create connection manager");
-      caFilename = caFile; 
-      certFilename = certFile; 
-      keyFilename = keyFile; 
+      caCertificateFile = cafile; 
+      certificateFile = certfile; 
+      keyFile = keyfile; 
       String protocol = "https";
       int port = 443;
 
@@ -82,6 +90,7 @@ public class IamConnectionManager {
          SSLContext ctx = SSLContext.getInstance("TLS");
          ctx.init(keyManagers, trustManagers, null);
          socketFactory = new SSLSocketFactory(ctx);
+         // this needed because we address idps by hostname
          socketFactory.setHostnameVerifier(org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
          Scheme scheme = new Scheme(protocol, socketFactory, port);
          schemeRegistry = new SchemeRegistry();
@@ -108,7 +117,7 @@ public class IamConnectionManager {
        return (ClientConnectionManager) connectionManager;
    }
       
-   protected void initSocketFactory() {
+   protected void __initSocketFactory() {
        log.debug("sr sock factory init");
 
        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
@@ -139,80 +148,83 @@ public class IamConnectionManager {
    
    protected void initManagers() {
 
-       // trust managers
-/**
-       try {
-           TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        try {
+           /* trust managers */
+           if (caCertificateFile != null) {
+              KeyStore trustStore;
+              int cn = 0;
 
-           X509Certificate cert = null;
-           if (caFilename!=null) cert = readCertificate(caFilename);
-           log.debug("init trust mgr " + cert);
-           trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-           trustStore.load(null, null);
-           trustStore.setCertificateEntry("CACERT", cert);
-           tmf.init(trustStore);
-           trustManagers = tmf.getTrustManagers();
-       } catch (Exception e) {
-           log.error("cacert error: " + e);
-       }
- **/
-     trustManagers = new TrustManager[] { new X509TrustManager() {
-        public X509Certificate[] getAcceptedIssuers() {
-            return null;
-        }
+              // at this point the logger isn't usually running yet
+              log.info("Setting x509 trust from " + caCertificateFile);
+              System.out.println("Setting x509 trust from " + caCertificateFile);
 
-        public void checkClientTrusted(X509Certificate[] certs, String authType) {
-            return;
-        }
+              TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+              CertificateFactory cf = CertificateFactory.getInstance("X.509");
+              FileInputStream in = new FileInputStream(caCertificateFile);
+              Collection certs = cf.generateCertificates(in);
 
-        public void checkServerTrusted(X509Certificate[] certs, String authType) {
-            return;
-        }
-    }};
+              trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+              trustStore.load(null, null);
 
+              Iterator cit = certs.iterator();
+              while (cit.hasNext()) {
+                 X509Certificate cert = (X509Certificate) cit.next();
+                 log.info(" adding " + cert.getSubjectX500Principal().toString());
+                 System.out.println(" adding " + cert.getSubjectX500Principal().toString());
+                 trustStore.setCertificateEntry("CACERT" + cn, cert);
+                 cn += 1;
+              }
+              tmf.init(trustStore);
+              trustManagers = tmf.getTrustManagers();
+           } else {  // no verification
+              trustManagers = new TrustManager[] { new X509TrustManager() {
+                 public X509Certificate[] getAcceptedIssuers() {
+                     return null;
+                 }
 
+                 public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                     return;
+                 }
 
-       // key managers
-       if (certFilename != null && keyFilename != null) {
-           try {
-              KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-              keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-              keyStore.load(null, null);
-
-              X509Certificate cert = readCertificate(certFilename);
-              PKCS1 pkcs = new PKCS1();
-              PrivateKey key = pkcs.readKey(keyFilename);
-
-              X509Certificate[] chain = new X509Certificate[1];
-              chain[0] = cert;
-              keyStore.setKeyEntry("CERT", (Key) key, "pw".toCharArray(), chain);
-
-              kmf.init(keyStore, "pw".toCharArray());
-              keyManagers = kmf.getKeyManagers();
-           } catch (Exception e) {
-              log.error("cert/key error: " + e);
+                 public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                     return;
+                 }
+             }};
            }
-       }
+
+           /* key manager */
+           if (certificateFile != null && keyFile != null) {
+               KeyStore keyStore;
+               KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+               keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+               keyStore.load(null, null);
+
+               FileInputStream in = new FileInputStream(certificateFile);
+               CertificateFactory cf = CertificateFactory.getInstance("X.509");
+               X509Certificate cert = (X509Certificate) cf.generateCertificate(in);
+               PKCS1 pkcs = new PKCS1();
+               log.info("reading key file: " + keyFile);
+               PrivateKey key = pkcs.readKey(keyFile);
+
+               X509Certificate[] chain = new X509Certificate[1];
+               chain[0] = cert;
+               keyStore.setKeyEntry("CERT", (Key) key, "pw".toCharArray(), chain);
+               kmf.init(keyStore, "pw".toCharArray());
+               keyManagers = kmf.getKeyManagers();
+           }
+        } catch (IOException e) {
+           log.error("error reading cert or key error: " + e);
+        } catch (KeyStoreException e) {
+           log.error("keystore error: " + e);
+        } catch (NoSuchAlgorithmException e) {
+           log.error("sf error: " + e);
+        } catch (CertificateException e) {
+           log.error("sf error: " + e);
+        } catch (UnrecoverableKeyException e) {
+           log.error("sf error: " + e);
+        }
 
    }
 
-    protected X509Certificate readCertificate(String filename) {
-        FileInputStream file;
-        X509Certificate cert;
-        try {
-            file = new FileInputStream(filename);
-        } catch (IOException e) {
-            log.error("ldap source bad cert file: " + e);
-            return null;
-        }
-        try {
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            cert = (X509Certificate) cf.generateCertificate(file);
-        } catch (CertificateException e) {
-            log.error("ldap source bad cert: " + e);
-            return null;
-        }
-        return cert;
-    }
    
 }

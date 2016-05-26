@@ -97,7 +97,7 @@ END
 
 # make sure the war file is up-to-date
 [[ -z $force ]] && {
-   mod="`find ../src -newer ../target/spreg.war`"
+   mod="`find ../src -newer ../target/spreg.war|egrep -v '\.js$|\.css$'`"
    [[ -n $mod ]] && {
       echo "spreg war file appears out of date"
       echo "use 'mvn clean package' to update the war file first"

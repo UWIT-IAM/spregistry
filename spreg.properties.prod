@@ -34,4 +34,7 @@ spreg.spRegistryUrl=https://iam-tools.u.washington.edu/spreg
 # location of incommon metadata
 incommon.metadata.path=/usr/local/etc/shibboleth/InCommon-metadata.xml
 
+# idp notifications
+spreg.idphosts=idp01.s.uw.edu,idp02.s.uw.edu,idp03.s.uw.edu,idp04.s.uw.edu
+
 
