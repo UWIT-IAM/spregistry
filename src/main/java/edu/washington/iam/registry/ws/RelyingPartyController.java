@@ -910,7 +910,7 @@ public class RelyingPartyController {
         } catch (Exception e) {
             log.info("parse error: " + e);
             status = 400;
-            mv.addObject("alert", "The posted document was not valid:\n" + e);
+            mv.addObject("alert", e.getMessage());
             response.setStatus(status);
             return mv;
         }
@@ -927,7 +927,7 @@ public class RelyingPartyController {
             status = rpManager.updateRelyingParty(relyingParty, mdid);
         } catch (RelyingPartyException e) {
             status = 400;
-            mv.addObject("alert", "Update failed:\n" + e.getMessage());
+            mv.addObject("alert", e.getMessage());
             response.setStatus(status);
             return mv;
         }
@@ -1009,7 +1009,7 @@ public class RelyingPartyController {
         } catch (Exception e) {
             log.info("parse error: " + e);
             status = 400;
-            mv.addObject("alert", "The posted document was not valid:\n" + e);
+            mv.addObject("alert", e.getMessage());
             response.setStatus(status);
             return mv;
         }
@@ -1018,7 +1018,7 @@ public class RelyingPartyController {
                rpManager.updateRelyingParty(rp, mdid);
            } catch (RelyingPartyException e) {
               status = 400;
-              mv.addObject("alert", "Update of the metadata failed:\n" + e);
+              mv.addObject("alert", "Update of the metadata failed:\n" + e.getMessage());
            }
         }
         else{
@@ -1187,7 +1187,7 @@ public class RelyingPartyController {
         } catch (Exception e) {
            log.info("parse error: " + e);
            status = 400;
-           mv.addObject("alert", "The posted document was not valid:\n" + e);
+           mv.addObject("alert", "The posted document was not valid:\n" + e.getMessage());
         }
         if (doc!=null) {
            try {
@@ -1195,7 +1195,7 @@ public class RelyingPartyController {
               status = 200;
            } catch (FilterPolicyException e) {
               status = 400;
-              mv.addObject("alert", "Update of the entity failed:" + e);
+              mv.addObject("alert", "Update of the entity failed:" + e.getMessage());
            }
         }
 
@@ -1247,9 +1247,9 @@ public class RelyingPartyController {
            DocumentBuilder builder = builderFactory.newDocumentBuilder();
            doc = builder.parse (in);
         } catch (Exception e) {
-           log.info("parse error: " + e);
+           log.info("parse error: " + e.getMessage());
            status = 400;
-           mv.addObject("alert", "The posted document was not valid:\n" + e);
+           mv.addObject("alert", "The posted document was not valid:\n" + e.getMessage());
         }
         if (doc!=null) {
            StringBuffer txt = new StringBuffer("[ Assign to Identity and Access Management. ]\n\nEntity Id: " + id + "\n");
@@ -1355,7 +1355,7 @@ public class RelyingPartyController {
         } catch (Exception e) {
            log.info("parse error: " + e);
            status = 400;
-           mv.addObject("alert", "The posted document was not valid:\n" + e);
+           mv.addObject("alert", "The posted document was not valid:\n" + e.getMessage());
         }
         if (doc!=null) {
            try {
@@ -1368,7 +1368,7 @@ public class RelyingPartyController {
               status = 200;
            } catch (ProxyException e) {
               status = 400;
-              mv.addObject("alert", "Update of the entity failed:" + e);
+              mv.addObject("alert", "Update of the entity failed:" + e.getMessage());
            }
         }
 

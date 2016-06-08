@@ -15,289 +15,297 @@
 #  ========================================================================
 #
 
-## scans rp-filter for:
+# scans rp-filter for:
 
-##   - new tgtid db entries   -> updates tgtid database
-##   - gws activators         -> new gws-activators.xml file
-##   - nameid exceptions      -> new nameid-filter.xml
+#   - new tgtid db entries   -> updates local tgtid database (psql)
+#   - gws activators         -> new gws-activators.xml file
+#   - nameid specifications  -> conf/saml-nameid-groups.xml
 
 
 import os
 import time
 import string
 import shutil
+import copy
+import re
 
 from subprocess import Popen
 from subprocess import PIPE
 
-from optparse import OptionParser
-import simplejson as json
-import syslog
-log=syslog.syslog
-log_debug=syslog.LOG_DEBUG
-log_info=syslog.LOG_INFO
-log_err=syslog.LOG_ERR
-log_alert=syslog.LOG_ALERT
-
-
-import xml.etree.ElementTree as ET
-from xml.parsers.expat import ExpatError
-
+from lxml import etree
 import psycopg2 as dbapi2
-
 import smtplib
 from email.mime.text import MIMEText
 
-nameidEntities = set([])
-nameidEntitiesX = set([])
-nameidNeedsUpdate = False
+from optparse import OptionParser
+import json
+import jinja2
 
-gwsEntities = set([])
-gwsEntitiesX = set([])
-gwsNeedsUpdate = False
+import syslog
+log = syslog.syslog
+log_debug = syslog.LOG_DEBUG
+log_info = syslog.LOG_INFO
+log_err = syslog.LOG_ERR
+log_alert = syslog.LOG_ALERT
+
+j2_env = None
 
 db = None
 config = None
 
 
-## eptid db
+def _print(str):
+    pass
+
+# some namespaces we need
+ns = {
+   'beans': 'http://www.springframework.org/schema/beans',
+   'afp': 'urn:mace:shibboleth:2.0:afp',
+   'resolver': 'urn:mace:shibboleth:2.0:resolver',
+}
+
+
+# eptid db
 def openDb():
-  global db
-  db = dbapi2.connect(host=config['db_host'], database=config['db_name'], user=config['db_user'], password=config['db_pass'])
+    global db
+    db = dbapi2.connect(host=config.tgtid_db['db_host'], database=config.tgtid_db['db_name'],
+                        user=config.tgtid_db['db_user'], password=config.tgtid_db['db_pass'])
 
 
-## load the existing activators
-def getGwsActivators():
-   global gwsEntities
-   global gwsEntitiesX
+# load the existing attribute resolver activators
 
-   doc = ET.parse(config['conf_dir'] + config['gws_activators'])
-   acts = doc.getroot().findall('ActivationRequirement')
-   for act in acts:
-      # print 'adding existing gws for ' + act.get('entityId')
-      gwsEntities.add(act.get('entityId'))
-   gwsEntitiesX = gwsEntities.copy()
+# type = label
+# values = list of sp entity ids
+# beanid: = config bean id
+# refid = attribute ref triggering activation
+# attrids = list of triggering attributes
+resolverEntities = [
+    {'type': 'gws', 'values': set([]), 'beanid': 'uw.GetsGwsMemberships', 'refid': 'gws_groups', 'attrids': ['gws_groups']},
+    {'type': 'courses', 'values': set([]), 'beanid': 'uw.GetsCourseMemberships', 'refid': 'sln_courses', 'attrids': ['sln_courses']},
+]
+resolverNeedsUpdate = False
+
+# type = label
+# values = list of sp entity ids
+# beanid: = config bean id
+# attrid = triggering attribute id
+nameidEntities = [
+    {'type': 'eppn', 'values': set([]), 'beanid': 'uw.GetsEppnNameId', 'attrid': 'eppnNameId'},
+    {'type': 'netid', 'values': set([]), 'beanid': 'uw.GetsNetidNameId', 'attrid': 'idNameId'},
+    {'type': 'tgtid', 'values': set([]), 'beanid': 'uw.GetsTgtidNameId', 'attrid': 'nameIDPersistentID'},   # sb: persistentIdNameId
+    {'type': 'email', 'values': set([]), 'beanid': 'uw.GetsEmailNameId', 'attrid': 'uwEduEmailNameId'},
+]
+nameidNeedsUpdate = False
+
+tgtidEntity = {'values': set([]), 'refid': 'tgtid2', 'attrids': []}
 
 
-## load the existing nameid exceptions
-## <AttributeFilterPolicy> 
-##   <PolicyRequirementRule(and)>
-##        <Rule(not)> <Rule>
-##        <Rule(not)> <Rule>
-##        . . .
+def _get_entity_values(entities, file):
+    doc = etree.parse(file)
+    for entity in entities:
+        bean = doc.getroot().find('.//*[@id="%s"]' % entity['beanid'])
+        for value in bean.findall('.//beans:value', ns):
+            _print('found existing %s: %s' % (entity['type'], value.text))
+            entity['values'].add(value.text)
+        entity['valuesX'] = copy.deepcopy(entity['values'])
 
-def getNameidEntities():
-   global nameidEntities
-   global nameidEntitiesX
 
-   doc = ET.parse(config['conf_dir'] + config['nameid_filter'])
-   afps = doc.getroot().findall('{urn:mace:shibboleth:2.0:afp}AttributeFilterPolicy')
-   for afp in afps:
-      if afp.get('id') == 'releaseTransientIdToAnyone':
-         prr = afp.find('{urn:mace:shibboleth:2.0:afp}PolicyRequirementRule')
-         for br in prr:
-            r = br.find('{urn:mace:shibboleth:2.0:afp:mf:basic}Rule')
-            if r.get('value'):
-               # print('loading nameid exception for ' + r.get('value'))
-               nameidEntities.add(r.get('value'))
-   nameidEntitiesX = nameidEntities.copy()
-         
+# get existing entities from bean definition files
+def get_existing_entities():
+    global resolverEntities
+    global nameidEntities
 
-# parse a filter file, recording interesting info
- 
+    _get_entity_values(resolverEntities, config.conf_dir + config.attribute_resolver_activators)
+    _get_entity_values(nameidEntities, config.conf_dir + config.nameid_exceptions)
+
+
+# get attributes that need activation
+def get_gws_attributes():
+    doc = etree.parse('../conf/attribute-resolver.xml')
+    for ent in resolverEntities:
+        for attr in doc.getroot().findall('.//resolver:AttributeDefinition/resolver:Dependency[@ref="%s"]' % (ent['refid']), ns):
+            _print('adding %s to %s' % (attr.getparent().get('id'), ent['type']))
+            ent['attrids'].append(attr.getparent().get('id'))
+    for attr in doc.getroot().findall('.//resolver:AttributeDefinition/resolver:Dependency[@ref="%s"]' % (tgtidEntity['refid']), ns):
+        tgtidEntity['attrids'].append(attr.getparent().get('id'))
+
+
+# parse a filter file, collect special-needs sp entityids
+
 def parseFilter(file):
 
-   global db
-   global nameidEntities
-   global nameidEntitiesX
-   global nameidNeedsUpdate
-   global gwsEntities
-   global gwsEntitiesX
-   global gwsNeedsUpdate
+    global db
+    global resolverEntities
+    global resolverNeedsUpdate
+    global nameidEntities
+    global nameidNeedsUpdate
+    global tgtidEntity
 
-   doc=ET.parse(file)
-   
-   afps = doc.getroot()
-   for afp in afps:
-      
-      prr = afp.find('{urn:mace:shibboleth:2.0:afp}PolicyRequirementRule')
- 
-      # entity id
-      eid = prr.get('value')
-      
-      # scan rules
-      for ar in afp.findall('{urn:mace:shibboleth:2.0:afp}AttributeRule'):
-         id = ar.get('attributeID')
-         if id=='idNameId' or id=='nameIDPersistentID' or id=='eppnNameId' or id=='uwEduEmailNameId': 
-            if eid not in nameidEntities:
-               print 'adding nameid exception: ' + eid
-               nameidNeedsUpdate = True
-               nameidEntities.add(eid)
-            else:
-               nameidEntitiesX.discard(eid)
+    doc = etree.parse(file)
 
-         if id=='gws_groups' or id=='entitlement_gartner': 
-            if eid not in gwsEntities:
-               print 'adding gws trigger: ' + eid
-               gwsNeedsUpdate = True
-               gwsEntities.add(eid)
-            else:
-               gwsEntitiesX.discard(eid)
+    afps = doc.getroot()
+    for afp in afps:
 
-         if id=='ePTID' or id=='attributePersistentID' or id=='nameIDPersistentID' or id=='saml2PersistentID': 
-            # print eid + ' used tgtid'
-            c1 = db.cursor()
-            c1.execute("SELECT rpno FROM rp where rpid='%s';" % (eid) )
-            row = c1.fetchone()
-            c1.close()
-            if row==None:
-               print 'adding tgtid entry for ' +  eid
-               c1 = db.cursor()
-               c1.execute("insert into rp values ( (select max(rpno) from rp)+1, '%s');" % (eid))
-               c1.close()
-               db.commit()
+        prr = afp.find('afp:PolicyRequirementRule', ns)
 
-   # remove any entity no longer special
-   for e in nameidEntitiesX: 
-      nameidNeedsUpdate = True
-      nameidEntities.remove(e)
-   for e in gwsEntitiesX: 
-      gwsNeedsUpdate = True
-      gwsEntities.remove(e)
+        # entity id
+        eid = prr.get('value')
 
-# verify a saml xml file
+        # scan release rules
+        for ar in afp.findall('afp:AttributeRule', ns):
+            aid = ar.get('attributeID')
+            # nameid specials.  release of the 'refid' means gets the nameid
+            for entity in nameidEntities:
+                if aid == entity['attrid']:
+                    if eid not in entity['values']:
+                        _print('adding %s exception for %s ' % (entity['type'], eid))
+                        entity['values'].add(eid)
+                        nameidNeedsUpdate = True
+                    else:
+                        entity['valuesX'].discard(eid)
+
+            # resolver activations. release of the attribute implies activation
+            for entity in resolverEntities:
+                if aid in entity['attrids']:
+                    if eid not in entity['values']:
+                        # print 'adding %s trigger for %s' % (entity['type'], eid)
+                        entity['values'].add(eid)
+                        resolverNeedsUpdate = True
+                    else:
+                        entity['valuesX'].discard(eid)
+
+            # tgtids, release of the attribute requires database entry
+            if id in tgtidEntity['attrids']:
+                # print eid + ' used tgtid'
+                c1 = db.cursor()
+                c1.execute("SELECT rpno FROM rp where rpid='%s';" % (eid))
+                row = c1.fetchone()
+                c1.close()
+                if row is not None:
+                    _print('adding tgtid entry for ' + eid)
+                    c1 = db.cursor()
+                    c1.execute("insert into rp values ( (select max(rpno) from rp)+1, '%s');" % (eid))
+                    c1.close()
+                    db.commit()
+
+    # remove any entities no longer special
+    for ent in nameidEntities:
+        for v in ent['valuesX']:
+            _print('removing exception for ' + v)
+            nameidNeedsUpdate = True
+            ent['values'].remove(v)
+    for ent in resolverEntities:
+        for v in ent['valuesX']:
+            resolverNeedsUpdate = True
+            ent['values'].remove(v)
+
+
+# verify a saml xml file.  uses external java app (from shib)
 def verifySaml(prog, file):
-   proc = Popen([prog,'--inFile',file, \
-     '--validateSchema', \
-     '--schemaExtension','/schema/shibboleth-2.0-afp-mf-basic.xsd', \
-     '--schemaExtension','/schema/shibboleth-2.0-afp-mf-saml.xsd'], shell=False, \
-     stdout=PIPE,stderr=PIPE)
+    proc = Popen([prog, '--inFile', file,
+                  '--validateSchema'
+                  '--schemaExtension', '/schema/shibboleth-2.0-afp-mf-basic.xsd',
+                  '--schemaExtension', '/schema/shibboleth-2.0-afp-mf-saml.xsd'], shell=False,
+                 stdout=PIPE, stderr=PIPE)
 
-   (out,err) = proc.communicate()
-  
-   proc.wait()
-   if proc.returncode!=0:
-      log(log_err, 'saml document %s is not valid' % (file))
-      return False
-   return True
+    (out, err) = proc.communicate()
 
-
-# copy a template file, substuting 'xml' for 'CONTENT'
-
-def writeFromTemplate(tmpl, tgt, xml):
-   ftmpl = open(tmpl, 'r')
-   ftgt = open(tgt, 'w')
-   for row in ftmpl:
-      if string.find(row, 'CONTENT')>=0: ftgt.write(xml)
-      else: ftgt.write(row)
-   ftmpl.close()
-   ftgt.close()
+    proc.wait()
+    if proc.returncode != 0:
+        log(log_err, 'saml document %s is not valid' % (file))
+        return False
+    return True
 
 
+# output a bean def file from a template, save the previous
+def output_bean_def(dest_file, tmpl_file, ents):
+    dest = config.conf_dir + dest_file
+    _print('dest=' + dest)
+    template = j2_env.get_template(tmpl_file)
+    tout = config.tmp_dir + dest_file
+    _print('tout=' + tout)
+    with open(tout, 'w') as f:
+        f.write(template.render(info=ents))
+    arc = config.archive_dir + dest_file + '.' + time.strftime('%d')
+    shutil.copy2(dest, arc)
+    os.rename(tout, dest)
+    log(log_info, "Created new " + dest_file)
 
-# write a new nameid filter file
-
-def outputNameidFilter():
-
-   # assemble content
-   xml = ''
-   for e in nameidEntities:
-      xml = xml + ('<basic:Rule xsi:type="basic:NOT"><basic:Rule xsi:type="basic:AttributeRequesterString" value="%s" /></basic:Rule>\n' % e )
-   
-   tmp_file = config['idp_base'] + config['tmp_dir'] + config['nameid_filter'] + '.' + str(os.getpid())
-   writeFromTemplate(config['conf_dir'] + config['nameid_filter'] + '.tmpl', tmp_file, xml)
-   if not verifySaml(config['saml_sign'], tmp_file): return False
-
-   tgt_file = config['conf_dir'] + config['nameid_filter']
-
-   sav = config['idp_base'] + config['archive_dir'] + config['nameid_filter'] + '.' +  time.strftime('%d')
-   shutil.copy2(tgt_file, sav)
-   os.rename(tmp_file, tgt_file)
-   log(log_info, "Created new nameid filter file")
-   return True
-
-# write a new gws activator file
-
-def outputGwsActivators():
-
-   # assemble content
-   xml = ''
-   for e in gwsEntities:
-      xml = xml + ('<ActivationRequirement entityId="%s" />\n' % e )
-   
-   tmp_file = config['idp_base'] + config['tmp_dir'] + config['gws_activators'] + '.' + str(os.getpid())
-   writeFromTemplate(config['conf_dir'] + config['gws_activators'] + '.tmpl', tmp_file, xml)
-   
-   try:
-      doc = ET.parse(tmp_file)
-   except (ExpatError):
-      log(log_err, 'gws activator file %s invalid' % (tmp_file))
-      return False
-
-   tgt_file = config['conf_dir'] + config['gws_activators']
-
-   sav = config['idp_base'] + config['archive_dir'] + config['gws_activators'] + '.' +  time.strftime('%d')
-   shutil.copy2(tgt_file, sav)
-   os.rename(tmp_file, tgt_file)
-   log(log_info, "Created new gws activators file")
-   return True
 
 def sendNotice(sub):
-   msg = MIMEText(sub)
-   msg['Subject'] = sub
-   msg['From'] = config['mail_from']
-   msg['To'] = config['mail_to']
-   s = smtplib.SMTP(config['mail_smtp'])
-   s.sendmail(msg['From'], [msg['To']], msg.as_string())
-   s.quit
+    msg = MIMEText(sub)
+    msg['Subject'] = sub
+    msg['From'] = config['mail_from']
+    msg['To'] = config['mail_to']
+    s = smtplib.SMTP(config['mail_smtp'])
+    s.sendmail(msg['From'], [msg['To']], msg.as_string())
+    s.quit
 
 
-#---------
+# ---------
 #
 # Main
 #
-#----------
+# ----------
 
 parser = OptionParser()
 parser.add_option('-v', '--verbose', action='store_true', dest='verbose', help='?')
 parser.add_option('-c', '--conf', action='store', type='string', dest='config', help='config file')
 options, args = parser.parse_args()
-config_file = 'filter_scan.conf'
-if options.config!=None:
-   config_file = options.config
-   print 'using config=' + config_file
-f = open(config_file,'r')
-config = json.loads(f.read())
-f.close()
+
+# import config
+config_source = 'spreg_conf'
+if options.config is not None:
+    config_source = options.config
+    _print('using config=' + config_source)
+config = __import__(config_source)
 
 # setup logging
 logname = 'idp_filter_scan'
-if 'log_name' in config: logname = config['log_name']
-
+if hasattr(config, 'log_name'):
+    logname = config.log_name
 log_facility = syslog.LOG_SYSLOG
-if 'syslog_facility' in config:
-   logf = config['syslog_facility']
-   if re.match(r'LOG_LOCAL[0-7]', logf): log_facility = eval('syslog.'+logf)
-
+if hasattr(config, 'syslog_facility'):
+    logf = config.syslog_facility
+    if re.match(r'LOG_LOCAL[0-7]', logf):
+        log_facility = eval('syslog.'+logf)
 option = syslog.LOG_PID
-if options.verbose: option |= syslog.LOG_PERROR
+if options.verbose:
+    option |= syslog.LOG_PERROR
+
+    def _print(str):
+        print (str)
 syslog.openlog(logname, option, log_facility)
-log(log_info, "starting.  (conf='%s')" % (config_file))
+log(log_info, "Filterscan starting.")
 
+
+#
+# open the tgtid database
+#
 openDb()
-getGwsActivators()
-getNameidEntities()
 
-parseFilter(config['conf_dir'] + config['rp_filter_file'])
+#
+# gather activator and exception info
+#
+get_gws_attributes()
+get_existing_entities()
+parseFilter(config.conf_dir + config.rp_filter_file)
 
-# write out the nameid filter
-if nameidNeedsUpdate: 
-   if not outputNameidFilter(): sendNotice('idp new nameid file fails!')
+j2_env = jinja2.Environment(trim_blocks=True, lstrip_blocks=True, loader=jinja2.FileSystemLoader(config.template_dir))
 
-# write out the gws activators file
-if gwsNeedsUpdate: 
-   if not outputGwsActivators(): sendNotice('idp new gws activators file fails!')
+#
+# update activators and exceptions as needed
+#
+if resolverNeedsUpdate:
+    ents = {}
+    for e in resolverEntities:
+        ents[e['type']] = e['values']
+    output_bean_def(config.attribute_resolver_activators, config.attribute_resolver_activators_j2, ents)
 
-log(log_info, "completed.")
+if nameidNeedsUpdate:
+    ents = {}
+    for e in nameidEntities:
+        ents[e['type']] = e['values']
+    output_bean_def(config.nameid_exceptions, config.nameid_exceptions_j2, ents)
 
-
+log(log_info, "Filterscan completed.")

@@ -115,7 +115,7 @@ v_xsrf = '${xsrf}';
     <br/>
     Service Provider Registry 2.3.0
     <br/>
-    Revision 05/19/2016
+    Revision 06/08/2016
     <p>
     <a href="https://wiki.cac.washington.edu/x/gjyoAQ">Learn more about the registry</a>
   </div>
@@ -156,7 +156,7 @@ v_xsrf = '${xsrf}';
   <div class="dijitDialogPaneContentArea">
     <h3>Adding a Service Provider to the Registry.</h3>
    <p>
-    You have three choices to load initial medata information.
+    You have three choices to load initial metadata information.
    <p>
    <ol>
     <li>If it is a Shibboleth SP, and is not on a private network, you can load metadata

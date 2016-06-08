@@ -33,7 +33,7 @@ import javax.mail.MessagingException;
 
 import edu.washington.iam.tools.DNSVerifier;
 import edu.washington.iam.tools.DNSVerifyException;
-
+import com.sun.mail.smtp.SMTPSenderFailedException;
 
 // local interface to java mail sender
 
@@ -93,6 +93,8 @@ public class IamMailSender {
          mailSender.send(mime);
       } catch(DNSVerifyException ex) {
          log.error("checking dns: " + ex.getMessage());
+     } catch (SMTPSenderFailedException e) {
+         log.error("cannot send email: " + e);
       } catch (MessagingException e) {
          log.error("iam mail failure: " + e);
       }

@@ -229,8 +229,7 @@ public class RelyingPartyManagerImpl implements RelyingPartyManager {
         int status = 200;
         log.info(String.format("rp update doc, source=%s; rpid=%s", mdid, relyingParty.getEntityId()));
         // do a final verification of the new metadata
-        if (schemaVerifier!=null && ! schemaVerifier.testSchemaValid(relyingParty)) throw new RelyingPartyException("schema verify fails");
-
+        if (schemaVerifier!=null && ! schemaVerifier.testSchemaValid(relyingParty)) throw new RelyingPartyException("The posted document did not produce valid metadata.");
         metadataDAOs.get(mdid).updateRelyingParty(relyingParty);
         return (status);
     }
