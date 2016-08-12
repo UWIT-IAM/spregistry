@@ -10,8 +10,6 @@ spreg.root=/data/local/spreg
 
 # database parameters
 spreg.db.url=iamdbdev01.s.uw.edu/spregistry
-spreg.db.username=spreg
-spreg.db.password=mcwlo09234mfkw
 
 # web service parameters
 spreg.gws.baseUrl=https://iam-ws.u.washington.edu:7443/group_sws/v2
@@ -34,7 +32,6 @@ spreg.smtp.requestMailTo=fox@uw.edu
 
 spreg.uwLogoutp=https://idp.u.washington.edu/idp/logout
 spreg.googleEntityId=https://idp.u.washington.edu/google
-spreg.cookieCryptKey=spud987was23f
 
 spreg.myEntityId=https://urizen4.cac.washington.edu/
 spreg.spRegistryUrl=https://urizen4.cac.washington.edu/spreg/

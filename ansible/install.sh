@@ -57,7 +57,7 @@ eval target="\${$OPTIND}"
    git clone ssh://git@git.s.uw.edu/iam/ansible-tools.git
    gettools=0
 } || {
-(( getools>0 )) && {
+(( gettools>0 )) && {
       cd ansible-tools
       git pull origin master
       cd ..
@@ -112,6 +112,7 @@ vars=
 (( verb>0 )) && vars="$vars -v "
 (( debug>0 )) && vars="$vars -vvvv "
 [[ -n $limit ]] && vars="$vars -l $limit "
+set -x
 ansible-playbook ${playbook} $vars -i ansible-tools/hosts  --extra-vars "target=${target}"
 
 

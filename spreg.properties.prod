@@ -3,13 +3,12 @@
 # spreg will look for this file first in the spreg directory
 # if that is undefined or not found this installed copy will be used
 #
-spreg.version=2.3.0
-spreg.versionDate=06/08/2016
+spreg.version=2.3.1
+spreg.versionDate=08/11/2016
 spreg.root=/data/local/spreg
 
 # database parameters ( prod db )
 spreg.db.url=iamdb11.cac.washington.edu/spregistry
-spreg.db.username=spreg
 
 # web service parameters
 spreg.gws.baseUrl=https://iam-ws.u.washington.edu:7443/group_sws/v2
@@ -37,4 +36,4 @@ spreg.certRoot=/spreg/ws
 incommon.metadata.path=/usr/local/etc/shibboleth/InCommon-metadata.xml
 
 # idp notifications
-spreg.idphosts=idp01.s.uw.edu,idp02.s.uw.edu,idp03.s.uw.edu,idp04.s.uw.edu
+spreg.idphosts=idp01.s.uw.edu,idp02.s.uw.edu,idp03.s.uw.edu,idp04.s.uw.edu,idp05.s.uw.edu,idp06.s.uw.edu
