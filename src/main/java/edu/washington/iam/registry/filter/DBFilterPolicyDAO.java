@@ -195,7 +195,7 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
 
         NamedParameterJdbcTemplate npTemplate = new NamedParameterJdbcTemplate(template);
         List<String> entityIdsToUpdate = npTemplate.queryForList(
-                "select entity_id from filter where group_id = :groupId and entity_id in (:ids) and status = 1"
+                "select entity_id from filter where group_id = :groupId and entity_id in (:ids)"
                 ,new MapSqlParameterSource()
                 .addValue("groupId", filterPolicyGroup.getId())
                 .addValue("ids", afpMap.keySet())
