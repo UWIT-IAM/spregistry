@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# run the verifier
+
+export JAVA_HOME=`java -XshowSettings:properties -version 2>&1  |grep java.home | awk '{print  $3}'`
+root="$(cd `dirname $0` && pwd)"
+${root}/xmlsectool.sh --validateSchema --schemaDirectory ${root}/schema-files --inFile $1
+
