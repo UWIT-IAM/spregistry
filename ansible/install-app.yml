@@ -86,10 +86,10 @@
 
   # always run the test
   - name: run service tests
-    local_action:  "command wget  -O /dev/null
-           --certificate={{ local_webclient_certFile }}
-           --private-key={{ local_webclient_keyFile }}
-           --ca-certificate={{ local_webclient_caFile }}
+    command: "wget  -O /dev/null
+           --certificate={{ spreg_webclient_certFile }}
+           --private-key={{ spreg_webclient_keyFile }}
+           --ca-certificate={{ spreg_webclient_caFile }}
            --no-check-certificate
             'https://{{inventory_hostname}}/spreg/ws/metadata?mdid=UW&id=https://iam-ws.u.washington.edu/'"
     register: wget_result
