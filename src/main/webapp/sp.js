@@ -772,7 +772,7 @@ function assembleRPMetadata(entityId) {
 function postSaveRP() {
    console.log('postSaveRP');
    // iam_bannerNotice('Changes saved');
-   iam_showTheMessage('Changes saved.<p>Allow 40 minutes for the changes<br>to propagate to the IdP.');
+   iam_showTheMessage('Changes saved.<p>Allow a couple of minutes for the changes<br>to propagate to the IdP.');
    var url = v_root + v_vers + '/rp/?id=' + rpId + '&mdid=UW' + adminQS;
    if (currentSp==null) {
       console.log('post load new SP');
@@ -982,7 +982,7 @@ function _attributeXml (gid, id) {
 
 function _postSaveAttrs() {
    iam_hideTheDialog('attrEditDialog');
-   iam_showTheMessage('Attributes updated: Allow 20 minutes to propagate.');
+   iam_showTheMessage('Attributes updated: Allow a couple of minutes to propagate.');
    showCurrentSp();
 }
 
@@ -1027,7 +1027,7 @@ function proxyEditKey() {
 
 function _postSaveProxy() {
    iam_hideTheDialog('proxyEditDialog');
-   iam_showTheNotice('Parameters saved: Allow 20 minutes to propagate.');
+   iam_showTheNotice('Parameters saved: Allow a couple of minutes to propagate.');
    showCurrentSp();
    numProxyEditKey = 0;
 }
