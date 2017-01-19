@@ -38,5 +38,7 @@
 
  <Attribute id="nsc_pid" description="Student ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="nsc_opeid" description="UW's ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="awsrole" description="AWS Account ID and roles (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="awsname" description="AWS Role Session Name (eppn) (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
 
 </Attributes>
