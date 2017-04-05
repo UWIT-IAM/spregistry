@@ -1268,7 +1268,8 @@ public class RelyingPartyController {
    /* production to RT system */
            msg.setTo(requestMailTo);
            msg.setSubject("IdP attribute request for " + id);
-           msg.setFrom(session.remoteUser + "@uw.edu");
+           if (session.remoteUser.indexOf("@")>0) msg.setFrom(session.remoteUser);
+           else msg.setFrom(session.remoteUser + "@uw.edu");
            msg.setText(txt.toString());
            try{
                this.mailSender.send(msg);
