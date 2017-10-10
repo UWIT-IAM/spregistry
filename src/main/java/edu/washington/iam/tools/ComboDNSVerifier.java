@@ -51,6 +51,8 @@ public class ComboDNSVerifier implements DNSVerifier {
         if (i>0) dns = dns.substring(0,i);
         i = dns.indexOf(":");
         if (i>0) dns = dns.substring(0,i);
+        i = dns.indexOf("?");
+        if (i>0) dns = dns.substring(0,i);
 
         log.debug("looking for owner (" + id + ") in " + dns);
 
