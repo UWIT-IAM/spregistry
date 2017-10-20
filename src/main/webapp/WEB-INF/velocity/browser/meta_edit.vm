@@ -19,12 +19,12 @@
 ## Templates for rp edit 
 ##
 
-<div id="metaEditDialog" data-dojo-type="dijit/Dialog" title="Edit metadata" $hide
-  onShow="metaEditShow()" onHide="metaEditHide()" onKeyPress="metaEditKey()" onClick="metaEditKey()">
-
+<div id="metaEditDialog" data-dojo-type="dijit/Dialog" title="Edit metadata" ${hide} onShow="metaEditShow()"
+     onHide="metaEditHide()" onKeyPress="metaEditKey()" onClick="metaEditKey()">
+## onShow="metaEditShow()" onHide="metaEditHide()" onKeyPress="metaEditKey()" onClick="metaEditKey()"
 ## <div id="metarnotice" class="rnotice">(<span class="rstar">*</span> required field)</div>
 
-<div class="dijitDialogPaneContentArea" data-dojo-type="dijit/layout/ContentPane">
+<div class="dijitDialogPaneContentArea" data-dojo-type="dijit/layout/ContentPane" >
 
 
 <h3 tabindex="0">Edit metadata for ${relyingParty.entityId}</h3>
@@ -46,15 +46,15 @@
 
      <li id="org0_0">
       <h4 class="dt">Name:${rstar}</h4>
-         <div class="dd"><input aria-label="org name. required entry" data-dojo-type="dijit.form.TextBox" id="orgn_0" value="#X($!org.name)" /></div>
+         <div class="dd"><input aria-label="org name. required entry" data-dojo-type="dijit/form/TextBox" id="orgn_0" value="#X($!org.name)" /></div>
      </li>
      <li id="org0_1">
       <h4 class="dt" >Display:$rstar</h4>
-         <div class="dd"><input aria-label="org display name, required" data-dojo-type="dijit.form.TextBox" id="orgd_0" value="#X($!org.displayName)" /></div>
+         <div class="dd"><input aria-label="org display name, required" data-dojo-type="dijit/form/TextBox" id="orgd_0" value="#X($!org.displayName)" /></div>
      </li>
      <li id="org0_2">
       <h4 class="dt" >Url:$rstar</h4>
-         <div class="dd"><input aria-label="org url, required" data-dojo-type="dijit.form.TextBox" id="orgu_0" value="#X($!org.url)" /></div>
+         <div class="dd"><input aria-label="org url, required" data-dojo-type="dijit/form/TextBox" id="orgu_0" value="#X($!org.url)" /></div>
      </li>
      #set ( $count = $count + 1)
 
@@ -70,7 +70,7 @@
         <ul class="iamlist">
      <li id="ct${count}_0">
        <span class="dt dt3" >Type</span>
-       <select class="dd" id="ctt_${count}" data-dojo-type="dijit.form.Select" aria-label="contact type" onChange="metaEditKey()">
+       <select class="dd" id="ctt_${count}" data-dojo-type="dijit/form/Select" aria-label="contact type" onChange="metaEditKey()">
        #foreach ( $t in ["technical","support","administrative","billing","other"] )
          <option value="$t" 
            #if ( $t == $ct.type )
@@ -79,20 +79,20 @@
          >$t</option>
        #end
        </select>
-            <button dojoType="dijit.form.Button" class="xbutton" title="delete this contact" style="margin-left:10px"
+            <button dojoType="dijit/form/Button" class="xbutton" title="delete this contact" style="margin-left:10px"
              onClick="meta_clearCT('${count}')">x</button>
      </li>
      <li id="ct${count}_1"><span class="dt dt3">Name$rstar</span>
-        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctgn_${count}" value="#X($!ct.givenName)"  aria-label="name, required" />
+        <input class="dd" data-dojo-type="dijit/form/TextBox" id="ctgn_${count}" value="#X($!ct.givenName)"  aria-label="name, required" />
      </li>
      <li id="ct${count}_2"><span class="dt dt3">Email$rstar</span>
-        <input class="dd" data-dojo-type="dijit.form.TextBox" id="cte_${count}" value="#X($!ct.email)" aria-label="email, required" />
+        <input class="dd" data-dojo-type="dijit/form/TextBox" id="cte_${count}" value="#X($!ct.email)" aria-label="email, required" />
      </li>
      <li id="ct${count}_3"><span class="dt dt3">Phone</span>
-        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctp_${count}" value="#X($!ct.phone)" aria-label="phone"/>
+        <input class="dd" data-dojo-type="dijit/form/TextBox" id="ctp_${count}" value="#X($!ct.phone)" aria-label="phone"/>
      </li>
      <li><div class="dt dt3" style="height:.5em"></div></li>
-     <ul>
+        </ul>
      </fieldset>
      #if ($count == 0 )
         <i>At least two contacts are recommended.</i>
@@ -107,7 +107,7 @@
         <ul class="iamlist">
      <li id="ct${i}_0" #if ( $i > 0 ) ${hide} #end >
        <span class="dt dt3" >Type</span>
-       <select class="dd" id="ctt_${i}"  data-dojo-type="dijit.form.Select" aria-label="contact type">
+       <select class="dd" id="ctt_${i}"  data-dojo-type="dijit/form/Select" aria-label="contact type">
        #foreach ( $t in ["","technical","support","administrative","billing","other"] )
          <option value="$t" 
            #if ( $t == " " )
@@ -116,20 +116,20 @@
          >$t</option>
        #end
        </select>
-            <button dojoType="dijit.form.Button" class="xbutton" title="delete this contact" style="margin-left:10px"
+            <button dojoType="dijit/form/Button" class="xbutton" title="delete this contact" style="margin-left:10px"
              onClick="meta_clearCT('${i}')">x</button>
      </li>
      <li id="ct${i}_1" #if ( $i > 0 ) ${hide} #end >
       <span class="dt dt3" >Name$rstar</span>
-        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctgn_${i}" value="" aria-label="Name, required" />
+        <input class="dd" data-dojo-type="dijit/form/TextBox" id="ctgn_${i}" value="" aria-label="Name, required" />
      </li>
      <li id="ct${i}_2" #if ( $i > 0 ) ${hide} #end >
       <label class="dt dt3" >Email$rstar</label>
-        <input class="dd" data-dojo-type="dijit.form.TextBox" id="cte_${i}" value="" aria-label="email, required" />
+        <input class="dd" data-dojo-type="dijit/form/TextBox" id="cte_${i}" value="" aria-label="email, required" />
      </li>
      <li id="ct${i}_3" #if ( $i > 0 ) ${hide} #end >
       <span class="dt dt3">Phone</span>
-        <input class="dd" data-dojo-type="dijit.form.TextBox" id="ctp_${i}" value="" aria-label="phone"/>
+        <input class="dd" data-dojo-type="dijit/form/TextBox" id="ctp_${i}" value="" aria-label="phone"/>
      </li>
      </ul>
      #set ( $label = "" )
@@ -137,7 +137,7 @@
    #end
    <div id="ct_more">
     <span class="dt dt3">
-       <button dojoType="dijit.form.Button" class="ddbutton" onClick="meta_showMoreFields('ct', 'ct_more')">Add contact</button>
+       <button dojoType="dijit/form/Button" class="ddbutton" onClick="meta_showMoreFields('ct', 'ct_more')">Add contact</button>
     </span>
    </div>
   #end
@@ -164,20 +164,20 @@
       <div class="dd">
        <ul class="iamlist">
         <li>
-         <input data-dojo-type="dijit.form.CheckBox" id="pse_10" aria-labelledby="pse_10p" $p10/>
+         <input data-dojo-type="dijit/form/CheckBox" id="pse_10" aria-labelledby="pse_10p" $p10/>
          <span id="pse_10p">urn:oasis:names:tc:SAML:1.0:protocol</span>
         </li>
         <li>
-         <input data-dojo-type="dijit.form.CheckBox" id="pse_11" aria-labelledby="pse_11p" $p11/>
+         <input data-dojo-type="dijit/form/CheckBox" id="pse_11" aria-labelledby="pse_11p" $p11/>
          <span id="pse_11p">urn:oasis:names:tc:SAML:1.1:protocol</span>
         </li>
         <li>
-         <input data-dojo-type="dijit.form.CheckBox" id="pse_20" aria-labelledby="pse_20p" $p20/>
+         <input data-dojo-type="dijit/form/CheckBox" id="pse_20" aria-labelledby="pse_20p" $p20/>
          <span id="pse_20p">urn:oasis:names:tc:SAML:2.0:protocol</span>
         </li>
       </ul></div>
    </li>
- 
+
    ## KeyInfo
 
       <li><h4 class="dt">KeyInfo</h4>
@@ -192,7 +192,7 @@
 
       <li id="ki${count}_1">
         <span class="dt dt3" >Cert PEM<br>
-            <button dojoType="dijit.form.Button" class="xbutton" title="delete this keyinfo"
+            <button dojoType="dijit/form/Button" class="xbutton" title="delete this keyinfo"
              onClick="meta_clearKI('${count}')">x</button>
            </span>
         <textarea data-dojo-type="dijit/form/Textarea" class="dd certbox" cols="64" rows="5" name="keyCert_${count}" id="kc_${count}"
@@ -206,7 +206,7 @@
    
       <li id="ki${i}_0" ${hide}>
       <span class="dt dt3" >Name</span>
-        <input class="dd" data-dojo-type="dijit.form.TextBox" name="keyName_${i}" id="kn_${i}" value="" aria-label="name"/>
+        <input class="dd" data-dojo-type="dijit/form/TextBox" name="keyName_${i}" id="kn_${i}" value="" aria-label="name"/>
       </li>
       <li id="ki${i}_1" ${hide}>
       <span class="dt dt3" >Cert PEM</span>
@@ -217,7 +217,7 @@
    #end
    <li id="ki_more">
     <span class="dt dt3">
-       <button dojoType="dijit.form.Button" class="ddbutton" onClick="meta_showMoreFields('ki', 'ki_more')">Add keyinfo</button>
+       <button dojoType="dijit/form/Button" class="ddbutton" onClick="meta_showMoreFields('ki', 'ki_more')">Add keyinfo</button>
     </span>
    </li>
   #end
@@ -235,7 +235,7 @@
    #set ( $count = 0 )
    #foreach ( $name in $relyingParty.nameIDFormats )
      <li id="ni${count}_0">
-      <input class="dd" data-dojo-type="dijit.form.TextBox" name="nameId_${count}" id="ni_${count}" value="$name" aria-label="nameid"/>
+      <input class="dd" data-dojo-type="dijit/form/TextBox" name="nameId_${count}" id="ni_${count}" value="$name" aria-label="nameid"/>
      </li>
      #set ( $count = $count + 1)
    #end
@@ -243,12 +243,12 @@
   #if ($count<5)
    #foreach ( $i in [ $count .. 4 ] )
      <li id="ni${i}_0" ${hide}>
-      <input class="dd" data-dojo-type="dijit.form.TextBox" name="nameId_${xtra}" id="ni_${i}" value="" aria-label="nameid"/></td>
+      <input class="dd" data-dojo-type="dijit/form/TextBox" name="nameId_${xtra}" id="ni_${i}" value="" aria-label="nameid"/></td>
      </li>
    #end
    <li id="hi_more">
     <span class="dt dt3">
-       <button dojoType="dijit.form.Button" class="ddbutton" onClick="meta_showMoreFields('ni', 'ni_more')">Add nameinfo</button>
+       <button dojoType="dijit/form/Button" class="ddbutton" onClick="meta_showMoreFields('ni', 'ni_more')">Add nameinfo</button>
     </span>
    </li>
   #end
@@ -271,13 +271,13 @@
    #set ( $count = 0 )
    #foreach ( $acs in $relyingParty.assertionConsumerServices )
      <li id="acs${count}_0">
-        <input class="dt dt2" data-dojo-type="dijit.form.TextBox" size="2" id="acsi_${count}"
+        <input class="dt dt2" data-dojo-type="dijit/form/TextBox" size="2" id="acsi_${count}"
              value="$acs.index" aria-label="acs index"/>
 
-        ## <input class="dd" data-dojo-type="dijit.form.TextBox" id="acsb_${count}"
+        ## <input class="dd" data-dojo-type="dijit/form/TextBox" id="acsb_${count}"
         ##       value="$acs.binding" size="30" style="width:400px" aria-label="binding"/>
 
-       <select class="dd" id="acsb_${count}" data-dojo-type="dijit.form.Select" aria-label="binding">
+       <select class="dd" id="acsb_${count}" data-dojo-type="dijit/form/Select" aria-label="binding">
        #foreach ( $t in [$bind1, $bind2, $bind3, $bind4, $bind5, $bind6, $bind7] )
          <option value="$t" 
            #if ( $t == $acs.binding )
@@ -290,10 +290,10 @@
      </li>
      <li id="acs${count}_1">
         <span class="dt dt2">
-       <button dojoType="dijit.form.Button" class="xbutton" title="delete acs $acs.index"
+       <button dojoType="dijit/form/Button" class="xbutton" title="delete acs $acs.index"
              onClick="meta_clearACS('${count}')">x</button>
           </span>
-        <input class="dd" data-dojo-type="dijit.form.TextBox" id="acsl_${count}"
+        <input class="dd" data-dojo-type="dijit/form/TextBox" id="acsl_${count}"
              value="$acs.location"  size="30" style="width:400px" aria-label="location"/>
      </li>
      <li><div class="dt" style="height:.5em"></div></li>
@@ -303,12 +303,12 @@
   #if ($count<50)
    #foreach ( $i in [ $count .. 49 ] )
      <li id="acs${i}_0" ${hide}>
-        <input class="dt dt2" data-dojo-type="dijit.form.TextBox" size="2" id="acsi_${i}"
+        <input class="dt dt2" data-dojo-type="dijit/form/TextBox" size="2" id="acsi_${i}"
              value="" placeholder="#" aria-label="index" />
 
-##         <input class="dd" data-dojo-type="dijit.form.TextBox" id="acsb_${i}"
+##         <input class="dd" data-dojo-type="dijit/form/TextBox" id="acsb_${i}"
 ##             value="" placeholder="binding" aria-label="binding" size="30" />
-       <select class="dd" id="acsb_${i}" data-dojo-type="dijit.form.Select" aria-label="binding">
+       <select class="dd" id="acsb_${i}" data-dojo-type="dijit/form/Select" aria-label="binding">
        #foreach ( $t in [$bind1, $bind2, $bind3, $bind4, $bind5, $bind6, $bind7] )
          <option value="$t">$t</option>
        #end
@@ -317,22 +317,26 @@
      </li>
      <li id="acs${i}_1" ${hide}>
         <div class="dt dt2" role="presentation"></div>
-        <input class="dd" data-dojo-type="dijit.form.TextBox" id="acsl_${i}"
+        <input class="dd" data-dojo-type="dijit/form/TextBox" id="acsl_${i}"
             value="" placeholder="location" aria-label="location" size="30" />
      </li>
    #end
    <li id="acs_more">
     <span class="dt dt3">
-       <button dojoType="dijit.form.Button" class="ddbutton" onClick="meta_showMoreFields('acs', 'acs_more')">Add ACS</button>
+       <button dojoType="dijit/form/Button" class="ddbutton" onClick="meta_showMoreFields('acs', 'acs_more')">Add ACS</button>
     </span>
    </li>
   #end
-    </ul></div>
-   </li>
+        </ul>
+       </div></li></ul>
 </div>
+
+
+
  <div class="dijitDialogPaneActionBar">
-    <button dojoType="dijit.form.Button" id="metaEditSaver" disabled="disabled" type="button" onClick="saveRP('${relyingParty.entityId}')">Save changes</button>
-    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('metaEditDialog')">Close</button>
+    <button dojoType="dijit/form/Button" id="metaEditSaver" disabled="disabled" type="button" onClick="saveRP('${relyingParty.entityId}')">Save changes</button>
+     ## disabled="disabled"
+    <button dojoType="dijit/form/Button" type="button" onClick="iam_hideTheDialog('metaEditDialog')">Close</button>
  </div>
 
 </div>
@@ -342,8 +346,8 @@
 <div id="metaDeleteDialog" data-dojo-type="dijit/Dialog" title="Metadata delete" $hide>
 <h3>Permanently delete ${relyingParty.entityId}?</h3>
  <div class="dijitDialogPaneActionBar">
-    <button dojoType="dijit.form.Button" type="button" onClick="deleteRP('${relyingParty.entityId}')">Yes, delete</button>
-    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('metaDeleteDialog')">Cancel</button>
+    <button dojoType="dijit/form/Button" type="button" onClick="deleteRP('${relyingParty.entityId}')">Yes, delete</button>
+    <button dojoType="dijit/form/Button" type="button" onClick="iam_hideTheDialog('metaDeleteDialog')">Cancel</button>
  </div>
 </div>
 
@@ -352,13 +356,13 @@
 <div id="metaNotSavedDialog" data-dojo-type="dijit/Dialog" title="Metadata not saved" $hide>
 <h3>Your changes have not been saved.<p>Close anyway?</h3>
  <div class="dijitDialogPaneActionBar">
-    <button dojoType="dijit.form.Button" type="button">Yes, close
+    <button dojoType="dijit/form/Button" type="button">Yes, close
         <script type="dojo/on" data-dojo-event="click">
           iam_hideTheDialog('metaNotSavedDialog');
           ### showHomePage();
         </script>
     </button>
-    <button dojoType="dijit.form.Button" type="button">No, continue editing
+    <button dojoType="dijit/form/Button" type="button">No, continue editing
         <script type="dojo/on" data-dojo-event="click">
            iam_hideTheDialog('metaNotSavedDialog');
            iam_showTheDialog('metaEditDialog');

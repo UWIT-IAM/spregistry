@@ -31,17 +31,18 @@ dojoConfig = {
    "isDebug": true,
    packages: [{
       name: "iam",
-      location: "/js"
+      location: "/spreg/js"
    }]
 };
 </script>
 
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/dojo.js" data-dojo-config="async: true"></script>
-  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dojo/resources/dojo.css"/>
-##  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/tundra/tundra.css"/>
-  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/claro/claro.css"/>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/dojo/1.12.2/dojo/dojo.js" data-dojo-config="async: true, parseOnLoad: true, isDebug: true"></script>
+  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.12.2/dojo/resources/dojo.css"/>
+##  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.12.2/dijit/themes/tundra/tundra.css"/>
+  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.12.2/dijit/themes/claro/claro.css"/>
 
-<link rel="stylesheet" type="text/css" href="/css/iam-dojo-2.css"/>
+<link rel="stylesheet" type="text/css" href="/spreg/css/iam-dojo-2.css"/>
+    <link rel="stylesheet" type="text/css" href="/spreg/css/octicons.css"/>
 
 ## add ie7 css if needed
 <script>
@@ -53,7 +54,7 @@ dojoConfig = {
             var link = dom.create("link", {
                   type  : "text/css",
                   rel   : "stylesheet",
-                  href  : '/css/iam-ie.css'
+                  href  : '/spreg/css/iam-ie.css'
                });
             console.log('adding css for ie7');
             query("head").append(link);
@@ -61,8 +62,8 @@ dojoConfig = {
     });
 </script>
 
-<script type="text/javascript" src="/js/iam-dojo.js"></script>
-<script type="text/javascript" src="/js/sp.js"></script>
+<script type="text/javascript" src="/spreg/js/iam-dojo.js"></script>
+<script type="text/javascript" src="/spreg/js/sp.js"></script>
 
 <script>
     require(["dojo/dom",
@@ -103,7 +104,7 @@ v_xsrf = '${xsrf}';
    <p aligh="center">Your session with the <br/>Service Provider Registry<br/> has expired. <br/>Refresh the page to continue working.</p>
  </div>
  <div class="dijitDialogPaneActionBar">
-    <button dojoType="dijit.form.Button" type="button" onClick="location.reload()">Refresh</button>
+    <button dojoType="dijit/form/Button" type="button" onClick="location.reload()">Refresh</button>
  </div>
 </div>
 
@@ -113,14 +114,14 @@ v_xsrf = '${xsrf}';
   <div class="dijitDialogPaneContentArea">
     Identity and Access Management
     <br/>
-    Service Provider Registry 2.3.1
+    Service Provider Registry 2.4.0
     <br/>
-    Revision 08/11/2016
+    Revision 2017-11-30
     <p>
     <a href="https://wiki.cac.washington.edu/x/gjyoAQ">Learn more about the registry</a>
   </div>
  <div class="dijitDialogPaneActionBar">
-    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('helpAbout')">Close</button>
+    <button dojoType="dijit/form/Button" type="button" onClick="iam_hideTheDialog('helpAbout')">Close</button>
  </div>
 </div>
 
@@ -130,11 +131,11 @@ v_xsrf = '${xsrf}';
  </div>
    Choose the role you want to work in.
    <p>
-    <button dojoType="dijit.form.Button" type="button" onClick="setRole('u', 'roleChooser')">user</button>
-    <button dojoType="dijit.form.Button" type="button" onClick="setRole('a', 'roleChooser')">administrator</button>
+    <button dojoType="dijit/form/Button" type="button" onClick="setRole('u', 'roleChooser')">user</button>
+    <button dojoType="dijit/form/Button" type="button" onClick="setRole('a', 'roleChooser')">administrator</button>
    <p>
  <div class="dijitDialogPaneActionBar">
-    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('roleChooser')">Close</button>
+    <button dojoType="dijit/form/Button" type="button" onClick="iam_hideTheDialog('roleChooser')">Close</button>
  </div>
 </div>
 #end
@@ -145,8 +146,8 @@ v_xsrf = '${xsrf}';
     An EntityId must be a valid URL.  The one you specified may not be accepted.
   </div>
  <div class="dijitDialogPaneActionBar">
-    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('invalidEntityId')">Try again</button>
-    <button dojoType="dijit.form.Button" type="button" onClick="meta_newSp(1)">Continue anyway</button>
+    <button dojoType="dijit/form/Button" type="button" onClick="iam_hideTheDialog('invalidEntityId')">Try again</button>
+    <button dojoType="dijit/form/Button" type="button" onClick="meta_newSp(1)">Continue anyway</button>
  </div>
 </div>
 
@@ -162,25 +163,25 @@ v_xsrf = '${xsrf}';
     <li>If it is a Shibboleth SP, and is not on a private network, you can load metadata
          directly from the SP.
     <br>
-    <button dojoType="dijit.form.Button" type="button" onClick="meta_lookupSp(1)">Get metadata from the SP</button>
+    <button dojoType="dijit/form/Button" type="button" onClick="meta_lookupSp(1)">Get metadata from the SP</button>
     </li>
     <p>
     <li>If you have the metadata available at a web URL you can load it from there.
     <br>
-    Metadata URL: <input dojoType="dijit.form.TextBox" id="newSpUrl" style="width:300px" value="" />
+    Metadata URL: <input dojoType="dijit/form/TextBox" id="newSpUrl" style="width:300px" value="" />
     <br>
-    <button dojoType="dijit.form.Button" type="button" onClick="meta_lookupUrl()">Get metadata from this URL</button>
+    <button dojoType="dijit/form/Button" type="button" onClick="meta_lookupUrl()">Get metadata from this URL</button>
     </li>
     <p>
     <li>If all else fails you can enter the data manually.
     <br>
-    <button dojoType="dijit.form.Button" type="button" onClick="meta_manualSp()">Do it the hard way</button>
+    <button dojoType="dijit/form/Button" type="button" onClick="meta_manualSp()">Do it the hard way</button>
     </li>
    </ol>
   </div>
    
  <div class="dijitDialogPaneActionBar">
-    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('newSpChooser')">Cancel</button>
+    <button dojoType="dijit/form/Button" type="button" onClick="iam_hideTheDialog('newSpChooser')">Cancel</button>
  </div>
 </div>
 
@@ -188,19 +189,19 @@ v_xsrf = '${xsrf}';
 
 ## page
 ## loader flash
-<div role="presentation" id="theflash" data-dojo-type="dijit.layout.ContentPane" style="width:100%; height:100%; z-index: 1001; display:block;">
+<div role="presentation" id="theflash" data-dojo-type="dijit/layout/ContentPane" style="width:100%; height:100%; z-index: 1001; display:block;">
 <div style="width: 100%; height:50%">
 </div>
-<div align="center"><img src="/img/circle_loader.gif">
+<div align="center"><img src="/spreg/img/circle_loader.gif">
 </div>
 </div>
 
 
-<div id="thepage" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height: 100%;overflow:hidden; opacity:0; padding:0px;">
+<div id="thepage" data-dojo-type="dijit/layout/ContentPane" style="width: 100%; height: 100%;overflow:hidden; opacity:0; padding:0px;">
 
 ## banner
 <h1 class="hidden">SERVICE PROVIDER REGISTRY</h1>
-<div id="topbanner" data-dojo-type="dijit.layout.ContentPane">
+<div id="topbanner" data-dojo-type="dijit/layout/ContentPane">
 <span class="topleft"><a href="https://wiki.cac.washington.edu/x/lR4">IDENTITY AND ACCESS MANAGEMENT</a></span>
 <ul class="topright">
  <li>Logged in: $remote_user</li>
@@ -216,7 +217,7 @@ v_xsrf = '${xsrf}';
 </div>##topbanner
 
 ## banner
-<div id="banner" data-dojo-type="dijit.layout.ContentPane">
+<div id="banner" data-dojo-type="dijit/layout/ContentPane">
     <span id="title"><a tabindex=-1 href="javascript:showHomePage()">SERVICE PROVIDER REGISTRY</a></span>
     <span id="banner_notice">
 #if ($adminRole)
@@ -229,7 +230,7 @@ v_xsrf = '${xsrf}';
 </div>##banner
 
 ## notice popup
-<div id="bannerNotice" data-dojo-type="dijit.layout.ContentPane" role="alert" $hide></div>
+<div id="bannerNotice" data-dojo-type="dijit/layout/ContentPane" role="alert" $hide></div>
 
 
 ## show the page when the dom is ready
@@ -266,7 +267,7 @@ function openNewSPForm() {
 
 
 
-<div id="indexPanel" data-dojo-type="dijit.layout.ContentPane">
+<div id="indexPanel" data-dojo-type="dijit/layout/ContentPane">
 
 <h2 class="hidden">Actions</h2>
 
@@ -279,7 +280,7 @@ function openNewSPForm() {
   <h3>Register a New Service Provider</h3>
 
    Enter your SP's entityId
-    <input dojoType="dijit.form.TextBox" id="newSp" value="" />
+    <input dojoType="dijit/form/TextBox" id="newSp" value="" />
    <br>
    <button style="font-size:smaller" type="button"
             data-dojo-type="dijit/form/Button" onClick="javascript:meta_newSp(0)">Continue</button>
@@ -290,13 +291,13 @@ function openNewSPForm() {
 
  <h3 style="clear:both;padding-top:25px">Update an Existing Service Provider</h3>
  <label for="filterSpList">Enter part of the SP's entityId
- </label><input id="filterSpList"  data-dojo-type="dijit.form.TextBox" />
+ </label><input id="filterSpList"  data-dojo-type="dijit/form/TextBox" />
 <br>
- <div><input data-dojo-type="dijit.form.CheckBox" id="justmine" value="1" aria-label="justmine" onClick="toggleListMine()"/>
+ <div><input data-dojo-type="dijit/form/CheckBox" id="justmine" value="1" aria-label="justmine" onClick="toggleListMine()"/>
       <label for="justmine" >Show only my SPs</label>
  </div>
 
- <div class="spList" id="spIndexPane" data-dojo-type="dijit.layout.ContentPane"
+ <div class="spList" id="spIndexPane" data-dojo-type="dijit/layout/ContentPane"
          style="margin-top:6px;overflow:auto">
      <i role="presentation">Retrieving the list of service providers</i>
   </div>
@@ -309,14 +310,14 @@ function openNewSPForm() {
 
 ## right side
 
-<div id="displayPanel" data-dojo-type="dijit.layout.ContentPane">
+<div id="displayPanel" data-dojo-type="dijit/layout/ContentPane">
 
-<div id="homeDisplay" data-dojo-type="dijit.layout.ContentPane" style="margin-top:6px;overflow:auto;" >
+<div id="homeDisplay" data-dojo-type="dijit/layout/ContentPane" style="margin-top:6px;overflow:auto;" >
 ## #parse ( 'browser/home.vm' )
  </div>
 
-<div id="spDisplay" data-dojo-type="dijit.layout.ContentPane" style="display:none" >
-   <div id="spPane" data-dojo-type="dijit.layout.ContentPane" >
+<div id="spDisplay" data-dojo-type="dijit/layout/ContentPane" style="display:none" >
+   <div id="spPane" data-dojo-type="dijit/layout/ContentPane" >
    </div>
 </div>
 
@@ -329,7 +330,7 @@ function openNewSPForm() {
 ## footer
 
 
-<div id="footer" data-dojo-type="dijit.layout.ContentPane"  style="position:absolute;bottom:0px">
+<div id="footer" data-dojo-type="dijit/layout/ContentPane"  style="position:absolute;bottom:0px">
     <span id="footlogo"><a href="http:/www.uw.edu/" title="University of Washington">
        ##  <img src="/img/uofw-small.gif" alt="UW" />
        UNIVERSITY OF WASHINGTON
@@ -345,7 +346,7 @@ function openNewSPForm() {
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.3</a></li>
+        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.4.0</a></li>
     </ul>
     </span>
 </div>
