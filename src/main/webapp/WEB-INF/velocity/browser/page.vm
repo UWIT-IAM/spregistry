@@ -31,7 +31,7 @@ dojoConfig = {
    "isDebug": true,
    packages: [{
       name: "iam",
-      location: "/js"
+      location: "/spreg/js"
    }]
 };
 </script>
@@ -41,7 +41,7 @@ dojoConfig = {
 ##  <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/tundra/tundra.css"/>
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.8.3/dijit/themes/claro/claro.css"/>
 
-<link rel="stylesheet" type="text/css" href="/css/iam-dojo-2.css"/>
+<link rel="stylesheet" type="text/css" href="/spreg/css/iam-dojo-2.css"/>
 
 ## add ie7 css if needed
 <script>
@@ -53,7 +53,7 @@ dojoConfig = {
             var link = dom.create("link", {
                   type  : "text/css",
                   rel   : "stylesheet",
-                  href  : '/css/iam-ie.css'
+                  href  : '/spreg/css/iam-ie.css'
                });
             console.log('adding css for ie7');
             query("head").append(link);
@@ -61,8 +61,8 @@ dojoConfig = {
     });
 </script>
 
-<script type="text/javascript" src="/js/iam-dojo.js"></script>
-<script type="text/javascript" src="/js/sp.js"></script>
+<script type="text/javascript" src="/spreg/js/iam-dojo.js"></script>
+<script type="text/javascript" src="/spreg/js/sp.js"></script>
 
 <script>
     require(["dojo/dom",
@@ -191,7 +191,7 @@ v_xsrf = '${xsrf}';
 <div role="presentation" id="theflash" data-dojo-type="dijit.layout.ContentPane" style="width:100%; height:100%; z-index: 1001; display:block;">
 <div style="width: 100%; height:50%">
 </div>
-<div align="center"><img src="/img/circle_loader.gif">
+<div align="center"><img src="/spreg/img/circle_loader.gif">
 </div>
 </div>
 
