@@ -452,7 +452,8 @@ public class RelyingPartyController {
      */
 
     private ModelAndView loginPage(HttpServletRequest request, HttpServletResponse response, int method) {
-        String remoteUser = request.getRemoteUser();
+        // String remoteUser = request.getRemoteUser();
+        String remoteUser = "mattjm@washington.edu";
         if (remoteUser==null && method==0) {  // social login
            String idp = (String)request.getAttribute("Shib-Identity-Provider");
            String mail = (String)request.getAttribute("mail");
@@ -1317,11 +1318,12 @@ public class RelyingPartyController {
     // update an rp's proxy 
     @RequestMapping(value="/rp/proxy", method=RequestMethod.PUT)
     public ModelAndView putRelyingPartyAttributesZ(@RequestParam(value="id", required=true) String id,
-            @RequestParam(value="role", required=false) String role,
-            @RequestParam(value="xsrf", required=false) String paramXsrf,
-            InputStream in,
-            HttpServletRequest request,
-            HttpServletResponse response) {
+                                                   @RequestParam(value="role", required=false) String role,
+                                                   @RequestParam(value="xsrf", required=false) String paramXsrf,
+                                                   @RequestParam(value="social_login_flag", required=true) boolean socialActive,
+                                                   InputStream in,
+                                                   HttpServletRequest request,
+                                                   HttpServletResponse response) {
 
         RPSession session = processRequestInfo(request, response, false);
         if (session==null) return (emptyMV());
@@ -1329,10 +1331,10 @@ public class RelyingPartyController {
         log.info("PUT update proxy for " + id);
         int status = 200;
 
-       if (session.isBrowser && !(paramXsrf!=null && paramXsrf.equals(session.xsrfCode))) {
-           log.info("got invalid xsrf=" + paramXsrf + ", expected+" + session.xsrfCode);
-           return emptyMV("invalid session (xsrf)");
-       }
+        if (session.isBrowser && !(paramXsrf!=null && paramXsrf.equals(session.xsrfCode))) {
+            log.info("got invalid xsrf=" + paramXsrf + ", expected+" + session.xsrfCode);
+            return emptyMV("invalid session (xsrf)");
+        }
 
         ModelAndView mv = emptyMV("OK dokey");
         try {
@@ -1343,35 +1345,23 @@ public class RelyingPartyController {
                 return mv;
             }
         } catch (DNSVerifyException e) {
-           mv.addObject("alert", "Could not verify ownership:\n" + e.getCause());
-           response.setStatus(500);
-           return mv;
+            mv.addObject("alert", "Could not verify ownership:\n" + e.getCause());
+            response.setStatus(500);
+            return mv;
         }
 
-        Document doc = null;
+
         try {
-           DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-           DocumentBuilder builder = builderFactory.newDocumentBuilder();
-           doc = builder.parse (in);
-        } catch (Exception e) {
-           log.info("parse error: " + e);
-           status = 400;
-           mv.addObject("alert", "The posted document was not valid:\n" + e.getMessage());
+            Proxy newproxy = new Proxy();
+            newproxy.setEntityId(id);
+            newproxy.setSocialActive(socialActive);
+            proxyManager.updateProxy(newproxy);
+            status = 200;
+        } catch (ProxyException e) {
+            status = 400;
+            mv.addObject("alert", "Update of the entity failed:" + e.getMessage());
         }
-        if (doc!=null) {
-           try {
-              List<Element> eles = XMLHelper.getElementsByName(doc.getDocumentElement(), "Proxy");
-              if (eles.size()!=1) throw new ProxyException("proxy xml must contain one element");
-              Element pxe = eles.get(0);
-              Proxy newproxy = new Proxy(pxe);
-              if (!newproxy.getEntityId().equals(id)) throw new ProxyException("post doesn't match qs id");
-              proxyManager.updateProxy(newproxy);
-              status = 200;
-           } catch (ProxyException e) {
-              status = 400;
-              mv.addObject("alert", "Update of the entity failed:" + e.getMessage());
-           }
-        }
+
 
         SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
         msg.setTo(mailTo);
@@ -1382,7 +1372,7 @@ public class RelyingPartyController {
         try{
             this.mailSender.send(msg);
         } catch(MailException ex) {
-            log.error("sending mail: " + ex.getMessage());            
+            log.error("sending mail: " + ex.getMessage());
         }
 
         response.setStatus(status);
