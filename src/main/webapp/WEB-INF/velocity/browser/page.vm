@@ -276,7 +276,7 @@ function openNewSPForm() {
   </div>
 
  <div id="newSpForm" $hide>
-  <h3>Register a New Service Provider mattjm</h3>
+  <h3>Register a New Service Provider</h3>
 
    Enter your SP's entityId
     <input dojoType="dijit/form/TextBox" id="newSp" value="" />
