@@ -18,6 +18,7 @@
 // iam dojo javascript tools
 
 // common variables
+// common variables
 var v_remoteUser = '';
 var v_xsrf = '';
 var v_etag = '';
@@ -33,6 +34,11 @@ var dijitRegistry;
 var dojoQuery;
 var dijitFocus;
 var dojoWindow;
+var dojoGeom;
+var dojoStyle;
+var dojoXhr;
+var dojoFx;
+var dojoOn;
 
 // content area sizes
 var contentHeight;
@@ -48,7 +54,14 @@ require([
    "dojo/dom-construct",
    "dojo/query",
    "dijit/focus",
-   "dojo/cookie"], function(registry, window, baseWindow, dom, construct, query, focus, cookie) {
+   "dojo/cookie", 
+    "dojo/dom-geometry",
+    "dojo/dom-style",
+    "dojo/request/xhr",
+    "dojo/_base/fx",
+    "dojo/on",
+    "dojo/domReady!"], function(registry, window, baseWindow, dom, construct, query, focus, cookie, domGeom, domStyle,
+                                  xhr, baseFx, on) {
       dijitRegistry = registry;
       dojoWindow = window;
       dojoDoc = baseWindow.doc;
@@ -57,6 +70,11 @@ require([
       dojoCookie = cookie;
       dojoQuery = query;
       dijitFocus = focus;
+      dojoGeom = domGeom;
+      dojoStyle = domStyle;
+      dojoXhr = xhr;
+      dojoFx = baseFx;
+      dojoOn = on;
 });
 
 // Trim leading and following spaces from a string
@@ -81,6 +99,7 @@ function iam_showTheDialog(d, req) {
    dig = dijitRegistry.byId(d);
    if (dig!=null) {
       dig.show();
+      console.log('show dialog ' + d);
       iam_focus(d);
    }
 }
@@ -103,7 +122,7 @@ function iam_loadTheDialog(d, html) {
         var bh2 = (bx.h)/2;
         var fdd = dojoDom.byId(cdiv);
         console.log('half height: ' + bh2);
-        dojo.style(fdd, {
+        dojoStyle.set(fdd, {
           height: bh2 + 'px'
         });
 
@@ -115,7 +134,7 @@ function iam_loadTheDialog(d, html) {
         dijitRegistry.byId(d).show();
         // reposition it
         fdd = dojoDom.byId(d);
-        dojo.style(fdd, {
+        dojoStyle.set(fdd, {
           top: '100px'
         });
       });
@@ -125,11 +144,11 @@ function iam_loadTheDialog(d, html) {
 function iam_hideShow(hides, shows) {
   for (var i=0;i<hides.length;i++) {
      var e = dojoDom.byId(hides[i]);
-     if (e!=null) e.style.display = 'none';
+     if (e!=null) dojoStyle.set(e, 'display', 'none');
   }
   for (var i=0;i<shows.length;i++) {
      var e = dojoDom.byId(shows[i]);
-     if (e!=null) e.style.display = '';
+     if (e!=null) dojoStyle.set(e, 'display', '');
   }
 }
 
@@ -158,8 +177,8 @@ function iam_bannerNotice(msg) {
    var jele = dijitRegistry.byId('bannerNotice');
    jele.set('content', msg);
    jele.set('aria-hidden', 'false');
-   ele.style.display = "";
-   ele.style.opacity = "1.0";
+    dojoStyle.set(ele, 'display', '');
+    dojoStyle.set(e, 'opacity', '1.0');
    require(["dojo/_base/fx"], function(fx){
       fx.fadeOut({
         node: ele,
@@ -298,68 +317,83 @@ function _showAlertFromXmlData(data) {
    });
 }
 
+//This is the "new hotness" but it has an odd javascript parsing problem.  Sticking with
+//original for now.
+/*
 // ajax get
 function iam_getRequest(url, headers, handleas, loader) {
    console.log('get req');
-   dojo.xhrGet({
-     url: url,
+   dojoXhr(url, {
      headers: headers,
-     handleAs: handleas,
-     failOk: true,
-     load: loader,
-     error: function(data, args) {
+     handleAs: handleas
+   }).then(function(data, args){
+       loader(data, args);
+   }, function(data, args) {
         console.log('xhr error status: ' + args.xhr.status);
         console.log(data);
         console.log(args.xhr.responseText);
         // _showAlertFromXmlData(args.xhr.responseText);
-      }
-   });
+      });
+
+}*/
+
+// ajax get (deprecated but using it for now)
+function iam_getRequest(url, headers, handleas, loader) {
+    console.log('get req');
+    dojo.xhrGet({
+        url: url,
+        headers: headers,
+        handleAs: handleas,
+        failOk: true,
+        load: loader,
+        error: function(data, args) {
+            console.log('xhr error status: ' + args.xhr.status);
+            console.log(data);
+            console.log(args.xhr.responseText);
+            // _showAlertFromXmlData(args.xhr.responseText);
+        }
+    });
 }
 
 
 // ajax put
 function iam_putRequest(url, headers, data, handleas, postRequest) {
    document.body.style.cursor = 'wait';
-   dojo.xhrPut({
-     url: url,
-     headers: headers,
-     handleAs: handleas,
-     putData: data,
-     failOk: true,
-     load: function(data, args) {
+   dojoXhr(url, {
+       headers: headers,
+       handleAs: handleas,
+       data: data,
+       method: 'PUT'
+   }).then(function(data, args) {
         document.body.style.cursor = 'default';
         if (postRequest!=null) postRequest(data,args);
-      },
-     error: function(data, args) {
+      }, function(data, args) {
         console.log('xhr error status: ' + args.xhr.status);
         console.log(data);
         console.log(args.xhr.responseText);
         _showAlertFromXmlData(args.xhr.responseText);
         document.body.style.cursor = 'default';
-      }
-   });
+      });
 }
 
 
 // ajax delete
 function iam_deleteRequest(url, headers, handleas, postRequest) {
    document.body.style.cursor = 'wait';
-   dojo.xhrDelete({
-     url: url,
+   dojoXhr(url, {
      headers: headers,
      handleAs: handleas,
-     failOk: true,
-     load: function(data, args) {
+     method: 'DELETE'
+   }).then(function(data, args) {
         document.body.style.cursor = 'default';
         if (postRequest!=null) postRequest(data, args);
-      },
-     error: function(data, args) {
+      }, function(data, args) {
         console.log('error' + args.xhr.status);
         console.log(data);
         // _showAlertFromXmlData(args.xhr.responseText);
         document.body.style.cursor = 'default';
-      }
-   });
+      });
+
 }
 
 
@@ -377,9 +411,9 @@ function iam_setPanelSizes() {
    console.log('adjust panels');
    require(["dojo/window"], function(win) {
      v_viewport = win.getBox();
-     var tbh = dojo.position(dojo.byId('topbanner'),true).h;
-     var bh = dojo.position(dojo.byId('banner'),true).h;
-     var fh = dojo.position(dojo.byId('footer'),true).h;
+     var tbh = dojoGeom.position(dojoDom.byId('topbanner'),true).h;
+     var bh = dojoGeom.position(dojoDom.byId('banner'),true).h;
+     var fh = dojoGeom.position(dojoDom.byId('footer'),true).h;
      console.log('vh='+v_viewport.h+' vw='+v_viewport.w+' tbh='+tbh+' bh='+bh+' fh='+fh);
 
      var ch = v_viewport.h - tbh - bh - fh; 
@@ -395,16 +429,16 @@ function iam_setPanelSizes() {
      var dw = cw - iw - 40; // allow space between
      var dh = ch - 80;
 
-     var pan = dojo.byId('indexPanel');
-     if (pan!=null) dojo.style(pan, {
+     var pan = dojoDom.byId('indexPanel');
+     if (pan!=null) dojoStyle.set(pan, {
         height: ih + 'px',
         width: iw + 'px',
         top: ct + 'px',
         left: '5px'
      });
 
-     pan = dojo.byId('displayPanel');
-     if (pan!=null) dojo.style(dojo.byId('displayPanel'), {
+     pan = dojoDom.byId('displayPanel');
+     if (pan!=null) dojoStyle.set(dojoDom.byId('displayPanel'), {
         height: dh + 'px',
         width: dw + 'px',
         top: ct + 'px',
@@ -423,12 +457,12 @@ function iam_setPanelSizes() {
  **/
 
 function iam_widgetFade(node) {
-  dojo.style(node, "opacity", "1");
+  dojoStyle.set(node, "opacity", "1");
   var fadeArgs = {
      node: node,
      duration: 3000
   };
-  dojo.fadeOut(fadeArgs).play();
+  dojoFx.fadeOut(fadeArgs).play();
 }
 
 // set parameters
