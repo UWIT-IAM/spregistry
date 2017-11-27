@@ -16,18 +16,13 @@
  *#
 ##
 
-#macro(gatewayItemEdit $friendlyName $name $idDescriptor $idpProxy)
+#macro(gatewayItemEdit $friendlyName $name $socialActive)
 <h4>$friendlyName</h4>
 
 <ul class="iamlist">
-  <li><label for="${name}_cid" class="dt dt9">${idDescriptor} ID</label>
-    <div class="dd"><input id="${name}_cid" dojoType="dijit.form.TextBox" size="60"
-                           value="#X($!{idpProxy.clientId})"
-                           /></div>
-  </li>
-  <li><label for="${name}_cpw" class="dt dt9">${idDescriptor} Secret</label>
-    <div class="dd"><input id="${name}_cpw" dojoType="dijit.form.TextBox" size="60"
-                           value="#X($!{idpProxy.clientSecret})"
+  <li><label for="${name}_flag" class="dt dt9">Allow Social logins</label>
+    <div class="dd"><input id="${name}_flag" dojoType="dijit/form/CheckBox"
+                           #if(${socialActive}) checked #end
                            /></div>
   </li>
 </ul>
@@ -38,9 +33,11 @@
 
     <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/F0jRAw" target="spghelp">help</a></div>
     <h3>SAML Gateway</h3>
-    #gatewayItemEdit("Google", "google", "Client", $proxy.getProxyIdp("Google"))
-    <hr>
-    #gatewayItemEdit("Facebook", "facebook", "Application", $proxy.getProxyIdp("Facebook"))
+    #gatewayItemEdit("Social Login", "social_login", ${proxy.socialActive})
+    <div>By checking this box, you assert that you
+        <a href="https://wiki.cac.washington.edu/x/F0jRAw" target="spghelp">know what you're doing</a>
+        and that this will allow users from all over the world to authenticate to your application using
+        social accounts (such as Google or Facebook).  </div>
 
 <div id="proxyDeleteDialog" data-dojo-type="dijit/Dialog" title="Proxy delete" $hide>
 <h3>Permanently delete proxy data for ${relyingPartyId}?</h3>

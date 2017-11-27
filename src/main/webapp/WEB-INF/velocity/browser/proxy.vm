@@ -18,17 +18,7 @@
 ## proxy tab
 ##
 
-#macro(gatewayItemConfig $name $idDescriptor $idpProxy)
-<h4 class="dt" valign="top">$name</h4>
-<div class="dd">
-  #if($idpProxy)
-  <span class="dt dt9">${idDescriptor} ID:</span>
-  <span class="dd dd3">#X($!{idpProxy.clientId})</span>
-  #else
-  <i>Not configured</i>
-  #end
-</div>
-#end
+
 
 <div id="proxySpContainer" dojoType="dijit.layout.ContentPane" title="Gateway" selected="false" style="overflow:hidden"
      onClose="return(true)" oLayout="false" >
@@ -46,12 +36,16 @@
     <p>
       <h3>SAML Gateway</h3>
       <ul class="iamlist">
+        #if ($proxy.socialActive)
         <li>
-          #gatewayItemConfig("Google", "Client", $proxy.getProxyIdp("Google"))
+            This SP <b>IS</b> configured to allow social logins.
         </li>
+        #else
         <li>
-          #gatewayItemConfig("Facebook", "Application", $proxy.getProxyIdp("Facebook"))
+            This SP <b>IS NOT</b> configured to allow social logins.
         </li>
+        #end
+
       </ul>
 
   </div>
