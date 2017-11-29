@@ -25,7 +25,7 @@ spreg.smtp.to=pubcookie@uw.edu
 spreg.smtp.requestMailTo=help@uw.edu
 
 spreg.uwLogoutp=https://idp.u.washington.edu/idp/logout
-spreg.googleEntityId=https://idp.u.washington.edu/google
+spreg.googleEntityId=https://idp-gw.u.washington.edu/google
 
 spreg.myEntityId=https://iam-tools.u.washington.edu/shibboleth
 spreg.spRegistryUrl=https://iam-tools.u.washington.edu/spreg

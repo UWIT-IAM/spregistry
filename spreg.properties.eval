@@ -26,7 +26,7 @@ spreg.smtp.to=fox@uw.edu
 spreg.smtp.requestMailTo=fox@uw.edu
 
 spreg.uwLogoutp=https://idp.u.washington.edu/idp/logout
-spreg.googleEntityId=https://idp.u.washington.edu/google
+spreg.googleEntityId=https://idp-gw.u.washington.edu/google
 
 spreg.myEntityId=https://iam-tools-test.u.washington.edu/shibboleth
 spreg.spRegistryUrl=https://iam-tools-test.u.washington.edu/spreg/

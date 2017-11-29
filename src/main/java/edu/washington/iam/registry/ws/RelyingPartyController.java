@@ -144,7 +144,7 @@ public class RelyingPartyController {
     private String incommonLoginPath = "/incommonlogin";
     private long standardLoginSec = 9*60*60;  // 9 hour session lifetime
     private long secureLoginSec = 1*60*60;  // 1 hour session lifetime
-    private String googleIdentityProvider = "https://idp-gw.u.washington.edu/google";
+    private String googleIdentityProvider = "https://idp-gw.u.washington.edu/google"; //value overridden by spreg.properties
     private String spRegistryUrl = "https://iam-tools.u.washington.edu/spreg/";
 
     private String myEntityId = null;
