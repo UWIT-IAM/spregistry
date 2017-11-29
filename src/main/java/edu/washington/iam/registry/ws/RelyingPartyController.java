@@ -458,6 +458,7 @@ public class RelyingPartyController {
            String idp = (String)request.getAttribute("Shib-Identity-Provider");
            String mail = (String)request.getAttribute("mail");
            log.info("social login from " + idp + ", email = " + mail);
+           log.debug("hardwired idp we expect is: " + googleIdentityProvider);
            if (idp.equals(googleIdentityProvider)) {
               remoteUser = mail;
            } else {
