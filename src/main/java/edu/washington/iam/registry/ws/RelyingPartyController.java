@@ -453,6 +453,7 @@ public class RelyingPartyController {
 
     private ModelAndView loginPage(HttpServletRequest request, HttpServletResponse response, int method) {
         String remoteUser = request.getRemoteUser();
+        log.info("social login attempt: " + remoteUser);
         if (remoteUser==null && method==0) {  // social login
            String idp = (String)request.getAttribute("Shib-Identity-Provider");
            String mail = (String)request.getAttribute("mail");
