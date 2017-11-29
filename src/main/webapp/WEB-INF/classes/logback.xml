@@ -21,7 +21,8 @@
   </root>
 
    <logger name="edu.washington">
-         <level value="INFO"/>
+         <!-- <level value="INFO"/> -->
+       <level value="DEBUG"/>
    </logger>
 
 

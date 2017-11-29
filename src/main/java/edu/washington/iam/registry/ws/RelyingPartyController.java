@@ -533,6 +533,7 @@ public class RelyingPartyController {
 
     @RequestMapping(value="/googlelogin/**", method=RequestMethod.GET)
     public ModelAndView googleLoginPage(HttpServletRequest request, HttpServletResponse response) {
+        log.debug("hitting /googlelogin/** endpoint now");
         return loginPage(request, response, 0);
     }
 
