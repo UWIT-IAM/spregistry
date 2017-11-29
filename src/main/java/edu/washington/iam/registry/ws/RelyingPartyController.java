@@ -144,7 +144,7 @@ public class RelyingPartyController {
     private String incommonLoginPath = "/incommonlogin";
     private long standardLoginSec = 9*60*60;  // 9 hour session lifetime
     private long secureLoginSec = 1*60*60;  // 1 hour session lifetime
-    private String googleIdentityProvider = "https://idp.u.washington.edu/google";
+    private String googleIdentityProvider = "https://idp-gw.u.washington.edu/google";
     private String spRegistryUrl = "https://iam-tools.u.washington.edu/spreg/";
 
     private String myEntityId = null;
@@ -453,8 +453,8 @@ public class RelyingPartyController {
 
     private ModelAndView loginPage(HttpServletRequest request, HttpServletResponse response, int method) {
         String remoteUser = request.getRemoteUser();
-        log.info("social login attempt: " + remoteUser);
-        if (remoteUser==null && method==0) {  // social login
+        log.debug("social login attempt, shib remoteUser value: " + remoteUser);
+        if (method==0) {  // social login
            String idp = (String)request.getAttribute("Shib-Identity-Provider");
            String mail = (String)request.getAttribute("mail");
            log.info("social login from " + idp + ", email = " + mail);
