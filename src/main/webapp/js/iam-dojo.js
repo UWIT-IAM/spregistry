@@ -319,24 +319,26 @@ function _showAlertFromXmlData(data) {
 
 //This is the "new hotness" but it has an odd javascript parsing problem.  Sticking with
 //original for now.
-/*
+
 // ajax get
 function iam_getRequest(url, headers, handleas, loader) {
    console.log('get req');
    dojoXhr(url, {
      headers: headers,
      handleAs: handleas
-   }).then(function(data, args){
-       loader(data, args);
-   }, function(data, args) {
-        console.log('xhr error status: ' + args.xhr.status);
-        console.log(data);
-        console.log(args.xhr.responseText);
-        // _showAlertFromXmlData(args.xhr.responseText);
-      });
+   }).then(function(data){
+       loader(data);
+   }, function(err) {
+       console.log('xhr error status: ' + err.response.status);
+       console.log(err);
+       console.log(err.response.text);
+       _showAlertFromXmlData(err.response.text);
+       document.body.style.cursor = 'default';
+   });
 
-}*/
+}
 
+/*
 // ajax get (deprecated but using it for now)
 function iam_getRequest(url, headers, handleas, loader) {
     console.log('get req');
@@ -353,7 +355,7 @@ function iam_getRequest(url, headers, handleas, loader) {
             // _showAlertFromXmlData(args.xhr.responseText);
         }
     });
-}
+}*/
 
 
 // ajax put
@@ -364,14 +366,14 @@ function iam_putRequest(url, headers, data, handleas, postRequest) {
        handleAs: handleas,
        data: data,
        method: 'PUT'
-   }).then(function(data, args) {
+   }).then(function(data) {
         document.body.style.cursor = 'default';
-        if (postRequest!=null) postRequest(data,args);
-      }, function(data, args) {
-        console.log('xhr error status: ' + args.xhr.status);
-        console.log(data);
-        console.log(args.xhr.responseText);
-        _showAlertFromXmlData(args.xhr.responseText);
+        if (postRequest!=null) postRequest(data);
+      }, function(err) {
+        console.log('xhr error status: ' + err.response.status);
+        console.log(err);
+        console.log(err.response.text);
+        _showAlertFromXmlData(err.response.text);
         document.body.style.cursor = 'default';
       });
 }
@@ -387,12 +389,13 @@ function iam_deleteRequest(url, headers, handleas, postRequest) {
    }).then(function(data, args) {
         document.body.style.cursor = 'default';
         if (postRequest!=null) postRequest(data, args);
-      }, function(data, args) {
-        console.log('error' + args.xhr.status);
-        console.log(data);
-        // _showAlertFromXmlData(args.xhr.responseText);
-        document.body.style.cursor = 'default';
-      });
+      }, function(err) {
+       console.log('xhr error status: ' + err.response.status);
+       console.log(err);
+       console.log(err.response.text);
+       _showAlertFromXmlData(err.response.text);
+       document.body.style.cursor = 'default';
+   });
 
 }
 

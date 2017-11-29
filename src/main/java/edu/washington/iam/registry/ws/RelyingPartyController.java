@@ -1277,6 +1277,7 @@ public class RelyingPartyController {
            } catch(MailException ex) {
                log.error("sending mail: " + ex.getMessage());            
                status = 500;
+               mv.addObject("alert", "Could not complete attribute request (sending mail failed).");
            }
 
         }

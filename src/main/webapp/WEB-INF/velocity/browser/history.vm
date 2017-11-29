@@ -67,8 +67,9 @@
                 </ul>
                 #end
                 #else
-                <li>No metadata history found (this SP was probably registered before we started tracking history).
-                Future changes will be recorded here.  </li>
+                <!-- <li>No metadata history found (this SP was probably registered before we started tracking history).
+                Future changes will be recorded here.  </li> -->
+                <li>Coming soon!</li>
                 #end
                 #if ($proxyHistory)
                     #foreach ($item in $proxyHistory)
@@ -80,8 +81,8 @@
                         </ul>
                     #end
                 #else
-                    <li>No proxy (social gateway) history found (this SP was probably registered before we started tracking history).
-                        Future changes will be recorded here.  </li>
+                    <!-- <li>No proxy (social gateway) history found (this SP was probably registered before we started tracking history).
+                        Future changes will be recorded here.  </li> -->
                 #end
             </div>
 

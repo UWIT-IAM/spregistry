@@ -204,7 +204,7 @@ function redirectToLogin(path) {
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.2</a></li>
+        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.4.0</a></li>
     </ul>
     </span>
 </div>

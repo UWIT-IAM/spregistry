@@ -293,6 +293,7 @@ function showSpList() {
     if (ndsp>10000) {  // the 10000 effectively disables this ... feature
        htm += '<span class="listitem dim4"><i>.&nbsp;.&nbsp;.&nbsp;</i></span>';
        break;
+       break;
     }
    
     // decorate the link with org and federation
@@ -326,8 +327,8 @@ function loadSpList()
       dijitRegistry.byId('justmine').set('checked', 1);
       spListMine = true;
    }
-   iam_getRequest(url, null, 'json', function(data, args) {
-        spList = data.rps;
+   iam_getRequest(url, null, 'javascript', function(data, args) {
+        spList = data;
         showSpList();
         iam_hashHandler();
       });
@@ -540,7 +541,7 @@ function _newSp(rpid, lookup) {
    if (lookup) dijitRegistry.byId('spDisplay').set('loadingMessage', 'Searching for ' + rpid + ' . . .' );
    else dijitRegistry.byId('spDisplay').set('loadingMessage', 'Processing . . .');
    dijitRegistry.byId('spDisplay').set('href', url);
-   newSpConnect = dojoOn(dijitRegistry.byId('spDisplay'), 'onLoad', postLoadNewSp);
+   newSpConnect = dojoOn(dijitRegistry.byId('spDisplay'), 'load', postLoadNewSp);
    showSpPanel();
    window.focus();
 };
