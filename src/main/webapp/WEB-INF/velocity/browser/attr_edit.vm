@@ -130,7 +130,7 @@
        #set( $started = true )
        <li id="${gid}_attr_edit_tr_all_${attr.id}">
            <input class="dt dtcb" data-dojo-type="dijit/form/CheckBox" id="${gid}_attr_edit_all_$!{attr.id}"
-                     onClick="attr_checkAll('$gid', '$!{attr.id}')">
+                     onClick="attr_checkAll('$gid', '$!{attr.id}')"
               #if ( $value.type == "basic:ANY" ) $checked #end></input>
              <label class="dd dd2" for="${gid}_attr_edit_all_$!{attr.id}">all values</label>
        </li>
