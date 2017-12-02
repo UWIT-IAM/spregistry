@@ -33,16 +33,27 @@
        onShow="adjustSpPaneSize('proxyViewPane')">
 
     ## This registry allows you to configure access to the social-to-saml authentication gateway.
-    <p>
+    <p />
       <h3>SAML Gateway</h3>
-      <ul class="iamlist">
+      <ul class="iamlist" style="padding-left: 20px">
         #if ($proxy.socialActive)
-        <li>
-            This SP <b>IS</b> configured to allow social logins.
-        </li>
+            <li>
+                <fieldset style="margin-bottom:8px">
+                    <legend class="h4">Social IdP Sign-On</legend>
+                    <div class="dd">
+                        <ul class="iamlist">
+                            <li>
+                                <input id="socialActive" name="social sign-on enabled" data-dojo-type="dijit/form/CheckBox" value="socialActive" checked readonly />
+                                <label for="socialActive" class="dt dt3">Allow social sign-on.</label>
+
+                            </li>
+                        </ul>
+                    </div>
+                </fieldset>
+            </li>
         #else
         <li>
-            This SP <b>IS NOT</b> configured to allow social logins.
+            The SAML gateway is not configured for this Service Provider.
         </li>
         #end
 
