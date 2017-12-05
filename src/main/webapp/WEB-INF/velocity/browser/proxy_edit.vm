@@ -20,10 +20,12 @@
 <h4>$friendlyName</h4>
 
 <ul class="iamlist">
-  <li><label for="${name}_flag" class="dt dt9">Allow Social logins</label>
-    <div class="dd"><input id="${name}_flag" dojoType="dijit/form/CheckBox"
+  <li><label for="${name}_flag">Allow Social logins</label>
+    <div class="dd">
+        <input id="${name}_flag" dojoType="dijit/form/CheckBox"
                            #if(${socialActive}) checked #end
-                           /></div>
+                           />
+    </div>
   </li>
 </ul>
 #end
@@ -33,11 +35,8 @@
 
     <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/F0jRAw" target="spghelp">help</a></div>
     <h3>SAML Gateway</h3>
-    #gatewayItemEdit("Social Login", "social_login", ${proxy.socialActive})
-    <div>By checking this box, you assert that you
-        <a href="https://wiki.cac.washington.edu/x/F0jRAw" target="spghelp">know what you're doing</a>
-        and that this will allow users from all over the world to authenticate to your application using
-        social accounts (such as Google or Facebook).  </div>
+    #gatewayItemEdit("Social IdP Sign-On", "social_login", ${proxy.socialActive})
+
 
 <div id="proxyDeleteDialog" data-dojo-type="dijit/Dialog" title="Proxy delete" $hide>
 <h3>Permanently delete proxy data for ${relyingPartyId}?</h3>

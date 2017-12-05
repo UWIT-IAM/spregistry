@@ -18,6 +18,12 @@
 ## proxy tab
 ##
 
+#macro(checkBoxIcon)
+<svg version="1.1" width="16" height="16" viewBox="0 0 16 16" class="octicon octicon-x" aria-hidden="true">
+    <image xlink:href="/spreg/img/check.svg" alt="Social sign-on is allowed." />
+</svg>
+#end
+
 
 
 <div id="proxySpContainer" dojoType="dijit.layout.ContentPane" title="Gateway" selected="false" style="overflow:hidden"
@@ -43,9 +49,7 @@
                     <div class="dd">
                         <ul class="iamlist">
                             <li>
-                                <input id="socialActive" name="social sign-on enabled" data-dojo-type="dijit/form/CheckBox" value="socialActive" checked readonly />
-                                <label for="socialActive" class="dt dt3">Allow social sign-on.</label>
-
+                                Social sign-on is allowed.  #checkBoxIcon()
                             </li>
                         </ul>
                     </div>

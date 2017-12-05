@@ -42,6 +42,7 @@ dojoConfig = {
   <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/dojo/1.12.2/dijit/themes/claro/claro.css"/>
 
 <link rel="stylesheet" type="text/css" href="/spreg/css/iam-dojo-2.css"/>
+    <link rel="stylesheet" type="text/css" href="/spreg/css/octicons.css"/>
 
 ## add ie7 css if needed
 <script>
