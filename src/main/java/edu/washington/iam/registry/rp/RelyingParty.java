@@ -45,11 +45,7 @@ public class RelyingParty implements XMLSerializable {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private String uuid;
     private String entityId;
-    private String startTime;
-    private String endTime;
-    private String updatedBy;
     private String metadataId;
     private boolean editable;
     private String protocolSupportEnumerationsUnsplit;
@@ -69,11 +65,6 @@ public class RelyingParty implements XMLSerializable {
     // initialize
     private void localInit () {
        metadataId = "";
-
-       updatedBy = "";
-       startTime = "";
-       endTime = "";
-       uuid = "";
        editable = false;
        // extensions = new Vector();
        keyDescriptors = new Vector();
@@ -89,28 +80,16 @@ public class RelyingParty implements XMLSerializable {
 //       this(ele, md.getId(), md.isEditable());
 //    }
 
+    // create from document element
     public RelyingParty (Element ele, String mdid, boolean edit) throws RelyingPartyException {
 
-        this(ele, mdid, edit, "", "", "", "");
-
-    }
-
-    // create from document element
-    public RelyingParty (Element ele, String mdid, boolean edit, String updatedBy, String startTime, String endTime,
-                         String uuid)
-            throws RelyingPartyException {
-
        localInit();
-       this.entityId = ele.getAttribute("entityID");
+       entityId = ele.getAttribute("entityID");
        if (entityId==null) throw new RelyingPartyException("No entity id attribute");
        // log.debug("create from doc: " + entityId);
 
-       this.metadataId = mdid;
-       this.editable = edit;
-       this.updatedBy = updatedBy;
-       this.startTime = startTime;
-       this.endTime = endTime;
-       this.uuid = uuid;
+       metadataId = mdid;
+       editable = edit;
 
        NodeList nl1 = ele.getChildNodes();
        for (int i=0; i<nl1.getLength(); i++) {
@@ -269,32 +248,6 @@ public class RelyingParty implements XMLSerializable {
     public String getMetadataId() {
        return (metadataId);
     }
-
-    public void setStartTime(String v) {
-        startTime = v;
-    }
-    public String getStartTime() {
-        return (startTime);
-    }
-    public void setEndTime(String v) {
-        endTime = v;
-    }
-    public String getEndTime() {
-        return (endTime);
-    }
-    public void setUuid(String v) {
-        uuid = v;
-    }
-    public String getUuid() {
-        return (uuid);
-    }
-    public void setUpdatedBy(String v) {
-        updatedBy = v;
-    }
-    public String getUpdatedBy() {
-        return (updatedBy);
-    }
-
 
     public void setEditable(boolean v) {
        editable = v;

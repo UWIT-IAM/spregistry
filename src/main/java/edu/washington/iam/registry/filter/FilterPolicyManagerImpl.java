@@ -17,7 +17,6 @@
 
 package edu.washington.iam.registry.filter;
 
-
 import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;

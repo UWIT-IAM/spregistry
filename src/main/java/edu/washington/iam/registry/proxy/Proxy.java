@@ -43,15 +43,14 @@ public class Proxy implements Serializable  {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private String uuid;
     private String entityId;
     private boolean socialActive;
-
 
     private String safePy(String in) {
        return in.replaceAll("\"","\\\"");
     }
 
+    // create from document element
     public Proxy (){}
 
     //2017-11-13 mattjm constructor taking XML document as argument removed (and deleted XMLProxyManager)
@@ -69,9 +68,6 @@ public class Proxy implements Serializable  {
     }
     public boolean getSocialActive() { return (socialActive); }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-    public String getUuid() { return uuid; }
+
 }
 

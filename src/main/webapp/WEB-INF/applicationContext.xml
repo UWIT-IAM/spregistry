@@ -73,6 +73,7 @@
         <property name="template" ref="jdbcTemplate" />
     </bean>
 
+
     <bean id="webClient" init-method="init" class="edu.washington.iam.tools.WebClient">
         <property name="certFile" value="${spreg.webclient.certFile}" />
         <property name="keyFile" value="${spreg.webclient.keyFile}" />
