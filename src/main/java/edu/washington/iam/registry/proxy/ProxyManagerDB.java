@@ -52,43 +52,24 @@ public class ProxyManagerDB implements ProxyManager {
         //       for differences
         log.info("proxy update " + proxy.getEntityId());
         template.update("delete from proxy where entity_id = ?", proxy.getEntityId());
-        for(ProxyIdp proxyIdp : proxy.getProxyIdps()){
-            template.update("insert into proxy (entity_id, social_provider, social_key, social_secret, status, update_time) "
-                    + "values (?, ?, ?, ?, ?, now())",
+        template.update("insert into proxy (entity_id, status, update_time) "
+                    + "values (?, ?, now())",
                     proxy.getEntityId(),
-                    proxyIdp.getIdp(),
-                    proxyIdp.getClientId(),
-                    proxyIdp.getClientSecret(),
-                    1);
-        }
+                    (proxy.getSocialActive()) ? 1 : 0);
+
     }
 
     private static final class ProxyMapper implements ResultSetExtractor<List<Proxy>> {
         @Override
         public List<Proxy> extractData(ResultSet rs) throws SQLException, DataAccessException{
-            Map<String, List<ProxyIdp>> proxyIdpsMap = new HashMap<>();
-            while(rs.next()){
-                String entityId = rs.getString("entity_id");
-                ProxyIdp pIdp = new ProxyIdp();
-                pIdp.setIdp(rs.getString("social_provider"));
-                pIdp.setClientSecret(rs.getString("social_secret"));
-                pIdp.setClientId(rs.getString("social_key"));
-                if(proxyIdpsMap.containsKey(entityId)){
-                    proxyIdpsMap.get(entityId).add(pIdp);
-                }
-                else{
-                    List<ProxyIdp> pIdps = new ArrayList<>();
-                    pIdps.add(pIdp);
-                    proxyIdpsMap.put(entityId, pIdps);
-                }
-            }
             List<Proxy> proxyList = new ArrayList<>();
-            for(Map.Entry<String, List<ProxyIdp>> entry : proxyIdpsMap.entrySet()){
+            while(rs.next()){
                 Proxy proxy = new Proxy();
-                proxy.setEntityId(entry.getKey());
-                proxy.setProxyIdps(entry.getValue());
+                proxy.setEntityId(rs.getString("entity_id"));
+                proxy.setSocialActive(rs.getBoolean("status"));
                 proxyList.add(proxy);
             }
+
             return proxyList;
         }
     }

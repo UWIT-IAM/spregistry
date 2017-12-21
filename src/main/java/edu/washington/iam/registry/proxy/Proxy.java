@@ -44,7 +44,7 @@ public class Proxy implements Serializable  {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private String entityId;
-    private List<ProxyIdp> idps;
+    private boolean socialActive;
 
     private String safePy(String in) {
        return in.replaceAll("\"","\\\"");
@@ -53,53 +53,21 @@ public class Proxy implements Serializable  {
     // create from document element
     public Proxy (){}
 
-    public Proxy (Element ele) throws ProxyException {
+    //2017-11-13 mattjm constructor taking XML document as argument removed (and deleted XMLProxyManager)
 
-       entityId = ele.getAttribute("entityId");
-       idps = new Vector();
-       NodeList nl1 = ele.getChildNodes();
-       for (int i=0; i<nl1.getLength(); i++) {
-           if (nl1.item(i).getNodeType()!=Node.ELEMENT_NODE) continue;
-           Element e1 = (Element)nl1.item(i);
-           String name = e1.getNodeName();
-           if (XMLHelper.matches(name,"ProxyIdp")) {
-              idps.add(new ProxyIdp(e1));
-           }
-       }
-       log.debug("create from doc: " + entityId);
-    }
 
-    // write xml doc
-    public void writeXml(BufferedWriter xout) throws IOException {
-       if (idps.size()==0) return;
-       xout.write("<Proxy entityId=\"" + XMLHelper.safeXml(entityId) + "\">\n");
-       for (int i=0; i<idps.size(); i++) idps.get(i).writeXml(xout);
-       xout.write("</Proxy>\n");
-    }
-
-    // write py doc
-    public void writePy(BufferedWriter xout) throws IOException {
-       if (idps.size()==0) return;
-       xout.write("\"" + entityId + "\": {\n");
-       for (int i=0; i<idps.size(); i++) idps.get(i).writePy(xout);
-       xout.write(" },\n");
-    }
-
-    public void setEntityId(String v) {
-       entityId = v;
+    public void setEntityId(String entityId) {
+        this.entityId = entityId;
     }
     public String getEntityId() {
-       return (entityId);
+        return (entityId);
     }
-    public void setProxyIdps(List<ProxyIdp> v) {
-       idps = v;
+
+    public void setSocialActive(boolean socialActive) {
+        this.socialActive = socialActive;
     }
-    public List<ProxyIdp> getProxyIdps() {
-       return (idps);
-    }
-    public ProxyIdp getProxyIdp(String idp) {
-       for (int i=0; i<idps.size(); i++) if (idps.get(i).getIdp().equals(idp)) return idps.get(i);
-       return null;
-    }
+    public boolean getSocialActive() { return (socialActive); }
+
+
 }
 
