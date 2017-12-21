@@ -1,0 +1,96 @@
+#* ========================================================================
+* Copyright (c) 2013 The University of Washington
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* ========================================================================
+*#
+##
+## history tab
+##
+## added 2016-11-03 mattjm
+
+
+
+<div id="historySpContainer" dojoType="dijit.layout.ContentPane" title="History" selected="false" style="overflow:hidden"
+     onClose="return(true)" oLayout="false" >
+
+
+    <div id="historyViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;"
+         onShow="adjustSpPaneSize('proxyViewPane')">
+
+        ## This tab displays a history of updates to this registration.
+        <p>
+        <h3>History</h3>
+        <ul class="iamlist">
+
+
+                #if ($relyingPartyHistory)
+                #foreach ($item in $relyingPartyHistory)
+                <ul>
+                    <h4>Metadata history entry ${foreach.count}</h4>
+                    <li>Effective from: ${item.startTime}</li>
+                    <li>Effective to: ${item.endTime}</li>
+                    <li>Update made by: ${item.updatedBy}</li>
+                    #set ( $org = $item.organization )
+                    <li>Organization: ${org.name}</li>
+                    <li>Display Name: ${org.displayName}</li>
+                    <li>Url: ${org.url}</li>
+
+                    #foreach ( $ct in $item.contactPersons )
+                    <li>${ct.type}:
+                    #if ( $ct.givenName || $ct.surName )
+                     #X($!ct.givenName $!ct.surName)<br>
+                    #end
+                    #if ( $ct.company )
+                     #X($!ct.company) </br>
+                    #end
+                    #if ( $ct.email )
+                     #X($!ct.email)</br>
+                    #end
+                    </li>
+                    <li>
+                    #foreach ( $ps in $item.protocolSupportEnumerations )
+                     $ps <br>
+                    #end
+                    </li>
+                    #end
+                </ul>
+                #end
+                #else
+                <!-- <li>No metadata history found (this SP was probably registered before we started tracking history).
+                Future changes will be recorded here.  </li> -->
+                <li>Coming soon!</li>
+                #end
+                #if ($proxyHistory)
+                    #foreach ($item in $proxyHistory)
+                        <ul>
+                            <h4>Proxy history entry ${foreach.count}</h4>
+
+
+
+                        </ul>
+                    #end
+                #else
+                    <!-- <li>No proxy (social gateway) history found (this SP was probably registered before we started tracking history).
+                        Future changes will be recorded here.  </li> -->
+                #end
+            </div>
+
+
+        </ul>
+
+    </div>
+</div>
+
+
+

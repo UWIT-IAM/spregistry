@@ -1,21 +1,40 @@
-spreg.db.url=example.com/spregistry
-spreg.db.username=joe
-spreg.db.password=letmein
-spreg.gws.baseUrl=https://example.com/gws
-spreg.gws.memberBase=u_example_dns-owners_
-spreg.webclient.certFile=/data/local/etc/foo.crt
-spreg.webclient.keyFile=/data/local/etc/foo.key
-spreg.webclient.caFile=/data/local/etc/uwca.crt
-spreg.root=/data/local/sp-registry/
-spreg.gws.adminGroupName=u_example_admins
-spreg.smtp.host=smtp.example.com
-spreg.smtp.from=SP registry &lt;spreg@example.com&gt;
-spreg.smtp.to=spreg@example.com
-spreg.smtp.requestMailTo=help@example.com
-spreg.idp.host=https://idp.example.com/idp/
-spreg.idp.cryptKey=topsecret
-spreg.myEntityId=https://example.com/shibboleth
-spreg.spRegistryUrl=https://example.com/spreg/
+# spreg properties template
+#
+# spreg will look for this file first in the spreg directory
+# if that is undefined or not found this installed copy will be used
+#
+spreg.version=2.3.1
+spreg.versionDate=08/11/2016
+
+spreg.root=C:/Users/user/Documents/spregworking
+
+# database parameters
+spreg.db.url=db.dev.edu/dbname
+
+# web service parameters
+spreg.gws.baseUrl=https://groups-base.edu/v2
+spreg.gws.ownerBase=/group/u_owners
+spreg.webclient.certFile=C:/Users/user/Documents/spregworking/cert.crt
+spreg.webclient.keyFile=C:/Users/user/Documents/spregworking/cert.key
+spreg.webclient.caFile=C:/Users/user/Documents/spregworking/ca.crt
+spreg.gws.adminGroupName=u_admins
 
 
+# mail settings
+spreg.smtp.host=smtp.edu
+spreg.smtp.from=SP registry <somebody@spreg.edu>
+spreg.smtp.to=admin@edu.edu
+spreg.smtp.requestMailTo=admin@edu.edu
 
+spreg.uwLogoutp=https://idp.edu/idp/logout
+spreg.googleEntityId=https://idp.edu/google
+
+spreg.myEntityId=https://http://127.0.0.1:8080/
+spreg.spRegistryUrl=https://http://127.0.0.1:8080/spreg
+
+# location of incommon metadata
+incommon.metadata.path=C:/Users/user/Documents/spregworking/InCommon-metadata.xml
+uw.metadata.path=C:/Users/user/Documents/spregworking/base-metadata.xml
+
+# idp notifications
+spreg.idphosts=

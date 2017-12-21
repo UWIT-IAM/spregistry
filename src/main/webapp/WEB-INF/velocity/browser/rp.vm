@@ -36,6 +36,8 @@ console.log('sp rp panel start');
 
 #parse ( "browser/proxy.vm" )
 
+#parse ( "browser/history.vm" )
+
 <script>
 console.log('sp rp panel end');
 </script>
