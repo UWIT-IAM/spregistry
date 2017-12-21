@@ -31,21 +31,21 @@
 
 
 ## tab entry
-<div id="metaSpContainer" dojoType="dijit/layout/ContentPane" title="Metadata" selected="true" style="overflow:hidden"
+<div id="metaSpContainer" dojoType="dijit.layout.ContentPane" title="Metadata" selected="true" style="overflow:hidden"
    doLayout="false" >
 
 <ul class="buttonBar" role="navigation">
   #if ($editable)
-   <li><button dojoType="dijit/form/Button" type="button" onClick="iam_showTheDialog('metaEditDialog',[])">Edit</button>
+   <li><button dojoType="dijit.form.Button" type="button" onClick="iam_showTheDialog('metaEditDialog',[])">Edit</button>
    </li>
    #if ( ! $newEntity )
-    <li><button dojoType="dijit/form/Button" type="button" onClick="iam_showTheDialog('metaDeleteDialog',[]);">Delete</button>
+    <li><button dojoType="dijit.form.Button" type="button" onClick="iam_showTheDialog('metaDeleteDialog',[]);">Delete</button>
     </li>
    #end
   #end
 </ul>
 
- <div id="metaViewPane" tabindex="0" dojoType="dijit/layout/ContentPane" doLayout="false" style="overflow:auto;"
+ <div id="metaViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;"
     onShow="adjustSpPaneSize('metaViewPane')" >
 
 ## <fieldset>
@@ -117,7 +117,7 @@
          #end
          <li><span class="dt dt3"></span>
              <span class="dd dd3" style="overflow:hidden;">
-              <button class="ddbutton" dojoType="dijit/form/Button" onClick="iam_showTheDialog('pemDialog_${i}');">Show PEM</button>
+              <button class="ddbutton" dojoType="dijit.form.Button" onClick="iam_showTheDialog('pemDialog_${i}');">Show PEM</button>
              </span></li>
          </ul>
          </fieldset>
@@ -174,7 +174,7 @@
 ## certificate PEM popups
 #set ($i=0)
 #foreach ( $key in $relyingParty.keyDescriptors )
-<div id="pemDialog_${i}" data-dojo-type="dijit/Dialog" title="Certificate PEM" style="display:none">
+<div id="pemDialog_${i}" data-dojo-type="dijit.Dialog" title="Certificate PEM" style="display:none">
 <div id="pemDialog_${i}_content">
  <div class="certbox"><pre>$!key.certificate</pre></div>
 </div>

@@ -35,7 +35,7 @@
                     <bean class="edu.washington.iam.registry.rp.XMLMetadata">
                         <property name="id" value="UWfixed"/>
                         <property name="description" value="UW fixed non-federation peers"/>
-                        <property name="uri" value="file:${uw.metadata.path}/"/>
+                        <property name="uri" value="file:${spreg.root}/UW-base-metadata.xml"/>
                         <property name="editable" value="false"/>
                     </bean>
                 </entry>

@@ -3,13 +3,13 @@
 # spreg will look for this file first in the spreg directory
 # if that is undefined or not found this installed copy will be used
 #
-spreg.version=2.4.0
-spreg.versionDate=2017-11-30
+spreg.version=2.1.2
+spreg.versionDate=05/05/2105
 
 spreg.root=/data/local/spreg
 
 # database parameters
-spreg.db.url=iamdbdev01.s.uw.edu/spregmattjm2017
+spreg.db.url=iamdbdev01.s.uw.edu/spregistry
 
 # web service parameters
 spreg.gws.baseUrl=https://iam-ws.u.washington.edu:7443/group_sws/v2
@@ -31,14 +31,13 @@ spreg.smtp.to=fox@uw.edu
 spreg.smtp.requestMailTo=fox@uw.edu
 
 spreg.uwLogoutp=https://idp.u.washington.edu/idp/logout
-spreg.googleEntityId=https://idp-gw.u.washington.edu/google
+spreg.googleEntityId=https://idp.u.washington.edu/google
 
 spreg.myEntityId=https://urizen4.cac.washington.edu/
 spreg.spRegistryUrl=https://urizen4.cac.washington.edu/spreg/
 
 # location of incommon metadata
 incommon.metadata.path=/usr/local/etc/shibboleth/InCommon-metadata.xml
-uw.metadata.path=/data/local/spreg/UW-base-metadata.xml
 
 # idp notifications
 spreg.idphosts=

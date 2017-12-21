@@ -113,7 +113,7 @@ function setSpTab() {
    tab = dijitRegistry.byId(tabid);
    console.log('tab: ' + tab);
    if (tab!=null) dijitRegistry.byId('spPanel').selectChild(tab);
-   tabnode = dojoDom.byId('spPanel_tablist_' + tabid);
+   tabnode = dojo.byId('spPanel_tablist_' + tabid);
    if (tabnode!=null) tabnode.focus();
    else console.log('no tabnod? ' + tabid);
    v_spLoading = false;
@@ -137,23 +137,23 @@ function postLoadSp() {
          iam_hashSetCurrent(tab, null);
       });
    if (spKeyListener!=null) spKeyListener.remove();
-    require(["dojo/on"], function(on){
-        spKeyListener = on(dojoDom.byId("spDisplay"), "keypress", function(e){
-            console.log(e.charOrCode + ' - ' +  e.charCode + ' ' + e.keyCode);
-            switch (e.charCode) {
-                case 69: // E
-                case 101:
-                    if (v_currentSpTab=='m') iam_showTheDialog('metaEditDialog');
-                    else if (v_currentSpTab=='a') iam_showTheDialog('attrEditDialog');
-                    else if (v_currentSpTab=='p') iam_showTheDialog('proxyEditDialog');
-                    break;
-                case 82: // R
-                case 114:
-                    if (v_currentSpTab=='a') iam_showTheDialog('attrReqDialog');
-                    break;
-            }
-        });
-    });
+   require(["dojo/on"], function(on){
+     spKeyListener = on(dojoDom.byId("spDisplay"), "keypress", function(e){
+       console.log(e.charOrCode + ' - ' +  e.charCode + ' ' + e.keyCode);
+       switch (e.charCode) {
+          case 69: // E
+          case 101:
+             if (v_currentSpTab=='m') iam_showTheDialog('metaEditDialog');
+             else if (v_currentSpTab=='a') iam_showTheDialog('attrEditDialog');
+             else if (v_currentSpTab=='p') iam_showTheDialog('proxyEditDialog');
+             break;
+          case 82: // R
+          case 114:
+             if (v_currentSpTab=='a') iam_showTheDialog('attrReqDialog');
+             break;
+       }
+     });
+   });
    numMetaEditKey = 0;
    numProxyEditKey = 0;
    setSpTab();
@@ -293,7 +293,6 @@ function showSpList() {
     if (ndsp>10000) {  // the 10000 effectively disables this ... feature
        htm += '<span class="listitem dim4"><i>.&nbsp;.&nbsp;.&nbsp;</i></span>';
        break;
-       break;
     }
    
     // decorate the link with org and federation
@@ -327,8 +326,8 @@ function loadSpList()
       dijitRegistry.byId('justmine').set('checked', 1);
       spListMine = true;
    }
-   iam_getRequest(url, null, 'javascript', function(data, args) {
-        spList = data;
+   iam_getRequest(url, null, 'json', function(data, args) {
+        spList = data.rps;
         showSpList();
         iam_hashHandler();
       });
@@ -353,20 +352,20 @@ function toggleListMine () {
 function setPaneSizes() {
    console.log('Set pane sizes.....');
 
-   var dh = dojoGeom.position(dojoDom.byId('displayPanel'),true).h;
-   var dw = dojoGeom.position(dojoDom.byId('displayPanel'),true).w;
+   var dh = dojo.position(dojo.byId('displayPanel'),true).h;
+   var dw = dojo.position(dojo.byId('displayPanel'),true).w;
    var idh = dh - 20;
    var idw = dw - 10;
    console.log('spDisp height:' + idh + ' width:' + idw);
 
-     dojoStyle.set(dojoDom.byId('spDisplay'), {
+     dojo.style(dojo.byId('spDisplay'), {
         height: idh + 'px',
         width: idw + 'px',
         top: '0px',
         left: '0px'
       });
    
-     dojoStyle.set(dojoDom.byId('homeDisplay'), {
+     dojo.style(dojo.byId('homeDisplay'), {
         height: idh + 'px',
         width: idw + 'px',
         top: '0px',
@@ -379,13 +378,13 @@ function setPaneSizes() {
 
 // set the index list to correct size 
 function adjustSPIndexSize() {
-   var ih = dojoGeom.position(dojoDom.byId('indexPanel'),true).h;
-   var iy = dojoGeom.position(dojoDom.byId('indexPanel'),true).y;
-   var spiy = dojoGeom.position(dojoDom.byId('spIndexPane'),true).y;
+   var ih = dojo.position(dojo.byId('indexPanel'),true).h;
+   var iy = dojo.position(dojo.byId('indexPanel'),true).y;
+   var spiy = dojo.position(dojo.byId('spIndexPane'),true).y;
    var spih = ih - (spiy - iy) - 20;
 
    console.log('set sp ind ht = ' + spih);
-    dojoStyle.set(dojoDom.byId('spIndexPane'), {
+     dojo.style(dojo.byId('spIndexPane'), {
         height: spih + 'px'
       });
 }
@@ -393,9 +392,9 @@ function adjustSPIndexSize() {
 // Size the SP ddetail isplay
 function adjustSpPaneSize(paneName) {
    var pane = dojoDom.byId(paneName);
-   var tHeight = dojoGeom.position(dojoDom.byId('spDisplay'),true).h;
+   var tHeight = dojo.position(dojo.byId('spDisplay'),true).h;
    var h = tHeight - 140;
-    dojoStyle.set(pane, {
+   dojo.style(pane, {
      height: h + 'px'
    });
 
@@ -483,13 +482,13 @@ meta_showMoreFields = function(name, id) {
 // if something went wrong there are no edit elements
 function postLoadNewSp() {
    console.log('postLoadNewSp');
-   newSpConnect.remove()
+   dojo.disconnect(newSpConnect);
    newSpConnect = null;
    var v = dojoDom.byId('orgn_0');
    if (v=='') return;
    postLoadSp();
    iam_showTheDialog('metaEditDialog',[]);
-};
+}
 
 // Catch 'enter' in the new-sp entityid textbox.  Act as if 'Continue'
 function checkNewSp(e) {
@@ -541,10 +540,10 @@ function _newSp(rpid, lookup) {
    if (lookup) dijitRegistry.byId('spDisplay').set('loadingMessage', 'Searching for ' + rpid + ' . . .' );
    else dijitRegistry.byId('spDisplay').set('loadingMessage', 'Processing . . .');
    dijitRegistry.byId('spDisplay').set('href', url);
-   newSpConnect = dojoOn(dijitRegistry.byId('spDisplay'), 'load', postLoadNewSp);
+   newSpConnect = dojo.connect(dijitRegistry.byId('spDisplay'), 'onLoad', postLoadNewSp);
    showSpPanel();
    window.focus();
-};
+}
 
 // start a lookup of a new SP from the textbox
 
@@ -606,7 +605,7 @@ function metaEditShow() {
 function metaEditKey() {
    console.log("edit popup key");
    numMetaEditKey += 1;
-   if (numMetaEditKey==1) dijitRegistry.byId('metaEditSaver').set('disabled', false);
+   if (numMetaEditKey==1) dijitRegistry.byId('metaEditSaver').set('disabled',0);
 }
 
 var badRE = new RegExp("[<>&]");
@@ -1035,10 +1034,17 @@ function _postSaveProxy() {
 
 // submit proxy edits
 function proxy_saveProxy(entityId) {
-   var gcid = dojoDom.byId('social_login_flag').checked;
+   var gcid = dojoDom.byId('google_cid').value.trim();
+   var gcpw = dojoDom.byId('google_cpw').value.trim();
+   var fcid = dojoDom.byId('facebook_cid').value.trim();
+   var fcpw = dojoDom.byId('facebook_cpw').value.trim();
    xml = '<Proxys><Proxy entityId="' + currentSp.id + '">';
-   var url = v_root + v_vers + '/rp/proxy?id=' + entityId + '&social_login_flag=' + gcid +'&xsrf=' + v_xsrf + adminQS;
-   iam_putRequest(url, null, null, null, _postSaveProxy);
+   if (gcid!='') xml += '<ProxyIdp idp="Google" clientId="' + iam_makeOkXml(gcid) + '" clientSecret="' + iam_makeOkXml(gcpw) + '"/>';
+   if (fcid!='') xml += '<ProxyIdp idp="Facebook" clientId="' + iam_makeOkXml(fcid) + '" clientSecret="' + iam_makeOkXml(fcpw) + '"/>';
+   xml += '</Proxy></Proxys>';
+   // console.log(xml);
+   var url = v_root + v_vers + '/rp/proxy?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
+   iam_putRequest(url, null, xml, null, _postSaveProxy);
 }
 
 function proxy_deleteProxy(entityId) {

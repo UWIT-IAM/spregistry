@@ -51,7 +51,7 @@
 #end ## foreach attr
 
   <li>
-    <div class="dt dtcb"><input data-dojo-type="dijit/form/RadioButton" $chkdef  name="nameidb2" value="default" id="${gid}_attr_edit_chk_default"
+    <div class="dt dtcb"><input data-dojo-type="dijit.form.RadioButton" $chkdef  name="nameidb2" value="default" id="${gid}_attr_edit_chk_default"
            class="${gid}_attr_edit_chk" />
     </div>
     <h4 class="dd dt12" style="overflow:hidden"><label for="${gid}_attr_edit_chk_default">default</label>
@@ -78,7 +78,7 @@
     #end ## if policy
 
   <li>
-    <div class="dt dtcb"><input data-dojo-type="dijit/form/RadioButton" $chk  name="nameidb2" value="${attr.id}" id="${gid}_attr_edit_chk_${attr.id}"
+    <div class="dt dtcb"><input data-dojo-type="dijit.form.RadioButton" $chk  name="nameidb2" value="${attr.id}" id="${gid}_attr_edit_chk_${attr.id}"
            class="${gid}_attr_edit_chk" />
     </div>
     <h4 class="dd dt12" style="overflow:hidden"><label for="${gid}_attr_edit_chk_${attr.id}">$!{attr.id}</label>
@@ -113,7 +113,7 @@
     #end ## if policy
 
   <li>
-    <div class="dt dtcb"><input data-dojo-type="dijit/form/CheckBox" $chk  value="${attr.id}" id="${gid}_attr_edit_chk_${attr.id}"
+    <div class="dt dtcb"><input data-dojo-type="dijit.form.CheckBox" $chk  value="${attr.id}" id="${gid}_attr_edit_chk_${attr.id}"
            class="${gid}_attr_edit_chk" onClick="attr_checkAttr('$gid', '$!{attr.id}')"></input>
     </div>
     <h4 class="dd dt12" style="overflow:hidden"><label for="${gid}_attr_edit_chk_${attr.id}">$!{attr.id}</label>
@@ -129,7 +129,7 @@
     #foreach ( $value in $pattr.valueRules )
        #set( $started = true )
        <li id="${gid}_attr_edit_tr_all_${attr.id}">
-           <input class="dt dtcb" data-dojo-type="dijit/form/CheckBox" id="${gid}_attr_edit_all_$!{attr.id}"
+           <input class="dt dtcb" data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_all_$!{attr.id}"
                      onClick="attr_checkAll('$gid', '$!{attr.id}')"
               #if ( $value.type == "basic:ANY" ) $checked #end></input>
              <label class="dd dd2" for="${gid}_attr_edit_all_$!{attr.id}">all values</label>
@@ -138,10 +138,10 @@
        #foreach ( $rule in $value.rules )
           <li id="${gid}_attr_edit_tr_v_${count}_$!{attr.id}">
              <div class="dt dt2" role="presentation"></div>
-             <div class="dd dd2"><input data-dojo-type="dijit/form/TextBox" 
+             <div class="dd dd2"><input data-dojo-type="dijit.form.TextBox" 
                      id="${gid}_attr_edit_v_${count}_$!{attr.id}" value="#X($!{rule.value.replaceFirst('urn:mace:washington.edu:groups:','')})" 
                       onClick="attr_showNext('$gid', ${count},'$!{attr.id}')" ></input>
-                <input data-dojo-type="dijit/form/CheckBox" id="${gid}_attr_edit_x_${count}_$!{attr.id}"
+                <input data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_x_${count}_$!{attr.id}"
                   #if ($rule.regex) $checked #end></input><label for="${gid}_attr_edit_x_${count}_$!{attr.id}">regex</label>
              </div>
           </li>
@@ -153,7 +153,7 @@
       ## add the 'all values' option 
       <li id="${gid}_attr_edit_tr_all_${attr.id}" $hide>
          <input class="dt dtcb" style="overflow:hidden:font-size:smaller"
-                  data-dojo-type="dijit/form/CheckBox" id="${gid}_attr_edit_all_$!{attr.id}"
+                  data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_all_$!{attr.id}"
                   onClick="attr_checkAll('$gid', '$!{attr.id}')"></input>
               <label class="dd dd2" for="${gid}_attr_edit_all_$!{attr.id}">all values</label>
      </li>
@@ -163,9 +163,9 @@
     #foreach ( $i in [ $count .. $ecount] )
        <li $hide id="${gid}_attr_edit_tr_v_${i}_$!{attr.id}">
             <div class="dt dt2" role="presentation"></div>
-            <div class="dd dd2"><input data-dojo-type="dijit/form/TextBox" id="${gid}_attr_edit_v_${i}_$!{attr.id}" value="" 
+            <div class="dd dd2"><input data-dojo-type="dijit.form.TextBox" id="${gid}_attr_edit_v_${i}_$!{attr.id}" value="" 
                  onClick="attr_showNext('$gid', ${i},'$!{attr.id}')"></input>
-              <input data-dojo-type="dijit/form/CheckBox" id="${gid}_attr_edit_x_${i}_$!{attr.id}"></input>
+              <input data-dojo-type="dijit.form.CheckBox" id="${gid}_attr_edit_x_${i}_$!{attr.id}"></input>
               <label for="${gid}_attr_edit_x_${i}_$!{attr.id}">regex</label>
             </div>
        </li>
@@ -180,7 +180,7 @@
 
 </form>
     <div class="dijitDialogPaneActionBar">
-        <button dojoType="dijit/form/Button" type="button" onClick="attr_saveAttrs('${gid}', '${relyingPartyId}')">Save changes</button>
-        <button dojoType="dijit/form/Button" type="button" onClick="iam_hideTheDialog('attrEditDialog');" >Close</button>
+        <button dojoType="dijit.form.Button" type="button" onClick="attr_saveAttrs('${gid}', '${relyingPartyId}')">Save changes</button>
+        <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('attrEditDialog');" >Close</button>
     </div>
 </div>

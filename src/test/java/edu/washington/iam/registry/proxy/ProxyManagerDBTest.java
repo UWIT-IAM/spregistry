@@ -25,8 +25,9 @@ public class ProxyManagerDBTest {
 
         Assert.assertNotNull(p);
         Assert.assertEquals("https://gettest.example.com", p.getEntityId());
-        Assert.assertEquals(true, p.getSocialActive());
-
+        Assert.assertEquals(2, p.getProxyIdps().size());
+        Assert.assertEquals("thisisthetwit", p.getProxyIdp("Twitter").getClientId());
+        Assert.assertEquals("shhh", p.getProxyIdp("Google").getClientSecret());
     }
 
     /*

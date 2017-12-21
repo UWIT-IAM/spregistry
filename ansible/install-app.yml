@@ -45,6 +45,15 @@
   - include: "ansible-tools/tasks/apache_config.yml file=https prod=spreg"
   - include: "ansible-tools/tasks/apache_config.yml file=http prod=spreg"
 
+  # copy js files
+  - name: copy js files
+    copy: "src=../src/main/webapp/sp.js dest=/www/js/sp.js group=iam-dev mode=664"
+    when: non_standard_apache is not defined
+
+  # copy css files
+  - name: copy css files
+    copy: "src=../src/main/webapp/sp.css dest=/www/css/sp.css group=iam-dev mode=664"
+    when: non_standard_apache is not defined
 
   # update certs and keys (used by spreg)
   # change restarts tomcat
