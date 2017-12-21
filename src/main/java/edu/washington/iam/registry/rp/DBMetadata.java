@@ -1,5 +1,6 @@
 package edu.washington.iam.registry.rp;
 
+
 import edu.washington.iam.registry.exception.RelyingPartyException;
 import edu.washington.iam.tools.XMLHelper;
 import org.slf4j.Logger;
@@ -13,10 +14,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import edu.washington.iam.tools.IdpHelper;
 
@@ -35,19 +33,42 @@ public class DBMetadata implements MetadataDAO {
     @Autowired
     private JdbcTemplate template;
 
+
     @Override
     public List<RelyingParty> getRelyingParties() {
         List<RelyingParty> rps = template.query(
-                "select * from metadata where status = 1 and group_id = ?",
+                "select * from metadata where end_time is null and group_id = ?",
                 new Object[] {groupId},
                 new RelyingPartyMapper());
         return rps;
     }
 
+
+    @Override
+    public List<RelyingParty> getRelyingPartyHistoryById(String id) throws RelyingPartyException {
+        // get metadata
+        List<RelyingParty> rps = null;
+        try {
+            rps = template.query(
+                    "select * from metadata where end_time is not null and group_id = ? and entity_id = ?",
+                    new Object[]{groupId, id},
+                    new RelyingPartyMapper());
+            return rps;
+        }
+        catch (Exception e){
+            String errorMsg = String.format("error getting rp: %s, rps size = %s", id, rps.size());
+            log.debug(errorMsg);
+            throw new RelyingPartyException(errorMsg);
+        }
+
+
+    }
+
+
     @Override
     public RelyingParty getRelyingPartyById(String id) throws RelyingPartyException {
         List<RelyingParty> rps = template.query(
-                "select * from metadata where status = 1 and group_id = ? and entity_id = ?",
+                "select * from metadata where end_time is null and group_id = ? and entity_id = ?",
                 new Object[] { groupId, id},
                 new RelyingPartyMapper());
         if(rps.size() == 1 && rps.get(0) != null){
@@ -66,13 +87,13 @@ public class DBMetadata implements MetadataDAO {
         List<String> results;
         if(searchStr != null) {
             results = template.queryForList(
-                    "select entity_id from metadata where status = 1 and group_id = ? and entity_id like ?",
+                    "select entity_id from metadata where end_time is null and group_id = ? and entity_id like ?",
                     new Object[]{groupId, '%' + searchStr + '%'},
                     String.class);
         }
         else {
             results = template.queryForList(
-                    "select entity_id from metadata where status = 1 and group_id = ?",
+                    "select entity_id from metadata where end_time is null and group_id = ?",
                     new Object[]{groupId},
                     String.class);
         }
@@ -84,18 +105,28 @@ public class DBMetadata implements MetadataDAO {
         log.info(String.format("updating metadata for rp %s in %s", relyingParty.getEntityId(), groupId));
         try {
             String xml = XMLHelper.serializeXmlToString(relyingParty);
-            List<String> existingIds = template.queryForList(
-                    "select entity_id from metadata where group_id = ? and entity_id = ?",
-                    String.class,
+            List<Integer> existingIds = template.queryForList(
+                    "select id from metadata where group_id = ? and entity_id = ? and end_time is null",
+                    Integer.class,
                     groupId, relyingParty.getEntityId());
             if (existingIds.size() == 0) {
+                // no active records so we add an active record
                 template.update(
-                        "insert into metadata (group_id, entity_id, xml, status, update_time) values (?, ?, ?, 1, now())",
-                        groupId, relyingParty.getEntityId(), xml);
+                        "insert into metadata (uuid, group_id, entity_id, xml, end_time, start_time) values " +
+                                "(? ,?, ?, ?, ?, now())",
+                        genUUID(), groupId, relyingParty.getEntityId(), xml, null);
+                        log.debug("added new rp " + relyingParty.getEntityId());
+            } else if (existingIds.size() == 1) {
+                // active record exists so mark last one inactive
+                template.update("update metadata set end_time = now() where id = ?", existingIds.get(0));
+                // add new active record
+                log.info(Integer.toString(template.update(
+                        "insert into metadata (uuid, group_id, entity_id, xml, end_time, start_time) values " +
+                                "(?, ?, ?, ?, ?, now())",
+                        relyingParty.getUuid(), groupId, relyingParty.getEntityId(), xml, null)));
+                log.debug("updated existing rp " + relyingParty.getEntityId());
             } else {
-                template.update("update metadata set xml = ?, status = 1, update_time = now() where " +
-                        " entity_id = ? and group_id = ? ",
-                        xml, relyingParty.getEntityId(), groupId);
+                throw new RelyingPartyException("more than one active metadata record found!!  No update performed.  ");
             }
             if (idpHelper!=null) idpHelper.notifyIdps("metadata");
         } catch (Exception e) {
@@ -107,11 +138,30 @@ public class DBMetadata implements MetadataDAO {
 
     @Override
     public void removeRelyingParty(String rpid) {
-        log.info(String.format("removing metadata for rp %s in %s", rpid, groupId));
-        template.update("update metadata set status = 0, update_time = now() where entity_id = ? and group_id = ?",
-                rpid, groupId);
-    }
+        try {
+            log.info(String.format("looking to remove metadata for rp %s in %s", rpid, groupId));
+            List<Integer> rpIds = template.queryForList(
+                    "select id from metadata where group_id = ? and entity_id = ? and end_time is null",
+                    Integer.class,
+                    groupId, rpid);
+            if (rpIds.size() == 1 && rpIds.get(0) != null) {
+                log.info(Integer.toString(template.update("update metadata set end_time = now() where id = ?",
+                        rpIds.get(0))));
+                log.info(String.format("updated (delete) %s", rpid));
+            }
+            else if (rpIds.size() == 0) {
+                log.info(String.format("No rp found for %s", rpid));
+            }
+            else {
+                throw new RelyingPartyException("more than one active metadata record found!!  No update performed.  ");
+            }
 
+
+        }
+        catch (Exception e) {
+            log.info("remove metadata trouble: " + e.getMessage());
+        }
+    }
     @Override
     public boolean isEditable() {
         return editable;
@@ -125,6 +175,8 @@ public class DBMetadata implements MetadataDAO {
     public void setGroupId(String groupId) { this.groupId = groupId; }
     public void setId(String id) { this.id = id; }
     public void setEditable(boolean editable) { this.editable = editable; }
+    private String genUUID() { return UUID.randomUUID().toString(); }
+
 
     private class RelyingPartyMapper implements RowMapper<RelyingParty> {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -136,6 +188,10 @@ public class DBMetadata implements MetadataDAO {
             RelyingParty relyingParty;
             String groupId = resultSet.getString("group_id");
             String entityId = resultSet.getString("entity_id");
+            String startTime = resultSet.getString("start_time");
+            String endTime = resultSet.getString("end_time");
+            String updatedBy = resultSet.getString("updated_by");
+            String uuid = resultSet.getString("uuid");
 
             try {
                 DocumentBuilder builder = dbf.newDocumentBuilder();
@@ -146,7 +202,7 @@ public class DBMetadata implements MetadataDAO {
             }
 
             try {
-                relyingParty = new RelyingParty(document.getDocumentElement(), id, true);
+                relyingParty = new RelyingParty(document.getDocumentElement(), id, true, updatedBy, startTime, endTime, uuid);
             } catch (RelyingPartyException ex) {
                 log.debug(String.format("exception for new Relying Party group_id: %s entity_id: %s message: %s",
                         groupId, entityId, ex.getMessage()));
@@ -161,4 +217,6 @@ public class DBMetadata implements MetadataDAO {
             return relyingParty;
         }
     }
+
+
 }
