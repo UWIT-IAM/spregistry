@@ -20,7 +20,7 @@
 <h4>$friendlyName</h4>
 
 <ul class="iamlist">
-  <li><label for="${name}_flag">Allow Social logins</label>
+  <li><label for="${name}_flag">Allow Social sign-on</label>
     <div class="dd">
         <input id="${name}_flag" dojoType="dijit/form/CheckBox"
                            #if(${socialActive}) checked #end
