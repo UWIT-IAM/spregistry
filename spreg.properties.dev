@@ -28,7 +28,7 @@ local.webclient.caFile=/home/fox/certs/uwca.crt
 spreg.smtp.host=appsubmit.cac.washington.edu
 spreg.smtp.from=SP registry <somebody@iam-tools.u.washington.edu>
 spreg.smtp.to=fox@uw.edu
-spreg.smtp.requestMailTo=fox@uw.edu
+spreg.smtp.requestMailTo=iam-support@uw.edu
 
 spreg.uwLogoutp=https://idp.u.washington.edu/idp/logout
 spreg.googleEntityId=https://idp-gw.u.washington.edu/google
