@@ -33,7 +33,7 @@
 <div id="proxyEditDialog" data-dojo-type="dijit/Dialog" title="Edit proxy data for ${relyingPartyId}" ${hide}>
   <div class="dijitDialogPaneContentArea" data-dojo-type="dijit/layout/ContentPane" >
 
-    <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/F0jRAw" target="spghelp">help</a></div>
+    <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/8wr-B" target="spghelp">help</a></div>
     <h3>SAML Gateway</h3>
     #gatewayItemEdit("Social IdP Sign-On", "social_login", ${proxy.socialActive})
 
