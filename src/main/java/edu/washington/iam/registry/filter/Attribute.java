@@ -48,6 +48,8 @@ public class Attribute implements Serializable  {
     private boolean hippa;
     private String authorizingGroup;
     private String type;
+    // reqHidden = hidden on attribute request page
+    private boolean reqHidden = false;
     private boolean editable = false;
     AttributeFilterPolicy attributeFilterPolicy;
     AttributeRule attributeRule;
@@ -60,6 +62,7 @@ public class Attribute implements Serializable  {
        name = ele.getAttribute("name");
        description = ele.getAttribute("description");
        type = ele.getAttribute("type");
+       reqHidden = ele.getAttribute("reqHidden").equals("true");
 
        log.debug("create from doc: " + id);
 
@@ -76,6 +79,7 @@ public class Attribute implements Serializable  {
        description = src.getDescription();
        type = src.getType();
        editable = src.isEditable();
+       reqHidden = src.isReqHidden();
     }
 
 
@@ -116,7 +120,12 @@ public class Attribute implements Serializable  {
     public boolean isEditable() {
        return editable;
     }
-
+    public void setReqHidden(boolean v) {
+        reqHidden = v;
+    }
+    public boolean isReqHidden() {
+        return reqHidden;
+    }
 
 }
 

@@ -93,9 +93,11 @@ Check the attributes you need. Uncheck those you no longer want.
   #set ( $chk = '' )
   #set ( $dis = '' )
   #set ( $grps='')
+  #set ( $reqhide = '')
   #if (${attr.attributeFilterPolicy})
     #set ($ar = $attr.attributeRule )
     #set ($chk=$checked)
+
     #if (!$attr.attributeFilterPolicy.editable) #set ($dis = $disable) #end
     #if ($attr.id == 'gws_groups')
         #set ( $nl='')
@@ -107,9 +109,11 @@ Check the attributes you need. Uncheck those you no longer want.
            #end
         #end ## vrules
     #end  ## if
+  #else
+      #if ($attr.reqHidden) #set ($reqhide = $hide) #end
   #end ## afp
 
-  <li><div class="dt dtcb"><input data-dojo-type="dijit.form.CheckBox" id="attr_req_${attr.id}"
+  <li $reqhide><div class="dt dtcb"><input data-dojo-type="dijit.form.CheckBox" id="attr_req_${attr.id}"
          $chk $dis value="${attr.id}"
        #if ($attr.id == 'gws_groups')
         onChange="local_check_gws()"
