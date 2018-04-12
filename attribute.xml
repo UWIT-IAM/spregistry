@@ -8,9 +8,9 @@
  <Attribute id="displayName" description="Full name (PDS: displayName)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="email" description="email (uwEWPEmail1 or uwSWPEmail or id@uw.edu)" authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="employeeNumber" description="Employee id (PDS: uwEmployeeID)" authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="entitlement_dlt_a" description="DLT Portal admin"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="entitlement_dlt_u" description="DLT Portal user"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="entitlement_gartner" description="Gartner entitlement"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="entitlement_dlt_a" description="DLT Portal admin"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="entitlement_dlt_u" description="DLT Portal user"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="entitlement_gartner" description="Gartner entitlement"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="entitlement_lib" description="basic library entitlement"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="entitlement_sln" description="Course enrolement by SLN"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="ePPN" description="uwnetid (PDS: uwNetID + @washington.edu)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
@@ -23,8 +23,8 @@
  <Attribute id="idNameId" description="&lt;i&gt;uwnetid&lt;/i&gt;"  authorizingGroup="u_weblogin_admins"  type="nameid" />
  <Attribute id="mailstop" description="Mail stop (PDS: uwEmployeeMailstop)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="nameIDPersistentID" description="Opaque, persistent identifier"  authorizingGroup="u_weblogin_admins"  type="nameid" />
- <Attribute id="NIHePPN" description="ePPN with inline scoping (for NIH)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="NIHePTID" description="persistent ID with inline scoping (for NIH)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="NIHePPN" description="ePPN with inline scoping (for NIH)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="NIHePTID" description="persistent ID with inline scoping (for NIH)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="phone" description="Employee phone (PDS: uwEWPPhone1)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="scopedAffiliation" description="affiliation with '@washington.edu'"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="surname" description="Last name (PDS: sn)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
@@ -36,14 +36,14 @@
  <Attribute id="uwStudentID" description="UW Student ID"  authorizingGroup="u_weblogin_admins"  type="attribute" /> 
  <Attribute id="uwStudentSystemKey" description="UW Student System Key"  authorizingGroup="u_weblogin_admins"  type="attribute" /> 
 
- <Attribute id="nsc_pid" description="Student ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="nsc_opeid" description="UW's ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="awsrole" description="AWS Account ID and roles (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="awsname" description="AWS Role Session Name (eppn) (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="slack_email" description="Slack email (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="slack_user" description="Slack user (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="slack_fname" description="Slack first name (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="slack_lname" description="Slack last name (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="nsc_pid" description="Student ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="nsc_opeid" description="UW's ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="awsrole" description="AWS Account ID and roles (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="awsname" description="AWS Role Session Name (eppn) (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="slack_email" description="Slack email (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="slack_user" description="Slack user (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="slack_fname" description="Slack first name (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="slack_lname" description="Slack last name (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
 
 
 </Attributes>
