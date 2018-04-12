@@ -53,6 +53,7 @@ j2_env = None
 db = None
 config = None
 
+warning_msg = '<!-- DON\'T EDIT!  This file created by, and overwritten by, filter_scan.py -->'
 
 def _print(str):
     pass
@@ -127,6 +128,7 @@ def get_gws_attributes():
             _print('adding %s to %s' % (attr.getparent().get('id'), ent['type']))
             ent['attrids'].append(attr.getparent().get('id'))
     for attr in doc.getroot().findall('.//resolver:AttributeDefinition/resolver:Dependency[@ref="%s"]' % (tgtidEntity['refid']), ns):
+        _print('adding %s to tgtid triggers' % (attr.getparent().get('id')))
         tgtidEntity['attrids'].append(attr.getparent().get('id'))
 
 
@@ -175,13 +177,13 @@ def parseFilter(file):
                         entity['valuesX'].discard(eid)
 
             # tgtids, release of the attribute requires database entry
-            if id in tgtidEntity['attrids']:
+            if aid in tgtidEntity['attrids']:
                 # print eid + ' used tgtid'
                 c1 = db.cursor()
                 c1.execute("SELECT rpno FROM rp where rpid='%s';" % (eid))
                 row = c1.fetchone()
                 c1.close()
-                if row is not None:
+                if row is None:
                     _print('adding tgtid entry for ' + eid)
                     c1 = db.cursor()
                     c1.execute("insert into rp values ( (select max(rpno) from rp)+1, '%s');" % (eid))
@@ -219,6 +221,7 @@ def verifySaml(prog, file):
 
 # output a bean def file from a template, save the previous
 def output_bean_def(dest_file, tmpl_file, ents):
+    ents['warning'] = warning_msg
     dest = config.conf_dir + dest_file
     _print('dest=' + dest)
     template = j2_env.get_template(tmpl_file)

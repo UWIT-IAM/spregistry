@@ -6,7 +6,6 @@ import java.util.List;
 
 public interface MetadataDAO {
     public List<RelyingParty> getRelyingParties();
-    public List<RelyingParty> getRelyingPartyHistoryById(String id) throws RelyingPartyException;
     public RelyingParty getRelyingPartyById(String id) throws RelyingPartyException;
     public List<String> searchRelyingPartyIds(String searchStr);
     public void updateRelyingParty(RelyingParty rp);

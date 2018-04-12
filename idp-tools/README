@@ -1,39 +1,34 @@
-This the utility that converts the database info into the various xml files on the idp.
-
-This should probably be packaged closer to the idp itself.
-Here for now just for safekeeping.
-
-
-Scan database and update local xml conf as needed
-
-  spreg_update.py
-
-Scan the local xml configs and create auto confs as needed
-
- filter_scan.py  
-
-creates 
-
- new tgtid db entries   -> updates tgtid database
- gws activators         -> new gws-activators.xml file
- nameid exceptions      -> new nameid-filter.xml
+These are tools run on the IdP hosts to keep metadata and filters up-to-date with
+the SP Registry database.  The tools are specific to our IdP configurations, so should be
+considered examples -- not directly installable components.
 
 
+refresh_ic.sh: 
 
-Also here are a couple of tools for loading the database
-from xml files
+  Maintains a local copy of InCommon metadata
 
-Load from local xml
+refresh_uw.sh:  
 
-  loaddb.sh
+  1) Maintains a local copy of local UW metadata (the SP registry database)
+  2) Updates various filter and activator configuration files as needed
+  3) Updates the local postgres targeted id database.
 
-Keep the database up-to-date until the database
-version goes production
+spreg_update.py:
 
-  updatedb.sh
+  Does (1) for refresh_uw.sh
+
+filter_scan.py:
+
+  Does (2,3) for refresh_uw.sh
 
 
+The tools need a python virtualenv (I use 2.7), with the requirements in py-requirements.txt
 
 
+We run the refresh scripts by cron.  refresh_ic daily, refresh_uw every minute.
+A second cron, run every 15 minutes forces a refresh_uw run.
 
+Jim
+
+ 
 

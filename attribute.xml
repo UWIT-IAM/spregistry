@@ -40,5 +40,10 @@
  <Attribute id="nsc_opeid" description="UW's ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="awsrole" description="AWS Account ID and roles (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="awsname" description="AWS Role Session Name (eppn) (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="slack_email" description="Slack email (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="slack_user" description="Slack user (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="slack_fname" description="Slack first name (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="slack_lname" description="Slack last name (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+
 
 </Attributes>

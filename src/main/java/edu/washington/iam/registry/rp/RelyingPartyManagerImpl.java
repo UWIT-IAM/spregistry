@@ -126,22 +126,6 @@ public class RelyingPartyManagerImpl implements RelyingPartyManager {
         return list;
     }
 
-
-    @Override
-    public List<RelyingParty> getRelyingPartyHistoryById(String id) throws RelyingPartyException {
-        log.debug("rp history search: " + id);
-        for (MetadataDAO metadataDAO : metadataDAOs.values()){
-            try {
-                return metadataDAO.getRelyingPartyHistoryById(id);
-            }
-            catch (RelyingPartyException e){
-
-            }
-        }
-        throw new RelyingPartyException("not found");
-    }
-
-
     // get rp by id
     @Override
     public RelyingParty getRelyingPartyById(String id, String mdid) throws RelyingPartyException {

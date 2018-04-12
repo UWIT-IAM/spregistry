@@ -16,8 +16,6 @@ import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
-
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-db-context.xml")
@@ -57,7 +55,7 @@ public class DBMetadataTest {
 
     @Test
     public void testSearchRelyingPartyIdsNoDeleted() throws Exception {
-        template.update("update metadata set end_time = '2001-01-01' where entity_id = ?",
+        template.update("update metadata set status = 0 where entity_id = ?",
                 "https://searchdbmetadatatest2.s.uw.edu");
         List<String> relyingParties = dao.searchRelyingPartyIds("searchdbmetadatatest");
         Assert.assertEquals(2, relyingParties.size());
@@ -126,7 +124,7 @@ public class DBMetadataTest {
 
     @Test
     public void testUpdateRelyingPartyDeletedRP() throws Exception {
-        template.update("update metadata set end_time = '2001-01-01' where entity_id = ? ", fakeEntityIds.get(0));
+        template.update("update metadata set status = 0 where entity_id = ? ", fakeEntityIds.get(0));
         Timestamp preUpdateTime = new Timestamp(new Date().getTime());
         int preUpdateSize = dao.searchRelyingPartyIds(null).size();
 
@@ -138,20 +136,18 @@ public class DBMetadataTest {
     }
 
     private Timestamp getTimestampForRP(String entityId){
-        return template.queryForObject("select start_time from metadata where entity_id = ? and end_time is null",
+        return template.queryForObject("select update_time from metadata where entity_id = ?",
                 Timestamp.class,
                 entityId);
     }
-
-    private String genUUID() { return UUID.randomUUID().toString(); }
 
     private void setupWithRPs(List<String> entityIds){
         String groupId = "uwrp";
         for (String entityId : entityIds) {
 
-            template.update("insert into metadata (uuid, group_id, entity_id, xml, end_time, start_time) " +
-                    "values (?, ?, ?, ?, ?, now())",
-                     genUUID(), groupId, entityId, fakeRelyingPartyXml(entityId), null);
+            template.update("insert into metadata (group_id, entity_id, xml, status, update_time) " +
+                    "values (?, ?, ?, 1, now())",
+                    groupId, entityId, fakeRelyingPartyXml(entityId));
         }
     }
 
@@ -171,7 +167,7 @@ public class DBMetadataTest {
                         .newDocumentBuilder()
                         .parse(new ByteArrayInputStream(relyingPartyXml.getBytes()))
                         .getDocumentElement(),
-                "uwrp", true, "mattjm", "2001-01-01", null, genUUID());
+                "uwrp", true);
 
         return relyingParty;
     }

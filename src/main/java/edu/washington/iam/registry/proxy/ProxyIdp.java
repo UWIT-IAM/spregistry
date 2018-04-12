@@ -15,9 +15,6 @@
  * ========================================================================
  */
 
-/*TODO mattjm 2017-11-13 this class can be deleted soon--no non-test JAVA code reaches it (some tests and javascript
-still do)*/
-
 
 package edu.washington.iam.registry.proxy;
 
