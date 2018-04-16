@@ -1,21 +1,18 @@
 
-idp_base = '/data/local/idp-3.2/'
-gateway_base = '/data/local/gateway/'
+idp_base = '/data/local/idp-3.3/'
 
 tgtid_db = {
  "db_host": "localhost",
  "db_name": "idp",
  "db_user": "shib",
- "db_pass": "somepassword",
+ "db_pass": "xxxxxxxxxx",
 }
 
 spreg_db = {
- 'db_host': 'iamdb11',
- 'db_host_dev': 'iamdbdev01',
+ 'db_host': 'xxxxxxxxxx',
  'db_name': 'spregistry',
- 'db_user': 'spreg',
- 'db_pass': 'somepassword',
- 'db_pass_prod': 'somepassword',
+ 'db_user': 'some-user',
+ 'db_pass': 'some-password',
 }
 
 conf_dir = idp_base + '/conf/'
@@ -33,17 +30,10 @@ idp_conf_files = {
     ]
 }
 
-proxy_base = gateway_base + '/uw/'
-proxy_conf_files = {
-    'groups': [
-      {'type':'proxy', 'id':'uwproxy', 'metadata_filename': 'rp-proxy-metadata.xml', 'secret_filename': 'rp-secrets', 'min_rows': 10}
-    ]
-}
-
 metadata_files = [
     idp_base + '/metadata/UW-base-metadata.xml',
     idp_base + '/metadata/UW-rp-metadata.xml',
-    idp_base + '/metadata/InCommon-metadata.xml'
+    idp_base + '/metadata-cache/InCommon-metadata.xml'
  ]
 saml_sign = idp_base + 'local-bin/samlsign-1.0/samlsign.sh'
 
@@ -61,3 +51,7 @@ nameid_exceptions_j2 = 'saml-nameid-exceptions.j2'
 
 
 syslog_facility = 'LOG_LOCAL5'
+
+# dash host and port
+dash_host = '127.0.0.1'
+dash_port = 8341

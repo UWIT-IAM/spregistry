@@ -1,0 +1,222 @@
+--
+-- PostgreSQL database dump
+--
+
+SET statement_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- Name: filter; Type: TABLE; Schema: public; Owner: spreg_userid; Tablespace: 
+--
+
+CREATE TABLE filter (
+    entity_id text NOT NULL,
+    xml text,
+    group_id character varying(48),
+    status integer,
+    update_time timestamp with time zone
+);
+
+
+ALTER TABLE public.filter OWNER TO spreg_userid;
+
+--
+-- Name: filter_group; Type: TABLE; Schema: public; Owner: spreg_userid; Tablespace: 
+--
+
+CREATE TABLE filter_group (
+    id character varying(48) NOT NULL,
+    header_xml text,
+    footer_xml text,
+    status integer,
+    update_time timestamp with time zone,
+    edit_mode integer
+);
+
+
+ALTER TABLE public.filter_group OWNER TO spreg_userid;
+
+--
+-- Name: metadata; Type: TABLE; Schema: public; Owner: spreg_userid; Tablespace: 
+--
+
+CREATE TABLE metadata (
+    entity_id text NOT NULL,
+    xml text,
+    group_id character varying(48),
+    status integer,
+    update_time timestamp with time zone
+);
+
+
+ALTER TABLE public.metadata OWNER TO spreg_userid;
+
+--
+-- Name: metadata_group; Type: TABLE; Schema: public; Owner: spreg_userid; Tablespace: 
+--
+
+CREATE TABLE metadata_group (
+    id character varying(48) NOT NULL,
+    header_xml text,
+    footer_xml text,
+    status integer,
+    update_time timestamp with time zone,
+    edit_mode integer
+);
+
+
+ALTER TABLE public.metadata_group OWNER TO spreg_userid;
+
+--
+-- Name: proxy; Type: TABLE; Schema: public; Owner: spreg_userid; Tablespace: 
+--
+
+CREATE TABLE proxy (
+    entity_id text,
+    social_provider text,
+    social_key text,
+    social_secret text,
+    status integer,
+    update_time timestamp with time zone DEFAULT now()
+);
+
+
+ALTER TABLE public.proxy OWNER TO spreg_userid;
+
+--
+-- Name: filter_group_pkey; Type: CONSTRAINT; Schema: public; Owner: spreg_userid; Tablespace: 
+--
+
+ALTER TABLE ONLY filter_group
+    ADD CONSTRAINT filter_group_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: filter_pkey; Type: CONSTRAINT; Schema: public; Owner: spreg_userid; Tablespace: 
+--
+
+ALTER TABLE ONLY filter
+    ADD CONSTRAINT filter_pkey PRIMARY KEY (entity_id);
+
+
+--
+-- Name: metadata_group_pkey; Type: CONSTRAINT; Schema: public; Owner: spreg_userid; Tablespace: 
+--
+
+ALTER TABLE ONLY metadata_group
+    ADD CONSTRAINT metadata_group_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: spreg_userid; Tablespace: 
+--
+
+ALTER TABLE ONLY metadata
+    ADD CONSTRAINT metadata_pkey PRIMARY KEY (entity_id);
+
+
+--
+-- Name: entity_id_idx; Type: INDEX; Schema: public; Owner: spreg_userid; Tablespace: 
+--
+
+CREATE INDEX entity_id_idx ON proxy USING btree (entity_id);
+
+
+--
+-- Name: filter_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: spreg_userid
+--
+
+ALTER TABLE ONLY filter
+    ADD CONSTRAINT filter_group_id_fkey FOREIGN KEY (group_id) REFERENCES filter_group(id);
+
+
+--
+-- Name: metadata_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: spreg_userid
+--
+
+ALTER TABLE ONLY metadata
+    ADD CONSTRAINT metadata_group_id_fkey FOREIGN KEY (group_id) REFERENCES metadata_group(id);
+
+
+--
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+--
+-- Name: filter; Type: ACL; Schema: public; Owner: spreg_userid
+--
+
+REVOKE ALL ON TABLE filter FROM PUBLIC;
+REVOKE ALL ON TABLE filter FROM spreg_userid;
+GRANT ALL ON TABLE filter TO spreg_userid;
+
+
+--
+-- Name: filter_group; Type: ACL; Schema: public; Owner: spreg_userid
+--
+
+REVOKE ALL ON TABLE filter_group FROM PUBLIC;
+REVOKE ALL ON TABLE filter_group FROM spreg_userid;
+GRANT ALL ON TABLE filter_group TO spreg_userid;
+
+
+--
+-- Name: metadata; Type: ACL; Schema: public; Owner: spreg_userid
+--
+
+REVOKE ALL ON TABLE metadata FROM PUBLIC;
+REVOKE ALL ON TABLE metadata FROM spreg_userid;
+GRANT ALL ON TABLE metadata TO spreg_userid;
+
+
+--
+-- Name: metadata_group; Type: ACL; Schema: public; Owner: spreg_userid
+--
+
+REVOKE ALL ON TABLE metadata_group FROM PUBLIC;
+REVOKE ALL ON TABLE metadata_group FROM spreg_userid;
+GRANT ALL ON TABLE metadata_group TO spreg_userid;
+
+
+--
+-- Name: proxy; Type: ACL; Schema: public; Owner: spreg_userid
+--
+
+REVOKE ALL ON TABLE proxy FROM PUBLIC;
+REVOKE ALL ON TABLE proxy FROM spreg_userid;
+GRANT ALL ON TABLE proxy TO spreg_userid;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
