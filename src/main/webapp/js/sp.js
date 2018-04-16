@@ -1028,7 +1028,7 @@ function proxyEditKey() {
 
 function _postSaveProxy() {
    iam_hideTheDialog('proxyEditDialog');
-   iam_showTheNotice('Parameters saved: Allow a couple of minutes to propagate.');
+   iam_showTheNotice('Social gateway configuration saved: Allow a couple of minutes to propagate.');
    showCurrentSp();
    numProxyEditKey = 0;
 }

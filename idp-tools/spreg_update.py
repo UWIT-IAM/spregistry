@@ -15,14 +15,15 @@
 #  ========================================================================
 #
 
-# update the local (UW) metadata, filter, and proxy resources
-# as needed from the spregistry database
+# update the local (UW) metadata and filter resources as needed from the spregistry database
 
 import os
 import time
 import string
 import shutil
 import re
+import socket
+import dashlib
 
 from optparse import OptionParser
 import json
@@ -72,12 +73,8 @@ def countNewRows(group):
     c1 = db.cursor()
     mtime = None
 
-    if group['type'] == 'proxy':
-        mtime = mTime(config.proxy_base + group['metadata_filename'])
-        c1.execute("select count(*) from %s where status=1 and update_time > '%s';" % (group['type'], mtime))
-    else:
-        mtime = mTime(config.idp_base + group['dir'] + '/' + group['filename'])
-        c1.execute("select count(*) from %s where status=1 and group_id='%s' and update_time > '%s';" % (group['type'], group['id'], mtime))
+    mtime = mTime(config.idp_base + group['dir'] + '/' + group['filename'])
+    c1.execute("select count(*) from %s where status=1 and group_id='%s' and update_time > '%s';" % (group['type'], group['id'], mtime))
     row = c1.fetchone()
     c1.close()
     # print 'num new = ', row[0]
@@ -162,105 +159,7 @@ def findGroup(type, id):
     for g in config.idp_conf_files['groups']:
         if g['type'] == type and g['id'] == id:
             return g
-    for g in config.proxy_conf_files['groups']:
-        if g['type'] == type and g['id'] == id:
-            return g
     return None
-
-#
-# proxy configs
-#
-
-
-def updateProxyConfig(group):
-    global db
-
-    m_name = group['metadata_filename']
-    s_name = group['secret_filename']
-
-    # first build the secrets file
-    secrets = {}
-    num = 0
-    c1 = db.cursor()
-    c1.execute("select entity_id,social_provider,social_key,social_secret from proxy where status=1")
-    rows = c1.fetchall()
-    for row in rows:
-        eid = row[0]
-        sid = row[1]
-        # print 'eid: ' + eid + ', sid: ' + sid
-        if eid not in secrets:
-            secrets[eid] = {}
-        secrets[eid][sid] = {"key": row[2], "secret": row[3]}
-        num += 1
-    # print '%d social keys found' % num
-
-    if num < group['min_rows']:
-        log(log_err, '%s document is too short: %d<%d' % (group['type'], num, group['min_rows']))
-        return False
-
-    s_file_path = config.proxy_base + s_name
-    s_tmp_path = config.tmp_dir + s_name + '.' + str(os.getpid())
-    f = open(s_tmp_path, 'w')
-    f.write(json.dumps(secrets))
-    f.close()
-
-    # generate a metadata file for the rps in secrets
-
-    m_file_path = config.proxy_base + m_name
-    m_tmp_path = config.tmp_dir + m_name + '.' + str(os.getpid())
-
-    mf = open(m_tmp_path, 'w')
-    copyRow('metadata_group', 'header_xml', 'uwrp', mf)
-
-    for mdfile in config.metadata_files:
-        f = open(mdfile, 'r')
-        copying = False
-        for line in f:
-            if copying:
-                mf.write(line)
-                if string.find(line, '</EntityDescriptor') >= 0:
-                    copying = False
-            else:
-                p = string.find(line, 'entityID="')
-                if p > 0:
-                    p += 10
-                    e = string.find(line, '"', p+1)
-                    eid = line[p:e]
-                    # print 'entityid: [%s]' % (line[p:e])
-                    if eid in secrets:
-                        # print 'adding: ' + eid + ' from ' + mdfile
-                        secrets[eid]['md'] = 1
-                        copying = True
-                        mf.write(line)
-        f.close()
-
-    copyRow('metadata_group', 'footer_xml', 'uwrp', mf)
-    mf.close()
-
-    # did we get everyone
-    for s in secrets:
-        if 'md' not in secrets[s]:
-            log(log_err,  'secrets file missed ' + s)
-
-    # verify the new file
-
-    if not verifySaml(config.saml_sign, m_tmp_path):
-        return False
-
-    # all ok, replace originals
-
-    # md
-    sav = config.archive_dir + m_name + time.strftime('%d%H%M%S')
-    shutil.copy2(m_file_path, sav)
-    os.rename(m_tmp_path, m_file_path)
-
-    # secret
-    sav = config.archive_dir + s_name + time.strftime('%d%H%M%S')
-    shutil.copy2(s_file_path, sav)
-    os.rename(s_tmp_path, s_file_path)
-
-    log(log_info, "Created new %s %s and %s files" % (group['type'], m_name, s_name))
-    return True
 
 
 def sendNotice(sub):
@@ -274,16 +173,12 @@ def sendNotice(sub):
 
 
 def updateFiles(group):
-    ret = True
-    if group['type'] == 'proxy':
-        ret = updateProxyConfig(group)
-    else:
-        ret = updateIdpConfig(group)
+    ret = updateIdpConfig(group)
     if not ret:
         print 'update files error: ' + group['type']
         print group
+        dashlib.send_alert(config.dash_host, config.dash_port, socket.getfqdn(), "idp-metadata", "1", "metadata update error")
         sendNotice('idp file %s is not valid!' % group['filename'])
-
 
 # ---------
 #
@@ -341,9 +236,9 @@ else:
         if options.force or countNewRows(group) > 0:
             updateFiles(group)
 
-    for group in config.proxy_conf_files['groups']:
-        log(log_info, "checking '%s'" % (group['id']))
-        if options.force or countNewRows(group) > 0:
-            updateFiles(group)
+    # send keepalive every time script is run--dash alert will happen
+    # if script doesn't complete for 195 minutes
+    dashlib.send_keepalive(config.dash_host, config.dash_port, socket.getfqdn(), 
+        "idp-metadata", "1","195","metadata load not seen for 3 hours","Upd")
 
 log(log_info, "completed.")
