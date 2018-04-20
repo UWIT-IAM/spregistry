@@ -909,7 +909,8 @@ public class RelyingPartyController {
             Document doc = null;
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            doc = builder.parse (in);
+            //In parser we trust.  (no server side input validation on XML payload)
+            doc = builder.parse(in);
             relyingParty = new RelyingParty(doc.getDocumentElement(), mdid, rpManager.isMetadataEditable(mdid));
         } catch (Exception e) {
             log.info("parse error: " + e);
