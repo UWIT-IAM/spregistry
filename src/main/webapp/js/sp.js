@@ -611,13 +611,24 @@ function metaEditKey() {
 
 var badRE = new RegExp("[<>&]");
 var nameRE = new RegExp("^[a-z][a-z0-9\.\_\-]+$");
+//just for acs endpoints, allow ampersand
+var badREacs = new RegExp("[<>]");
 
-function badText(v, e) {
-   if (v.search(badRE)>=0) {
+// checking is a little different for ACS endpoints--need to allow ampersand
+function badText(v, e, acs = false) {
+   if (!acs && v.search(badRE)>=0) {
+       iam_showTheNotice("invalid " + e);
+       return 1;
+   } else if (v.search(badREacs)>=0) {
        iam_showTheNotice("invalid " + e);
        return 1;
    }
    return 0;
+}
+
+// encode ampersand in ACS endpoint
+function makeOkACSXml(str) {
+    return str.replace(/&/g,'&amp;');
 }
 
 // build the rp xml
@@ -693,9 +704,10 @@ function assembleRPMetadata(entityId) {
          return '';
       }
       if (badText(bv, "acs binding")) return '';
-      if (badText(lv, "acs location")) return '';
+      if (badText(lv, "acs location", true)) return '';
       xml = xml + '<AssertionConsumerService index="' + idxv + '" ';
       xml = xml + 'Binding="' + bv + '" Location="' + lv + '"/>';
+      xml = makeOkACSXml(xml);
       hadAcs = true;
    }
    if (!hadAcs) {
