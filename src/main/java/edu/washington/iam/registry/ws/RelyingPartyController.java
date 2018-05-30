@@ -453,6 +453,7 @@ public class RelyingPartyController {
 
     private ModelAndView loginPage(HttpServletRequest request, HttpServletResponse response, int method) {
         String remoteUser = request.getRemoteUser();
+        //String remoteUser = "";  //netid@washington.edu goes here for testing locally
         log.debug("social login attempt, shib remoteUser value: " + remoteUser);
         if (method==0) {  // social login
            String idp = (String)request.getAttribute("Shib-Identity-Provider");
@@ -908,7 +909,8 @@ public class RelyingPartyController {
             Document doc = null;
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = builderFactory.newDocumentBuilder();
-            doc = builder.parse (in);
+            //In parser we trust.  (no server side input validation on XML payload)
+            doc = builder.parse(in);
             relyingParty = new RelyingParty(doc.getDocumentElement(), mdid, rpManager.isMetadataEditable(mdid));
         } catch (Exception e) {
             log.info("parse error: " + e);
