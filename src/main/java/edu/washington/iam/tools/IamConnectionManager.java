@@ -17,6 +17,8 @@
 
 package edu.washington.iam.tools;
 
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,12 +28,7 @@ import java.util.Iterator;
 import java.net.URL;
 import java.net.MalformedURLException;
 
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -46,14 +43,12 @@ import java.security.KeyStoreException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
+import org.apache.http.config.Registry;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
-
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.params.BasicHttpParams;
 
 
 /**
@@ -66,13 +61,13 @@ public class IamConnectionManager {
    private String certificateFile;
    private String keyFile;
 
-   private SSLSocketFactory socketFactory;
+   private SSLConnectionSocketFactory socketFactory;
    private TrustManager[] trustManagers;
    private KeyManager[] keyManagers;
    private KeyStore keyStore;
    private KeyStore trustStore;
-   private SchemeRegistry schemeRegistry;
-   private ThreadSafeClientConnManager connectionManager;
+   private Registry schemeRegistry;
+   private PoolingHttpClientConnectionManager connectionManager;
 
    private static Logger log = LoggerFactory.getLogger(IamConnectionManager.class);
    
@@ -89,15 +84,11 @@ public class IamConnectionManager {
       try {
          SSLContext ctx = SSLContext.getInstance("TLS");
          ctx.init(keyManagers, trustManagers, null);
-         socketFactory = new SSLSocketFactory(ctx);
-         // this needed because we address idps by hostname
-         socketFactory.setHostnameVerifier(org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-         Scheme scheme = new Scheme(protocol, socketFactory, port);
-         schemeRegistry = new SchemeRegistry();
-         schemeRegistry.register(scheme);
-
+         socketFactory = new SSLConnectionSocketFactory(ctx, new NoopHostnameVerifier());
+         schemeRegistry = RegistryBuilder.<ConnectionSocketFactory> create()
+                 .register("https", socketFactory).build();
          log.debug("create conn mgr");
-         connectionManager = new ThreadSafeClientConnManager(new BasicHttpParams(),schemeRegistry);
+         connectionManager = new PoolingHttpClientConnectionManager(schemeRegistry);
 
       } catch (Exception e) {
          log.error("sf error: " + e);
@@ -105,16 +96,16 @@ public class IamConnectionManager {
    }
 
    
-   public SSLSocketFactory getSocketFactory() {
+   public SSLConnectionSocketFactory getSocketFactory() {
        log.debug("sr get sock factory");
        return socketFactory;
    }
-   public SchemeRegistry getSchemeRegistry() {
+   public Registry getSchemeRegistry() {
        log.debug("sr get scheme reg");
        return schemeRegistry;
    }
-   public ClientConnectionManager getConnectionManager() {
-       return (ClientConnectionManager) connectionManager;
+   public HttpClientConnectionManager getConnectionManager() {
+       return connectionManager;
    }
       
    protected void __initSocketFactory() {
