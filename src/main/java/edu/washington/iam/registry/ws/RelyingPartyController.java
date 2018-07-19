@@ -452,8 +452,8 @@ public class RelyingPartyController {
      */
 
     private ModelAndView loginPage(HttpServletRequest request, HttpServletResponse response, int method) {
-        String remoteUser = request.getRemoteUser();
-        //String remoteUser = "";  //netid@washington.edu goes here for testing locally
+        //String remoteUser = request.getRemoteUser();
+        String remoteUser = "mattjm@washington.edu";  //netid@washington.edu goes here for testing locally
         log.debug("social login attempt, shib remoteUser value: " + remoteUser);
         if (method==0) {  // social login
            String idp = (String)request.getAttribute("Shib-Identity-Provider");
@@ -1077,7 +1077,7 @@ public class RelyingPartyController {
                 status = 401;
                 mv.addObject("alert", "You are not the owner.");
             } else {
-                status = proxyManager.removeRelyingParty(id);
+                status = proxyManager.removeProxy(id);
                 status = filterPolicyManager.removeEditableRelyingParty(id);
                 status = rpManager.removeRelyingParty(id, mdid);
             }
@@ -1089,6 +1089,10 @@ public class RelyingPartyController {
            mv.addObject("alert", "Could not verify ownership:\n" + e.getCause());
            response.setStatus(500);
            return mv;
+        }  catch (ProxyException e) {
+            mv.addObject("alert", "Proxy (gateway) error:\n" + e.getCause());
+            response.setStatus(500);
+            return mv;
         }
         SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
         msg.setTo(mailTo);
