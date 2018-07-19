@@ -668,6 +668,8 @@ public class RelyingPartyController {
 
         RelyingParty rp = null;
         RelyingParty rrp = null;
+        List<RelyingParty> relyingPartyHistory = null;
+        List<Proxy> proxyHistory = null;
 
         boolean canEdit = false;
  
@@ -691,6 +693,17 @@ public class RelyingPartyController {
            response.setStatus(500);
            return mv;
         }
+        try {
+            relyingPartyHistory = rpManager.getRelyingPartyHistoryById(id);
+        } catch (RelyingPartyException e){
+            log.debug("Exception occurred getting metadata history");
+        }
+        try {
+            proxyHistory = proxyManager.getProxyHistory(id);
+        } catch (ProxyException e){
+            log.debug("Exception occurred getting proxy history");
+        }
+
 
         log.info("returning rp id=" + id );
         List<FilterPolicyGroup> filterPolicyGroups = filterPolicyManager.getFilterPolicyGroups();
@@ -704,6 +717,8 @@ public class RelyingPartyController {
         mv.addObject("filterPolicyManager", filterPolicyManager);
         mv.addObject("attributes", attributes);
         mv.addObject("relyingPartyId", id);
+        mv.addObject("relyingPartyHistory", relyingPartyHistory);
+        mv.addObject("proxyHistory", proxyHistory);
         mv.addObject("proxy", proxy);
         mv.addObject("isAdmin", session.isAdmin);
         mv.addObject("isProxy", session.isProxy);
