@@ -26,6 +26,9 @@ import java.util.Vector;
 import java.util.Arrays;
 
 import edu.washington.iam.tools.XMLSerializable;
+
+import org.javers.core.metamodel.annotation.Id;
+import org.javers.core.metamodel.annotation.TypeName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +43,18 @@ import edu.washington.iam.tools.XMLHelper;
 
 import edu.washington.iam.registry.exception.RelyingPartyException;
 
+import org.javers.core.*;
+import org.javers.core.diff.Diff;
+import static org.javers.core.diff.ListCompareAlgorithm.LEVENSHTEIN_DISTANCE;
 
+//decorator for javers compare functions
+@TypeName("RelyingParty")
 public class RelyingParty implements XMLSerializable {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private String uuid;
+    @Id //decorator for javers
     private String entityId;
     private String startTime;
     private String endTime;
@@ -96,6 +105,7 @@ public class RelyingParty implements XMLSerializable {
     }
 
     // create from document element
+
     public RelyingParty (Element ele, String mdid, boolean edit, String updatedBy, String startTime, String endTime,
                          String uuid)
             throws RelyingPartyException {
@@ -250,6 +260,17 @@ public class RelyingParty implements XMLSerializable {
           contactPersons.get(i).writeXml(xout);
        }
        xout.write(" </EntityDescriptor>\n");
+    }
+
+    public Diff RpCompare(RelyingParty obj){
+
+        Javers javers = JaversBuilder.javers()
+                .withListCompareAlgorithm(LEVENSHTEIN_DISTANCE)
+                .build();
+
+           Diff diff = javers.compare(this, obj);
+
+        return diff;
     }
 
     public RelyingParty replicate(String dns) {

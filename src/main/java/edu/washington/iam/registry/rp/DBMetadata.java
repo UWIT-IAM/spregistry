@@ -15,6 +15,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.sql.Timestamp;
 
 import edu.washington.iam.tools.IdpHelper;
 
@@ -50,7 +51,8 @@ public class DBMetadata implements MetadataDAO {
         List<RelyingParty> rps = null;
         try {
             rps = template.query(
-                    "select * from metadata where end_time is not null and group_id = ? and entity_id = ?",
+                    "select * from metadata where group_id = ? and entity_id = ?" +
+                    "order by start_time ASC",
                     new Object[]{groupId, id},
                     new RelyingPartyMapper());
             return rps;

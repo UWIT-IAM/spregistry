@@ -44,7 +44,7 @@ import edu.washington.iam.registry.exception.RelyingPartyException;
 // small subset of all possible keydescriptors
 public class KeyDescriptor implements Serializable  {
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+    //private final Logger log = LoggerFactory.getLogger(getClass());
 
 
     private String use;

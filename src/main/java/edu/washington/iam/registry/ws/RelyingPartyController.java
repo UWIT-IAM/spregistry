@@ -22,17 +22,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.BufferedWriter;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Date;
-import java.util.Vector;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 import java.text.SimpleDateFormat;
 
 import edu.washington.iam.registry.rp.RelyingPartyEntry;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.ui.Model;
@@ -89,6 +84,14 @@ import java.security.cert.CertificateParsingException;
 
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
+
+import org.javers.core.*;
+import org.javers.core.diff.Diff.*;
+import org.javers.core.diff.*;
+import org.javers.core.diff.changetype.*;
+import org.javers.core.diff.Diff;
+import static org.javers.core.diff.ListCompareAlgorithm.LEVENSHTEIN_DISTANCE;
+import edu.washington.iam.registry.rp.HistoryItem;
 
 
 @Controller
@@ -668,8 +671,58 @@ public class RelyingPartyController {
 
         RelyingParty rp = null;
         RelyingParty rrp = null;
+
         List<RelyingParty> relyingPartyHistory = null;
         List<Proxy> proxyHistory = null;
+
+        try {
+            relyingPartyHistory = rpManager.getRelyingPartyHistoryById(id);
+        } catch (RelyingPartyException e) {
+            log.debug("Exception occurred getting metadata history");
+            return emptyMV("SP not found");
+        }
+        try {
+            proxyHistory = proxyManager.getProxyHistory(id);
+        } catch (ProxyException e){
+            log.debug("Exception occurred getting proxy history");
+        }
+
+        Javers javers = JaversBuilder.javers()
+                .withListCompareAlgorithm(LEVENSHTEIN_DISTANCE)
+                .build();
+
+        List<HistoryItem> changes = new LinkedList<>();
+        //List<Diff> diffs = new LinkedList<>();
+        if (relyingPartyHistory.size() > 1) {
+            int i = 0;
+            while (i < relyingPartyHistory.size() - 1) {
+                Diff diff = relyingPartyHistory.get(i).RpCompare(relyingPartyHistory.get(i + 1));
+                String foo = javers.getJsonConverter().toJson(diff);
+                //pull out effective date of change and put into new history item
+                ValueChange effectiveDate = (ValueChange)diff.getPropertyChanges("startTime").get(0);
+                HistoryItem item = new HistoryItem(effectiveDate.getRight().toString());
+                //now iterate over all changes and put into history item (ignore start and end times now)
+                List<Change> myChanges = diff.getChanges();
+                for (Change change:myChanges) {
+                    ValueChange myChange = (ValueChange)change;
+                    if (!myChange.getPropertyName().equalsIgnoreCase("startTime") ||
+                            !myChange.getPropertyName().equalsIgnoreCase("endTime") ) {
+                        item.AddItem(myChange.getPropertyName(), myChange.getLeft().toString(), myChange.getRight().toString());
+                        //I need to figure out if something is a contact and then handle that properly--right now just field changes come through
+                        //and I need to be able to attach contact properties  to a particular contact.
+                    }
+                }
+                changes.add(item);
+                //HistoryItem item = new HistoryItem(diff.getPropertyChanges("startTime").get(0).value);
+                i++;
+            }
+
+
+        }
+
+
+
+
 
         boolean canEdit = false;
  
@@ -693,16 +746,7 @@ public class RelyingPartyController {
            response.setStatus(500);
            return mv;
         }
-        try {
-            relyingPartyHistory = rpManager.getRelyingPartyHistoryById(id);
-        } catch (RelyingPartyException e){
-            log.debug("Exception occurred getting metadata history");
-        }
-        try {
-            proxyHistory = proxyManager.getProxyHistory(id);
-        } catch (ProxyException e){
-            log.debug("Exception occurred getting proxy history");
-        }
+
 
 
         log.info("returning rp id=" + id );
@@ -717,9 +761,9 @@ public class RelyingPartyController {
         mv.addObject("filterPolicyManager", filterPolicyManager);
         mv.addObject("attributes", attributes);
         mv.addObject("relyingPartyId", id);
+        mv.addObject("proxy", proxy);
         mv.addObject("relyingPartyHistory", relyingPartyHistory);
         mv.addObject("proxyHistory", proxyHistory);
-        mv.addObject("proxy", proxy);
         mv.addObject("isAdmin", session.isAdmin);
         mv.addObject("isProxy", session.isProxy);
         mv.addObject("dateFormatter", new SimpleDateFormat("yy/MM/dd"));
@@ -1121,6 +1165,8 @@ public class RelyingPartyController {
         response.setStatus(status);
         return mv;
     }
+
+
 
 
     // rp attributes 
