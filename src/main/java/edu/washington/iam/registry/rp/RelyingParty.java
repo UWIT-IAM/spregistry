@@ -21,12 +21,17 @@ package edu.washington.iam.registry.rp;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 import java.util.Arrays;
 
 import edu.washington.iam.tools.XMLSerializable;
 
+import org.javers.core.diff.Change;
+import org.javers.core.diff.changetype.NewObject;
+import org.javers.core.diff.changetype.ObjectRemoved;
+import org.javers.core.diff.changetype.ValueChange;
 import org.javers.core.metamodel.annotation.Id;
 import org.javers.core.metamodel.annotation.TypeName;
 import org.slf4j.Logger;
@@ -262,15 +267,102 @@ public class RelyingParty implements XMLSerializable {
        xout.write(" </EntityDescriptor>\n");
     }
 
-    public Diff RpCompare(RelyingParty obj){
+    public HistoryItem RpCompare(RelyingParty obj){
 
+        HistoryItem historyItems;
+        
         Javers javers = JaversBuilder.javers()
                 .withListCompareAlgorithm(LEVENSHTEIN_DISTANCE)
                 .build();
+        
+        //take a diff
+        Diff diff = javers.compare(this, obj);
+        
+        //get the date
+        ValueChange effectiveDate = (ValueChange)diff.getPropertyChanges("startTime").get(0);
+        //create new history item using date
+        historyItems = new HistoryItem(effectiveDate.getRight().toString());
+        //now iterate over all changes and put into history item (ignore start and end times now)
+        List<Change> myChanges = diff.getChanges();
+        try {
+            for (Change change:myChanges) {
+                //changed value
+                Object obj1 = change.getAffectedObject();  //returns changed object, new object, or deleted object
+                 if (change instanceof ValueChange)
+                {
+                    ValueChange thischange = (ValueChange)change;
+                    //if object type is RelyingParty then this change is a single valued field, not one of several belonging to another object.
+                    if (obj1 instanceof RelyingParty){
+                        String propertyName = thischange.getPropertyName().toString();
+                        String left = thischange.getLeft().toString();
+                        String right = thischange.getRight().toString();
+                        historyItems.AddItem(propertyName, left, right);
 
-           Diff diff = javers.compare(this, obj);
+                    }
+                    else {
+                        String propertyName = thischange.getPropertyName().toString();
+                        //string containing index of affected object
+                        String globalid = change.getAffectedGlobalId().toString();
+                        int objindex = Integer.parseInt(globalid.substring(globalid.length() - 1));
+                        //original object
+                        Object left = this.contactPersons.get(objindex);
+                        //changed object
+                        Object right = change.getAffectedObject();
+                        historyItems.AddItem(propertyName, left, right);
 
-        return diff;
+                    }
+
+
+                }
+                else if (change instanceof NewObject)
+                {
+
+                }
+                else if (change instanceof ObjectRemoved)
+                {
+
+                }
+
+
+               /* Change myChange = change;
+                Object obj1 = change.getAffectedObject();
+                Object obj2 = change.getAffectedGlobalId();
+                Object obj3 = change.getAffectedLocalId();
+                Object obj4 = change.getAffectedObject();
+                String testt = typeof*/
+               /* if (    //fields we don't care about
+                        !myChange.getPropertyName().equalsIgnoreCase("startTime") &&
+                                !myChange.getPropertyName().equalsIgnoreCase("endTime") &&
+                                !myChange.getPropertyName().equalsIgnoreCase("uuid")
+                        ) {
+
+                    String left;
+                    if (myChange.getLeft() == null)
+                    {
+                        left = "(missing or deleted)";
+                    } else {
+                        left = myChange.getLeft().toString();
+                    }
+                    String right;
+                    if (myChange.getRight() == null)
+                    {
+                        right = "(missing or deleted)";
+                    } else {
+                        right = myChange.getRight().toString();
+                    }
+                    item.AddItem(myChange.getPropertyName(), left, right);
+                    Object obj1 = myChange.getAffectedObject();
+                    Object obj2 = myChange.getAffectedGlobalId();
+                    Object obj3 = myChange.getAffectedLocalId();
+                    //I need to figure out if something is a contact and then handle that properly--right now just field changes come through
+                    //and I need to be able to attach contact properties  to a particular contact.
+                }*/}
+        }
+        catch (Exception e) {
+
+        }
+
+        return historyItems;
     }
 
     public RelyingParty replicate(String dns) {

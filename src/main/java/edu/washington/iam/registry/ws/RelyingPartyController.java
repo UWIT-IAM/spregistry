@@ -687,38 +687,22 @@ public class RelyingPartyController {
             log.debug("Exception occurred getting proxy history");
         }
 
-        Javers javers = JaversBuilder.javers()
-                .withListCompareAlgorithm(LEVENSHTEIN_DISTANCE)
-                .build();
 
-        List<HistoryItem> changes = new LinkedList<>();
-        //List<Diff> diffs = new LinkedList<>();
+        List<HistoryItem> rpHistory = new LinkedList<HistoryItem>();
         if (relyingPartyHistory.size() > 1) {
             int i = 0;
             while (i < relyingPartyHistory.size() - 1) {
-                Diff diff = relyingPartyHistory.get(i).RpCompare(relyingPartyHistory.get(i + 1));
-                String foo = javers.getJsonConverter().toJson(diff);
-                //pull out effective date of change and put into new history item
-                ValueChange effectiveDate = (ValueChange)diff.getPropertyChanges("startTime").get(0);
-                HistoryItem item = new HistoryItem(effectiveDate.getRight().toString());
-                //now iterate over all changes and put into history item (ignore start and end times now)
-                List<Change> myChanges = diff.getChanges();
-                for (Change change:myChanges) {
-                    ValueChange myChange = (ValueChange)change;
-                    if (!myChange.getPropertyName().equalsIgnoreCase("startTime") ||
-                            !myChange.getPropertyName().equalsIgnoreCase("endTime") ) {
-                        item.AddItem(myChange.getPropertyName(), myChange.getLeft().toString(), myChange.getRight().toString());
-                        //I need to figure out if something is a contact and then handle that properly--right now just field changes come through
-                        //and I need to be able to attach contact properties  to a particular contact.
+                HistoryItem item = relyingPartyHistory.get(i).RpCompare(relyingPartyHistory.get(i + 1));
+                rpHistory.add(item);
+                i++;
                     }
                 }
-                changes.add(item);
-                //HistoryItem item = new HistoryItem(diff.getPropertyChanges("startTime").get(0).value);
-                i++;
-            }
 
 
-        }
+
+
+
+
 
 
 
@@ -1620,6 +1604,7 @@ public class RelyingPartyController {
         log.info("Star view");
         return homePage(request, response);
     }
+
 
 
 }

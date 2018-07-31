@@ -12,19 +12,27 @@ public class HistoryItem {
     private class ChangeItem
     {
         private String propertyName;
-        private String oldValue;
-        private String newValue;
+        private Object oldValue;
+        private Object newValue;
+        private int changeType;
 
-
-        private ChangeItem(String propertyName, String oldValue, String newValue) {
+        private void LocalInit(){
 
             propertyName = null;
             oldValue = null;
             newValue = null;
 
+            changeType = 0;
+        }
+
+        private ChangeItem(String propertyName, Object oldValue, Object newValue, int changeType) {
+
+            LocalInit();
+
             this.propertyName = propertyName;
             this.oldValue = oldValue;
             this.newValue = newValue;
+            this.changeType = changeType;
 
         }
     }
@@ -35,8 +43,7 @@ public class HistoryItem {
 
     }
 
-    //Element ele, String mdid, boolean edit, String updatedBy, String startTime, String endTime,
-    //                         String uuid
+
 
     public HistoryItem (String effectiveDate) {
 
@@ -47,12 +54,15 @@ public class HistoryItem {
     }
 
 
-    public void AddItem(String propertyName, String oldValue, String newValue){
+    //add a new instance of something that changed
+    public void AddItem(String propertyName, Object oldValue, Object newValue){
 
-        ChangeItem myItem = new ChangeItem(propertyName, oldValue, newValue);
+        ChangeItem myItem = new ChangeItem(propertyName, oldValue, newValue, 1);
         changes.add(myItem);
 
     }
+
+
 }
 
 
