@@ -21,6 +21,8 @@ package edu.washington.iam.registry.rp;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
@@ -50,6 +52,11 @@ import edu.washington.iam.registry.exception.RelyingPartyException;
 
 import org.javers.core.*;
 import org.javers.core.diff.Diff;
+import org.javers.core.metamodel.object.*;
+
+
+import javax.xml.bind.ValidationEvent;
+
 import static org.javers.core.diff.ListCompareAlgorithm.LEVENSHTEIN_DISTANCE;
 
 //decorator for javers compare functions
@@ -277,51 +284,58 @@ public class RelyingParty implements XMLSerializable {
         
         //take a diff
         Diff diff = javers.compare(this, obj);
-        
+       String foo = javers.getJsonConverter().toJson(diff).toString();
         //get the date
         ValueChange effectiveDate = (ValueChange)diff.getPropertyChanges("startTime").get(0);
         //create new history item using date
         historyItems = new HistoryItem(effectiveDate.getRight().toString());
         //now iterate over all changes and put into history item (ignore start and end times now)
-        List<Change> myChanges = diff.getChanges();
         try {
-            for (Change change:myChanges) {
+        //select out ValueChange objects only
+        List<ValueChange> myValueChanges = diff.getChangesByType(ValueChange.class);
+            for (ValueChange change:myValueChanges) {
                 //changed value
                 Object obj1 = change.getAffectedObject();  //returns changed object, new object, or deleted object
-                 if (change instanceof ValueChange)
-                {
-                    ValueChange thischange = (ValueChange)change;
-                    //if object type is RelyingParty then this change is a single valued field, not one of several belonging to another object.
-                    if (obj1 instanceof RelyingParty){
-                        String propertyName = thischange.getPropertyName().toString();
-                        String left = thischange.getLeft().toString();
-                        String right = thischange.getRight().toString();
-                        historyItems.AddItem(propertyName, left, right);
-
-                    }
-                    else {
-                        String propertyName = thischange.getPropertyName().toString();
-                        //string containing index of affected object
-                        String globalid = change.getAffectedGlobalId().toString();
-                        int objindex = Integer.parseInt(globalid.substring(globalid.length() - 1));
-                        //original object
-                        Object left = this.contactPersons.get(objindex);
-                        //changed object
-                        Object right = change.getAffectedObject();
-                        historyItems.AddItem(propertyName, left, right);
-
-                    }
-
+                //we don't care about these fields
+                if (change.getPropertyName().equalsIgnoreCase("startTime") ||
+                        change.getPropertyName().equalsIgnoreCase("endTime") ||
+                        change.getPropertyName().equalsIgnoreCase("uuid")) continue;
+                //if object type is RelyingParty then this change is a single valued field, not a list of fields of a different object type (e.g. contactPersons).
+                if (obj1 instanceof RelyingParty){
+                    String propertyName = change.getPropertyName().toString();
+                    String left = change.getLeft().toString();
+                    String right = change.getRight().toString();
+                    historyItems.AddItem(propertyName, left, right);
 
                 }
-                else if (change instanceof NewObject)
-                {
+                else {  //else should catch any "object" type fields of RelyingParty
+                    String propertyName = change.getPropertyName().toString();
+                    //string containing index of affected object
+                    GlobalId globalId = change.getAffectedGlobalId();
+                    ValueObjectId valueId = (ValueObjectId)globalId;
+                    String [] idList = valueId.getFragment().split("/");
+                    int objIndex = Integer.parseInt(idList[1]);
+                    //easy to get the change TO value from the change object
+                    Object right = change.getAffectedObject().get();
+                    //some nutty reflection to get the original value
+                    Class leftCls = this.getClass();
+                    Field leftField = leftCls.getDeclaredField(idList[0]);
+                    Object left =  leftField.get(this);
+
+                    historyItems.AddItem(propertyName, left, right);
 
                 }
-                else if (change instanceof ObjectRemoved)
-                {
-
+            }
+            List<NewObject> myNewObjects = diff.getChangesByType(NewObject.class);
+            for (Change change:myNewObjects) {
+                Object obj2 = change.getAffectedObject();
+                    //historyItems.AddItem();
                 }
+            List<ObjectRemoved> myRemovedObjects = diff.getChangesByType(ObjectRemoved.class);
+            for (Change change:myRemovedObjects) {
+                Object obj2 = change.getAffectedObject();
+                //historyItems.AddItem();
+            }
 
 
                /* Change myChange = change;
@@ -356,10 +370,10 @@ public class RelyingParty implements XMLSerializable {
                     Object obj3 = myChange.getAffectedLocalId();
                     //I need to figure out if something is a contact and then handle that properly--right now just field changes come through
                     //and I need to be able to attach contact properties  to a particular contact.
-                }*/}
+                }*/
         }
         catch (Exception e) {
-
+            Exception ee = e;
         }
 
         return historyItems;
