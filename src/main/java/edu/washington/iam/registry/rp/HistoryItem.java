@@ -1,65 +1,115 @@
 package edu.washington.iam.registry.rp;
 
 import java.util.*;
-import java.text.DateFormat;
 
 public class HistoryItem {
 
 
     private String effectiveDate;
     private List<ChangeItem> changes;
+    private String updatedBy;
 
-    private class ChangeItem
+    public class ChangeItem
     {
-        private String propertyName;
+
+
+        private String objectName;
         private Object oldValue;
         private Object newValue;
         private int changeType;
 
         private void LocalInit(){
 
-            propertyName = null;
+            objectName = null;
             oldValue = null;
             newValue = null;
-
             changeType = 0;
         }
 
-        private ChangeItem(String propertyName, Object oldValue, Object newValue, int changeType) {
+        private ChangeItem(String objectName, Object oldValue, Object newValue, int changeType) {
 
             LocalInit();
 
-            this.propertyName = propertyName;
+            this.objectName = objectName;
             this.oldValue = oldValue;
             this.newValue = newValue;
             this.changeType = changeType;
 
+
         }
+
+        public String getObjectName() {
+            return this.objectName;
+        }
+
+        public Object getOldValue() {
+            return this.oldValue;
+        }
+
+        public Object getNewValue() {
+            return this.newValue;
+        }
+
+        public int getChangeType() {
+            return this.changeType;
+        }
+
+
     }
 
     private void localInit () {
         effectiveDate = null;
         changes = new Vector();
+        updatedBy = "";
 
     }
 
 
 
-    public HistoryItem (String effectiveDate) {
+    public HistoryItem (String effectiveDate, String updatedBy) {
 
         localInit();
 
         this.effectiveDate = effectiveDate;
+        this.updatedBy = updatedBy;
 
     }
 
-
+    //1 = object changed
     //add a new instance of something that changed
-    public void AddItem(String propertyName, Object oldValue, Object newValue){
+    public void AddChangeItem(String objectName, Object oldValue, Object newValue){
 
-        ChangeItem myItem = new ChangeItem(propertyName, oldValue, newValue, 1);
+        ChangeItem myItem = new ChangeItem(objectName, oldValue, newValue, 1);
         changes.add(myItem);
 
+    }
+    //2 = object added (only new is populated)
+    // something added that wasn't there before
+    public void AddNewItem(String objectName, Object newValue){
+
+        ChangeItem myItem = new ChangeItem(objectName, null, newValue, 2);
+        changes.add(myItem);
+
+    }
+    //3 = object removed (only old is populated)
+    //something completely removed
+    public void AddDeleteItem(String objectName, Object oldValue){
+
+        ChangeItem myItem = new ChangeItem(objectName, oldValue, null, 3);
+        changes.add(myItem);
+
+    }
+
+    public String getEffectiveDate() {
+        return effectiveDate;
+    }
+
+    public List<ChangeItem> getChanges() {
+        return changes;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
     }
 
 

@@ -34,63 +34,116 @@
         <ul class="iamlist">
 
 
-                #if ($relyingPartyHistory)
-                #foreach ($item in $relyingPartyHistory)
-                <ul>
-                    <h4>Metadata history entry ${foreach.count}</h4>
-                    <li>Effective from: ${item.startTime}</li>
-                    <li>Effective to: ${item.endTime}</li>
-                    <li>Update made by: ${item.updatedBy}</li>
-                    #set ( $org = $item.organization )
-                    <li>Organization: ${org.name}</li>
-                    <li>Display Name: ${org.displayName}</li>
-                    <li>Url: ${org.url}</li>
+                #if ($rpHistory)
+                #foreach ( $item in $rpHistory )
+                    <li><ul>
+                        <li><h4>Metadata history entry ${velocityCount}</h4></li>
+                        <li>Date and Time of change: ${item.effectiveDate}</li>
+                        <li>Change made by: ${item.updatedBy}</li>
+                    #foreach ($change in ${item.changes})
+                        #if (${change.objectName} == "ContactPerson")
+                            #if (${change.changeType} == "1")
+                            <li>Contact Person Updated:
+                                <ul>
+                                    <li>Old Entry:</li>
+                                    <ul>
+                                        <li>Type:  ${change.oldValue.type}</li>
+                                        <li>Name: ${change.oldValue.givenName}</li>
+                                        <li>Email: ${change.oldValue.email}</li>
+                                        <li>Email: ${change.oldValue.phone}</li>
+                                    </ul>
 
-                    #foreach ( $ct in $item.contactPersons )
-                    <li>${ct.type}:
-                    #if ( $ct.givenName || $ct.surName )
-                     #X($!ct.givenName $!ct.surName)<br>
+                                    <li>New Entry:</li>
+                                    <ul>
+                                        <li>Type:  ${change.newValue.type}</li>
+                                        <li>Name: ${change.newValue.givenName}</li>
+                                        <li>Email: ${change.newValue.email}</li>
+                                        <li>Email: ${change.newValue.phone}</li>
+                                    </ul>
+                                </ul>
+                            </li>
+                            #end
+                            #if (${change.changeType} == "2")
+                                <li>New Contact Person Added:
+                                    <ul>
+
+                                        <li>Type:  ${change.newValue.type}</li>
+                                        <li>Name: ${change.newValue.givenName}</li>
+                                        <li>Email: ${change.newValue.email}</li>
+                                     
+                                    </ul>
+                                </li>
+                            #end
+                            #if (${change.changeType} == "3")
+                                <li>Contact Person Removed:
+                                    <ul>
+
+                                        <li>Type:  ${change.oldValue.type}</li>
+                                        <li>Name: ${change.oldValue.givenName}</li>
+                                        <li>Email: ${change.oldValue.email}</li>
+
+                                    </ul>
+                                </li>
+                            #end
+                        #end
+                        #if (${change.objectName} == "AssertionConsumerService")
+                            #if (${change.changeType} == "1")
+                                <li>Contact Person Updated:
+                                    <ul>
+                                        <li>Old Entry:</li>
+                                        <ul>
+                                            <li>Binding:  ${change.oldValue.binding}</li>
+                                            <li>Location: ${change.oldValue.location}</li>
+                                            <li>Index: ${change.oldValue.index}</li>
+                                        </ul>
+
+                                        <li>New Entry:</li>
+                                        <ul>
+                                            <li>Binding:  ${change.newValue.binding}</li>
+                                            <li>Location: ${change.newValue.location}</li>
+                                            <li>Index: ${change.newValue.index}</li>
+                                        </ul>
+                                    </ul>
+                                </li>
+                            #end
+                            #if (${change.changeType} == "2")
+                                <li>New Contact Person Added:
+                                    <ul>
+
+                                        <li>Binding:  ${change.newValue.binding}</li>
+                                        <li>Location: ${change.newValue.location}</li>
+                                        <li>Index: ${change.newValue.index}</li>
+
+                                    </ul>
+                                </li>
+                            #end
+                            #if (${change.changeType} == "3")
+                                <li>Contact Person Removed:
+                                    <ul>
+                                        <li>Binding:  ${change.oldValue.binding}</li>
+                                        <li>Location: ${change.oldValue.location}</li>
+                                        <li>Index: ${change.oldValue.index}</li>
+                                    </ul>
+                                </li>
+                            #end
+                        #end
                     #end
-                    #if ( $ct.company )
-                     #X($!ct.company) </br>
-                    #end
-                    #if ( $ct.email )
-                     #X($!ct.email)</br>
-                    #end
-                    </li>
-                    <li>
-                    #foreach ( $ps in $item.protocolSupportEnumerations )
-                     $ps <br>
-                    #end
-                    </li>
-                    #end
-                </ul>
+
+                    </ul></li>
                 #end
                 #else
                 <!-- <li>No metadata history found (this SP was probably registered before we started tracking history).
                 Future changes will be recorded here.  </li> -->
                 <li>Coming soon!</li>
                 #end
-                #if ($proxyHistory)
-                    #foreach ($item in $proxyHistory)
-                        <ul>
-                            <h4>Proxy history entry ${foreach.count}</h4>
-
-
-
-                        </ul>
-                    #end
-                #else
-                    <!-- <li>No proxy (social gateway) history found (this SP was probably registered before we started tracking history).
-                        Future changes will be recorded here.  </li> -->
-                #end
-            </div>
-
-
         </ul>
-
     </div>
+
+
+
+
 </div>
+
 
 
 

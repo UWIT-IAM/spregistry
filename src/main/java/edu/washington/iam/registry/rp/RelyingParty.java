@@ -54,6 +54,8 @@ import org.javers.core.*;
 import org.javers.core.diff.Diff;
 import org.javers.core.metamodel.object.*;
 
+import edu.washington.iam.registry.rp.HistoryItem;
+import edu.washington.iam.registry.rp.HistoryItem.*;
 
 import javax.xml.bind.ValidationEvent;
 
@@ -288,14 +290,16 @@ public class RelyingParty implements XMLSerializable {
         //get the date
         ValueChange effectiveDate = (ValueChange)diff.getPropertyChanges("startTime").get(0);
         //create new history item using date
-        historyItems = new HistoryItem(effectiveDate.getRight().toString());
+        historyItems = new HistoryItem(effectiveDate.getRight().toString(), obj.getUpdatedBy());
         //now iterate over all changes and put into history item (ignore start and end times now)
         try {
         //select out ValueChange objects only
-        List<ValueChange> myValueChanges = diff.getChangesByType(ValueChange.class);
+            int objDupIndex = -1;  //prevent duplicates
+            Class objDupType = null;  //prevent duplicates
+            List<ValueChange> myValueChanges = diff.getChangesByType(ValueChange.class);
             for (ValueChange change:myValueChanges) {
                 //changed value
-                Object obj1 = change.getAffectedObject();  //returns changed object, new object, or deleted object
+                Object obj1 = change.getAffectedObject();  //returns changed object
                 //we don't care about these fields
                 if (change.getPropertyName().equalsIgnoreCase("startTime") ||
                         change.getPropertyName().equalsIgnoreCase("endTime") ||
@@ -305,7 +309,7 @@ public class RelyingParty implements XMLSerializable {
                     String propertyName = change.getPropertyName().toString();
                     String left = change.getLeft().toString();
                     String right = change.getRight().toString();
-                    historyItems.AddItem(propertyName, left, right);
+                    historyItems.AddChangeItem(propertyName, left, right);
 
                 }
                 else {  //else should catch any "object" type fields of RelyingParty
@@ -315,26 +319,41 @@ public class RelyingParty implements XMLSerializable {
                     ValueObjectId valueId = (ValueObjectId)globalId;
                     String [] idList = valueId.getFragment().split("/");
                     int objIndex = Integer.parseInt(idList[1]);
+                    //since we grab the entire object when we detect one change,
+                    //don't bother tracking additional changes
+                    if (objIndex == objDupIndex && this.getClass() == objDupType)
+                    {
+                        continue;
+                    }
+                    objDupIndex = objIndex;  //keep track of this instance index
+                    objDupType = obj1.getClass();  //keep track of this instance type
                     //easy to get the change TO value from the change object
                     Object right = change.getAffectedObject().get();
                     //some nutty reflection to get the original value
                     Class leftCls = this.getClass();
                     Field leftField = leftCls.getDeclaredField(idList[0]);
-                    Object left =  leftField.get(this);
+                    Object left =  ((Vector)leftField.get(this)).get(objIndex);
 
-                    historyItems.AddItem(propertyName, left, right);
+                    //get short name from class name (easier to deal with in .vm templates)
+                    String [] objNameSplit = right.getClass().toString().split("\\.");
+                    String shortObjectName = objNameSplit[objNameSplit.length - 1];
+                    historyItems.AddChangeItem(shortObjectName, left, right);
+
 
                 }
             }
             List<NewObject> myNewObjects = diff.getChangesByType(NewObject.class);
             for (Change change:myNewObjects) {
                 Object obj2 = change.getAffectedObject();
-                    //historyItems.AddItem();
+                //if object type is RelyingParty then this change is a single valued field, not a list of fields of a different object type (e.g. contactPersons).
+                if (obj2 instanceof RelyingParty) {
+                    historyItems.AddNewItem(obj2.getClass().toString(), obj2);
                 }
+            }
             List<ObjectRemoved> myRemovedObjects = diff.getChangesByType(ObjectRemoved.class);
             for (Change change:myRemovedObjects) {
-                Object obj2 = change.getAffectedObject();
-                //historyItems.AddItem();
+                Object obj3 = change.getAffectedObject();
+                historyItems.AddDeleteItem(obj3.getClass().toString(), obj3);
             }
 
 
@@ -371,7 +390,7 @@ public class RelyingParty implements XMLSerializable {
                     //I need to figure out if something is a contact and then handle that properly--right now just field changes come through
                     //and I need to be able to attach contact properties  to a particular contact.
                 }*/
-        }
+            }
         catch (Exception e) {
             Exception ee = e;
         }
@@ -475,7 +494,7 @@ public class RelyingParty implements XMLSerializable {
     }
 
     public String getEntityCategory() {
-       return (entityCategory);
+        return (entityCategory);
     }
 
 }

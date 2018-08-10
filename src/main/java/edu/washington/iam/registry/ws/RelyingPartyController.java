@@ -672,27 +672,28 @@ public class RelyingPartyController {
         RelyingParty rp = null;
         RelyingParty rrp = null;
 
-        List<RelyingParty> relyingPartyHistory = null;
+        List<RelyingParty> relyingPartyEntries = null; //list of all RP entries from the database
         List<Proxy> proxyHistory = null;
 
         try {
-            relyingPartyHistory = rpManager.getRelyingPartyHistoryById(id);
+            relyingPartyEntries = rpManager.getRelyingPartyHistoryById(id);
         } catch (RelyingPartyException e) {
             log.debug("Exception occurred getting metadata history");
             return emptyMV("SP not found");
         }
         try {
             proxyHistory = proxyManager.getProxyHistory(id);
+
         } catch (ProxyException e){
             log.debug("Exception occurred getting proxy history");
         }
 
 
-        List<HistoryItem> rpHistory = new LinkedList<HistoryItem>();
-        if (relyingPartyHistory.size() > 1) {
+        List<HistoryItem> rpHistory = new LinkedList<HistoryItem>();  //list of parsed history items
+        if (relyingPartyEntries.size() > 1) {
             int i = 0;
-            while (i < relyingPartyHistory.size() - 1) {
-                HistoryItem item = relyingPartyHistory.get(i).RpCompare(relyingPartyHistory.get(i + 1));
+            while (i < relyingPartyEntries.size() - 1) {
+                HistoryItem item = relyingPartyEntries.get(i).RpCompare(relyingPartyEntries.get(i + 1));
                 rpHistory.add(item);
                 i++;
                     }
@@ -746,8 +747,8 @@ public class RelyingPartyController {
         mv.addObject("attributes", attributes);
         mv.addObject("relyingPartyId", id);
         mv.addObject("proxy", proxy);
-        mv.addObject("relyingPartyHistory", relyingPartyHistory);
-        mv.addObject("proxyHistory", proxyHistory);
+        mv.addObject("rpHistory", rpHistory);
+        //mv.addObject("proxyHistory", proxyHistory);
         mv.addObject("isAdmin", session.isAdmin);
         mv.addObject("isProxy", session.isProxy);
         mv.addObject("dateFormatter", new SimpleDateFormat("yy/MM/dd"));
