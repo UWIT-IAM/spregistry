@@ -21,7 +21,7 @@
 
 
 <div id="proxySpContainer" dojoType="dijit.layout.ContentPane" title="Gateway" selected="false" style="overflow:hidden"
-     onClose="return(true)" oLayout="false" >
+     onClose="return(true)" doLayout="false" >
 
   <ul class="buttonBar" role="navigation">
     #if ($canEdit)

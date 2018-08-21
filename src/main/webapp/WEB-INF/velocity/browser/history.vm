@@ -22,11 +22,11 @@
 
 
 <div id="historySpContainer" dojoType="dijit.layout.ContentPane" title="History" selected="false" style="overflow:hidden"
-     onClose="return(true)" oLayout="false" >
+     onClose="return(true)" doLayout="false" >
 
 
     <div id="historyViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;"
-         onShow="adjustSpPaneSize('proxyViewPane')">
+         onShow="adjustSpPaneSize('historyViewPane')">
 
         ## This tab displays a history of updates to this registration.
         <p>
@@ -41,7 +41,7 @@
                         <li>Date and Time of change: ${item.effectiveDate}</li>
                         <li>Change made by: ${item.updatedBy}</li>
                     #foreach ($change in ${item.changes})
-                        #if (${change.objectName} == "ContactPerson")
+                        #if (${change.objectName} == "contactPersons")
                             #if (${change.changeType} == "1")
                             <li>Contact Person Updated:
                                 <ul>
@@ -50,7 +50,7 @@
                                         <li>Type:  ${change.oldValue.type}</li>
                                         <li>Name: ${change.oldValue.givenName}</li>
                                         <li>Email: ${change.oldValue.email}</li>
-                                        <li>Email: ${change.oldValue.phone}</li>
+                                        <li>Phone: ${change.oldValue.phone}</li>
                                     </ul>
 
                                     <li>New Entry:</li>
@@ -58,7 +58,7 @@
                                         <li>Type:  ${change.newValue.type}</li>
                                         <li>Name: ${change.newValue.givenName}</li>
                                         <li>Email: ${change.newValue.email}</li>
-                                        <li>Email: ${change.newValue.phone}</li>
+                                        <li>Phone: ${change.newValue.phone}</li>
                                     </ul>
                                 </ul>
                             </li>
@@ -70,7 +70,7 @@
                                         <li>Type:  ${change.newValue.type}</li>
                                         <li>Name: ${change.newValue.givenName}</li>
                                         <li>Email: ${change.newValue.email}</li>
-                                     
+                                        <li>Phone: ${change.newValue.phone}</li>
                                     </ul>
                                 </li>
                             #end
@@ -85,10 +85,9 @@
                                     </ul>
                                 </li>
                             #end
-                        #end
-                        #if (${change.objectName} == "AssertionConsumerService")
+                        #elseif (${change.objectName} == "assertionConsumerServices")
                             #if (${change.changeType} == "1")
-                                <li>Contact Person Updated:
+                                <li>ACS Endpoint Updated:
                                     <ul>
                                         <li>Old Entry:</li>
                                         <ul>
@@ -107,7 +106,7 @@
                                 </li>
                             #end
                             #if (${change.changeType} == "2")
-                                <li>New Contact Person Added:
+                                <li>New ACS Endpoint Added:
                                     <ul>
 
                                         <li>Binding:  ${change.newValue.binding}</li>
@@ -118,7 +117,7 @@
                                 </li>
                             #end
                             #if (${change.changeType} == "3")
-                                <li>Contact Person Removed:
+                                <li>ACS Endpoint Removed:
                                     <ul>
                                         <li>Binding:  ${change.oldValue.binding}</li>
                                         <li>Location: ${change.oldValue.location}</li>
@@ -126,7 +125,108 @@
                                     </ul>
                                 </li>
                             #end
+                        #elseif (${change.objectName} == "keyDescriptors")
+                            #if (${change.changeType} == "1")
+                                <li>ACS Endpoint Updated:
+                                    <ul>
+                                        <li>Old Entry:</li>
+                                        <ul>
+                                            <li>Binding:  ${change.oldValue.use}</li>
+                                            <li>Location: ${change.oldValue.keyName}</li>
+                                            <li>Index: ${change.oldValue.certificate}</li>
+                                        </ul>
+
+                                        <li>New Entry:</li>
+                                        <ul>
+                                            <li>Binding:  ${change.newValue.use}</li>
+                                            <li>Location: ${change.newValue.keyName}</li>
+                                            <li>Index: ${change.newValue.certificate}</li>
+                                        </ul>
+                                    </ul>
+                                </li>
+                            #end
+                            #if (${change.changeType} == "2")
+                                <li>New ACS Endpoint Added:
+                                    <ul>
+
+                                        <li>Binding:  ${change.newValue.use}</li>
+                                        <li>Location: ${change.newValue.keyName}</li>
+                                        <li>Index: ${change.newValue.certificate}</li>
+
+                                    </ul>
+                                </li>
+                            #end
+                            #if (${change.changeType} == "3")
+                                <li>ACS Endpoint Removed:
+                                    <ul>
+                                        <li>Binding:  ${change.oldValue.use}</li>
+                                        <li>Location: ${change.oldValue.keyName}</li>
+                                        <li>Index: ${change.oldValue.certificate}</li>
+                                    </ul>
+                                </li>
+                            #end
+                        #elseif (${change.objectName} == "protocolSupportEnumerations")
+                            #if (${change.changeType} == "1")
+                                <li>Protocol Updated:
+                                    <ul>
+                                        <li>Old Entry:</li>
+                                        <ul>
+                                            <li>${change.oldValue}</li>
+                                        </ul>
+
+                                        <li>New Entry:</li>
+                                        <ul>
+                                            <li>${change.newValue}</li>
+                                        </ul>
+                                    </ul>
+                                </li>
+                            #end
+                            #if (${change.changeType} == "2")
+                                <li>Protocol Added:
+                                    <ul>
+                                        <li>${change.newValue.use}</li>
+                                    </ul>
+                                </li>
+                            #end
+                            #if (${change.changeType} == "3")
+                                <li>Protocol Removed:
+                                    <ul>
+                                        <li>${change.oldValue.use}</li>
+                                    </ul>
+                                </li>
+                            #end
+                        #elseif (${change.objectName} == "nameIDFormats")
+                            #if (${change.changeType} == "1")
+                                <li>NameID Updated:
+                                    <ul>
+                                        <li>Old Entry:</li>
+                                        <ul>
+                                            <li>${change.oldValue}</li>
+                                        </ul>
+
+                                        <li>New Entry:</li>
+                                        <ul>
+                                            <li>${change.newValue}</li>
+                                        </ul>
+                                    </ul>
+                                </li>
+                            #end
+                            #if (${change.changeType} == "2")
+                                <li>NameID Added:
+                                    <ul>
+                                        <li>${change.newValue.use}</li>
+                                    </ul>
+                                </li>
+                            #end
+                            #if (${change.changeType} == "3")
+                                <li>NameID Removed:
+                                    <ul>
+                                        <li>${change.oldValue.use}</li>
+                                    </ul>
+                                </li>
+                            #end
                         #end
+
                     #end
 
                     </ul></li>

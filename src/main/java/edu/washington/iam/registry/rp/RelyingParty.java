@@ -334,10 +334,8 @@ public class RelyingParty implements XMLSerializable {
                     Field leftField = leftCls.getDeclaredField(idList[0]);
                     Object left =  ((Vector)leftField.get(this)).get(objIndex);
 
-                    //get short name from class name (easier to deal with in .vm templates)
-                    String [] objNameSplit = right.getClass().toString().split("\\.");
-                    String shortObjectName = objNameSplit[objNameSplit.length - 1];
-                    historyItems.AddChangeItem(shortObjectName, left, right);
+                    //idList[0] is the name of the property in RelyingParty Object
+                    historyItems.AddChangeItem(idList[0], left, right);
 
 
                 }
