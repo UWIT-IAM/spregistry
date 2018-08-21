@@ -697,7 +697,7 @@ public class RelyingPartyController {
                 rpHistory.add(item);
                 i++;
                     }
-                }
+        }
 
 
 
