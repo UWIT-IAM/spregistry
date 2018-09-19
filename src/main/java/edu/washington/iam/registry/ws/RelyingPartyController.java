@@ -137,8 +137,8 @@ public class RelyingPartyController {
     private static String roleCookie = "spck2";
     private static String logoutUrl;
 
-    private static String mailTo = "pubcookie@u.washington.edu";
-    private static String requestMailTo = "iam-support@u.washington.edu";
+    private static String mailTo = "u_weblogin_spreg-notify@uw.edu";
+    private static String requestMailTo = "help@uw.edu";
 
     // sessions
     private String standardLoginPath = "/login";
