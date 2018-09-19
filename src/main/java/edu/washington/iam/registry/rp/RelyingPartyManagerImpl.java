@@ -241,22 +241,22 @@ public class RelyingPartyManagerImpl implements RelyingPartyManager {
         return new ArrayList<>(metadataDAOs.keySet());
     }
 
-    public int updateRelyingParty(RelyingParty relyingParty, String mdid) throws RelyingPartyException {
+    public int updateRelyingParty(RelyingParty relyingParty, String mdid, String remoteUser) throws RelyingPartyException {
         int status = 200;
         log.info(String.format("rp update doc, source=%s; rpid=%s", mdid, relyingParty.getEntityId()));
         // do a final verification of the new metadata
         if (schemaVerifier!=null && ! schemaVerifier.testSchemaValid(relyingParty)) throw new RelyingPartyException("The posted document did not produce valid metadata.");
-        metadataDAOs.get(mdid).updateRelyingParty(relyingParty);
+        metadataDAOs.get(mdid).updateRelyingParty(relyingParty, remoteUser);
         return (status);
     }
 
 
     /* delete relyingParty */
     @Override
-    public int removeRelyingParty(String id, String mdid) {
+    public int removeRelyingParty(String id, String mdid, String remoteUser) {
         log.info("rp delete doc " + id);
 
-        metadataDAOs.get(mdid).removeRelyingParty(id);
+        metadataDAOs.get(mdid).removeRelyingParty(id, remoteUser);
         return (200);
     }
 

@@ -103,7 +103,7 @@ public class DBMetadata implements MetadataDAO {
     }
 
     @Override
-    public void updateRelyingParty(RelyingParty relyingParty) {
+    public void updateRelyingParty(RelyingParty relyingParty, String updatedBy) {
         log.info(String.format("updating metadata for rp %s in %s", relyingParty.getEntityId(), groupId));
         try {
             String xml = XMLHelper.serializeXmlToString(relyingParty);
@@ -114,18 +114,18 @@ public class DBMetadata implements MetadataDAO {
             if (existingIds.size() == 0) {
                 // no active records so we add an active record
                 template.update(
-                        "insert into metadata (uuid, group_id, entity_id, xml, end_time, start_time) values " +
-                                "(? ,?, ?, ?, ?, now())",
-                        genUUID(), groupId, relyingParty.getEntityId(), xml, null);
+                        "insert into metadata (uuid, group_id, entity_id, xml, end_time, start_time, updated_by) values " +
+                                "(? ,?, ?, ?, ?, now(), ?)",
+                        genUUID(), groupId, relyingParty.getEntityId(), xml, null, updatedBy);
                         log.debug("added new rp " + relyingParty.getEntityId());
             } else if (existingIds.size() == 1) {
                 // active record exists so mark last one inactive
                 template.update("update metadata set end_time = now() where id = ?", existingIds.get(0));
                 // add new active record
                 log.info(Integer.toString(template.update(
-                        "insert into metadata (uuid, group_id, entity_id, xml, end_time, start_time) values " +
-                                "(?, ?, ?, ?, ?, now())",
-                        relyingParty.getUuid(), groupId, relyingParty.getEntityId(), xml, null)));
+                        "insert into metadata (uuid, group_id, entity_id, xml, end_time, start_time, updated_by) values " +
+                                "(?, ?, ?, ?, ?, now(), ?)",
+                        relyingParty.getUuid(), groupId, relyingParty.getEntityId(), xml, null, updatedBy)));
                 log.debug("updated existing rp " + relyingParty.getEntityId());
             } else {
                 throw new RelyingPartyException("more than one active metadata record found!!  No update performed.  ");
@@ -139,16 +139,22 @@ public class DBMetadata implements MetadataDAO {
 
 
     @Override
-    public void removeRelyingParty(String rpid) {
+    public void removeRelyingParty(String rpid, String updatedBy) {
         try {
             log.info(String.format("looking to remove metadata for rp %s in %s", rpid, groupId));
+            /* small bit of errata:  when removing an RP we rewrite the updatedBy field of the last record to the netid
+            of the person who deleted it.  In this sense we lose the data of whoever made the last update,
+            but I think it's more important to know who deleted it over who made the last update
+            before it was deleted.  Contrast with an update (above) where we mark the old record
+            inactive but don't change who updated it.  We don't display deletes to users, so this mostly
+             matters in an audit situation.  */
             List<Integer> rpIds = template.queryForList(
                     "select id from metadata where group_id = ? and entity_id = ? and end_time is null",
                     Integer.class,
                     groupId, rpid);
             if (rpIds.size() == 1 && rpIds.get(0) != null) {
-                log.info(Integer.toString(template.update("update metadata set end_time = now() where id = ?",
-                        rpIds.get(0))));
+                log.info(Integer.toString(template.update("update metadata set end_time = now(), updated_by = ? where id = ?",
+                        updatedBy, rpIds.get(0))));
                 log.info(String.format("updated (delete) %s", rpid));
             }
             else if (rpIds.size() == 0) {

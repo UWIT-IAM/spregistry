@@ -58,6 +58,7 @@ import edu.washington.iam.registry.rp.HistoryItem;
 import edu.washington.iam.registry.rp.HistoryItem.*;
 
 import javax.xml.bind.ValidationEvent;
+import java.util.Optional;
 
 import static org.javers.core.diff.ListCompareAlgorithm.LEVENSHTEIN_DISTANCE;
 
@@ -293,102 +294,131 @@ public class RelyingParty implements XMLSerializable {
         historyItems = new HistoryItem(effectiveDate.getRight().toString(), obj.getUpdatedBy());
         //now iterate over all changes and put into history item (ignore start and end times now)
         try {
-        //select out ValueChange objects only
+            //select out ValueChange objects only
             int objDupIndex = -1;  //prevent duplicates
-            Class objDupType = null;  //prevent duplicates
+            Object objDupType = null;  //prevent duplicates
             List<ValueChange> myValueChanges = diff.getChangesByType(ValueChange.class);
-            for (ValueChange change:myValueChanges) {
+            for (ValueChange change : myValueChanges) {
                 //changed value
                 Object obj1 = change.getAffectedObject();  //returns changed object
                 //we don't care about these fields
                 if (change.getPropertyName().equalsIgnoreCase("startTime") ||
                         change.getPropertyName().equalsIgnoreCase("endTime") ||
-                        change.getPropertyName().equalsIgnoreCase("uuid")) continue;
+                        change.getPropertyName().equalsIgnoreCase("uuid") ||
+                        change.getPropertyName().equalsIgnoreCase("updatedBy")) continue;
                 //if object type is RelyingParty then this change is a single valued field, not a list of fields of a different object type (e.g. contactPersons).
-                if (obj1 instanceof RelyingParty){
+                if (obj1 instanceof RelyingParty) {
                     String propertyName = change.getPropertyName().toString();
                     String left = change.getLeft().toString();
                     String right = change.getRight().toString();
                     historyItems.AddChangeItem(propertyName, left, right);
 
-                }
-                else {  //else should catch any "object" type fields of RelyingParty
+                } else {  //else should catch any "object" type fields of RelyingParty
                     String propertyName = change.getPropertyName().toString();
                     //string containing index of affected object
                     GlobalId globalId = change.getAffectedGlobalId();
-                    ValueObjectId valueId = (ValueObjectId)globalId;
-                    String [] idList = valueId.getFragment().split("/");
+                    ValueObjectId valueId = (ValueObjectId) globalId;
+                    String[] idList = valueId.getFragment().split("/");
                     int objIndex = Integer.parseInt(idList[1]);
                     //since we grab the entire object when we detect one change,
                     //don't bother tracking additional changes
-                    if (objIndex == objDupIndex && this.getClass() == objDupType)
-                    {
+                    if (objIndex == objDupIndex && obj1.equals(objDupType)) {
                         continue;
                     }
                     objDupIndex = objIndex;  //keep track of this instance index
-                    objDupType = obj1.getClass();  //keep track of this instance type
+                    objDupType = obj1;  //keep track of this object so we don't duplicate it
                     //easy to get the change TO value from the change object
                     Object right = change.getAffectedObject().get();
                     //some nutty reflection to get the original value
                     Class leftCls = this.getClass();
                     Field leftField = leftCls.getDeclaredField(idList[0]);
-                    Object left =  ((Vector)leftField.get(this)).get(objIndex);
+                    Object left = ((Vector) leftField.get(this)).get(objIndex);
 
                     //idList[0] is the name of the property in RelyingParty Object
+                    //note the object type name from left and right are different from idlist[0].  The latter is the name of
+                    //the list of the former objects in RelyingParty Object.
                     historyItems.AddChangeItem(idList[0], left, right);
 
 
                 }
             }
             List<NewObject> myNewObjects = diff.getChangesByType(NewObject.class);
-            for (Change change:myNewObjects) {
-                Object obj2 = change.getAffectedObject();
+            for (Change change : myNewObjects) {
+                Object obj2 = change.getAffectedObject().get();
+                String[] classNameSplit = obj2.getClass().toString().split("\\.");
+                String className = classNameSplit[classNameSplit.length - 1];
+                if (className.equalsIgnoreCase("startTime") ||
+                        className.equalsIgnoreCase("endTime") ||
+                        className.equalsIgnoreCase("uuid") ||
+                        className.equalsIgnoreCase("loggerRemoteView") ||
+                        className.equalsIgnoreCase("logger") ||
+                        className.equalsIgnoreCase("updatedBy")) continue;
                 //if object type is RelyingParty then this change is a single valued field, not a list of fields of a different object type (e.g. contactPersons).
                 if (obj2 instanceof RelyingParty) {
-                    historyItems.AddNewItem(obj2.getClass().toString(), obj2);
+                    historyItems.AddNewItem(className, obj2);
+                } else {  //else should catch any "object" type fields of RelyingParty
+                    String propertyName = className;
+                    //string containing index of affected object
+                    GlobalId globalId = change.getAffectedGlobalId();
+                    ValueObjectId valueId = (ValueObjectId) globalId;
+                    String[] idList = valueId.getFragment().split("/");
+                    int objIndex = Integer.parseInt(idList[1]);
+                    //since we grab the entire object when we detect one change,
+                    //don't bother tracking additional changes
+                    if (objIndex == objDupIndex && obj2.equals(objDupType)) {
+                        continue;
+                    }
+                    objDupIndex = objIndex;  //keep track of this instance index
+                    objDupType = obj2;  //keep track of this object so we don't duplicate it
+                    //idList[0] is the name of the property in RelyingParty Object
+                    //note the object type (classname above) is different from idlist[0].  The latter is the name of
+                    //the list of the former objects in RelyingParty Object.
+                    historyItems.AddNewItem(idList[0], obj2);
+
+
                 }
+
             }
             List<ObjectRemoved> myRemovedObjects = diff.getChangesByType(ObjectRemoved.class);
-            for (Change change:myRemovedObjects) {
-                Object obj3 = change.getAffectedObject();
-                historyItems.AddDeleteItem(obj3.getClass().toString(), obj3);
-            }
-
-
-               /* Change myChange = change;
-                Object obj1 = change.getAffectedObject();
-                Object obj2 = change.getAffectedGlobalId();
-                Object obj3 = change.getAffectedLocalId();
-                Object obj4 = change.getAffectedObject();
-                String testt = typeof*/
-               /* if (    //fields we don't care about
-                        !myChange.getPropertyName().equalsIgnoreCase("startTime") &&
-                                !myChange.getPropertyName().equalsIgnoreCase("endTime") &&
-                                !myChange.getPropertyName().equalsIgnoreCase("uuid")
-                        ) {
-
-                    String left;
-                    if (myChange.getLeft() == null)
-                    {
-                        left = "(missing or deleted)";
-                    } else {
-                        left = myChange.getLeft().toString();
+            for (Change change : myRemovedObjects) {
+                Object obj3 = change.getAffectedObject().get();
+                String[] classNameSplit = obj3.getClass().toString().split("\\.");
+                String className = classNameSplit[classNameSplit.length - 1];
+                if (className.equalsIgnoreCase("startTime") ||
+                        className.equalsIgnoreCase("endTime") ||
+                        className.equalsIgnoreCase("uuid") ||
+                        className.equalsIgnoreCase("loggerRemoteView") ||
+                        className.equalsIgnoreCase("logger") ||
+                        className.equalsIgnoreCase("updatedBy")) continue;
+                //if object type is RelyingParty then this change is a single valued field, not a list of fields of a different object type (e.g. contactPersons).
+                if (obj3 instanceof RelyingParty) {
+                    historyItems.AddDeleteItem(className, change.toString()); //will that work?
+                } else {  //else should catch any "object" type fields of RelyingParty
+                    String propertyName = className;
+                    //string containing index of affected object
+                    GlobalId globalId = change.getAffectedGlobalId();
+                    ValueObjectId valueId = (ValueObjectId) globalId;
+                    String[] idList = valueId.getFragment().split("/");
+                    int objIndex = Integer.parseInt(idList[1]);
+                    //since we grab the entire object when we detect one change,
+                    //don't bother tracking additional changes
+                    if (objIndex == objDupIndex && obj3.equals(objDupType)) {
+                        continue;
                     }
-                    String right;
-                    if (myChange.getRight() == null)
-                    {
-                        right = "(missing or deleted)";
-                    } else {
-                        right = myChange.getRight().toString();
-                    }
-                    item.AddItem(myChange.getPropertyName(), left, right);
-                    Object obj1 = myChange.getAffectedObject();
-                    Object obj2 = myChange.getAffectedGlobalId();
-                    Object obj3 = myChange.getAffectedLocalId();
-                    //I need to figure out if something is a contact and then handle that properly--right now just field changes come through
-                    //and I need to be able to attach contact properties  to a particular contact.
-                }*/
+                    objDupIndex = objIndex;  //keep track of this instance index
+                    objDupType = obj3;  //keep track of this object so we don't duplicate it
+                    //some nutty reflection to get the original value
+                    Class leftCls = this.getClass();
+                    Field leftField = leftCls.getDeclaredField(idList[0]);
+                    Object left = ((Vector) leftField.get(this)).get(objIndex);
+                    //idList[0] is the name of the property in RelyingParty Object
+                    //note the object type (classname above) is different from idlist[0].  The latter is the name of
+                    //the list of the former objects in RelyingParty Object.
+                    historyItems.AddDeleteItem(idList[0], left);
+                }
+
             }
+        }
         catch (Exception e) {
             Exception ee = e;
         }

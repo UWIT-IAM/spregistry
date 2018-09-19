@@ -186,7 +186,7 @@ public class XMLMetadata implements MetadataDAO {
    }
 
    @Override
-   public void updateRelyingParty(RelyingParty rp) {
+   public void updateRelyingParty(RelyingParty rp, String updatedBy) {
       if (!editable) return;
 
       refreshMetadataIfNeeded();
@@ -208,7 +208,7 @@ public class XMLMetadata implements MetadataDAO {
 
    // remove a single rp
    @Override
-   public void removeRelyingParty(String id) {
+   public void removeRelyingParty(String id, String updatedBy) {
       if (!editable) return;
       refreshMetadataIfNeeded();
       locker.readLock().lock();

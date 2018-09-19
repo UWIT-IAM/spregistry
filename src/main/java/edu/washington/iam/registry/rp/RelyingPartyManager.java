@@ -20,8 +20,8 @@ public interface RelyingPartyManager extends Serializable {
    public RelyingParty getRelyingPartyById(String id) throws RelyingPartyException;
    public RelyingParty getRelyingPartyById(String id, String mdid) throws RelyingPartyException;
 
-   public int updateRelyingParty(RelyingParty relyingParty, String mdId) throws RelyingPartyException;
-   public int removeRelyingParty(String id, String mdId);
+   public int updateRelyingParty(RelyingParty relyingParty, String mdId, String remoteUser) throws RelyingPartyException;
+   public int removeRelyingParty(String id, String mdId, String remoteUser);
 
    public RelyingParty genRelyingPartyByLookup(String dns) throws RelyingPartyException;
    public RelyingParty genRelyingPartyByName(String entityId, String dns);

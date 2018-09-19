@@ -94,7 +94,7 @@ public class DBMetadataTest {
 
     @Test
     public void testRemoveRelyingParty(){
-        dao.removeRelyingParty(fakeEntityIds.get(0));
+        dao.removeRelyingParty(fakeEntityIds.get(0), "testuser");
         List<String> ids = dao.searchRelyingPartyIds(null);
         Assert.assertEquals(fakeEntityIds.size() - 1, ids.size());
     }
@@ -104,7 +104,7 @@ public class DBMetadataTest {
         String entityId = "https://updaterelyingpartynewrp.s.uw.edu";
         RelyingParty relyingParty = fakeRelyingParty(entityId);
 
-        dao.updateRelyingParty(relyingParty);
+        dao.updateRelyingParty(relyingParty, "testuser");
 
         List<String> ids = dao.searchRelyingPartyIds(null);
         Assert.assertEquals(fakeEntityIds.size() + 1, ids.size());
@@ -117,7 +117,7 @@ public class DBMetadataTest {
         Assert.assertTrue(getTimestampForRP(fakeEntityIds.get(0)).before(preUpdateTime));
         int preUpdateSize = dao.searchRelyingPartyIds(null).size();
 
-        dao.updateRelyingParty(fakeRelyingParty(fakeEntityIds.get(0)));
+        dao.updateRelyingParty(fakeRelyingParty(fakeEntityIds.get(0)), "testuser");
 
         Assert.assertTrue(String.format("update time for %s has changed", fakeEntityIds.get(0)),
                 getTimestampForRP(fakeEntityIds.get(0)).after(preUpdateTime));
@@ -130,7 +130,7 @@ public class DBMetadataTest {
         Timestamp preUpdateTime = new Timestamp(new Date().getTime());
         int preUpdateSize = dao.searchRelyingPartyIds(null).size();
 
-        dao.updateRelyingParty(fakeRelyingParty(fakeEntityIds.get(0)));
+        dao.updateRelyingParty(fakeRelyingParty(fakeEntityIds.get(0)), "testuser");
 
         Assert.assertTrue(String.format("update time for %s has changed", fakeEntityIds.get(0)),
                 getTimestampForRP(fakeEntityIds.get(0)).after(preUpdateTime));

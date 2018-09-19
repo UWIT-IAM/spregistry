@@ -973,7 +973,7 @@ public class RelyingPartyController {
         }
 
         try {
-            status = rpManager.updateRelyingParty(relyingParty, mdid);
+            status = rpManager.updateRelyingParty(relyingParty, mdid, session.remoteUser);
         } catch (RelyingPartyException e) {
             status = 400;
             mv.addObject("alert", e.getMessage());
@@ -1064,7 +1064,7 @@ public class RelyingPartyController {
         }
         if(rp.getEntityId().equals(id)){
            try {
-               rpManager.updateRelyingParty(rp, mdid);
+               rpManager.updateRelyingParty(rp, mdid, session.remoteUser);
            } catch (RelyingPartyException e) {
               status = 400;
               mv.addObject("alert", "Update of the metadata failed:\n" + e.getMessage());
@@ -1123,7 +1123,7 @@ public class RelyingPartyController {
             } else {
                 status = proxyManager.removeProxy(id);
                 status = filterPolicyManager.removeEditableRelyingParty(id);
-                status = rpManager.removeRelyingParty(id, mdid);
+                status = rpManager.removeRelyingParty(id, mdid, session.remoteUser);
             }
         } catch (FilterPolicyException e) {
            mv.addObject("alert", "delete of filter policy failed:\n" + e.getCause());
