@@ -26,6 +26,9 @@
  <Attribute id="NIHePPN" description="ePPN with inline scoping (for NIH)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="NIHePTID" description="persistent ID with inline scoping (for NIH)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="phone" description="Employee phone (PDS: uwEWPPhone1)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="preferredFirst" description="Preferred first name  (PDS: uwPersonPreferredFirst)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="preferredMiddle" description="Preferred middle name  (PDS: uwPersonPreferredFirst)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="preferredSurname" description="Preferred surname  (PDS: uwPersonPreferredSurname)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="scopedAffiliation" description="affiliation with '@washington.edu'"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="surname" description="Last name (PDS: sn)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="title" description="Title (PDS: uwEWPTitle1)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
@@ -35,16 +38,17 @@
  <Attribute id="uwRegID" description="UW registry id"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="uwStudentID" description="UW Student ID"  authorizingGroup="u_weblogin_admins"  type="attribute" /> 
  <Attribute id="uwStudentSystemKey" description="UW Student System Key"  authorizingGroup="u_weblogin_admins"  type="attribute" /> 
-
- <Attribute id="nsc_pid" description="Student ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
- <Attribute id="nsc_opeid" description="UW's ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <!--following attributes hidden except from admins or on attribute pages of SPs that receive them-->
  <Attribute id="awsrole" description="AWS Account ID and roles (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="awssession" description="AWS Session Duration (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="awsname" description="AWS Role Session Name (eppn) (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="nsc_pid" description="Student ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="nsc_opeid" description="UW's ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="slack_email" description="Slack email (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="slack_user" description="Slack user (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="slack_fname" description="Slack first name (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="slack_lname" description="Slack last name (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+
 
 
 </Attributes>

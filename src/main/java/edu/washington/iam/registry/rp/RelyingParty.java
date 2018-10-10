@@ -228,15 +228,13 @@ public class RelyingParty implements XMLSerializable {
        entityId = id;
        editable = true;
 
-       protocolSupportEnumerationsUnsplit = "urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol";
+       protocolSupportEnumerationsUnsplit = "urn:oasis:names:tc:SAML:2.0:protocol";
        protocolSupportEnumerations = Arrays.asList(protocolSupportEnumerationsUnsplit.split(" "));
 
        keyDescriptors.add(new KeyDescriptor(dns));
        nameIDFormats.add("urn:mace:shibboleth:1.0:nameIdentifier");
 
        assertionConsumerServices.add(new AssertionConsumerService(1,
-           "urn:oasis:names:tc:SAML:1.0:profiles:browser-post", "https://" + dns + "/Shibboleth.sso/SAML/POST"));
-       assertionConsumerServices.add(new AssertionConsumerService(2,
            "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST", "https://" + dns + "/Shibboleth.sso/SAML2/POST"));
        organization = new Organization("", "", "");
        contactPersons.add(new ContactPerson("administrative"));
@@ -280,11 +278,11 @@ public class RelyingParty implements XMLSerializable {
     public HistoryItem RpCompare(RelyingParty obj){
 
         HistoryItem historyItems;
-        
+
         Javers javers = JaversBuilder.javers()
                 .withListCompareAlgorithm(LEVENSHTEIN_DISTANCE)
                 .build();
-        
+
         //take a diff
         Diff diff = javers.compare(this, obj);
        String foo = javers.getJsonConverter().toJson(diff).toString();
