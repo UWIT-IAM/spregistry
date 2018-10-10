@@ -11,6 +11,10 @@
 RewriteCond %{REQUEST_URI} ^/sp-registry*
 RewriteRule ^/* /spreg/ [R=301,L]
 
+RewriteCond %{HTTP_USER_AGENT}  Trident
+RewriteCond %{REQUEST_URI} ^/spreg*
+RewriteRule ^(.*)$ https://iam-tools.u.washington.edu/ie.html
+
 ProxyPass /spreg ajp://localhost:8009/spreg
 
 # browser authn
