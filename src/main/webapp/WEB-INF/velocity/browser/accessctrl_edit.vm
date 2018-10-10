@@ -1,0 +1,78 @@
+#* ========================================================================
+ * Copyright (c) 2012-2013 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ *#
+##
+
+#macro(gatewayItemEdit $friendlyName $name $socialActive)
+<h4>$friendlyName</h4>
+
+<ul class="iamlist">
+  <li><label for="${name}_flag">Allow Social sign-on</label>
+    <div class="dd">
+        <input id="${name}_flag" dojoType="dijit/form/CheckBox"
+                           #if(${socialActive}) checked #end
+                           />
+    </div>
+  </li>
+</ul>
+#end
+
+<div id="accessCtrlEditDialog" data-dojo-type="dijit/Dialog" title="Edit access control data for ${relyingPartyId}" ${hide}>
+  <div class="dijitDialogPaneContentArea" data-dojo-type="dijit/layout/ContentPane" >
+
+    <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/8wr-B" target="spghelp">help</a></div>
+    <h3>SAML Gateway</h3>
+    #gatewayItemEdit("Social IdP Sign-On", "social_login", ${accessctrl.auto2FA})
+
+
+<div id="accessCtrlDeleteDialog" data-dojo-type="dijit/Dialog" title="Proxy delete" $hide>
+<h3>Permanently delete proxy data for ${relyingPartyId}?</h3>
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" type="button" onClick="proxy_deleteProxy('${relyingPartyId}')">Yes, delete</button>
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('proxyDeleteDialog')">Cancel</button>
+ </div>
+</div>
+
+</div>
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" id="accessCtrlEditSaver" type="button" onClick="proxy_saveProxy('${relyingPartyId}')">Save changes</button>
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('accessCtrlEditDialog')">Close</button>
+ </div>
+
+
+## not saved dialog
+
+<div id="accessCtrlNotSavedDialog" data-dojo-type="dijit/Dialog" title="Metadata not saved" $hide>
+<h3>Your changes have not been saved.<p>Close anyway?</h3>
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" type="button">Yes, close
+        <script type="dojo/on" data-dojo-event="click">
+          iam_hideTheDialog('accessCtrlNotSavedDialog');
+          showHomePage();
+        </script>
+    </button>
+    <button dojoType="dijit.form.Button" type="button">No, continue editing
+        <script type="dojo/on" data-dojo-event="click">
+           iam_hideTheDialog('accessCtrlNotSavedDialog');
+           iam_showTheDialog('accessCtrlEditDialog');
+        </script>
+    </button>
+ </div>
+</div>
+
+
+</div>
+

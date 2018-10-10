@@ -1,0 +1,65 @@
+#* ========================================================================
+ * Copyright (c) 2013 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ *#
+##
+## proxy tab
+##
+
+
+
+<div id="accessCtrlSpContainer" dojoType="dijit.layout.ContentPane" title="Access Control" selected="false" style="overflow:hidden"
+     onClose="return(true)" doLayout="false" >
+
+  <ul class="buttonBar" role="navigation">
+    #if ($canEdit)
+    <li><button dojoType="dijit.form.Button" type="button" onClick="iam_showTheDialog('accessCtrlEditDialog',['sp/proxylib'])">Edit</button></li>
+    #end
+  </ul>
+
+  <div id="accessCtrlViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;"
+       onShow="adjustSpPaneSize('accessCtrlViewPane')">
+
+    <p />
+      <h3>Auto 2FA</h3>
+      <ul class="iamlist" style="padding-left: 20px">
+        #if ($accessctrl.auto2FA)
+            <li>
+                <fieldset style="margin-bottom:8px">
+                    <legend class="h4">Auto 2FA</legend>
+                    <div class="dd">
+                        <ul class="iamlist">
+                            <li>
+                                Auto 2FA is enabled. <font color="green">&#x2714;</font>
+                            </li>
+                        </ul>
+                    </div>
+                </fieldset>
+            </li>
+        #else
+        <li>
+            Auto 2FA is not configured for this Service Provider.
+        </li>
+        #end
+
+      </ul>
+
+  </div>
+</div> 
+
+#if ($canEdit)
+#parse ( "browser/accessctrl_edit.vm" )
+#end
+
