@@ -16,14 +16,14 @@
  *#
 ##
 
-#macro(gatewayItemEdit $friendlyName $name $socialActive)
+#macro(accessCtrlItemEdit $friendlyName $name $isActive)
 <h4>$friendlyName</h4>
 
 <ul class="iamlist">
-  <li><label for="${name}_flag">Allow Social sign-on</label>
+  <li><label for="${name}_flag">Enable Auto 2FA</label>
     <div class="dd">
         <input id="${name}_flag" dojoType="dijit/form/CheckBox"
-                           #if(${socialActive}) checked #end
+                           #if(${isActive}) checked #end
                            />
     </div>
   </li>
@@ -34,12 +34,39 @@
   <div class="dijitDialogPaneContentArea" data-dojo-type="dijit/layout/ContentPane" >
 
     <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/8wr-B" target="spghelp">help</a></div>
-    <h3>SAML Gateway</h3>
-    #gatewayItemEdit("Social IdP Sign-On", "social_login", ${accessctrl.auto2FA})
+    <h3>Conditional Access</h3>
+    <h4>Auto 2FA</h4>
+
+    <ul class="iamlist">
+      <li><label for="${auto2fa_flag}">Enable Auto 2FA</label>
+          <div class="dd">
+              <input id="auto2fa_flag" dojoType="dijit/form/CheckBox"
+                  #if(${accessCtrl.auto2FA}) checked #end
+              />
+          </div>
+      </li>
+    </ul>
+      <h4>Conditional Access</h4>
+      <ul class="iamlist">
+          <li><label for="${conditional_flag}">Enable Conditional Access</label>
+              <div class="dd">
+                  <input id="conditional_flag" dojoType="dijit/form/CheckBox"
+                      #if(${accessCtrl.conditional}) checked #end
+                  />
+
+              </div>
+          </li>
+          <li><div class="dd"><label for="${conditional_group}">Conditional Access Group:</label></div>
+              <div class="dd">
+                  <input data-dojo-type="dijit/form/TextBox" id="conditional_group" #if(${accessCtrl.conditional}) value=${accessCtrl.conditionalGroup} #end /><div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/jTCoAQ" target="spghelp"> help</a></div>
+              </div>
+          </li>
+      </ul>
+
 
 
 <div id="accessCtrlDeleteDialog" data-dojo-type="dijit/Dialog" title="Proxy delete" $hide>
-<h3>Permanently delete proxy data for ${relyingPartyId}?</h3>
+<h3>Disable Auto 2FA for ${relyingPartyId}?</h3>
  <div class="dijitDialogPaneActionBar">
     <button dojoType="dijit.form.Button" type="button" onClick="proxy_deleteProxy('${relyingPartyId}')">Yes, delete</button>
     <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('proxyDeleteDialog')">Cancel</button>

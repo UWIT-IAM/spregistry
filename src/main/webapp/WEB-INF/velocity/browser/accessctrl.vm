@@ -35,7 +35,7 @@
     <p />
       <h3>Auto 2FA</h3>
       <ul class="iamlist" style="padding-left: 20px">
-        #if ($accessctrl.auto2FA)
+        #if ($accessCtrl.auto2FA)
             <li>
                 <fieldset style="margin-bottom:8px">
                     <legend class="h4">Auto 2FA</legend>
@@ -53,6 +53,29 @@
             Auto 2FA is not configured for this Service Provider.
         </li>
         #end
+
+      </ul>
+      <p />
+      <h3>Conditional Access</h3>
+      <ul class="iamlist" style="padding-left: 20px">
+          #if ($accessCtrl.conditional)
+              <li>
+                  <fieldset style="margin-bottom:8px">
+                      <legend class="h4">Conditional Access</legend>
+                      <div class="dd">
+                          <ul class="iamlist">
+                              <li>
+                                  Conditional access is enabled using group ($accessCtrl.conditionalGroup) <font color="green">&#x2714;</font>
+                              </li>
+                          </ul>
+                      </div>
+                  </fieldset>
+              </li>
+          #else
+              <li>
+                  Conditional access is not configured for this Service Provider.
+              </li>
+          #end
 
       </ul>
 

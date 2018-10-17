@@ -25,6 +25,7 @@ import java.io.BufferedWriter;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
+import edu.washington.iam.registry.exception.*;
 import edu.washington.iam.registry.rp.RelyingPartyEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,11 +67,8 @@ import edu.washington.iam.registry.proxy.Proxy;
 import edu.washington.iam.registry.proxy.ProxyIdp;
 import edu.washington.iam.registry.proxy.ProxyManager;
 
-import edu.washington.iam.registry.exception.RelyingPartyException;
-import edu.washington.iam.registry.exception.FilterPolicyException;
-import edu.washington.iam.registry.exception.AttributeNotFoundException;
-import edu.washington.iam.registry.exception.NoPermissionException;
-import edu.washington.iam.registry.exception.ProxyException;
+import edu.washington.iam.registry.accessctrl.AccessCtrlManager;
+import edu.washington.iam.registry.accessctrl.AccessCtrl;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -104,6 +102,7 @@ public class RelyingPartyController {
     private static FilterPolicyManager filterPolicyManager;
     private static RelyingPartyManager rpManager;
     private static ProxyManager proxyManager;
+    private static AccessCtrlManager accessCtrlManager;
 
     private static DNSVerifier dnsVerifier;
     private static GroupManager groupManager;
@@ -739,6 +738,7 @@ public class RelyingPartyController {
         List<Attribute> attributes = filterPolicyManager.getAttributes(rp);
 
         Proxy proxy = proxyManager.getProxy(id);
+        AccessCtrl accessCtrl = accessCtrlManager.getAccessCtrl(id);
 
         mv.addObject("canEdit", canEdit);
         mv.addObject("relyingParty", rp);
@@ -747,6 +747,7 @@ public class RelyingPartyController {
         mv.addObject("attributes", attributes);
         mv.addObject("relyingPartyId", id);
         mv.addObject("proxy", proxy);
+        mv.addObject("accessCtrl", accessCtrl);
         mv.addObject("rpHistory", rpHistory);
         //mv.addObject("proxyHistory", proxyHistory);
         mv.addObject("isAdmin", session.isAdmin);
@@ -1415,6 +1416,73 @@ public class RelyingPartyController {
         } catch (ProxyException e) {
             status = 400;
             mv.addObject("alert", "Update of the entity failed:" + e.getMessage());
+        }
+
+
+        SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
+        msg.setTo(mailTo);
+        String act = "updated";
+        if (status==201) act = "created";
+        msg.setSubject("Service provider proxy info " + act + " by " + session.remoteUser);
+        msg.setText( "User '" + session.remoteUser + "' " + act + " proxy info '" + id + "'.\nRequest status: " + status + "\n");
+        try{
+            this.mailSender.send(msg);
+        } catch(MailException ex) {
+            log.error("sending mail: " + ex.getMessage());
+        }
+
+        response.setStatus(status);
+        return mv;
+    }
+
+    @RequestMapping(value="/rp/accessctrl", method=RequestMethod.PUT)
+    public ModelAndView putRelyingPartyAccessCtrl(@RequestParam(value="id", required=true) String id,
+                                                   @RequestParam(value="role", required=false) String role,
+                                                   @RequestParam(value="xsrf", required=false) String paramXsrf,
+                                                   @RequestParam(value="aut2fa_flag", required=true) boolean auto2FA,
+                                                   @RequestParam(value="conditional_flag", required=true) boolean conditional,
+                                                   @RequestParam(value="conditional_group_name", required=true) String conditionalGroup,
+                                                   InputStream in,
+                                                   HttpServletRequest request,
+                                                   HttpServletResponse response) {
+
+        RPSession session = processRequestInfo(request, response, false);
+        if (session==null) return (emptyMV());
+
+        log.info("PUT update access control for " + id);
+        int status = 200;
+
+        if (session.isBrowser && !(paramXsrf!=null && paramXsrf.equals(session.xsrfCode))) {
+            log.info("got invalid xsrf=" + paramXsrf + ", expected+" + session.xsrfCode);
+            return emptyMV("invalid session (xsrf)");
+        }
+
+        ModelAndView mv = emptyMV("OK dokey");
+        try {
+            if (!userCanEdit(session, id)) {
+                status = 401;
+                mv.addObject("alert", "You are not an owner of that entity.");
+                response.setStatus(status);
+                return mv;
+            }
+        } catch (DNSVerifyException e) {
+            mv.addObject("alert", "Could not verify ownership:\n" + e.getCause());
+            response.setStatus(500);
+            return mv;
+        }
+
+
+        try {
+            AccessCtrl newAccessCtrl = new AccessCtrl();
+            newAccessCtrl.setEntityId(id);
+            newAccessCtrl.setAuto2FA(auto2FA);
+            newAccessCtrl.setConditional(conditional);
+            newAccessCtrl.setConditionalGroup(conditionalGroup);
+            accessCtrlManager.updateAccessCtrl(newAccessCtrl, session.remoteUser);
+            status = 200;
+        } catch (AccessCtrlException e) {
+            status = 400;
+            mv.addObject("alert", "Update of access control for entity failed:" + e.getMessage());
         }
 
 
