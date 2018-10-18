@@ -29,19 +29,17 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 
-import org.apache.http.impl.client.BasicResponseHandler;
+
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -52,11 +50,13 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.conn.ClientConnectionManager;
+
+import org.apache.http.conn.HttpClientConnectionManager;
+
+import org.apache.http.impl.client.HttpClients;
+
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -83,12 +83,13 @@ public class WebClient {
     private String caFile = null;
     private int queryTimeLimit = 15000;  // fifteen seconds default
 
-    private ClientConnectionManager connectionManager;
+    //private ClientConnectionManager connectionManager;
+    private HttpClientConnectionManager connectionManager;
     private boolean initialized = false;
     private DocumentBuilder documentBuilder;
 
     DefaultHttpClient soapclient = null;
-    DefaultHttpClient restclient = null;
+    CloseableHttpClient restclient = null;
 
     HttpParams httpParams = null;
 
@@ -166,8 +167,12 @@ public class WebClient {
 
        // log.debug("do rest get");
        Element ele = null;
-       // restclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
-       if (restclient==null) restclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, new BasicHttpParams());
+       if (restclient==null)
+       {
+           restclient = HttpClients.custom()
+                   .setConnectionManager(connectionManager).build();
+           // restclient = new DefaultHttpClient((HttpClientConnectionManager)connectionManager, new BasicHttpParams());
+       }
        try {
 
           // log.debug(" rest get, url: " + url);
@@ -244,13 +249,16 @@ public class WebClient {
 
        // log.debug("simple rest get");
        try {
-          HttpParams httpParams = new BasicHttpParams();
-          HttpConnectionParams.setConnectionTimeout(httpParams, queryTimeLimit);
-          HttpConnectionParams.setSoTimeout(httpParams, queryTimeLimit);
-          DefaultHttpClient httpclient = new DefaultHttpClient((ClientConnectionManager)connectionManager, httpParams);
+
+          RequestConfig httpParams = RequestConfig.custom()
+                  .setConnectTimeout(queryTimeLimit)
+                  .setSocketTimeout(queryTimeLimit).build();
+          CloseableHttpClient httpclient = HttpClients.custom()
+                   .setDefaultRequestConfig(httpParams)
+                   .setConnectionManager(connectionManager).build();
+
 
           // log.debug(" url: " + url);
-
           HttpGet httpget = new HttpGet(url);
           HttpResponse response = httpclient.execute(httpget);
           log.debug("resp: " + response.getStatusLine().getStatusCode() + " = " + response.getStatusLine().getReasonPhrase());

@@ -84,6 +84,7 @@ public class DBMetadata implements MetadataDAO {
         log.info(String.format("updating metadata for rp %s in %s", relyingParty.getEntityId(), groupId));
         try {
             String xml = XMLHelper.serializeXmlToString(relyingParty);
+
             List<String> existingIds = template.queryForList(
                     "select entity_id from metadata where group_id = ? and entity_id = ?",
                     String.class,
