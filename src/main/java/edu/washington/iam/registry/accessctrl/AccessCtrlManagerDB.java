@@ -2,8 +2,6 @@ package edu.washington.iam.registry.accessctrl;
 
 import edu.washington.iam.registry.exception.AccessCtrlException;
 import edu.washington.iam.registry.exception.ProxyException;
-import edu.washington.iam.registry.proxy.Proxy;
-import edu.washington.iam.registry.proxy.ProxyManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -50,10 +48,10 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
     }
 
     public AccessCtrl getAccessCtrl(String entityId) {
-        log.debug("looking for proxy for " + entityId);
+        log.debug("looking for access control for " + entityId);
         AccessCtrl accessCtrl = null;
 
-        List<AccessCtrl> accessCtrlList = template.query("select * from proxy where entity_id = ? and end_time is null",
+        List<AccessCtrl> accessCtrlList = template.query("select * from access_control where entity_id = ? and end_time is null",
                 new Object[] {entityId},
                 new AccessCtrlMapper());
         if(accessCtrlList.size() != 0){
@@ -67,18 +65,18 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
         log.debug("looking to update access control for " + accessCtrl.getEntityId());
 
         try {
-            List<String> uuid = template.queryForList(
+            List<UUID> uuid = template.queryForList(
                     "select uuid from metadata where entity_id = ? and end_time is null",
-                    String.class,
+                    UUID.class,
                     accessCtrl.getEntityId());
                     accessCtrl.setUuid(uuid.get(0));
             log.info("attempting access control update for " + accessCtrl.getEntityId());
             //recycle "delete" method to mark current record inactive
             removeAccessCtrl(accessCtrl.getEntityId(), updatedBy);
-            log.info("Marked current proxy record (if any) inactive--adding new one next");
+            log.info("Marked current access control record (if any) inactive--adding new one next");
             // add new active record
             log.info(Integer.toString(template.update(
-                    "insert into access_control (uuid, entity_id, end_time, start_time, updated_by, auto2fa," +
+                    "insert into access_control (uuid, entity_id, end_time, start_time, updated_by, auto_2fa," +
                             "conditional, conditional_group) values " +
                             "(? ,?, ?,  now(), ?, ?, ?, ?)",
                     accessCtrl.getUuid(), accessCtrl.getEntityId(), null, updatedBy, accessCtrl.getAuto2FA(),
@@ -97,17 +95,17 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
     }
 
     public int removeAccessCtrl(String entityId, String updatedBy) throws ProxyException {
-        log.debug("looking to delete proxy for " + entityId);
+        log.debug("looking to delete access control for " + entityId);
 
-        List<Integer> entityIds = template.queryForList(
+        List<Integer> ids = template.queryForList(
                 "select id from access_control where entity_id = ? and end_time is null",
                 Integer.class, entityId);
-        if (entityIds.size() == 1 && entityIds.get(0) != null) {
-            template.update("update access_control set end_time = now(), updated_by = ? where id = ?", entityIds.get(0), updatedBy);
-            log.debug("updated (delete) access control for %s", entityId);
+        if (ids.size() == 1 && ids.get(0) != null) {
+            template.update("update access_control set end_time = now(), updated_by = ? where id = ?", updatedBy, ids.get(0));
+            log.info("updated (delete) access control for %s", entityId);
             return 200;
         }
-        else if (entityIds.size() == 0) {
+        else if (ids.size() == 0) {
             log.info(String.format("No access control found for %s", entityId));
             return 500;
         }
@@ -127,8 +125,8 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
             while(rs.next()){
                 AccessCtrl accessCtrlItem = new AccessCtrl();
                 accessCtrlItem.setEntityId(rs.getString("entity_id"));
-                accessCtrlItem.setUuid(rs.getString("uuid"));
-                accessCtrlItem.setAuto2FA(rs.getBoolean("auto2fa"));
+                accessCtrlItem.setUuid((UUID)rs.getObject("uuid"));
+                accessCtrlItem.setAuto2FA(rs.getBoolean("auto_2fa"));
                 accessCtrlItem.setConditional(rs.getBoolean("conditional"));
                 accessCtrlItem.setConditionalGroup(rs.getString("conditional_group"));
                 accessCtrlList.add(accessCtrlItem);

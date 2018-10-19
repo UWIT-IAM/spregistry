@@ -15,17 +15,30 @@
  * ========================================================================
  *#
 ##
-## proxy tab
+## access control tab
 ##
 
+#parse ( 'definitions.vm' )
+
+#if ($isAdmin)
+    #parse ( "browser/accessctrl_edit.vm" )
+#end
+#if ($canEdit || $newEntity)
+    #parse ( "browser/accessctrl_req.vm" )
+#end
 
 
 <div id="accessCtrlSpContainer" dojoType="dijit.layout.ContentPane" title="Access Control" selected="false" style="overflow:hidden"
      onClose="return(true)" doLayout="false" >
 
   <ul class="buttonBar" role="navigation">
-    #if ($canEdit)
-    <li><button dojoType="dijit.form.Button" type="button" onClick="iam_showTheDialog('accessCtrlEditDialog',['sp/proxylib'])">Edit</button></li>
+    #if ($canEdit || $newEntity)
+    <li><button dojoType="dijit.form.Button" type="button"
+                onClick="iam_showTheDialog('accessCtrlReqDialog',['sp/accessctrllib'])">Request Access Control</button>
+    </li>
+    #end
+    #if ($isAdmin)
+    <li><button dojoType="dijit.form.Button" type="button" onClick="iam_showTheDialog('accessCtrlEditDialog',['sp/accessctrllib'])">Edit</button></li>
     #end
   </ul>
 
@@ -65,7 +78,7 @@
                       <div class="dd">
                           <ul class="iamlist">
                               <li>
-                                  Conditional access is enabled using group ($accessCtrl.conditionalGroup) <font color="green">&#x2714;</font>
+                                  Conditional access is enabled using authorization group(s): $accessCtrl.conditionalGroup <font color="green">&#x2714;</font>
                               </li>
                           </ul>
                       </div>
@@ -82,7 +95,5 @@
   </div>
 </div> 
 
-#if ($canEdit)
-#parse ( "browser/accessctrl_edit.vm" )
-#end
+
 

@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public class AccessCtrl implements Serializable  {
 
@@ -33,7 +34,7 @@ public class AccessCtrl implements Serializable  {
     private Boolean conditional;
     private String conditionalGroup;
     private String entityId;
-    private String uuid;
+    private UUID uuid;
     private String startTime;
     private String endTime;
     private String updatedBy;
@@ -79,11 +80,11 @@ public class AccessCtrl implements Serializable  {
         this.entityId = entityId;
     }
 
-    public String getUuid() {
+    public UUID getUuid() {
         return uuid;
     }
 
-    public void setUuid(String uuid) {
+    public void setUuid(UUID uuid) {
         this.uuid = uuid;
     }
     public String getStartTime() {

@@ -1435,11 +1435,11 @@ public class RelyingPartyController {
         return mv;
     }
 
-    @RequestMapping(value="/rp/accessctrl", method=RequestMethod.PUT)
+    @RequestMapping(value="/rp/accessCtrl", method=RequestMethod.PUT)
     public ModelAndView putRelyingPartyAccessCtrl(@RequestParam(value="id", required=true) String id,
                                                    @RequestParam(value="role", required=false) String role,
                                                    @RequestParam(value="xsrf", required=false) String paramXsrf,
-                                                   @RequestParam(value="aut2fa_flag", required=true) boolean auto2FA,
+                                                   @RequestParam(value="auto2fa_flag", required=true) boolean auto2FA,
                                                    @RequestParam(value="conditional_flag", required=true) boolean conditional,
                                                    @RequestParam(value="conditional_group_name", required=true) String conditionalGroup,
                                                    InputStream in,
@@ -1458,6 +1458,14 @@ public class RelyingPartyController {
         }
 
         ModelAndView mv = emptyMV("OK dokey");
+
+        if (!session.isAdmin) {
+            status = 401;
+            mv.addObject("alert", "You are not permitted to update access control.");
+            response.setStatus(status);
+            return mv;
+        }
+
         try {
             if (!userCanEdit(session, id)) {
                 status = 401;
@@ -1502,6 +1510,74 @@ public class RelyingPartyController {
         return mv;
     }
 
+    // request for access control
+    @RequestMapping(value="/rp/accessCtrlReq", method=RequestMethod.PUT)
+    public ModelAndView putAccessCtrlReq(@RequestParam(value="id", required=true) String id,
+                                               InputStream in,
+                                               HttpServletRequest request,
+                                               HttpServletResponse response) {
+
+        RPSession session = processRequestInfo(request, response, false);
+        if (session==null) return (emptyMV());
+        log.info("PUT request for: " + id);
+        int status = 200;
+
+        ModelAndView mv = emptyMV("OK dokey");
+
+        try {
+            if (!userCanEdit(session, id)) {
+                status = 401;
+                mv.addObject("alert", "You are not an owner of that entity.");
+            }
+        } catch (DNSVerifyException e) {
+            mv.addObject("alert", "Could not verify ownership:\n" + e.getCause());
+            response.setStatus(500);
+            return mv;
+        }
+
+        Document doc = null;
+        try {
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = builderFactory.newDocumentBuilder();
+            doc = builder.parse (in);
+        } catch (Exception e) {
+            log.info("parse error: " + e.getMessage());
+            status = 400;
+            mv.addObject("alert", "The posted document was not valid:\n" + e.getMessage());
+        }
+        if (doc!=null) {
+            StringBuffer txt = new StringBuffer("[ Assign to Identity and Access Management. ]\n\nEntity Id: " + id + "\n");
+            txt.append("User:      " + session.remoteUser + "\n\nRequesting:\n");
+            List<Element> attrs = XMLHelper.getElementsByName(doc.getDocumentElement(), "Add");
+            log.debug(attrs.size() + " adds");
+            for (int i=0; i<attrs.size(); i++) txt.append("  Add new attribute: " + attrs.get(i).getAttribute("id") + "\n\n");
+            attrs = XMLHelper.getElementsByName(doc.getDocumentElement(), "Drop");
+            log.debug(attrs.size() + " drops");
+            for (int i=0; i<attrs.size(); i++) txt.append("  Drop existing attribute: " + attrs.get(i).getAttribute("id") + "\n\n");
+            Element mele = XMLHelper.getElementByName(doc.getDocumentElement(), "Comments");
+            if (mele!=null) txt.append("\nComment:\n\n" + mele.getTextContent() + "\n\n");
+            txt.append("Quick link:\n\n   " + spRegistryUrl + "#a" + id + "\n");
+
+            SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
+            /* production to RT system */
+            msg.setTo(requestMailTo);
+            msg.setSubject("IdP attribute request for " + id);
+            if (session.remoteUser.indexOf("@")>0) msg.setFrom(session.remoteUser);
+            else msg.setFrom(session.remoteUser + "@uw.edu");
+            msg.setText(txt.toString());
+            try{
+                this.mailSender.send(msg);
+            } catch(MailException ex) {
+                log.error("sending mail: " + ex.getMessage());
+                status = 500;
+                mv.addObject("alert", "Could not complete attribute request (sending mail failed).");
+            }
+
+        }
+        response.setStatus(status);
+        return mv;
+    }
+
     public void setRelyingPartyManager(RelyingPartyManager m) {
         rpManager = m;
     }
@@ -1514,6 +1590,9 @@ public class RelyingPartyController {
         proxyManager = m;
     }
 
+    public void setAccessCtrlManager(AccessCtrlManager m) {
+        accessCtrlManager = m;
+    }
 
     /* utility */
     private boolean userCanEdit(RPSession session, String entityId)

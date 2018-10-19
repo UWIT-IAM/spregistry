@@ -143,7 +143,7 @@ public class DBMetadataTest {
                 entityId);
     }
 
-    private String genUUID() { return UUID.randomUUID().toString(); }
+    private UUID genUUID() { return UUID.randomUUID(); }
 
     private void setupWithRPs(List<String> entityIds){
         String groupId = "uwrp";

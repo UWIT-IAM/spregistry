@@ -23,10 +23,7 @@ import java.io.IOException;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Vector;
-import java.util.Arrays;
+import java.util.*;
 
 import edu.washington.iam.tools.XMLSerializable;
 
@@ -58,7 +55,6 @@ import edu.washington.iam.registry.rp.HistoryItem;
 import edu.washington.iam.registry.rp.HistoryItem.*;
 
 import javax.xml.bind.ValidationEvent;
-import java.util.Optional;
 
 import static org.javers.core.diff.ListCompareAlgorithm.LEVENSHTEIN_DISTANCE;
 
@@ -68,7 +64,7 @@ public class RelyingParty implements XMLSerializable {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private String uuid;
+    private UUID uuid;
     @Id //decorator for javers
     private String entityId;
     private String startTime;
@@ -97,7 +93,7 @@ public class RelyingParty implements XMLSerializable {
        updatedBy = "";
        startTime = "";
        endTime = "";
-       uuid = "";
+       uuid = null;
        editable = false;
        // extensions = new Vector();
        keyDescriptors = new Vector();
@@ -115,14 +111,14 @@ public class RelyingParty implements XMLSerializable {
 
     public RelyingParty (Element ele, String mdid, boolean edit) throws RelyingPartyException {
 
-        this(ele, mdid, edit, "", "", "", "");
+        this(ele, mdid, edit, "", "", "", null);
 
     }
 
     // create from document element
 
     public RelyingParty (Element ele, String mdid, boolean edit, String updatedBy, String startTime, String endTime,
-                         String uuid)
+                         UUID uuid)
             throws RelyingPartyException {
 
        localInit();
@@ -454,10 +450,10 @@ public class RelyingParty implements XMLSerializable {
     public String getEndTime() {
         return (endTime);
     }
-    public void setUuid(String v) {
+    public void setUuid(UUID v) {
         uuid = v;
     }
-    public String getUuid() {
+    public UUID getUuid() {
         return (uuid);
     }
     public void setUpdatedBy(String v) {

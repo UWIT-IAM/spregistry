@@ -183,7 +183,7 @@ public class DBMetadata implements MetadataDAO {
     public void setGroupId(String groupId) { this.groupId = groupId; }
     public void setId(String id) { this.id = id; }
     public void setEditable(boolean editable) { this.editable = editable; }
-    private String genUUID() { return UUID.randomUUID().toString(); }
+    private UUID genUUID() { return UUID.randomUUID(); }
 
 
     private class RelyingPartyMapper implements RowMapper<RelyingParty> {
@@ -199,7 +199,7 @@ public class DBMetadata implements MetadataDAO {
             String startTime = resultSet.getString("start_time");
             String endTime = resultSet.getString("end_time");
             String updatedBy = resultSet.getString("updated_by");
-            String uuid = resultSet.getString("uuid");
+            UUID uuid = (UUID) resultSet.getObject("uuid");
 
             try {
                 DocumentBuilder builder = dbf.newDocumentBuilder();

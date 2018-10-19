@@ -1062,3 +1062,102 @@ function proxy_deleteProxy(entityId) {
    var url = v_root + v_vers + '/rp/proxy?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
    iam_putRequest(url, null, xml, null, _postSaveProxy);
 }
+
+/*
+ * access control tools
+ */
+
+
+function accessCtrlEditHide() {
+    console.log("accessCtrl popup hide");
+    var gcid = dojoDom.byId('google_cid').value.trim();
+    if (gcid!='' && numAccessCtrlEditKey>1) {  // '1' to ignore the 'close' click
+        iam_showTheDialog('accessCtrlNotSavedDialog');
+    }
+}
+
+function accessCtrlEditShow() {
+    console.log("accessCtrl popup show");
+}
+function accessCtrlEditKey() {
+    console.log("accessCtrl popup key");
+    numAccessCtrlEditKey += 1;
+    if (numAccessCtrlEditKey==1) dijitRegistry.byId('accessCtrlEditSaver').set('disabled',0);
+}
+
+function _postSaveAccessCtrl() {
+    iam_hideTheDialog('accessCtrlEditDialog');
+    iam_showTheNotice('Access control configuration saved: Allow a couple of minutes to propagate.');
+    showCurrentSp();
+    numAccessCtrlEditKey = 0;
+}
+
+// submit accessCtrl edits
+function accessCtrl_saveAccessCtrl(entityId) {
+    var auto2fa = dojoDom.byId('auto2fa_flag').checked;
+    var cond = dojoDom.byId('conditional_flag').checked;
+    var cond_group = dojoDom.byId('conditional_group_name').value;
+    var url = v_root + v_vers + '/rp/accessCtrl?id=' + entityId + '&auto2fa_flag=' + auto2fa  + '&conditional_flag=' + cond + '&conditional_group_name=' + cond_group +'&xsrf=' + v_xsrf + adminQS;
+    iam_putRequest(url, null, null, null, _postSaveAccessCtrl);
+}
+
+// submit the request
+function accessCtrl_reqAccessCtrl(entityId) {
+
+    _okmsg = '';
+    var gws_text = '';
+    var cond_group = dojoDom.byId('conditional_group_req').value.trim();
+    var auto2fa = dojoDom.byId('auto2fa_req').checked;
+    var cond = dojoDom.byId('conditional_req').checked;
+    var cond_group_in = dojoDom.byId('conditional_group_in').value.trim();
+    var auto2fa_in = dojoDom.byId('auto2fa_in').checked;
+    var cond_in = dojoDom.byId('conditional_in').checked;
+    xml = '<Attributes>';
+    if (cond) {
+        var grpsin = dijitRegistry.byId('conditional_group_in').get('value').trim();
+        if (grps == '') {
+            iam_showTheNotice('You must identify the group(s) for conditional access.');
+            return;
+        }
+        if (cond_group == grpsin) {
+            true; //noop
+        } else {
+            xml += '<Add id="conditional_access_group"/>';
+            _okmsg += '<li>Adding: conditional access group</li>';
+            gws_text = '\n\nGroups requested:\n' + grps;
+            if (grpsin != '') gws_text += '\nPrevious groups:\n' + grpsin;
+        }
+    }
+    if (cond_in != cond) {
+        if (cond) {
+            xml += '<Add id="condtional_access"/>';
+            _okmsg += '<li>Adding: conditional access</li>';
+        } else {
+            xml += '<Drop id="conditional_access"/>';
+            _okmsg += '<li>Dropping: conditional acces</li>';
+        }
+    }
+    if (auto2fa_in != auto2fa) {
+        if (auto2fa) {
+            xml += '<Add id="auto2fa"/>';
+            _okmsg += '<li>Adding: auto2fa</li>';
+        } else {
+            xml += '<Drop id="auto2fa"/>';
+            _okmsg += '<li>Dropping: auto2fa</li>';
+        }
+        if (_okmsg == '') {
+            iam_showTheNotice('There are no changes to request.');
+            return;
+        }
+        _okmsg = 'Request submitted<ul>' + _okmsg + '</ul>';
+        msg = dijitRegistry.byId('accessCtrl_req_exptext').get('value').trim();
+        if (msg == '') {
+            iam_showTheNotice('You must explain why you need access control');
+            return;
+        }
+        xml = xml + '<Comments>' + iam_makeOkXml(msg + gws_text) + '</Comments>';
+        xml = xml + '</Attributes>';
+        action = v_root + v_vers + '/rp/accessCtrlReq?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
+        iam_putRequest(action, null, xml, null, _postReqAttrs);
+    }
+};
