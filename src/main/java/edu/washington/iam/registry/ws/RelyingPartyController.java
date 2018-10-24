@@ -1122,7 +1122,7 @@ public class RelyingPartyController {
                 status = 401;
                 mv.addObject("alert", "You are not the owner.");
             } else {
-                status = proxyManager.removeProxy(id);
+                status = proxyManager.removeProxy(id, session.remoteUser);
                 status = filterPolicyManager.removeEditableRelyingParty(id);
                 status = rpManager.removeRelyingParty(id, mdid, session.remoteUser);
             }
@@ -1411,7 +1411,7 @@ public class RelyingPartyController {
             Proxy newproxy = new Proxy();
             newproxy.setEntityId(id);
             newproxy.setSocialActive(socialActive);
-            proxyManager.updateProxy(newproxy);
+            proxyManager.updateProxy(newproxy, session.remoteUser);
             status = 200;
         } catch (ProxyException e) {
             status = 400;
@@ -1549,11 +1549,11 @@ public class RelyingPartyController {
             StringBuffer txt = new StringBuffer("[ Assign to Identity and Access Management. ]\n\nEntity Id: " + id + "\n");
             txt.append("User:      " + session.remoteUser + "\n\nRequesting:\n");
             List<Element> attrs = XMLHelper.getElementsByName(doc.getDocumentElement(), "Add");
-            log.debug(attrs.size() + " adds");
-            for (int i=0; i<attrs.size(); i++) txt.append("  Add new attribute: " + attrs.get(i).getAttribute("id") + "\n\n");
+            log.debug(attrs.size() + " access control adds");
+            for (int i=0; i<attrs.size(); i++) txt.append("  Add new access control feature: " + attrs.get(i).getAttribute("id") + "\n\n");
             attrs = XMLHelper.getElementsByName(doc.getDocumentElement(), "Drop");
-            log.debug(attrs.size() + " drops");
-            for (int i=0; i<attrs.size(); i++) txt.append("  Drop existing attribute: " + attrs.get(i).getAttribute("id") + "\n\n");
+            log.debug(attrs.size() + " access control drops");
+            for (int i=0; i<attrs.size(); i++) txt.append("  Drop existing access control feature: " + attrs.get(i).getAttribute("id") + "\n\n");
             Element mele = XMLHelper.getElementByName(doc.getDocumentElement(), "Comments");
             if (mele!=null) txt.append("\nComment:\n\n" + mele.getTextContent() + "\n\n");
             txt.append("Quick link:\n\n   " + spRegistryUrl + "#a" + id + "\n");
@@ -1561,7 +1561,7 @@ public class RelyingPartyController {
             SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
             /* production to RT system */
             msg.setTo(requestMailTo);
-            msg.setSubject("IdP attribute request for " + id);
+            msg.setSubject("IdP access control request for " + id);
             if (session.remoteUser.indexOf("@")>0) msg.setFrom(session.remoteUser);
             else msg.setFrom(session.remoteUser + "@uw.edu");
             msg.setText(txt.toString());

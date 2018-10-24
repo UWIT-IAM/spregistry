@@ -1068,28 +1068,18 @@ function proxy_deleteProxy(entityId) {
  */
 
 
-function accessCtrlEditHide() {
-    console.log("accessCtrl popup hide");
-    var gcid = dojoDom.byId('google_cid').value.trim();
-    if (gcid!='' && numAccessCtrlEditKey>1) {  // '1' to ignore the 'close' click
-        iam_showTheDialog('accessCtrlNotSavedDialog');
-    }
-}
 
-function accessCtrlEditShow() {
-    console.log("accessCtrl popup show");
-}
-function accessCtrlEditKey() {
-    console.log("accessCtrl popup key");
-    numAccessCtrlEditKey += 1;
-    if (numAccessCtrlEditKey==1) dijitRegistry.byId('accessCtrlEditSaver').set('disabled',0);
-}
 
 function _postSaveAccessCtrl() {
     iam_hideTheDialog('accessCtrlEditDialog');
     iam_showTheNotice('Access control configuration saved: Allow a couple of minutes to propagate.');
     showCurrentSp();
     numAccessCtrlEditKey = 0;
+}
+
+function _postReqAccessCtrl() {
+    iam_hideTheDialog('accessCtrlReqDialog');
+    iam_showTheMessage('Request submitted.');
 }
 
 // submit accessCtrl edits
@@ -1110,40 +1100,35 @@ function accessCtrl_reqAccessCtrl(entityId) {
     var auto2fa = dojoDom.byId('auto2fa_req').checked;
     var cond = dojoDom.byId('conditional_req').checked;
     var cond_group_in = dojoDom.byId('conditional_group_in').value.trim();
-    var auto2fa_in = dojoDom.byId('auto2fa_in').checked;
-    var cond_in = dojoDom.byId('conditional_in').checked;
+    var auto2fa_in = dojoDom.byId('auto2fa_in').value.trim();
+    var cond_in = dojoDom.byId('conditional_in').value.trim();
     xml = '<Attributes>';
     if (cond) {
-        var grpsin = dijitRegistry.byId('conditional_group_in').get('value').trim();
-        if (grps == '') {
+        if (cond_in == '') {
+            xml += '<Add id="conditional_access (group below)"/>';
+            _okmsg += '<li>Adding: conditional access</li>';
+            }
+        if (cond_group == '') {
             iam_showTheNotice('You must identify the group(s) for conditional access.');
             return;
         }
-        if (cond_group == grpsin) {
+        if (cond_group == cond_group_in) {
             true; //noop
         } else {
-            xml += '<Add id="conditional_access_group"/>';
             _okmsg += '<li>Adding: conditional access group</li>';
-            gws_text = '\n\nGroups requested:\n' + grps;
-            if (grpsin != '') gws_text += '\nPrevious groups:\n' + grpsin;
+            gws_text = '\n\nGroups requested:\n' + cond_group;
+            if (cond_group_in != '') gws_text += '\nPrevious groups:\n' + cond_group_in;
         }
-    }
-    if (cond_in != cond) {
-        if (cond) {
-            xml += '<Add id="condtional_access"/>';
-            _okmsg += '<li>Adding: conditional access</li>';
-        } else {
+    } else {
+        if (cond_in != '') {
             xml += '<Drop id="conditional_access"/>';
-            _okmsg += '<li>Dropping: conditional acces</li>';
+            _okmsg += '<li>Dropping: conditional access</li>';
         }
     }
-    if (auto2fa_in != auto2fa) {
-        if (auto2fa) {
+    if (auto2fa) {
+        if (auto2fa_in == '') {
             xml += '<Add id="auto2fa"/>';
             _okmsg += '<li>Adding: auto2fa</li>';
-        } else {
-            xml += '<Drop id="auto2fa"/>';
-            _okmsg += '<li>Dropping: auto2fa</li>';
         }
         if (_okmsg == '') {
             iam_showTheNotice('There are no changes to request.');
@@ -1158,6 +1143,11 @@ function accessCtrl_reqAccessCtrl(entityId) {
         xml = xml + '<Comments>' + iam_makeOkXml(msg + gws_text) + '</Comments>';
         xml = xml + '</Attributes>';
         action = v_root + v_vers + '/rp/accessCtrlReq?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
-        iam_putRequest(action, null, xml, null, _postReqAttrs);
+        iam_putRequest(action, null, xml, null, _postReqAccessCtrl());
+    } else {
+        if (auto2fa_in != '') {
+            xml += '<Drop id="auto2fa"/>';
+            _okmsg += '<li>Dropping: auto2fa</li>';
+        }
     }
 };

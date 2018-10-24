@@ -32,7 +32,7 @@ import edu.washington.iam.registry.exception.NoPermissionException;
 public interface ProxyManager extends Serializable {
    public List<Proxy> getProxys();
    public Proxy getProxy(String entityId);
-   public int removeProxy(String rpid) throws ProxyException;
+   public int removeProxy(String rpid, String updatedBy) throws ProxyException;
    public List<Proxy> getProxyHistory(String entityId) throws ProxyException;
     ;
 
@@ -40,6 +40,6 @@ public interface ProxyManager extends Serializable {
      *
      * @param proxy Takes a validated proxy and stores it
      */
-   public void updateProxy(Proxy proxy) throws ProxyException;
+   public void updateProxy(Proxy proxy, String updatedBy) throws ProxyException;
 
 }

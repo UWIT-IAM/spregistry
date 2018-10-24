@@ -114,9 +114,7 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
             //TODO what about a return code?
         }
     }
-    
 
-    private String genUUID() { return UUID.randomUUID().toString(); }
 
     private static final class AccessCtrlMapper implements ResultSetExtractor<List<AccessCtrl>> {
         @Override

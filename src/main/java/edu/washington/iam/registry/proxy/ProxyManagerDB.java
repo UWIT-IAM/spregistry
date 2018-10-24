@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ProxyManagerDB implements ProxyManager {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -57,20 +58,23 @@ public class ProxyManagerDB implements ProxyManager {
         return proxy;
     }
 
-    public int removeProxy(String rpid) throws ProxyException {
+    public int removeProxy(String rpid, String updatedBy) throws ProxyException {
         log.debug("looking to delete proxy for " + rpid);
 
         List<Integer> rpIds = template.queryForList(
                 "select id from proxy where entity_id = ? and end_time is null",
                 Integer.class, rpid);
         if (rpIds.size() == 1 && rpIds.get(0) != null) {
-            template.update("update proxy set end_time = now() where id = ?", rpIds.get(0));
+            template.update("update proxy set end_time = now(), updated_by = ? where _id = ?", updatedBy, rpIds.get(0));
             log.debug("updated (delete) proxy for %s", rpid);
             return 200;
         }
         else if (rpIds.size() == 0) {
-            log.info(String.format("No proxy found for %s", rpid));
-            return 500;
+            //there is no record with end_time = null if social gateway wasn't enabled
+            log.info(String.format("No proxy found for %s (usually not an error--was inactive)", rpid));
+            //if there are no records with end_time = null then there are no active records to remove
+            //and everything is fine.  mattjm 2018-10-23
+            return 200;
         }
         else{
             throw new ProxyException("more than one active proxy record found!!  No update performed.");
@@ -79,23 +83,27 @@ public class ProxyManagerDB implements ProxyManager {
     }
 
     //add or update a proxy
-    public void updateProxy(Proxy proxy) throws ProxyException {
+    public void updateProxy(Proxy proxy, String updatedBy) throws ProxyException {
         // TODO: Right now we just delete all proxy data and reinsert it. A smarter implementation would check
         //       for differences
-        List<String> uuid = template.queryForList("select uuid from metadata where entity_id = ? and end_time is null",
-        String.class,
-        proxy.getEntityId());
+        List<UUID> uuid = template.queryForList("select uuid from metadata where entity_id = ? and end_time is null",
+                UUID.class,
+                proxy.getEntityId());
+
         proxy.setUuid(uuid.get(0));
         log.info("attempting proxy update " + proxy.getEntityId());
         //recycle "delete" method to mark current record inactive
-        removeProxy(proxy.getEntityId());
-        log.info("Marked current proxy record inactive--adding new one next");
-            template.update("insert into proxy (uuid, entity_id, status, start_time, end_time) "
-                    + "values (?, ?, ?, now(), null)",
+        removeProxy(proxy.getEntityId(), updatedBy);
+        //only add a record with end_time=null if social gateway should be active.
+        if (proxy.getSocialActive()) {
+            log.info("Marked current proxy record inactive--adding new one next");
+            template.update("insert into proxy (uuid, entity_id, start_time, end_time, updated_by) "
+                            + "values (?, ?, now(), null, ?)",
                     proxy.getUuid(),
                     proxy.getEntityId(),
-                    (proxy.getSocialActive()) ? 1 : 0);
+                    updatedBy);
 
+        }
     }
 
     private static final class ProxyMapper implements ResultSetExtractor<List<Proxy>> {
@@ -105,8 +113,11 @@ public class ProxyManagerDB implements ProxyManager {
             while(rs.next()){
                 Proxy proxy = new Proxy();
                 proxy.setEntityId(rs.getString("entity_id"));
-                proxy.setUuid(rs.getString("uuid"));
-                proxy.setSocialActive(rs.getBoolean("status"));
+                proxy.setUuid((UUID)rs.getObject("uuid"));
+                proxy.setSocialActive(true);
+                proxy.setUpdatedBy(rs.getString("updated_by"));
+                proxy.setStartTime(rs.getString("start_time"));
+                proxy.setEndTime(rs.getString("end_time"));
                 proxyList.add(proxy);
             }
 

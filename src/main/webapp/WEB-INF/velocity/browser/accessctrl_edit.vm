@@ -73,25 +73,8 @@
  </div>
 
 
-## not saved dialog
 
-<div id="accessCtrlNotSavedDialog" data-dojo-type="dijit/Dialog" title="Access Control configuration not saved" $hide>
-<h3>Your changes have not been saved.<p>Close anyway?</h3>
- <div class="dijitDialogPaneActionBar">
-    <button dojoType="dijit.form.Button" type="button">Yes, close
-        <script type="dojo/on" data-dojo-event="click">
-          iam_hideTheDialog('accessCtrlNotSavedDialog');
-          showHomePage();
-        </script>
-    </button>
-    <button dojoType="dijit.form.Button" type="button">No, continue editing
-        <script type="dojo/on" data-dojo-event="click">
-           iam_hideTheDialog('accessCtrlNotSavedDialog');
-           iam_showTheDialog('accessCtrlEditDialog');
-        </script>
-    </button>
- </div>
-</div>
+
 
 
 </div>

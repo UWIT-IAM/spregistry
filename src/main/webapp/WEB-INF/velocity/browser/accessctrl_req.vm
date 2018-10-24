@@ -19,6 +19,7 @@
 ## attr request
 ##
 
+#set ( $chk = '' )
 
 <div id="accessCtrlReqDialog" data-dojo-type="dijit/Dialog" title="Request access control for ${relyingPartyId}" ${hide}>
     <div class="dijitDialogPaneContentArea" data-dojo-type="dijit/layout/ContentPane" >
@@ -26,36 +27,44 @@
         <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/8wr-B" target="spghelp">help</a></div>
         <h3>Access Control</h3>
         <h4>Auto 2FA</h4>
+        #if(${accessCtrl.auto2FA})
+        #set ($chk=$checked)
+        #end
         <ul class="iamlist">
             <li><label for="auto2fa_req">Enable Auto 2FA</label>
                 <div class="dd">
                     <input id="auto2fa_req" dojoType="dijit/form/CheckBox"
-                        #if(${accessCtrl.auto2FA}) checked #end
+                        #if(${accessCtrl.auto2FA}) $chk #end
                     />
-                    <input id="auto2fa_in" value="${accessCtrl.conditionalGroup}" type="hidden" aria-hidden="true" />
+                    <input id="auto2fa_in" value="$chk" type="hidden" aria-hidden="true" />
                 </div>
             </li>
         </ul>
         <h4>Conditional Access</h4>
+        #if(${accessCtrl.conditional})
+            #set ($chk=$checked)
+        #end
         <ul class="iamlist">
             <li><label for="conditional_req}">Enable Conditional Access</label>
                 <div class="dd">
                     <input id="conditional_req" dojoType="dijit/form/CheckBox"
-                        #if(${accessCtrl.conditional}) checked #end
+                        #if(${accessCtrl.conditional}) $chk #end
                     />
-                    <input id="conditional_in" value="${accessCtrl.conditional}" type="hidden" aria-hidden="true" />
+                    <input id="conditional_in" value="$chk" type="hidden" aria-hidden="true" />
                 </div>
             </li>
             <li><div class="dd"><label for="conditional_group_req">Conditional Access Group:</label></div>
                 <div class="dd">
                     <input data-dojo-type="dijit/form/TextBox" id="conditional_group_req" #if(${accessCtrl.conditional}) value="${accessCtrl.conditionalGroup}" #end /><div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/jTCoAQ" target="spghelp"> help</a></div>
-                    <input data-dojo-type="dijit.form.Textarea" id="conditional_group_in" value="${accessCtrl.conditionalGroup}" type="hidden" aria-hidden="true" />
+                    <input data-dojo-type="dijit/form/TextBox" id="conditional_group_in" #if(${accessCtrl.conditional}) value="${accessCtrl.conditionalGroup}" #else value = "" #end type="hidden" aria-hidden="true" />
                 </div>
             </li>
+            <p />
             <li><label for="accessCtrl_req_exptext">Explain your need for the attributes: </label>
                 <br>
                 <textarea data-dojo-type="dijit.form.Textarea" cols="50" rows="10" id="accessCtrl_req_exptext" aria-label="reason for access control, required">Please provide the name and version of your SAML software.
                 </textarea></li>
+
         </ul>
 
 
@@ -68,25 +77,7 @@
     </div>
 
 
-## not saved dialog
 
-    <div id="accessCtrlNotSavedDialog" data-dojo-type="dijit/Dialog" title="Access Control request not sent" $hide>
-        <h3>Your changes have not been saved.<p>Close anyway?</h3>
-        <div class="dijitDialogPaneActionBar">
-            <button dojoType="dijit.form.Button" type="button">Yes, close
-                <script type="dojo/on" data-dojo-event="click">
-          iam_hideTheDialog('accessCtrlNotSavedDialog');
-          showHomePage();
-        </script>
-            </button>
-            <button dojoType="dijit.form.Button" type="button">No, continue editing
-                <script type="dojo/on" data-dojo-event="click">
-           iam_hideTheDialog('accessCtrlNotSavedDialog');
-           iam_showTheDialog('accessCtrlEditDialog');
-        </script>
-            </button>
-        </div>
-    </div>
 
 
 </div>
