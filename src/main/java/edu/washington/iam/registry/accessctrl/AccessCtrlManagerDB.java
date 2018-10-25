@@ -1,7 +1,6 @@
 package edu.washington.iam.registry.accessctrl;
 
 import edu.washington.iam.registry.exception.AccessCtrlException;
-import edu.washington.iam.registry.exception.ProxyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -94,7 +93,7 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
 
     }
 
-    public int removeAccessCtrl(String entityId, String updatedBy) throws ProxyException {
+    public int removeAccessCtrl(String entityId, String updatedBy) throws AccessCtrlException {
         log.debug("looking to delete access control for " + entityId);
 
         List<Integer> ids = template.queryForList(
@@ -110,7 +109,7 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
             return 500;
         }
         else{
-            throw new ProxyException("more than one active access control record found!!  No update performed.");
+            throw new AccessCtrlException("more than one active access control record found!!  No update performed.");
             //TODO what about a return code?
         }
     }

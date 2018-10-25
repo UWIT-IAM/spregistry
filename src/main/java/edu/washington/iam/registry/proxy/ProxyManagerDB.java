@@ -84,8 +84,6 @@ public class ProxyManagerDB implements ProxyManager {
 
     //add or update a proxy
     public void updateProxy(Proxy proxy, String updatedBy) throws ProxyException {
-        // TODO: Right now we just delete all proxy data and reinsert it. A smarter implementation would check
-        //       for differences
         List<UUID> uuid = template.queryForList("select uuid from metadata where entity_id = ? and end_time is null",
                 UUID.class,
                 proxy.getEntityId());

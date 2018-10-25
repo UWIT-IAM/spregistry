@@ -44,7 +44,18 @@ public class AccessCtrl implements Serializable  {
        return in.replaceAll("\"","\\\"");
     }
 
-    public AccessCtrl(){}
+    public AccessCtrl(){
+
+        auto2FA = false;
+        conditional = false;
+        conditionalGroup = "";
+        entityId = "";
+        uuid = null;
+        startTime = null;
+        endTime = null;
+        updatedBy = "";
+
+    }
 
     //2017-11-13 mattjm constructor taking XML document as argument removed (and deleted XMLProxyManager)
 

@@ -114,6 +114,7 @@ public class DBMetadataTest {
     @Test
     public void testUpdateRelyingPartyExistingRP() throws Exception {
         Timestamp preUpdateTime = new Timestamp(new Date().getTime());
+        Thread.sleep(500);
         Assert.assertTrue(getTimestampForRP(fakeEntityIds.get(0)).before(preUpdateTime));
         int preUpdateSize = dao.searchRelyingPartyIds(null).size();
 
@@ -128,6 +129,7 @@ public class DBMetadataTest {
     public void testUpdateRelyingPartyDeletedRP() throws Exception {
         template.update("update metadata set end_time = '2001-01-01' where entity_id = ? ", fakeEntityIds.get(0));
         Timestamp preUpdateTime = new Timestamp(new Date().getTime());
+        Thread.sleep(500);
         int preUpdateSize = dao.searchRelyingPartyIds(null).size();
 
         dao.updateRelyingParty(fakeRelyingParty(fakeEntityIds.get(0)), "testuser");

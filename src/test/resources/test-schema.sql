@@ -2,19 +2,20 @@ drop table if exists proxy;
 
 CREATE TABLE proxy (
     id integer NOT NULL AUTO_INCREMENT,
-    uuid character(36) NOT NULL,
+    uuid uuid NOT NULL,
     entity_id text,
     status integer,
-    end_time timestamp NULL DEFAULT now(),
-    start_time timestamp DEFAULT now()
+    end_time timestamp NULL,
+    start_time timestamp DEFAULT now(),
+    updated_by text,
 );
 
-insert into proxy (uuid, entity_id, status, end_time, start_time)
-  values ('58e115ef-36e7-4db6-bad6-cafd784f3faa', 'https://gettest.example.com', 1, null, now());
-insert into proxy (uuid, entity_id, status, end_time, start_time)
-  values ('298b2a35-a117-48d0-8d89-9957a6e4c91d', 'https://gettest.example.com', 1, null, now());
-insert into proxy (uuid, entity_id, status, end_time, start_time)
-  values ('80f79afb-0fa5-4d41-ae17-1a599299344a', 'https://notgettest.example.com', 1, null, now());
+insert into proxy (uuid, entity_id, end_time, start_time)
+  values ('58e115ef-36e7-4db6-bad6-cafd784f3faa', 'https://gettest.example.com',  null, now());
+insert into proxy (uuid, entity_id, end_time, start_time)
+  values ('298b2a35-a117-48d0-8d89-9957a6e4c91d', 'https://gettest.example.com', null, now());
+insert into proxy (uuid, entity_id, end_time, start_time)
+  values ('80f79afb-0fa5-4d41-ae17-1a599299344a', 'https://notgettest.example.com', null, now());
 
 
 
@@ -40,15 +41,19 @@ insert into filter_group (id, header_xml, footer_xml, status, update_time, edit_
 
 drop table if exists filter;
 CREATE TABLE filter (
+    uuid uuid NOT NULL,
     entity_id character varying(128) NOT NULL,
     xml text,
     group_id character varying(48),
-    status integer,
-    update_time timestamp DEFAULT now()
+    start_time timestamp DEFAULT now(),
+    end_time timestamp NULL,
+    updated_by text,
+    id integer NOT NULL AUTO_INCREMENT,
 );
 
 ALTER TABLE filter
-    ADD PRIMARY KEY (entity_id);
+    ADD PRIMARY KEY (id);
+
 
 ALTER TABLE filter
     ADD FOREIGN KEY (group_id) REFERENCES filter_group(id);
@@ -75,11 +80,11 @@ insert into metadata_group (id, header_xml, footer_xml, status, update_time, edi
 drop table if exists metadata;
 CREATE TABLE metadata (
     id integer NOT NULL AUTO_INCREMENT,
-    uuid character(36) NOT NULL,
+    uuid uuid NOT NULL,
     entity_id character varying(128) NOT NULL,
     xml text,
     group_id character varying(48),
-    end_time timestamp NULL DEFAULT now(),
+    end_time timestamp NULL,
     start_time timestamp DEFAULT now(),
     updated_by character varying(48)
 );
@@ -89,5 +94,23 @@ ALTER TABLE metadata
 
 ALTER TABLE metadata
     ADD FOREIGN KEY (group_id) REFERENCES metadata_group(id);
+
+
+
+drop table if exists access_control;
+CREATE TABLE access_control (
+id integer NOT NULL AUTO_INCREMENT,
+uuid uuid NOT NULL,
+entity_id text NOT NULL,
+end_time timestamp NULL,
+start_time timestamp DEFAULT now() NOT NULL,
+updated_by text,
+auto_2fa boolean DEFAULT false,
+conditional boolean DEFAULT false,
+conditional_group varchar(135)
+);
+
+alter table access_control
+    ADD PRIMARY KEY (id);
 
 

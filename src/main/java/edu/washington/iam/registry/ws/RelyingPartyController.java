@@ -1123,7 +1123,7 @@ public class RelyingPartyController {
                 mv.addObject("alert", "You are not the owner.");
             } else {
                 status = proxyManager.removeProxy(id, session.remoteUser);
-                status = filterPolicyManager.removeEditableRelyingParty(id);
+                status = filterPolicyManager.removeEditableRelyingParty(id, session.remoteUser);
                 status = rpManager.removeRelyingParty(id, mdid, session.remoteUser);
             }
         } catch (FilterPolicyException e) {
@@ -1247,7 +1247,7 @@ public class RelyingPartyController {
         }
         if (doc!=null) {
            try {
-              filterPolicyManager.updateRelyingParty(policyId, doc);
+              filterPolicyManager.updateRelyingParty(policyId, doc, session.remoteUser);
               status = 200;
            } catch (FilterPolicyException e) {
               status = 400;
