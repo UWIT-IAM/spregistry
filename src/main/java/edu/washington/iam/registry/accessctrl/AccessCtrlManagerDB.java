@@ -82,7 +82,7 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
                     accessCtrl.getConditional(), accessCtrl.getConditionalGroup())));
             log.debug("updated existing access control for " + accessCtrl.getEntityId());
 
-            if (idpHelper!=null) idpHelper.notifyIdps("metadata");
+            if (idpHelper!=null) idpHelper.notifyIdps("accessctrl");
         } catch (Exception e) {
             log.info("update access control trouble: " + e.getMessage());
             // just eat it - don't know the repercussions
@@ -102,6 +102,7 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
         if (ids.size() == 1 && ids.get(0) != null) {
             template.update("update access_control set end_time = now(), updated_by = ? where id = ?", updatedBy, ids.get(0));
             log.info("updated (delete) access control for %s", entityId);
+            if (idpHelper!=null) idpHelper.notifyIdps("accessctrl");
             return 200;
         }
         else if (ids.size() == 0) {

@@ -119,6 +119,11 @@ public class DBMetadata implements MetadataDAO {
                         genUUID(), groupId, relyingParty.getEntityId(), xml, null, updatedBy);
                         log.debug("added new rp " + relyingParty.getEntityId());
             } else if (existingIds.size() == 1) {
+                //we need to get the uuid
+                List<UUID> uuid = template.queryForList("select uuid from metadata where entity_id = ? and end_time is null",
+                        UUID.class,
+                        relyingParty.getEntityId());
+                relyingParty.setUuid(uuid.get(0));
                 // active record exists so mark last one inactive
                 template.update("update metadata set end_time = now() where id = ?", existingIds.get(0));
                 // add new active record

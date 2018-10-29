@@ -103,8 +103,9 @@ public class FilterPolicyManagerImpl implements FilterPolicyManager {
     @Override
     public void updateRelyingParty(String pgid, Document doc, String updatedBy)
             throws FilterPolicyException {
-        //we have received and XML document (doc) containing the new requested new attribute state
+        // we have received an XML document (doc) containing the new requested new attribute state
         // "pgid" is the request policygroup as passed from spreg UI, "doc" contains the actual entityid
+        // within the XML payload
         log.info("rp update attr doc for " + pgid);
 
         FilterPolicyGroup policyGroup = filterPolicyDAO.getFilterPolicyGroup(pgid);

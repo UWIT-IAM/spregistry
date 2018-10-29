@@ -1122,6 +1122,7 @@ public class RelyingPartyController {
                 status = 401;
                 mv.addObject("alert", "You are not the owner.");
             } else {
+                status = accessCtrlManager.removeAccessCtrl(id, session.remoteUser);
                 status = proxyManager.removeProxy(id, session.remoteUser);
                 status = filterPolicyManager.removeEditableRelyingParty(id, session.remoteUser);
                 status = rpManager.removeRelyingParty(id, mdid, session.remoteUser);
@@ -1131,11 +1132,15 @@ public class RelyingPartyController {
            response.setStatus(500);
            return mv;
         } catch (DNSVerifyException e) {
-           mv.addObject("alert", "Could not verify ownership:\n" + e.getCause());
+           mv.addObject("alert", "(while attempting  rp delete) Could not verify ownership:\n" + e.getCause());
            response.setStatus(500);
            return mv;
         }  catch (ProxyException e) {
-            mv.addObject("alert", "Proxy (gateway) error:\n" + e.getCause());
+            mv.addObject("alert", "(while attempting  rp delete) Proxy (gateway) error:\n" + e.getCause());
+            response.setStatus(500);
+            return mv;
+        }  catch (AccessCtrlException e) {
+            mv.addObject("alert", "(while attempting  rp delete) Access control error:\n" + e.getCause());
             response.setStatus(500);
             return mv;
         }

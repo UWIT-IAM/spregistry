@@ -28,6 +28,6 @@ public interface AccessCtrlManager extends Serializable {
    public AccessCtrl getAccessCtrl(String entityId);
    public void updateAccessCtrl(AccessCtrl accessCtrl, String updatedBy) throws AccessCtrlException;
    public List<AccessCtrl> getAccessCtrlHistory(String entityId) throws AccessCtrlException;
-
+   public int removeAccessCtrl(String entityId, String updatedBy) throws AccessCtrlException;
 
 }

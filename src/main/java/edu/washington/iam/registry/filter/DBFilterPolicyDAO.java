@@ -105,17 +105,21 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
             if(attributeFiltersMap.containsKey(filterPolicyGroup.getId())){
                 log.debug("checking filter table for updates to " + filterPolicyGroup.getId());
                 Timestamp lastUpdateTime = null;
+                //the most recent start_time will almost always be the most recent update time
+                //but if someone has "deleted" an SP then the most recent end_time will be the most recent update time
+                //so we get both and see which is more recent and use that
                 Timestamp lastUpdateTimeStart =
-                        template.queryForObject("select max(start_time) from filter where group_id = ?",
+                        template.queryForObject("select max(start_time) from filter where group_id = ? and end_time is null",
                             new Object[]{filterPolicyGroup.getId()},
                             Timestamp.class);
                 Timestamp lastUpdateTimeEnd =
-                        template.queryForObject("select max(end_time) from filter where group_id = ?",
+                        template.queryForObject("select max(end_time) from filter where group_id = ? and end_time is not null",
                                 new Object[]{filterPolicyGroup.getId()},
                                 Timestamp.class);
-                if (lastUpdateTime == null || lastUpdateTimeStart.after(lastUpdateTimeEnd)){
+                if ( lastUpdateTimeEnd == null || lastUpdateTimeStart.after(lastUpdateTimeEnd)){
                     lastUpdateTime = lastUpdateTimeStart;
                 } else { lastUpdateTime = lastUpdateTimeEnd; }
+                log.debug("last update = " + lastUpdateTime.toString());
                 Timestamp ft = attributeFiltersMap.get(filterPolicyGroup.getId()).getLastFetchTime();
                 if(ft==null || lastUpdateTime.after(ft)){
                     log.info("attribute filter policy has been updated, rebuilding for " + filterPolicyGroup.getId());
@@ -191,6 +195,9 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
         return null;
     }
 
+    /**mattjm 2018-10-26
+     * I still have no idea why this takes a LIST of filter policies as an argument
+     */
     @Override
     public void updateFilterPolicies(FilterPolicyGroup filterPolicyGroup,
                                      List<AttributeFilterPolicy> attributeFilterPolicies, String updatedBy)
@@ -204,22 +211,24 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
         NamedParameterJdbcTemplate npTemplate = new NamedParameterJdbcTemplate(template);
         //get existing group/entityid pairs by group and entityid
         List<String> entityIdsToUpdate = npTemplate.queryForList(
-                "select entity_id from filter where group_id = :groupId and entity_id in (:ids)"
+                "select entity_id from filter where end_time is null and group_id = :groupId and entity_id in (:ids)"
                 ,new MapSqlParameterSource()
                 .addValue("groupId", filterPolicyGroup.getId())
                 .addValue("ids", afpMap.keySet())
                 , String.class
                 );
-        //this is a list of filter policies from XML docs as passed to this method via arguments (e.g. NEW STUFF)
+        //this is a list of ONLY entity IDs from the hashmap above--all this came in from the client via
+        // XML PUT(e.g. NEW STUFF)
         List<String> entityIdsToAdd = new ArrayList<>(afpMap.keySet());
         //this removes the entityids already in the database from the "to add" list above
         entityIdsToAdd.removeAll(entityIdsToUpdate);
 
-        //add a new entry if it wasn't in the DB already
+        //add a new entry if no active records in the DB already--all this does is keep us from having to make an extra,
+        //unnecessary "removerelyingparty" (i.e. mark an attribute entry deleted) call to the DB
         for(String addEntityId : entityIdsToAdd){
             createFilterPolicy(filterPolicyGroup, afpMap.get(addEntityId), updatedBy);
         }
-        //update the entry if it was there already
+        //update the entry if there are active DB records already
         for(String updateEntityId : entityIdsToUpdate){
             updateFilterPolicy(filterPolicyGroup, afpMap.get(updateEntityId), updatedBy);
         }

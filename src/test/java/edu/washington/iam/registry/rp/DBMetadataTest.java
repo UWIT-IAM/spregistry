@@ -106,6 +106,10 @@ public class DBMetadataTest {
 
         dao.updateRelyingParty(relyingParty, "testuser");
 
+        //make sure uuids come along for the update
+        RelyingParty testUUID = dao.getRelyingPartyById(relyingParty.getEntityId());
+        Assert.assertTrue(testUUID.getUuid().toString().length() > 30);
+
         List<String> ids = dao.searchRelyingPartyIds(null);
         Assert.assertEquals(fakeEntityIds.size() + 1, ids.size());
         Assert.assertTrue(String.format("list of entity ids contains %s", entityId), ids.contains(entityId));
@@ -113,8 +117,8 @@ public class DBMetadataTest {
 
     @Test
     public void testUpdateRelyingPartyExistingRP() throws Exception {
-        Timestamp preUpdateTime = new Timestamp(new Date().getTime());
         Thread.sleep(500);
+        Timestamp preUpdateTime = new Timestamp(new Date().getTime());
         Assert.assertTrue(getTimestampForRP(fakeEntityIds.get(0)).before(preUpdateTime));
         int preUpdateSize = dao.searchRelyingPartyIds(null).size();
 
@@ -132,7 +136,11 @@ public class DBMetadataTest {
         Thread.sleep(500);
         int preUpdateSize = dao.searchRelyingPartyIds(null).size();
 
+        //TODO:  to make this test work we need to get the UUID here and store it
+
         dao.updateRelyingParty(fakeRelyingParty(fakeEntityIds.get(0)), "testuser");
+
+        //TODO:  Then get the UUID of the entity again here and compare it the previous one--it should be different
 
         Assert.assertTrue(String.format("update time for %s has changed", fakeEntityIds.get(0)),
                 getTimestampForRP(fakeEntityIds.get(0)).after(preUpdateTime));
