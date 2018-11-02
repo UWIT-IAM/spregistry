@@ -152,7 +152,9 @@ public class DBMetadata implements MetadataDAO {
             but I think it's more important to know who deleted it over who made the last update
             before it was deleted.  Contrast with an update (above) where we mark the old record
             inactive but don't change who updated it.  We don't display deletes to users, so this mostly
-             matters in an audit situation.  */
+             matters in an audit situation.
+             I supposed a smarter implementation could put an end_date on the last update record and just add a new one
+             with end_date already set.  */
             List<Integer> rpIds = template.queryForList(
                     "select id from metadata where group_id = ? and entity_id = ? and end_time is null",
                     Integer.class,

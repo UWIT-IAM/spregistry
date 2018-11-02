@@ -29,13 +29,24 @@
         <h4>2FA</h4>
 
         <ul class="iamlist">
+            #if(!(${accessCtrl.getAuto2FA()}) && !(${accessCtrl.getCond2FA()}))
+                #set ($chk=$checked)
+            #end
+            <li><label for="default2fa_req">2FA by SP Request (Default)</label>
+                <div class="dd">
+                    <input id="default2fa_req" dojoType="dijit/form/RadioButton" name="type_2fa"
+                        #if(!(${accessCtrl.getAuto2FA()}) && !(${accessCtrl.getCond2FA()})) $chk #end
+                    />
+                    <input id="default2fa_in" value="$chk" type="hidden" aria-hidden="true" />
+                </div>
+            </li>
+            #set ($chk = '')
             #if(${accessCtrl.getAuto2FA()})
                 #set ($chk=$checked)
             #end
-            <li>Require all users to provide a second factor</li><p/>
-            <li><label for="auto2fa_req">Enable Auto 2FA</label><p/>
+            <li><label for="auto2fa_req">Auto 2FA--all users require 2FA</label>
                 <div class="dd">
-                    <input id="auto2fa_req" dojoType="dijit/form/CheckBox"
+                    <input id="auto2fa_req" dojoType="dijit/form/RadioButton" name="type_2fa"
                         #if(${accessCtrl.getAuto2FA()}) $chk #end
                     />
                     <input id="auto2fa_in" value="$chk" type="hidden" aria-hidden="true" />
@@ -45,10 +56,9 @@
             #if(${accessCtrl.getCond2FA()})
                 #set ($chk=$checked)
             #end
-            <li>Require all members of a certain group to provide a second factor</li><p/>
-            <li><label for="cond2fa_req">Enable Conditional 2FA</label><p/>
+            <li><label for="cond2fa_req">Conditional 2FA--members of group require 2FA</label>
                 <div class="dd">
-                    <input id="cond2fa_req" dojoType="dijit/form/CheckBox"
+                    <input id="cond2fa_req" dojoType="dijit/form/RadioButton" name="type_2fa"
                         #if(${accessCtrl.getCond2FA()}) $chk #end
                     />
                     <input id="cond2fa_in" value="$chk" type="hidden" aria-hidden="true" />

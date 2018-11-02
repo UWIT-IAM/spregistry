@@ -40,17 +40,24 @@
     <h4>2FA</h4>
 
     <ul class="iamlist">
-      <li><label for="auto2fa_flag">Enable Auto 2FA</label>
+        <li><label for="auto2fa_flag">2FA by SP Request (Default)</label>
+            <div class="dd">
+                <input id="default2fa_flag" dojoType="dijit/form/RadioButton" value="default2fa_flag" name="type_2fa"
+                    #if(!(${accessCtrl.getAuto2FA()}) && !(${accessCtrl.getCond2FA()})) checked #end
+                />
+            </div>
+        </li>
+        <li><label for="auto2fa_flag">Auto 2FA--all users require 2FA</label>
           <div class="dd">
-              <input id="auto2fa_flag" dojoType="dijit/form/CheckBox"
-                  #if(${accessCtrl.getAuto2FA()}) checked #end onChange="disableOther2FA('cond2fa_flag')"
+              <input id="auto2fa_flag" dojoType="dijit/form/RadioButton" value="auto2fa_flag" name="type_2fa"
+                  #if(${accessCtrl.getAuto2FA()}) checked #end
               />
           </div>
       </li>
-        <li><label for="cond2fa_flag">Enable Conditional 2FA</label>
+        <li><label for="cond2fa_flag">Conditional 2FA--members of group require 2FA</label>
             <div class="dd">
-                <input id="cond2fa_flag" dojoType="dijit/form/CheckBox"
-                    #if(${accessCtrl.getCond2FA()}) checked #end onChange="disableOther2FA('auto2fa_flag')"
+                <input id="cond2fa_flag" dojoType="dijit/form/RadioButton" value="cond2fa_flag" name="type_2fa"
+                    #if(${accessCtrl.getCond2FA()}) checked #end
                 />
             </div>
         </li>

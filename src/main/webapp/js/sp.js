@@ -1090,7 +1090,12 @@ function _postReqAccessCtrl() {
 
 // submit accessCtrl edits
 function accessCtrl_saveAccessCtrl(entityId) {
+
+    var my2FAValue = dojoDom.byId('cond2fa_flag').checked;
+
+
     var type_2fa = '';
+    var default2fa = dojoDom.byId('default2fa_flag').checked;
     var cond2fa = dojoDom.byId('cond2fa_flag').checked;
     var auto2fa = dojoDom.byId('auto2fa_flag').checked;
     var group_2fa = dojoDom.byId('group2fa').value.trim();
@@ -1100,6 +1105,8 @@ function accessCtrl_saveAccessCtrl(entityId) {
         type_2fa = "auto"
     } else if (cond2fa) {
         type_2fa = "cond";
+    } else if (default2fa){
+        type_2fa = "default";
     }
 
     var url = v_root + v_vers + '/rp/accessCtrl?id=' + entityId + '&type_2fa=' + type_2fa  + '&conditional_flag='
@@ -1120,7 +1127,9 @@ function accessCtrl_reqAccessCtrl(entityId) {
     var auto2fa = dojoDom.byId('auto2fa_req').checked;
     var auto2fa_in = dojoDom.byId('auto2fa_in').value.trim();
     var cond2fa = dojoDom.byId('cond2fa_req').checked;
-    var cond2fa_in = dojoDom.byId('cond2fa_in').checked;
+    var cond2fa_in = dojoDom.byId('cond2fa_in').value.trim();
+    var default2fa = dojoDom.byId('default2fa_req').checked;
+    var default2fa_in = dojoDom.byId('default2fa_in').value.trim();
     var cond = dojoDom.byId('conditional_req').checked;
 
     var cond_in = dojoDom.byId('conditional_in').value.trim();
@@ -1129,7 +1138,7 @@ function accessCtrl_reqAccessCtrl(entityId) {
         type_2fa = "auto"
     } else if (cond2fa) {
         type_2fa = "cond";
-    }
+    } else { type_2fa = "default"; }
 
     xml = '<Attributes>';
     if (cond) {
@@ -1152,6 +1161,26 @@ function accessCtrl_reqAccessCtrl(entityId) {
         if (cond_in != '') {
             xml += '<Drop id="conditional_access"/>';
             _okmsg += '<li>Dropping: conditional access</li>';
+        }
+    }
+    if (default2fa) {
+        if (default2fa_in == '') {
+            xml += '<Add id="default"/>';
+            _okmsg += '<li>Adding: default</li>';
+        }
+        if (_okmsg == '') {
+            iam_showTheNotice('There are no changes to request.');
+            return;
+        }
+        _okmsg = 'Request submitted<ul>' + _okmsg + '</ul>';
+        xml = xml + '<Comments>' + iam_makeOkXml(gws_text) + '</Comments>';
+        xml = xml + '</Attributes>';
+        action = v_root + v_vers + '/rp/accessCtrlReq?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
+        iam_putRequest(action, null, xml, null, _postReqAccessCtrl());
+    } else {
+        if (default2fa_in != '') {
+            xml += '<Drop id="default"/>';
+            _okmsg += '<li>Dropping: default</li>';
         }
     }
     if (auto2fa) {
@@ -1208,11 +1237,5 @@ function accessCtrl_reqAccessCtrl(entityId) {
     }
 }
 
-function disableOther2FA(id) {
-
-    var mycheckbox = dojoDom.byId(id);
-    mycheckbox.checked = false;
-
-}
 
 ;

@@ -445,8 +445,8 @@ public class RelyingPartyController {
      */
 
     private ModelAndView loginPage(HttpServletRequest request, HttpServletResponse response, int method) {
-        //String remoteUser = request.getRemoteUser();
-        String remoteUser = "mattjm@washington.edu";  //netid@washington.edu goes here for testing locally
+        String remoteUser = request.getRemoteUser();
+        //String remoteUser = "mattjm@washington.edu";  //netid@washington.edu goes here for testing locally
         log.debug("social login attempt, shib remoteUser value: " + remoteUser);
         if (method==0) {  // social login
            String idp = (String)request.getAttribute("Shib-Identity-Provider");
@@ -1119,7 +1119,7 @@ public class RelyingPartyController {
                 status = rpManager.removeRelyingParty(id, mdid, session.remoteUser);
             }
         } catch (FilterPolicyException e) {
-           mv.addObject("alert", "delete of filter policy failed:\n" + e.getCause());
+           mv.addObject("alert", "(while attempting  rp delete) delete of filter policy failed:\n" + e.getCause());
            response.setStatus(500);
            return mv;
         } catch (DNSVerifyException e) {
@@ -1483,7 +1483,9 @@ public class RelyingPartyController {
 
             if(type2FA.equals("cond")) {
                 newAccessCtrl.setCond2FA(group2FA);
-            } else {newAccessCtrl.setAuto2FA(true);}
+            } else if (type2FA.equals("auto")) {
+                newAccessCtrl.setAuto2FA(true);
+            }
 
             newAccessCtrl.setEntityId(id);
 
