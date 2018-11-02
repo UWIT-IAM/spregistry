@@ -24,28 +24,51 @@
 <div id="accessCtrlReqDialog" data-dojo-type="dijit/Dialog" title="Request access control for ${relyingPartyId}" ${hide}>
     <div class="dijitDialogPaneContentArea" data-dojo-type="dijit/layout/ContentPane" >
 
-        <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/8wr-B" target="spghelp">help</a></div>
+        <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/rAZNBQ" target="spghelp">help</a></div>
         <h3>Access Control</h3>
-        <h4>Auto 2FA</h4>
-        #if(${accessCtrl.auto2FA})
-        #set ($chk=$checked)
-        #end
+        <h4>2FA</h4>
+
         <ul class="iamlist">
-            <li><label for="auto2fa_req">Enable Auto 2FA</label>
+            #if(${accessCtrl.getAuto2FA()})
+                #set ($chk=$checked)
+            #end
+            <li>Require all users to provide a second factor</li><p/>
+            <li><label for="auto2fa_req">Enable Auto 2FA</label><p/>
                 <div class="dd">
                     <input id="auto2fa_req" dojoType="dijit/form/CheckBox"
-                        #if(${accessCtrl.auto2FA}) $chk #end
+                        #if(${accessCtrl.getAuto2FA()}) $chk #end
                     />
                     <input id="auto2fa_in" value="$chk" type="hidden" aria-hidden="true" />
                 </div>
             </li>
+            #set ($chk = '')
+            #if(${accessCtrl.getCond2FA()})
+                #set ($chk=$checked)
+            #end
+            <li>Require all members of a certain group to provide a second factor</li><p/>
+            <li><label for="cond2fa_req">Enable Conditional 2FA</label><p/>
+                <div class="dd">
+                    <input id="cond2fa_req" dojoType="dijit/form/CheckBox"
+                        #if(${accessCtrl.getCond2FA()}) $chk #end
+                    />
+                    <input id="cond2fa_in" value="$chk" type="hidden" aria-hidden="true" />
+                </div>
+            </li>
+            <li><div class="dd"><label for="group2fa_req">Conditional 2FA Group:</label></div>
+                <div class="dd">
+                    <input data-dojo-type="dijit/form/TextBox" id="group2fa_req" #if(${accessCtrl.getGroupAuto2FA()} != "") value="${accessCtrl.getGroupAuto2FA()}" #end /><div style="float:right;font-size:.8em"></div>
+                    <input data-dojo-type="dijit/form/TextBox" id="group2fa_in" #if(${accessCtrl.getGroupAuto2FA()} != "") value="${accessCtrl.getGroupAuto2FA()}" #else value = "" #end type="hidden" aria-hidden="true" />
+                </div>
+            </li>
         </ul>
         <h4>Conditional Access</h4>
+        #set ($chk = '')
         #if(${accessCtrl.conditional})
             #set ($chk=$checked)
         #end
         <ul class="iamlist">
-            <li><label for="conditional_req}">Enable Conditional Access</label>
+            <li>Require all users to be a member of a certain group</li><p/>
+            <li><label for="conditional_req}">Enable Conditional Access</label><p/>
                 <div class="dd">
                     <input id="conditional_req" dojoType="dijit/form/CheckBox"
                         #if(${accessCtrl.conditional}) $chk #end
@@ -59,11 +82,6 @@
                     <input data-dojo-type="dijit/form/TextBox" id="conditional_group_in" #if(${accessCtrl.conditional}) value="${accessCtrl.conditionalGroup}" #else value = "" #end type="hidden" aria-hidden="true" />
                 </div>
             </li>
-            <p />
-            <li><label for="accessCtrl_req_exptext">Explain your need for the attributes: </label>
-                <br>
-                <textarea data-dojo-type="dijit.form.Textarea" cols="50" rows="10" id="accessCtrl_req_exptext" aria-label="reason for access control, required">Please provide the name and version of your SAML software.
-                </textarea></li>
 
         </ul>
 

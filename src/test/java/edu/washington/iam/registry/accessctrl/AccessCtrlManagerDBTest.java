@@ -82,8 +82,10 @@ public class AccessCtrlManagerDBTest {
                 entityId);
         //set up test object
         myCtrl.setUuid(uuid.get(0));
-        myCtrl.setAuto2FA(true);
-        myCtrl.setEntityId(entityId);
+        try {
+            myCtrl.setAuto2FA(true);
+            myCtrl.setEntityId(entityId);
+        } catch (AccessCtrlException e) {}
         //use test object to update access control for this entity id
         try {
             dao.updateAccessCtrl(myCtrl, remoteUser);
@@ -147,7 +149,9 @@ public class AccessCtrlManagerDBTest {
                 entityId);
         //set up test object
         myCtrl.setUuid(uuid.get(0));
-        myCtrl.setAuto2FA(true);
+        try {
+            myCtrl.setAuto2FA(true);
+        } catch (AccessCtrlException e) {}
         myCtrl.setEntityId(entityId);
         //use test object to update access control for this entity id
         try {

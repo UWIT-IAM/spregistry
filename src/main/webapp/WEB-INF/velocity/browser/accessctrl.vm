@@ -48,22 +48,29 @@
     <p />
       <h3>Auto 2FA</h3>
       <ul class="iamlist" style="padding-left: 20px">
-        #if ($accessCtrl.auto2FA)
+        #if ($accessCtrl.getAuto2FA())
             <li>
                 <fieldset style="margin-bottom:8px">
-                    <legend class="h4">Auto 2FA</legend>
+                    <legend class="h4">2FA</legend>
                     <div class="dd">
                         <ul class="iamlist">
-                            <li>
-                                Auto 2FA is enabled. <font color="green">&#x2714;</font>
-                            </li>
+                            #if ($accessCtrl.getAuto2FA())
+                                <li>
+                                    Auto 2FA is enabled. <font color="green">&#x2714;</font>
+                                </li>
+                            #end
+                            #if ($accessCtrl.getCond2FA())
+                                <li>
+                                    Conditional 2FA is enabled using authorization group(s): $accessCtrl.getGroupAuto2FA() <font color="green">&#x2714;</font>
+                                </li>
+                            #end
                         </ul>
                     </div>
                 </fieldset>
             </li>
         #else
         <li>
-            Auto 2FA is not configured for this Service Provider.
+            2FA is not configured for this Service Provider.
         </li>
         #end
 

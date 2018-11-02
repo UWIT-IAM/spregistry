@@ -119,6 +119,10 @@ function setSpTab() {
    v_spLoading = false;
 }
 
+
+
+
+
 // Setup hash and key listeners, set the tab
 // called after the SP display loads
 
@@ -153,7 +157,9 @@ function postLoadSp() {
                     break;
             }
         });
+
     });
+
    numMetaEditKey = 0;
    numProxyEditKey = 0;
    setSpTab();
@@ -1084,10 +1090,20 @@ function _postReqAccessCtrl() {
 
 // submit accessCtrl edits
 function accessCtrl_saveAccessCtrl(entityId) {
+    var type_2fa = '';
+    var cond2fa = dojoDom.byId('cond2fa_flag').checked;
     var auto2fa = dojoDom.byId('auto2fa_flag').checked;
+    var group_2fa = dojoDom.byId('group2fa').value.trim();
     var cond = dojoDom.byId('conditional_flag').checked;
     var cond_group = dojoDom.byId('conditional_group_name').value;
-    var url = v_root + v_vers + '/rp/accessCtrl?id=' + entityId + '&auto2fa_flag=' + auto2fa  + '&conditional_flag=' + cond + '&conditional_group_name=' + cond_group +'&xsrf=' + v_xsrf + adminQS;
+    if (auto2fa) {
+        type_2fa = "auto"
+    } else if (cond2fa) {
+        type_2fa = "cond";
+    }
+
+    var url = v_root + v_vers + '/rp/accessCtrl?id=' + entityId + '&type_2fa=' + type_2fa  + '&conditional_flag='
+        + cond + '&conditional_group_name=' + cond_group + '&group_2fa=' + group_2fa + '&xsrf=' + v_xsrf + adminQS;
     iam_putRequest(url, null, null, null, _postSaveAccessCtrl);
 }
 
@@ -1096,12 +1112,25 @@ function accessCtrl_reqAccessCtrl(entityId) {
 
     _okmsg = '';
     var gws_text = '';
+    var type_2fa = '';
+    var group_2fa = dojoDom.byId('group2fa_req').value.trim();
+    var group_2fa_in = dojoDom.byId('group2fa_in').value.trim();
     var cond_group = dojoDom.byId('conditional_group_req').value.trim();
-    var auto2fa = dojoDom.byId('auto2fa_req').checked;
-    var cond = dojoDom.byId('conditional_req').checked;
     var cond_group_in = dojoDom.byId('conditional_group_in').value.trim();
+    var auto2fa = dojoDom.byId('auto2fa_req').checked;
     var auto2fa_in = dojoDom.byId('auto2fa_in').value.trim();
+    var cond2fa = dojoDom.byId('cond2fa_req').checked;
+    var cond2fa_in = dojoDom.byId('cond2fa_in').checked;
+    var cond = dojoDom.byId('conditional_req').checked;
+
     var cond_in = dojoDom.byId('conditional_in').value.trim();
+
+    if (auto2fa) {
+        type_2fa = "auto"
+    } else if (cond2fa) {
+        type_2fa = "cond";
+    }
+
     xml = '<Attributes>';
     if (cond) {
         if (cond_in == '') {
@@ -1135,12 +1164,7 @@ function accessCtrl_reqAccessCtrl(entityId) {
             return;
         }
         _okmsg = 'Request submitted<ul>' + _okmsg + '</ul>';
-        msg = dijitRegistry.byId('accessCtrl_req_exptext').get('value').trim();
-        if (msg == '') {
-            iam_showTheNotice('You must explain why you need access control');
-            return;
-        }
-        xml = xml + '<Comments>' + iam_makeOkXml(msg + gws_text) + '</Comments>';
+        xml = xml + '<Comments>' + iam_makeOkXml(gws_text) + '</Comments>';
         xml = xml + '</Attributes>';
         action = v_root + v_vers + '/rp/accessCtrlReq?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
         iam_putRequest(action, null, xml, null, _postReqAccessCtrl());
@@ -1150,4 +1174,45 @@ function accessCtrl_reqAccessCtrl(entityId) {
             _okmsg += '<li>Dropping: auto2fa</li>';
         }
     }
-};
+    if (cond2fa) {
+        if (cond2fa_in == '') {
+            xml += '<Add id="cond2fa"/>';
+            _okmsg += '<li>Adding: cond2fa</li>';
+        }
+        if (group_2fa == '') {
+            iam_showTheNotice('You must identify the group(s) for conditional 2fa.');
+            return;
+        }
+        if (group_2fa == group_2fa_in) {
+            true; //noop
+        } else {
+            _okmsg += '<li>Adding: conditional access group</li>';
+            gws_text = '\n\nGroups requested:\n' + group_2fa;
+            if (group_2fa_in != '') gws_text += '\nPrevious groups:\n' + group_2fa_in;
+        }
+        if (_okmsg == '') {
+            iam_showTheNotice('There are no changes to request.');
+            return;
+        }
+        _okmsg = 'Request submitted<ul>' + _okmsg + '</ul>';
+
+        xml = xml + '<Comments>' + iam_makeOkXml(gws_text) + '</Comments>';
+        xml = xml + '</Attributes>';
+        action = v_root + v_vers + '/rp/accessCtrlReq?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
+        iam_putRequest(action, null, xml, null, _postReqAccessCtrl());
+    } else {
+        if (cond2fa_in != '') {
+            xml += '<Drop id="cond2fa"/>';
+            _okmsg += '<li>Dropping: cond2fa</li>';
+        }
+    }
+}
+
+function disableOther2FA(id) {
+
+    var mycheckbox = dojoDom.byId(id);
+    mycheckbox.checked = false;
+
+}
+
+;

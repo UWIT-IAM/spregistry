@@ -26,16 +26,12 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 
 import edu.washington.iam.registry.exception.*;
-import edu.washington.iam.registry.rp.RelyingPartyEntry;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestBody;
+
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -59,12 +55,12 @@ import edu.washington.iam.tools.Group;
 import edu.washington.iam.tools.GroupManager;
 
 import edu.washington.iam.registry.filter.FilterPolicyManager;
-import edu.washington.iam.registry.filter.AttributeFilterPolicy;
+
 import edu.washington.iam.registry.filter.FilterPolicyGroup;
 import edu.washington.iam.registry.filter.Attribute;
 
 import edu.washington.iam.registry.proxy.Proxy;
-import edu.washington.iam.registry.proxy.ProxyIdp;
+
 import edu.washington.iam.registry.proxy.ProxyManager;
 
 import edu.washington.iam.registry.accessctrl.AccessCtrlManager;
@@ -72,7 +68,7 @@ import edu.washington.iam.registry.accessctrl.AccessCtrl;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
@@ -83,12 +79,7 @@ import java.security.cert.CertificateParsingException;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 
-import org.javers.core.*;
-import org.javers.core.diff.Diff.*;
-import org.javers.core.diff.*;
-import org.javers.core.diff.changetype.*;
-import org.javers.core.diff.Diff;
-import static org.javers.core.diff.ListCompareAlgorithm.LEVENSHTEIN_DISTANCE;
+
 import edu.washington.iam.registry.rp.HistoryItem;
 
 
@@ -454,8 +445,8 @@ public class RelyingPartyController {
      */
 
     private ModelAndView loginPage(HttpServletRequest request, HttpServletResponse response, int method) {
-        String remoteUser = request.getRemoteUser();
-        //String remoteUser = "";  //netid@washington.edu goes here for testing locally
+        //String remoteUser = request.getRemoteUser();
+        String remoteUser = "mattjm@washington.edu";  //netid@washington.edu goes here for testing locally
         log.debug("social login attempt, shib remoteUser value: " + remoteUser);
         if (method==0) {  // social login
            String idp = (String)request.getAttribute("Shib-Identity-Provider");
@@ -1444,9 +1435,11 @@ public class RelyingPartyController {
     public ModelAndView putRelyingPartyAccessCtrl(@RequestParam(value="id", required=true) String id,
                                                    @RequestParam(value="role", required=false) String role,
                                                    @RequestParam(value="xsrf", required=false) String paramXsrf,
-                                                   @RequestParam(value="auto2fa_flag", required=true) boolean auto2FA,
+                                                   @RequestParam(value="type_2fa", required=true) String type2FA,
+                                                   @RequestParam(value="group_2fa", required=true) String group2FA,
                                                    @RequestParam(value="conditional_flag", required=true) boolean conditional,
                                                    @RequestParam(value="conditional_group_name", required=true) String conditionalGroup,
+
                                                    InputStream in,
                                                    HttpServletRequest request,
                                                    HttpServletResponse response) {
@@ -1487,8 +1480,13 @@ public class RelyingPartyController {
 
         try {
             AccessCtrl newAccessCtrl = new AccessCtrl();
+
+            if(type2FA.equals("cond")) {
+                newAccessCtrl.setCond2FA(group2FA);
+            } else {newAccessCtrl.setAuto2FA(true);}
+
             newAccessCtrl.setEntityId(id);
-            newAccessCtrl.setAuto2FA(auto2FA);
+
             newAccessCtrl.setConditional(conditional);
             newAccessCtrl.setConditionalGroup(conditionalGroup);
             accessCtrlManager.updateAccessCtrl(newAccessCtrl, session.remoteUser);

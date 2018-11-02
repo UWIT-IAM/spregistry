@@ -76,10 +76,10 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
             // add new active record
             log.info(Integer.toString(template.update(
                     "insert into access_control (uuid, entity_id, end_time, start_time, updated_by, auto_2fa," +
-                            "conditional, conditional_group) values " +
-                            "(? ,?, ?,  now(), ?, ?, ?, ?)",
-                    accessCtrl.getUuid(), accessCtrl.getEntityId(), null, updatedBy, accessCtrl.getAuto2FA(),
-                    accessCtrl.getConditional(), accessCtrl.getConditionalGroup())));
+                            "auto_2fa_group, conditional, conditional_group) values " +
+                            "(? ,?, ?,  now(), ?, ?, ?, ?, ?)",
+                    accessCtrl.getUuid(), accessCtrl.getEntityId(), null, updatedBy, accessCtrl.getAuto2FAInternal(),
+                    accessCtrl.getGroupAuto2FA(), accessCtrl.getConditional(), accessCtrl.getConditionalGroup())));
             log.debug("updated existing access control for " + accessCtrl.getEntityId());
 
             if (idpHelper!=null) idpHelper.notifyIdps("accessctrl");
@@ -120,16 +120,16 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
         @Override
         public List<AccessCtrl> extractData(ResultSet rs) throws SQLException, DataAccessException{
             List<AccessCtrl> accessCtrlList = new ArrayList<>();
-            while(rs.next()){
-                AccessCtrl accessCtrlItem = new AccessCtrl();
-                accessCtrlItem.setEntityId(rs.getString("entity_id"));
-                accessCtrlItem.setUuid((UUID)rs.getObject("uuid"));
-                accessCtrlItem.setAuto2FA(rs.getBoolean("auto_2fa"));
-                accessCtrlItem.setConditional(rs.getBoolean("conditional"));
-                accessCtrlItem.setConditionalGroup(rs.getString("conditional_group"));
-                accessCtrlList.add(accessCtrlItem);
-            }
-
+                while (rs.next()) {
+                    AccessCtrl accessCtrlItem = new AccessCtrl();
+                    accessCtrlItem.setEntityId(rs.getString("entity_id"));
+                    accessCtrlItem.setUuid((UUID) rs.getObject("uuid"));
+                    accessCtrlItem.setAuto2FAInternal(rs.getBoolean("auto_2fa"));
+                    accessCtrlItem.setConditional(rs.getBoolean("conditional"));
+                    accessCtrlItem.setConditionalGroup(rs.getString("conditional_group"));
+                    accessCtrlItem.setGroupAuto2FA(rs.getString("auto_2fa_group"));
+                    accessCtrlList.add(accessCtrlItem);
+                }
             return accessCtrlList;
         }
     }
