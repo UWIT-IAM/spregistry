@@ -1166,47 +1166,19 @@ function accessCtrl_reqAccessCtrl(entityId) {
     if (default2fa) {
         if (default2fa_in == '') {
             xml += '<Add id="default"/>';
-            _okmsg += '<li>Adding: default</li>';
-        }
-        if (_okmsg == '') {
-            iam_showTheNotice('There are no changes to request.');
-            return;
-        }
-        _okmsg = 'Request submitted<ul>' + _okmsg + '</ul>';
-        xml = xml + '<Comments>' + iam_makeOkXml(gws_text) + '</Comments>';
-        xml = xml + '</Attributes>';
-        action = v_root + v_vers + '/rp/accessCtrlReq?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
-        iam_putRequest(action, null, xml, null, _postReqAccessCtrl());
-    } else {
-        if (default2fa_in != '') {
-            xml += '<Drop id="default"/>';
-            _okmsg += '<li>Dropping: default</li>';
+            _okmsg += '<li>Change 2FA type to: default</li>';
         }
     }
     if (auto2fa) {
         if (auto2fa_in == '') {
             xml += '<Add id="auto2fa"/>';
-            _okmsg += '<li>Adding: auto2fa</li>';
-        }
-        if (_okmsg == '') {
-            iam_showTheNotice('There are no changes to request.');
-            return;
-        }
-        _okmsg = 'Request submitted<ul>' + _okmsg + '</ul>';
-        xml = xml + '<Comments>' + iam_makeOkXml(gws_text) + '</Comments>';
-        xml = xml + '</Attributes>';
-        action = v_root + v_vers + '/rp/accessCtrlReq?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
-        iam_putRequest(action, null, xml, null, _postReqAccessCtrl());
-    } else {
-        if (auto2fa_in != '') {
-            xml += '<Drop id="auto2fa"/>';
-            _okmsg += '<li>Dropping: auto2fa</li>';
+            _okmsg += '<li>Change 2FA type to: auto</li>';
         }
     }
     if (cond2fa) {
         if (cond2fa_in == '') {
             xml += '<Add id="cond2fa"/>';
-            _okmsg += '<li>Adding: cond2fa</li>';
+            _okmsg += '<li>Change 2FA type to: conditional</li>';
         }
         if (group_2fa == '') {
             iam_showTheNotice('You must identify the group(s) for conditional 2fa.');
@@ -1219,22 +1191,16 @@ function accessCtrl_reqAccessCtrl(entityId) {
             gws_text = '\n\nGroups requested:\n' + group_2fa;
             if (group_2fa_in != '') gws_text += '\nPrevious groups:\n' + group_2fa_in;
         }
-        if (_okmsg == '') {
-            iam_showTheNotice('There are no changes to request.');
-            return;
-        }
-        _okmsg = 'Request submitted<ul>' + _okmsg + '</ul>';
-
-        xml = xml + '<Comments>' + iam_makeOkXml(gws_text) + '</Comments>';
-        xml = xml + '</Attributes>';
-        action = v_root + v_vers + '/rp/accessCtrlReq?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
-        iam_putRequest(action, null, xml, null, _postReqAccessCtrl());
-    } else {
-        if (cond2fa_in != '') {
-            xml += '<Drop id="cond2fa"/>';
-            _okmsg += '<li>Dropping: cond2fa</li>';
-        }
     }
+    if (_okmsg == '') {
+        iam_showTheNotice('There are no changes to request.');
+        return;
+    }
+    _okmsg = 'Request submitted<ul>' + _okmsg + '</ul>';
+    xml = xml + '<Comments>' + iam_makeOkXml(gws_text) + '</Comments>';
+    xml = xml + '</Attributes>';
+    action = v_root + v_vers + '/rp/accessCtrlReq?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
+    iam_putRequest(action, null, xml, null, _postReqAccessCtrl());
 }
 
 

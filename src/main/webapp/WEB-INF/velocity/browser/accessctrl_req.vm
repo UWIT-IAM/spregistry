@@ -20,6 +20,7 @@
 ##
 
 #set ( $chk = '' )
+#set ( $inVal = '' )
 
 <div id="accessCtrlReqDialog" data-dojo-type="dijit/Dialog" title="Request access control for ${relyingPartyId}" ${hide}>
     <div class="dijitDialogPaneContentArea" data-dojo-type="dijit/layout/ContentPane" >
@@ -29,39 +30,45 @@
         <h4>2FA</h4>
 
         <ul class="iamlist">
+            <li>If your SP can't request 2FA, the IdP can force 2FA for all users or members of a certain group.</li><p/>
             #if(!(${accessCtrl.getAuto2FA()}) && !(${accessCtrl.getCond2FA()}))
                 #set ($chk=$checked)
+                #set ($inVal='on')
             #end
             <li><label for="default2fa_req">2FA by SP Request (Default)</label>
                 <div class="dd">
                     <input id="default2fa_req" dojoType="dijit/form/RadioButton" name="type_2fa"
                         #if(!(${accessCtrl.getAuto2FA()}) && !(${accessCtrl.getCond2FA()})) $chk #end
                     />
-                    <input id="default2fa_in" value="$chk" type="hidden" aria-hidden="true" />
+                    <input id="default2fa_in" value="inVal" type="hidden" aria-hidden="true" />
                 </div>
             </li>
             #set ($chk = '')
+            #set ($inVal='')
             #if(${accessCtrl.getAuto2FA()})
                 #set ($chk=$checked)
+                #set ($inVal='on')
             #end
             <li><label for="auto2fa_req">Auto 2FA--all users require 2FA</label>
                 <div class="dd">
                     <input id="auto2fa_req" dojoType="dijit/form/RadioButton" name="type_2fa"
                         #if(${accessCtrl.getAuto2FA()}) $chk #end
                     />
-                    <input id="auto2fa_in" value="$chk" type="hidden" aria-hidden="true" />
+                    <input id="auto2fa_in" value="$inVal" type="hidden" aria-hidden="true" />
                 </div>
             </li>
             #set ($chk = '')
+            #set ($inVal='')
             #if(${accessCtrl.getCond2FA()})
                 #set ($chk=$checked)
+                #set ($inVal='on')
             #end
             <li><label for="cond2fa_req">Conditional 2FA--members of group require 2FA</label>
                 <div class="dd">
                     <input id="cond2fa_req" dojoType="dijit/form/RadioButton" name="type_2fa"
                         #if(${accessCtrl.getCond2FA()}) $chk #end
                     />
-                    <input id="cond2fa_in" value="$chk" type="hidden" aria-hidden="true" />
+                    <input id="cond2fa_in" value="$inVal" type="hidden" aria-hidden="true" />
                 </div>
             </li>
             <li><div class="dd"><label for="group2fa_req">Conditional 2FA Group:</label></div>
@@ -73,22 +80,24 @@
         </ul>
         <h4>Conditional Access</h4>
         #set ($chk = '')
+        #set ($inVal='')
         #if(${accessCtrl.conditional})
             #set ($chk=$checked)
+            #set ($inVal='on')
         #end
         <ul class="iamlist">
             <li>Require all users to be a member of a certain group</li><p/>
-            <li><label for="conditional_req}">Enable Conditional Access</label><p/>
+            <li><label for="conditional_req}">Enable Conditional Access</label>
                 <div class="dd">
                     <input id="conditional_req" dojoType="dijit/form/CheckBox"
                         #if(${accessCtrl.conditional}) $chk #end
                     />
-                    <input id="conditional_in" value="$chk" type="hidden" aria-hidden="true" />
+                    <input id="conditional_in" value="$inVal" type="hidden" aria-hidden="true" />
                 </div>
             </li>
             <li><div class="dd"><label for="conditional_group_req">Conditional Access Group:</label></div>
                 <div class="dd">
-                    <input data-dojo-type="dijit/form/TextBox" id="conditional_group_req" #if(${accessCtrl.conditional}) value="${accessCtrl.conditionalGroup}" #end /><div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/jTCoAQ" target="spghelp"> help</a></div>
+                    <input data-dojo-type="dijit/form/TextBox" id="conditional_group_req" #if(${accessCtrl.conditional}) value="${accessCtrl.conditionalGroup}" #end /><div style="float:right;font-size:.8em"></div>
                     <input data-dojo-type="dijit/form/TextBox" id="conditional_group_in" #if(${accessCtrl.conditional}) value="${accessCtrl.conditionalGroup}" #else value = "" #end type="hidden" aria-hidden="true" />
                 </div>
             </li>

@@ -79,7 +79,7 @@
           </li>
           <li><div class="dd"><label for="conditional_group">Conditional Access Group:</label></div>
               <div class="dd">
-                  <input data-dojo-type="dijit/form/TextBox" id="conditional_group_name" #if(${accessCtrl.conditional}) value=${accessCtrl.conditionalGroup} #end /><div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/jTCoAQ" target="spghelp"> help</a></div>
+                  <input data-dojo-type="dijit/form/TextBox" id="conditional_group_name" #if(${accessCtrl.conditional}) value=${accessCtrl.conditionalGroup} #end /><div style="float:right;font-size:.8em"></div>
               </div>
           </li>
       </ul>
