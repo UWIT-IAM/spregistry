@@ -48,7 +48,7 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
 
     public AccessCtrl getAccessCtrl(String entityId) {
         log.debug("looking for access control for " + entityId);
-        AccessCtrl accessCtrl = null;
+        AccessCtrl accessCtrl = new AccessCtrl();
 
         List<AccessCtrl> accessCtrlList = template.query("select * from access_control where entity_id = ? and end_time is null",
                 new Object[] {entityId},

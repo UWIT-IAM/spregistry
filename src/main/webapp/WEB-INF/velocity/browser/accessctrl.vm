@@ -70,7 +70,7 @@
             </li>
         #else
         <li>
-            2FA is not configured for this Service Provider.
+            Conditional/Auto 2FA is not configured for this Service Provider.
         </li>
         #end
 
