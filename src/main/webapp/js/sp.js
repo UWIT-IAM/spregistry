@@ -1147,7 +1147,7 @@ function accessCtrl_reqAccessCtrl(entityId) {
             _okmsg += '<li>Adding: conditional access</li>';
             }
         if (cond_group == '') {
-            iam_showTheNotice('You must identify the group(s) for conditional access.');
+            iam_showTheNotice('Error: You must specify a group name when enabling conditional access.');
             return;
         }
         if (cond_group == cond_group_in) {
@@ -1181,7 +1181,7 @@ function accessCtrl_reqAccessCtrl(entityId) {
             _okmsg += '<li>Change 2FA type to: conditional</li>';
         }
         if (group_2fa == '') {
-            iam_showTheNotice('You must identify the group(s) for conditional 2fa.');
+            iam_showTheNotice('Error: You must specify a group name when enabling conditional 2FA.');
             return;
         }
         if (group_2fa == group_2fa_in) {

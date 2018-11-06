@@ -35,7 +35,7 @@
                 #set ($chk=$checked)
                 #set ($inVal='on')
             #end
-            <li><label for="default2fa_req">2FA by SP Request (Default)</label>
+            <li><label for="default2fa_req">2FA by SP request (default)</label>
                 <div class="dd">
                     <input id="default2fa_req" dojoType="dijit/form/RadioButton" name="type_2fa"
                         #if(!(${accessCtrl.getAuto2FA()}) && !(${accessCtrl.getCond2FA()})) $chk #end
@@ -49,7 +49,7 @@
                 #set ($chk=$checked)
                 #set ($inVal='on')
             #end
-            <li><label for="auto2fa_req">Auto 2FA--all users require 2FA</label>
+            <li><label for="auto2fa_req">Auto 2FA: All users must use 2FA</label>
                 <div class="dd">
                     <input id="auto2fa_req" dojoType="dijit/form/RadioButton" name="type_2fa"
                         #if(${accessCtrl.getAuto2FA()}) $chk #end
@@ -63,7 +63,7 @@
                 #set ($chk=$checked)
                 #set ($inVal='on')
             #end
-            <li><label for="cond2fa_req">Conditional 2FA--members of group require 2FA</label>
+            <li><label for="cond2fa_req">Conditional 2FA: Only members of group must use 2FA</label>
                 <div class="dd">
                     <input id="cond2fa_req" dojoType="dijit/form/RadioButton" name="type_2fa"
                         #if(${accessCtrl.getCond2FA()}) $chk #end
@@ -71,7 +71,7 @@
                     <input id="cond2fa_in" value="$inVal" type="hidden" aria-hidden="true" />
                 </div>
             </li>
-            <li><div class="dd"><label for="group2fa_req">Conditional 2FA Group:</label></div>
+            <li><div class="dd"><label for="group2fa_req">Conditional 2FA group:</label></div>
                 <div class="dd">
                     <input data-dojo-type="dijit/form/TextBox" id="group2fa_req" #if(${accessCtrl.getGroupAuto2FA()} != "") value="${accessCtrl.getGroupAuto2FA()}" #end /><div style="float:right;font-size:.8em"></div>
                     <input data-dojo-type="dijit/form/TextBox" id="group2fa_in" #if(${accessCtrl.getGroupAuto2FA()} != "") value="${accessCtrl.getGroupAuto2FA()}" #else value = "" #end type="hidden" aria-hidden="true" />
@@ -87,7 +87,7 @@
         #end
         <ul class="iamlist">
             <li>Require all users to be a member of a certain group</li><p/>
-            <li><label for="conditional_req}">Enable Conditional Access</label>
+            <li><label for="conditional_req}">Enable conditional access</label>
                 <div class="dd">
                     <input id="conditional_req" dojoType="dijit/form/CheckBox"
                         #if(${accessCtrl.conditional}) $chk #end
@@ -95,7 +95,7 @@
                     <input id="conditional_in" value="$inVal" type="hidden" aria-hidden="true" />
                 </div>
             </li>
-            <li><div class="dd"><label for="conditional_group_req">Conditional Access Group:</label></div>
+            <li><div class="dd"><label for="conditional_group_req">Conditional access group:</label></div>
                 <div class="dd">
                     <input data-dojo-type="dijit/form/TextBox" id="conditional_group_req" #if(${accessCtrl.conditional}) value="${accessCtrl.conditionalGroup}" #end /><div style="float:right;font-size:.8em"></div>
                     <input data-dojo-type="dijit/form/TextBox" id="conditional_group_in" #if(${accessCtrl.conditional}) value="${accessCtrl.conditionalGroup}" #else value = "" #end type="hidden" aria-hidden="true" />

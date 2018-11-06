@@ -143,6 +143,16 @@ public class AccessCtrl implements Serializable  {
     public void setConditionalGroup(String conditionalGroup) {
         this.conditionalGroup = conditionalGroup;
     }
+
+    //for input of user data--DB users plain "unsafe" methods
+    public void setConditionalByUser(Boolean conditional, String conditionalGroup) throws AccessCtrlException {
+        if (StringUtils.isNotBlank(conditionalGroup)) {
+            this.conditionalGroup = conditionalGroup;
+            this.conditional = conditional;
+        }
+        else { throw new AccessCtrlException("tried to set conditional access but provided empty or whitespace" +
+                "string for group name"); }
+    }
     public String getEntityId() {
         return entityId;
     }
