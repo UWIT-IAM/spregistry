@@ -8,7 +8,7 @@ spreg.versionDate=2018-11-15
 spreg.root=/data/local/spreg
 
 # database parameters
-spreg.db.url=iamdbdev01.s.uw.edu/spreghistory2018 
+spreg.db.url=iamdbdev01.s.uw.edu/spreghistory2018
 
 # web service parameters
 spreg.gws.baseUrl=https://iam-ws.u.washington.edu:7443/group_sws/v2
