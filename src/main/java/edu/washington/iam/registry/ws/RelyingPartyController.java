@@ -1498,19 +1498,6 @@ public class RelyingPartyController {
             mv.addObject("alert", "Update of access control for entity failed:" + e.getMessage());
         }
 
-
-        SimpleMailMessage msg = new SimpleMailMessage(this.templateMessage);
-        msg.setTo(mailTo);
-        String act = "updated";
-        if (status==201) act = "created";
-        msg.setSubject("Service provider proxy info " + act + " by " + session.remoteUser);
-        msg.setText( "User '" + session.remoteUser + "' " + act + " proxy info '" + id + "'.\nRequest status: " + status + "\n");
-        try{
-            this.mailSender.send(msg);
-        } catch(MailException ex) {
-            log.error("sending mail: " + ex.getMessage());
-        }
-
         response.setStatus(status);
         return mv;
     }

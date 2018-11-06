@@ -46,9 +46,9 @@
        onShow="adjustSpPaneSize('accessCtrlViewPane')">
 
     <p />
-      <h3>Auto 2FA</h3>
+      <h3>Access Control</h3>
       <ul class="iamlist" style="padding-left: 20px">
-        #if (${accessCtrl.getAuto2FA()}) || (${accessCtrl.getCond2FA()})
+        #if (${accessCtrl.getAuto2FA()} || ${accessCtrl.getCond2FA()})
             <li>
                 <fieldset style="margin-bottom:8px">
                     <legend class="h4">2FA</legend>
@@ -76,7 +76,6 @@
 
       </ul>
       <p />
-      <h3>Conditional Access</h3>
       <ul class="iamlist" style="padding-left: 20px">
           #if ($accessCtrl.conditional)
               <li>
