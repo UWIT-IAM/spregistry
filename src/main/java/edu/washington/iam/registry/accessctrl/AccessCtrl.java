@@ -52,6 +52,7 @@ public class AccessCtrl implements Serializable  {
     public AccessCtrl(){
 
         //is2FASet keeps track if some idiot (like your author) tries to enable conditional AND auto 2fa
+        //perhaps a better name would have been "is2FASetByUser".  If the DB sets the value we don't care.
         is2FASet = false;
         auto2FA = false;
         groupAuto2FA = "";
@@ -65,7 +66,6 @@ public class AccessCtrl implements Serializable  {
 
     }
 
-    //2017-11-13 mattjm constructor taking XML document as argument removed (and deleted XMLProxyManager)
 
     //"conditional 2fa" is a virtual state--it means auto2fa is true and a group is set to a non-empty string
     public Boolean getCond2FA() {
@@ -97,7 +97,7 @@ public class AccessCtrl implements Serializable  {
             return true;
         } else return false;
     }
-    //like the get methods, sets the state to "auto 2fa" without you having to figure out if the group field is populated
+    //like the get method, sets the state to "auto 2fa" without you having to figure out if the group field is populated
     //or not
     public void setAuto2FA(Boolean auto2FA) throws AccessCtrlException {
         if (is2FASet) { throw new AccessCtrlException("Can't sent Auto 2FA AND Conditional 2FA!!"); }
@@ -144,14 +144,19 @@ public class AccessCtrl implements Serializable  {
         this.conditionalGroup = conditionalGroup;
     }
 
-    //for input of user data--DB users plain "unsafe" methods
+    //for setting conditional access using user input--DB uses plain "unsafe" methods above
     public void setConditionalByUser(Boolean conditional, String conditionalGroup) throws AccessCtrlException {
-        if (StringUtils.isNotBlank(conditionalGroup)) {
-            this.conditionalGroup = conditionalGroup;
-            this.conditional = conditional;
-        }
-        else { throw new AccessCtrlException("tried to set conditional access but provided empty or whitespace" +
-                "string for group name"); }
+
+        if (conditional) {
+            if (StringUtils.isNotBlank(conditionalGroup))
+            {
+                this.conditionalGroup = conditionalGroup;
+                this.conditional = true;
+            } else {
+                throw new AccessCtrlException("tried to set conditional access but provided empty or whitespace" +
+                        "string for group name");
+            }
+        } else { this.conditional = false; }
     }
     public String getEntityId() {
         return entityId;
