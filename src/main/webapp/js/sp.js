@@ -102,14 +102,21 @@ function showSpPanel() {
 
 var spKeyListener = null;
 
-//  Switch to the correct tab
+/*  Switch to the correct tab
 
+hash uses first letter of container <div> for tab, so container first letters must be unique.  Yes really.  Blame Fox.
+
+for access control tab I made container name start with  "z"...recommend going backward from there for future
+collisions with existing tab first letters.
+
+*/
 function setSpTab() {
    console.log('setSpTab: tab=' + v_currentSpTab);
    var tab = null;
    var tabid = 'metaSpContainer';
    if (v_currentSpTab == 'a') tabid = 'attrSpContainer';
    else if (v_currentSpTab == 'p') tabid = 'proxySpContainer';
+   else if (v_currentSpTab == 'z') tabid = 'zaccessCtrlSpContainer';
    tab = dijitRegistry.byId(tabid);
    console.log('tab: ' + tab);
    if (tab!=null) dijitRegistry.byId('spPanel').selectChild(tab);
@@ -150,6 +157,7 @@ function postLoadSp() {
                     if (v_currentSpTab=='m') iam_showTheDialog('metaEditDialog');
                     else if (v_currentSpTab=='a') iam_showTheDialog('attrEditDialog');
                     else if (v_currentSpTab=='p') iam_showTheDialog('proxyEditDialog');
+                    else if (v_currentSpTab=='z') iam_showTheDialog('accessCtrlEditDialog');
                     break;
                 case 82: // R
                 case 114:

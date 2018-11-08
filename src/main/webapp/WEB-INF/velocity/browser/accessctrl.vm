@@ -28,7 +28,7 @@
 #end
 
 
-<div id="accessCtrlSpContainer" dojoType="dijit.layout.ContentPane" title="Access Control" selected="false" style="overflow:hidden"
+<div id="zaccessCtrlSpContainer" dojoType="dijit.layout.ContentPane" title="Access Control" selected="false" style="overflow:hidden"
      onClose="return(true)" doLayout="false" >
 
   <ul class="buttonBar" role="navigation">
