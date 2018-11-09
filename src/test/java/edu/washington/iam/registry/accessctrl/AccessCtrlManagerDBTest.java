@@ -63,7 +63,9 @@ public class AccessCtrlManagerDBTest {
         myCtrl.setEntityId("phony");
         myCtrl = dao.getAccessCtrl(fakeEntityIds.get(0));
         //make sure phony access control object is overwritten with null one returned from get method
-        Assert.assertTrue(myCtrl == null);
+        Assert.assertFalse(myCtrl.getAuto2FA());
+        Assert.assertFalse(myCtrl.getCond2FA());
+        Assert.assertFalse(myCtrl.getConditional());
 
     }
 
