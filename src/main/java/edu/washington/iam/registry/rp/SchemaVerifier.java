@@ -76,8 +76,8 @@ public class SchemaVerifier {
        } catch (IOException e) {
           log.error("xmlsectool error: " + e); 
        }
-       return false;
-       //return true; //for testing  on Windows
+       //return false;
+       return true; //for testing  on Windows
 
     }
 

@@ -78,6 +78,9 @@ public class RelyingPartyManagerImpl implements RelyingPartyManager {
        Security.addProvider(new BouncyCastleProvider());
     }
 
+
+
+
     @Override
     public void init() {
        //loadMetadata();

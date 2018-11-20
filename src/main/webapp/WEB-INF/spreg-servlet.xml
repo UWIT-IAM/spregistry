@@ -49,7 +49,7 @@
         <property name="filterPolicyManager" ref="spfpManager"/>
         <property name="proxyManager" ref="spprManager"/>
         <property name="accessCtrlManager" ref="spacManager"/>
-         <property name="mailSender" ref="mailSender"/>
+        <property name="mailSender" ref="mailSender"/>
          <property name="templateMessage" ref="templateMessage"/>
          <property name="mailTo" value="${spreg.smtp.to}"/>
          <property name="requestMailTo" value="${spreg.smtp.requestMailTo}"/>

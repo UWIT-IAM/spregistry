@@ -84,6 +84,8 @@ public class FilterPolicyManagerImpl implements FilterPolicyManager {
             for (AttributeFilterPolicy afp : fps) {
                 for (AttributeRule attributeRule : afp.getAttributeRules()) {
                     if (attributeRule.getId().equals(attr.getId())) {
+                        //attributefilterpolicy is set so we can see attribute source with mouseover text
+                        //on attribute page.
                         attr.setAttributeFilterPolicy(afp);
                         attr.setAttributeRule(attributeRule);
                         matches++;

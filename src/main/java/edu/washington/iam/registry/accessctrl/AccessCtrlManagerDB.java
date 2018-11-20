@@ -1,6 +1,7 @@
 package edu.washington.iam.registry.accessctrl;
 
 import edu.washington.iam.registry.exception.AccessCtrlException;
+import edu.washington.iam.registry.rp.UuidManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -27,6 +28,8 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
     public void setIdpHelper(IdpHelper v) {
         idpHelper = v;
     }
+
+    private UuidManager uuidManager = new UuidManager(template);
 
 
     public List<AccessCtrl> getAccessCtrlHistory(String entityId) throws AccessCtrlException {
@@ -64,11 +67,8 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
         log.debug("looking to update access control for " + accessCtrl.getEntityId());
 
         try {
-            List<UUID> uuid = template.queryForList(
-                    "select uuid from metadata where entity_id = ? and end_time is null",
-                    UUID.class,
-                    accessCtrl.getEntityId());
-                    accessCtrl.setUuid(uuid.get(0));
+
+            accessCtrl.setUuid(uuidManager.GetUuid(accessCtrl.getEntityId()));
             log.info("attempting access control update for " + accessCtrl.getEntityId());
             //recycle "delete" method to mark current record inactive
             removeAccessCtrl(accessCtrl.getEntityId(), updatedBy);
@@ -85,7 +85,7 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
             if (idpHelper!=null) idpHelper.notifyIdps("accessctrl");
         } catch (Exception e) {
             log.info("update access control trouble: " + e.getMessage());
-            // just eat it - don't know the repercussions
+            throw new AccessCtrlException("update access control trouble: " + e.getMessage());
         }
 
 

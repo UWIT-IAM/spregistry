@@ -48,6 +48,11 @@
         <property name="template" ref="jdbcTemplate"></property>
     </bean>
 
+    <bean id="UuidManager"
+          class="edu.washington.iam.registry.rp.UuidManager">
+        <property name="template" ref="jdbcTemplate"></property>
+    </bean>
+
 
     <bean id="proxyManagerDB" class="edu.washington.iam.registry.proxy.ProxyManagerDB">
         <property name="template" ref="jdbcTemplate"></property>

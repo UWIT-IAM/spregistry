@@ -3,6 +3,7 @@ package edu.washington.iam.registry.filter;
 import edu.washington.iam.registry.exception.AttributeNotFoundException;
 import edu.washington.iam.registry.exception.FilterPolicyException;
 import edu.washington.iam.registry.exception.NoPermissionException;
+import edu.washington.iam.registry.rp.UuidManager;
 import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.tools.IdpHelper;
 import org.slf4j.Logger;
@@ -37,6 +38,9 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
     public void setIdpHelper(IdpHelper v) {
         idpHelper = v;
     }
+
+    @Autowired
+    private UuidManager uuidManager;
 
     @Autowired
     private JdbcTemplate template;
