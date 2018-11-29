@@ -201,7 +201,7 @@ function showCurrentSp() {
    } else console.log('showCur no sur');
    if (dijitRegistry.byId('spPane')!=null)  dijitRegistry.byId('spPane').destroyRecursive();
 
-   var url = v_root + v_vers + '/rp?id=' + currentSp.id + '&lmdid=' + currentSp.meta + '&view=inner' + adminQS;
+   var url = v_root + v_vers + '/rp?id=' + currentSp.id + '&mdid=' + currentSp.meta + '&view=inner' + adminQS;
    dijitRegistry.byId('spDisplay').set('errorMessage', v_loadErrorMessage);
    dijitRegistry.byId('spDisplay').set('loadingMessage', 'Loading ' + currentSp.id + ' . . .' );
    dijitRegistry.byId('spDisplay').set('onLoad', postLoadSp);

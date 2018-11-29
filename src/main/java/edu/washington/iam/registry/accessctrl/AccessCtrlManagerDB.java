@@ -4,6 +4,7 @@ import edu.washington.iam.registry.exception.AccessCtrlException;
 import edu.washington.iam.registry.rp.UuidManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -29,7 +30,8 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
         idpHelper = v;
     }
 
-    private UuidManager uuidManager = new UuidManager(template);
+    @Autowired
+    private UuidManager uuidManager;
 
 
     public List<AccessCtrl> getAccessCtrlHistory(String entityId) throws AccessCtrlException {
@@ -68,7 +70,7 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
 
         try {
 
-            accessCtrl.setUuid(uuidManager.GetUuid(accessCtrl.getEntityId()));
+            accessCtrl.setUuid(uuidManager.getUuid(accessCtrl.getEntityId()));
             log.info("attempting access control update for " + accessCtrl.getEntityId());
             //recycle "delete" method to mark current record inactive
             removeAccessCtrl(accessCtrl.getEntityId(), updatedBy);
@@ -106,8 +108,11 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
             return 200;
         }
         else if (ids.size() == 0) {
-            log.info(String.format("No access control found for %s", entityId));
-            return 500;
+            //there is no record with end_time = null if access control has never been enabled
+            log.info(String.format("No access control found for %s (usually not an error--wasn't set before)", entityId));
+            //if there are no records with end_time = null then there are no active records to remove
+            //and everything is fine.  mattjm 2018-10-23
+            return 200;
         }
         else{
             throw new AccessCtrlException("more than one active access control record found!!  No update performed.");

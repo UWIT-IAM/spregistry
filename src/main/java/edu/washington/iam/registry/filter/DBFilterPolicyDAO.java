@@ -1,8 +1,6 @@
 package edu.washington.iam.registry.filter;
 
-import edu.washington.iam.registry.exception.AttributeNotFoundException;
 import edu.washington.iam.registry.exception.FilterPolicyException;
-import edu.washington.iam.registry.exception.NoPermissionException;
 import edu.washington.iam.registry.rp.UuidManager;
 import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.tools.IdpHelper;
@@ -15,21 +13,13 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.BufferedWriter;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.logging.Filter;
 
 public class DBFilterPolicyDAO implements FilterPolicyDAO {
     private final Logger log = LoggerFactory.getLogger(getClass());
@@ -241,10 +231,8 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
 
     public void updateFilterPolicy(FilterPolicyGroup filterPolicyGroup,
                                    AttributeFilterPolicy attributeFilterPolicy, String updatedBy) throws FilterPolicyException {
-        List<UUID> uuid = template.queryForList("select uuid from metadata where entity_id = ? and end_time is null",
-                UUID.class,
-                attributeFilterPolicy.getEntityId());
-        attributeFilterPolicy.setUuid(uuid.get(0));
+
+        attributeFilterPolicy.setUuid(uuidManager.getUuid(attributeFilterPolicy.getEntityId()));
         log.info(String.format("updating %s for %s", attributeFilterPolicy.getEntityId(), filterPolicyGroup.getId()));
         //recycle delete method
         removeRelyingParty(filterPolicyGroup, attributeFilterPolicy.getEntityId(), updatedBy);
@@ -267,10 +255,8 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
 
     public void createFilterPolicy(FilterPolicyGroup filterPolicyGroup,
                                    AttributeFilterPolicy attributeFilterPolicy, String updatedBy) throws FilterPolicyException {
-        List<UUID> uuid = template.queryForList("select uuid from metadata where entity_id = ? and end_time is null",
-                UUID.class,
-                attributeFilterPolicy.getEntityId());
-        attributeFilterPolicy.setUuid(uuid.get(0));
+
+        attributeFilterPolicy.setUuid(uuidManager.getUuid(attributeFilterPolicy.getEntityId()));
         log.info(String.format("creating %s for %s", attributeFilterPolicy.getEntityId(), filterPolicyGroup.getId()));
         try {
             String xml = XMLHelper.serializeXmlToString(attributeFilterPolicy);

@@ -31,6 +31,8 @@ public class DBMetadata implements MetadataDAO {
         idpHelper = v;
     }
 
+
+
     @Autowired
     private JdbcTemplate template;
 
@@ -113,6 +115,7 @@ public class DBMetadata implements MetadataDAO {
                     groupId, relyingParty.getEntityId());
             if (existingIds.size() == 0) {
                 // no active records so we add an active record
+
                 template.update(
                         "insert into metadata (uuid, group_id, entity_id, xml, end_time, start_time, updated_by) values " +
                                 "(? ,?, ?, ?, ?, now(), ?)",
@@ -190,6 +193,7 @@ public class DBMetadata implements MetadataDAO {
     public void setGroupId(String groupId) { this.groupId = groupId; }
     public void setId(String id) { this.id = id; }
     public void setEditable(boolean editable) { this.editable = editable; }
+    //we don't use uuidmanager here because this class only handles UW metadata
     private UUID genUUID() { return UUID.randomUUID(); }
 
 

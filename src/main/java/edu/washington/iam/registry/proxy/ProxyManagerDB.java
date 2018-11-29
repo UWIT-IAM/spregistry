@@ -1,8 +1,10 @@
 package edu.washington.iam.registry.proxy;
 
 import edu.washington.iam.registry.exception.ProxyException;
+import edu.washington.iam.registry.rp.UuidManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -20,6 +22,9 @@ public class ProxyManagerDB implements ProxyManager {
     public void setTemplate(JdbcTemplate template) {
         this.template = template;
     }
+
+    @Autowired
+    private UuidManager uuidManager;
 
     public List<Proxy> getProxys() {
         log.debug("getting the list of proxies");
@@ -84,11 +89,8 @@ public class ProxyManagerDB implements ProxyManager {
 
     //add or update a proxy
     public void updateProxy(Proxy proxy, String updatedBy) throws ProxyException {
-        List<UUID> uuid = template.queryForList("select uuid from metadata where entity_id = ? and end_time is null",
-                UUID.class,
-                proxy.getEntityId());
 
-        proxy.setUuid(uuid.get(0));
+        proxy.setUuid(uuidManager.getUuid(proxy.getEntityId()));
         log.info("attempting proxy update " + proxy.getEntityId());
         //recycle "delete" method to mark current record inactive
         removeProxy(proxy.getEntityId(), updatedBy);

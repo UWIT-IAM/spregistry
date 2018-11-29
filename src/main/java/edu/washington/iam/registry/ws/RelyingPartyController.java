@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 
 import edu.washington.iam.registry.exception.*;
 
+import edu.washington.iam.registry.rp.UuidManager;
 import org.springframework.stereotype.Controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -94,6 +95,7 @@ public class RelyingPartyController {
     private static RelyingPartyManager rpManager;
     private static ProxyManager proxyManager;
     private static AccessCtrlManager accessCtrlManager;
+    private static UuidManager uuidManager;
 
     private static DNSVerifier dnsVerifier;
     private static GroupManager groupManager;
@@ -1113,9 +1115,14 @@ public class RelyingPartyController {
                 status = 401;
                 mv.addObject("alert", "You are not the owner.");
             } else {
-                status = accessCtrlManager.removeAccessCtrl(id, session.remoteUser);
-                status = proxyManager.removeProxy(id, session.remoteUser);
-                status = filterPolicyManager.removeEditableRelyingParty(id, session.remoteUser);
+                /* If there is NOT an incommon uuid we can delete these.  If there is one we need to keep them.
+                 * Otherwise attributes/proxy/access control for InCommon SP get clobbered when we delete
+                 * the UW SP*/
+                if(!uuidManager.hasIncUuid(id)) {
+                    status = accessCtrlManager.removeAccessCtrl(id, session.remoteUser);
+                    status = proxyManager.removeProxy(id, session.remoteUser);
+                    status = filterPolicyManager.removeEditableRelyingParty(id, session.remoteUser);
+                }
                 status = rpManager.removeRelyingParty(id, mdid, session.remoteUser);
             }
         } catch (FilterPolicyException e) {
@@ -1582,6 +1589,8 @@ public class RelyingPartyController {
     public void setAccessCtrlManager(AccessCtrlManager m) {
         accessCtrlManager = m;
     }
+
+    public void setUuidManager(UuidManager m) { uuidManager = m; }
 
     /* utility */
     private boolean userCanEdit(RPSession session, String entityId)

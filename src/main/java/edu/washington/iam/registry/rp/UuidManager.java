@@ -8,14 +8,23 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
 import java.util.UUID;
 
+/*
+* This class manages UUIDs.
+*
+* FOr UW SPs, the table of record for UUID is metadata.  For InCommon SPs, the table of record is incommon_sp.
+* 
+* */
 public class UuidManager {
 
-    @Autowired
-    JdbcTemplate template;
+    private JdbcTemplate template;
+    public void setTemplate(JdbcTemplate m) { template = m; }
+
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public UUID GetUuid (String entityId){
+    /*Feed an entityid to getUuid and it will get the UUID if one exists, or return
+     * a new one if one isn't found.  Works for InCommon (no entry in metadata table) and UW SPs.*/
+    public UUID getUuid(String entityId){
 
         //look in metadata table
         List<UUID> uuid = template.queryForList(
@@ -32,8 +41,8 @@ public class UuidManager {
                     "select uuid from incommon_sp where entity_id = ? and active is true",
                     UUID.class,
                     entityId);
-            if (uuid.size() > 0) {
-                return uuid.get(0);
+            if (uuidIc.size() > 0) {
+                return uuidIc.get(0);
             }
             else {
                 //we have never done anything in the database with this SP, so we have to create a UUID for it
@@ -50,6 +59,22 @@ public class UuidManager {
 
 
         }
+
+        /*Given an entity ID, returns whether or not that entityID has a UUID entry in the
+         * incommon_sp table */
+        public Boolean hasIncUuid(String entityId){
+
+            List<UUID> uuidIc = template.queryForList(
+                    "select uuid from incommon_sp where entity_id = ? and active is true",
+                    UUID.class,
+                    entityId);
+            if (uuidIc.size() > 0) {
+                return true;
+            } else { return false; }
+
+        }
+
+
 
 
 
