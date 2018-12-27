@@ -4,8 +4,7 @@
     authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="attributePersistentID" description="The persistent id as an attribute"
      authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="cn" description="PDS: 'uwPersonPreferredFirst uwPersonPreferredMiddle uwPersonPreferredSurname' will be used if available, otherwise PDS: cn."
-            authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="cn" description="Based on preferred name parts (first, middle, surname) if available, else PDS: cn" authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="displayName" description="Full name (PDS: displayName)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="email" description="email (uwEWPEmail1 or uwSWPEmail or id@uw.edu)" authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="employeeNumber" description="Employee id (PDS: uwEmployeeID)" authorizingGroup="u_weblogin_admins"  type="attribute" />
@@ -17,8 +16,7 @@
  <Attribute id="ePPN" description="uwnetid (PDS: uwNetID + @washington.edu)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="eppnNameId" description="&lt;i&gt;uwnetid&lt;/i&gt;@washington.edu"  authorizingGroup="u_weblogin_admins"  type="nameid" />
  <Attribute id="ePTID" description="The persistent id as a SAML1 targeted id"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="givenName" description="PDS: 'uwPersonPreferredFirst uwPersonPreferredMiddle' will be used if set by user, otherwise PDS: uwPersonRegisteredFirstMiddle"
-            authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="givenName" description="Base on preferred name parts (first, middle) if available, else PDS: uwPersonRegisteredFirstMiddle" authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="gws_groups" description="GWS group effective memberships"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="homedept" description="Home department (PDS: uwEmployeeHomeDepartment)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="idNameId" description="&lt;i&gt;uwnetid&lt;/i&gt;"  authorizingGroup="u_weblogin_admins"  type="nameid" />
@@ -31,8 +29,7 @@
  <Attribute id="preferredMiddle" description="Preferred middle name  (PDS: uwPersonPreferredMiddle)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="preferredSurname" description="Preferred surname  (PDS: uwPersonPreferredSurname)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="scopedAffiliation" description="affiliation with '@washington.edu'"  authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="surname" description="PDS: uwPersonPreferredSurname will be used if set by user, otherwise uwPersonRegisteredSurname"
-            authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="surname" description="PDS: uwPersonPreferredSurname if available, else PDS:uwPersonRegisteredSurname" authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="title" description="Title (PDS: uwEWPTitle1)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="uwEduEmail" description="UW.EDU email (netid@uw.edu)" authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="uwEduEmailNameId" description="&lt;i&gt;uwnetid&lt;/i&gt;@uw.edu" authorizingGroup="u_weblogin_admins"  type="nameid" />
