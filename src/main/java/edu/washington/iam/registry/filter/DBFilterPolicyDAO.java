@@ -239,8 +239,8 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
         log.info(String.format("marked old fp deleted %s for %s, attempting to add new one", attributeFilterPolicy.getEntityId(), filterPolicyGroup.getId()));
         try {
             String xml = XMLHelper.serializeXmlToString(attributeFilterPolicy);
-            template.update("insert into filter (uuid, entity_id, start_time, end_time, updated_by, xml, group_id) "
-                    + "values (?, ?, now(), null, ?, ?, ?)",
+            template.update("insert into filter (uuid, entity_id, start_time, end_time, updated_by, xml, group_id, status) "
+                    + "values (?, ?, now(), null, ?, ?, ?, 1)",
                     attributeFilterPolicy.getUuid(),
                     attributeFilterPolicy.getEntityId(),
                     updatedBy,
@@ -260,8 +260,8 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
         log.info(String.format("creating %s for %s", attributeFilterPolicy.getEntityId(), filterPolicyGroup.getId()));
         try {
             String xml = XMLHelper.serializeXmlToString(attributeFilterPolicy);
-            template.update("insert into filter (uuid, entity_id, start_time, end_time, updated_by, xml, group_id) "
-                            + "values (?, ?, now(), null, ?, ?, ?)",
+            template.update("insert into filter (uuid, entity_id, start_time, end_time, updated_by, xml, group_id, status) "
+                            + "values (?, ?, now(), null, ?, ?, ?, 1)",
                     attributeFilterPolicy.getUuid(),
                     attributeFilterPolicy.getEntityId(),
                     updatedBy,
@@ -285,8 +285,9 @@ public class DBFilterPolicyDAO implements FilterPolicyDAO {
                 filterPolicyGroup.getId()
                 );
         if (rpIds.size() == 1 && rpIds.get(0) != null) {
-            template.update("update filter set end_time = now(), updated_by = ? where id= ?",
+            template.update("update filter set end_time = now(), updated_by = ?, status = ? where id= ?",
                     updatedBy,
+                    0,
                     rpIds.get(0));
         }
         else if (rpIds.size() == 0)

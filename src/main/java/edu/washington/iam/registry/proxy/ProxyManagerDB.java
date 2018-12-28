@@ -70,7 +70,7 @@ public class ProxyManagerDB implements ProxyManager {
                 "select id from proxy where entity_id = ? and end_time is null",
                 Integer.class, rpid);
         if (rpIds.size() == 1 && rpIds.get(0) != null) {
-            template.update("update proxy set end_time = now(), updated_by = ? where _id = ?", updatedBy, rpIds.get(0));
+            template.update("update proxy set end_time = now(), updated_by = ?, status = ? where _id = ?", updatedBy, 0, rpIds.get(0));
             log.debug("updated (delete) proxy for %s", rpid);
             return 200;
         }
@@ -97,8 +97,8 @@ public class ProxyManagerDB implements ProxyManager {
         //only add a record with end_time=null if social gateway should be active.
         if (proxy.getSocialActive()) {
             log.info("Marked current proxy record inactive--adding new one next");
-            template.update("insert into proxy (uuid, entity_id, start_time, end_time, updated_by) "
-                            + "values (?, ?, now(), null, ?)",
+            template.update("insert into proxy (uuid, entity_id, start_time, end_time, updated_by, status) "
+                            + "values (?, ?, now(), null, ?, 1)",
                     proxy.getUuid(),
                     proxy.getEntityId(),
                     updatedBy);

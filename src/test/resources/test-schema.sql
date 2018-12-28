@@ -4,10 +4,10 @@ CREATE TABLE proxy (
     id integer NOT NULL AUTO_INCREMENT,
     uuid uuid NOT NULL,
     entity_id text,
-    status integer,
     end_time timestamp NULL,
     start_time timestamp DEFAULT now(),
     updated_by text,
+    status integer
 );
 
 insert into proxy (uuid, entity_id, end_time, start_time)
@@ -49,6 +49,7 @@ CREATE TABLE filter (
     end_time timestamp NULL,
     updated_by text,
     id integer NOT NULL AUTO_INCREMENT,
+    status INTEGER
 );
 
 ALTER TABLE filter
@@ -86,7 +87,8 @@ CREATE TABLE metadata (
     group_id character varying(48),
     end_time timestamp NULL,
     start_time timestamp DEFAULT now(),
-    updated_by character varying(48)
+    updated_by character varying(48),
+    status INTEGER
 );
 
 ALTER TABLE metadata

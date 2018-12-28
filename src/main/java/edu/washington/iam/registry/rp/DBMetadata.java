@@ -117,8 +117,8 @@ public class DBMetadata implements MetadataDAO {
                 // no active records so we add an active record
 
                 template.update(
-                        "insert into metadata (uuid, group_id, entity_id, xml, end_time, start_time, updated_by) values " +
-                                "(? ,?, ?, ?, ?, now(), ?)",
+                        "insert into metadata (uuid, group_id, entity_id, xml, end_time, start_time, updated_by, status) values " +
+                                "(? ,?, ?, ?, ?, now(), ?, 1)",
                         genUUID(), groupId, relyingParty.getEntityId(), xml, null, updatedBy);
                         log.debug("added new rp " + relyingParty.getEntityId());
             } else if (existingIds.size() == 1) {
@@ -128,11 +128,11 @@ public class DBMetadata implements MetadataDAO {
                         relyingParty.getEntityId());
                 relyingParty.setUuid(uuid.get(0));
                 // active record exists so mark last one inactive
-                template.update("update metadata set end_time = now() where id = ?", existingIds.get(0));
+                template.update("update metadata set end_time = now(), status = ? where id = ?", 0, existingIds.get(0));
                 // add new active record
                 log.info(Integer.toString(template.update(
-                        "insert into metadata (uuid, group_id, entity_id, xml, end_time, start_time, updated_by) values " +
-                                "(?, ?, ?, ?, ?, now(), ?)",
+                        "insert into metadata (uuid, group_id, entity_id, xml, end_time, start_time, updated_by, status) values " +
+                                "(?, ?, ?, ?, ?, now(), ?, 1)",
                         relyingParty.getUuid(), groupId, relyingParty.getEntityId(), xml, null, updatedBy)));
                 log.debug("updated existing rp " + relyingParty.getEntityId());
             } else {
@@ -163,8 +163,8 @@ public class DBMetadata implements MetadataDAO {
                     Integer.class,
                     groupId, rpid);
             if (rpIds.size() == 1 && rpIds.get(0) != null) {
-                log.info(Integer.toString(template.update("update metadata set end_time = now(), updated_by = ? where id = ?",
-                        updatedBy, rpIds.get(0))));
+                log.info(Integer.toString(template.update("update metadata set end_time = now(), updated_by = ?, status = ? where id = ?",
+                        updatedBy, 0, rpIds.get(0))));
                 log.info(String.format("updated (delete) %s", rpid));
             }
             else if (rpIds.size() == 0) {
