@@ -1162,7 +1162,7 @@ function accessCtrl_reqAccessCtrl(entityId) {
             true; //noop
         } else {
             _okmsg += '<li>Adding: conditional access group</li>';
-            gws_text += '\n\nConditional groups requested:\n' + cond_group;
+            gws_text += '\n\nConditional access groups requested:\n' + cond_group;
             if (cond_group_in != '') gws_text += '\nConditional previous groups:\n' + cond_group_in;
         }
     } else {
