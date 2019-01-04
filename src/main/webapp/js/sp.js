@@ -1162,8 +1162,8 @@ function accessCtrl_reqAccessCtrl(entityId) {
             true; //noop
         } else {
             _okmsg += '<li>Adding: conditional access group</li>';
-            gws_text = '\n\nGroups requested:\n' + cond_group;
-            if (cond_group_in != '') gws_text += '\nPrevious groups:\n' + cond_group_in;
+            gws_text += '\n\nConditional groups requested:\n' + cond_group;
+            if (cond_group_in != '') gws_text += '\nConditional previous groups:\n' + cond_group_in;
         }
     } else {
         if (cond_in != '') {
@@ -1195,9 +1195,9 @@ function accessCtrl_reqAccessCtrl(entityId) {
         if (group_2fa == group_2fa_in) {
             true; //noop
         } else {
-            _okmsg += '<li>Adding: conditional access group</li>';
-            gws_text = '\n\nGroups requested:\n' + group_2fa;
-            if (group_2fa_in != '') gws_text += '\nPrevious groups:\n' + group_2fa_in;
+            _okmsg += '<li>Adding: 2FA access group</li>';
+            gws_text += '\n\n2FA groups requested:\n' + group_2fa;
+            if (group_2fa_in != '') gws_text += '\n2FA Previous groups:\n' + group_2fa_in;
         }
     }
     if (_okmsg == '') {
