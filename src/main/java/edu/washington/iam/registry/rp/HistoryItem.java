@@ -112,7 +112,7 @@ public class HistoryItem {
         return updatedBy;
     }
 
-
+    public int getNumberOfChanges() { return changes.size(); }
 }
 
 

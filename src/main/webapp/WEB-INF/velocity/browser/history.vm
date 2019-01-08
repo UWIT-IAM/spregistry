@@ -234,7 +234,7 @@
                 #else
                 <!-- <li>No metadata history found (this SP was probably registered before we started tracking history).
                 Future changes will be recorded here.  </li> -->
-                <li>Coming soon!</li>
+                <li>No history available</li>
                 #end
         </ul>
     </div>

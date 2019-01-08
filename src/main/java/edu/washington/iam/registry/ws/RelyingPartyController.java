@@ -686,7 +686,10 @@ public class RelyingPartyController {
             int i = 0;
             while (i < relyingPartyEntries.size() - 1) {
                 HistoryItem item = relyingPartyEntries.get(i).RpCompare(relyingPartyEntries.get(i + 1));
-                rpHistory.add(item);
+                //little bit of a hack to not add an "empty" item if we didn't parse out changes properly
+                if (item.getNumberOfChanges() != 0) {
+                    rpHistory.add(item);
+                }
                 i++;
                     }
         }
