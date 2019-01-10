@@ -31,6 +31,8 @@
 
         <ul class="iamlist">
             <li>If your SP can't request 2FA, the IdP can force 2FA for all users or members of a certain group.</li><p/>
+            #set ($chk = '')
+            #set ($inVal='')
             #if(!(${accessCtrl.getAuto2FA()}) && !(${accessCtrl.getCond2FA()}))
                 #set ($chk=$checked)
                 #set ($inVal='on')
@@ -40,7 +42,7 @@
                     <input id="default2fa_req" dojoType="dijit/form/RadioButton" name="type_2fa"
                         #if(!(${accessCtrl.getAuto2FA()}) && !(${accessCtrl.getCond2FA()})) $chk #end
                     />
-                    <input id="default2fa_in" value="inVal" type="hidden" aria-hidden="true" />
+                    <input id="default2fa_in" value="$inVal" type="hidden" aria-hidden="true" />
                 </div>
             </li>
             #set ($chk = '')

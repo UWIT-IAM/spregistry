@@ -70,7 +70,7 @@ public class ProxyManagerDB implements ProxyManager {
                 "select id from proxy where entity_id = ? and end_time is null",
                 Integer.class, rpid);
         if (rpIds.size() == 1 && rpIds.get(0) != null) {
-            template.update("update proxy set end_time = now(), updated_by = ?, status = ? where _id = ?", updatedBy, 0, rpIds.get(0));
+            template.update("update proxy set end_time = now(), updated_by = ?, status = ? where id = ?", updatedBy, 0, rpIds.get(0));
             log.debug("updated (delete) proxy for %s", rpid);
             return 200;
         }
