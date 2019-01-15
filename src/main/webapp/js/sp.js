@@ -1196,7 +1196,7 @@ function accessCtrl_reqAccessCtrl(entityId) {
             true; //noop
         } else {
             _okmsg += '<li>Adding: 2FA access group</li>';
-            gws_text += '\n\n2FA groups requested:\n' + group_2fa;
+            gws_text += '\n\nConditional 2FA groups requested:\n' + group_2fa;
             if (group_2fa_in != '') gws_text += '\n2FA Previous groups:\n' + group_2fa_in;
         }
     }
