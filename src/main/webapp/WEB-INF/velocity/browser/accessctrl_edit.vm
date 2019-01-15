@@ -43,21 +43,21 @@
         <li><label for="auto2fa_flag">2FA by SP request (default)</label>
             <div class="dd">
                 <input id="default2fa_flag" dojoType="dijit/form/RadioButton" value="default2fa_flag" name="type_2fa"
-                    #if(!(${accessCtrl.getAuto2FA()}) && !(${accessCtrl.getCond2FA()})) checked #end
+                    #if(!(${accessCtrl.getAuto2FA()}) && !(${accessCtrl.getCond2FA()})) checked="checked" #end
                 />
             </div>
         </li>
         <li><label for="auto2fa_flag">Auto 2FA: All users must use 2FA</label>
           <div class="dd">
               <input id="auto2fa_flag" dojoType="dijit/form/RadioButton" value="auto2fa_flag" name="type_2fa"
-                  #if(${accessCtrl.getAuto2FA()}) checked #end
+                  #if(${accessCtrl.getAuto2FA()}) checked="checked" #end
               />
           </div>
       </li>
         <li><label for="cond2fa_flag">Conditional 2FA: Only members of group must use 2FA</label>
             <div class="dd">
                 <input id="cond2fa_flag" dojoType="dijit/form/RadioButton" value="cond2fa_flag" name="type_2fa"
-                    #if(${accessCtrl.getCond2FA()}) checked #end
+                    #if(${accessCtrl.getCond2FA()}) checked="checked" #end
                 />
             </div>
         </li>
