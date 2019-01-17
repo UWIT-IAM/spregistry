@@ -17,9 +17,9 @@ public interface FilterPolicyDAO {
                                           String rpid);
     // add new or update existing filterPolicies
     void updateFilterPolicies(FilterPolicyGroup filterPolicyGroup,
-                              List<AttributeFilterPolicy> attributeFilterPolicies)
+                              List<AttributeFilterPolicy> attributeFilterPolicies, String updatedBy)
             throws FilterPolicyException;
     int removeRelyingParty(FilterPolicyGroup filterPolicyGroup,
-                           String entityId)
+                           String entityId, String updatedBy)
             throws FilterPolicyException;
 }

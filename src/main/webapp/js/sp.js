@@ -102,14 +102,21 @@ function showSpPanel() {
 
 var spKeyListener = null;
 
-//  Switch to the correct tab
+/*  Switch to the correct tab
 
+hash uses first letter of container <div> for tab, so container first letters must be unique.  Yes really.  Blame Fox.
+
+for access control tab I made container name start with  "z"...recommend going backward from there for future
+collisions with existing tab first letters.
+
+*/
 function setSpTab() {
    console.log('setSpTab: tab=' + v_currentSpTab);
    var tab = null;
    var tabid = 'metaSpContainer';
    if (v_currentSpTab == 'a') tabid = 'attrSpContainer';
    else if (v_currentSpTab == 'p') tabid = 'proxySpContainer';
+   else if (v_currentSpTab == 'z') tabid = 'zaccessCtrlSpContainer';
    tab = dijitRegistry.byId(tabid);
    console.log('tab: ' + tab);
    if (tab!=null) dijitRegistry.byId('spPanel').selectChild(tab);
@@ -118,6 +125,10 @@ function setSpTab() {
    else console.log('no tabnod? ' + tabid);
    v_spLoading = false;
 }
+
+
+
+
 
 // Setup hash and key listeners, set the tab
 // called after the SP display loads
@@ -146,6 +157,7 @@ function postLoadSp() {
                     if (v_currentSpTab=='m') iam_showTheDialog('metaEditDialog');
                     else if (v_currentSpTab=='a') iam_showTheDialog('attrEditDialog');
                     else if (v_currentSpTab=='p') iam_showTheDialog('proxyEditDialog');
+                    else if (v_currentSpTab=='z') iam_showTheDialog('accessCtrlEditDialog');
                     break;
                 case 82: // R
                 case 114:
@@ -153,7 +165,9 @@ function postLoadSp() {
                     break;
             }
         });
+
     });
+
    numMetaEditKey = 0;
    numProxyEditKey = 0;
    setSpTab();
@@ -1062,3 +1076,140 @@ function proxy_deleteProxy(entityId) {
    var url = v_root + v_vers + '/rp/proxy?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
    iam_putRequest(url, null, xml, null, _postSaveProxy);
 }
+
+/*
+ * access control tools
+ */
+
+
+
+
+function _postSaveAccessCtrl() {
+    iam_hideTheDialog('accessCtrlEditDialog');
+    iam_showTheNotice('Access control configuration saved: Allow a couple of minutes to propagate.');
+    showCurrentSp();
+    numAccessCtrlEditKey = 0;
+}
+
+function _postReqAccessCtrl() {
+    iam_hideTheDialog('accessCtrlReqDialog');
+    iam_showTheMessage('Request submitted.');
+}
+
+// submit accessCtrl edits
+function accessCtrl_saveAccessCtrl(entityId) {
+
+    var my2FAValue = dojoDom.byId('cond2fa_flag').checked;
+
+
+    var type_2fa = '';
+    var default2fa = dojoDom.byId('default2fa_flag').checked;
+    var cond2fa = dojoDom.byId('cond2fa_flag').checked;
+    var auto2fa = dojoDom.byId('auto2fa_flag').checked;
+    var group_2fa = dojoDom.byId('group2fa').value.trim();
+    var cond = dojoDom.byId('conditional_flag').checked;
+    var cond_group = dojoDom.byId('conditional_group_name').value;
+    if (auto2fa) {
+        type_2fa = "auto"
+    } else if (cond2fa) {
+        type_2fa = "cond";
+    } else if (default2fa){
+        type_2fa = "default";
+    }
+
+    var url = v_root + v_vers + '/rp/accessCtrl?id=' + entityId + '&type_2fa=' + type_2fa  + '&conditional_flag='
+        + cond + '&conditional_group_name=' + cond_group + '&group_2fa=' + group_2fa + '&xsrf=' + v_xsrf + adminQS;
+    iam_putRequest(url, null, null, null, _postSaveAccessCtrl);
+}
+
+// submit the request
+function accessCtrl_reqAccessCtrl(entityId) {
+
+    _okmsg = '';
+    var gws_text = '';
+    var type_2fa = '';
+    var group_2fa = dojoDom.byId('group2fa_req').value.trim();
+    var group_2fa_in = dojoDom.byId('group2fa_in').value.trim();
+    var cond_group = dojoDom.byId('conditional_group_req').value.trim();
+    var cond_group_in = dojoDom.byId('conditional_group_in').value.trim();
+    var auto2fa = dojoDom.byId('auto2fa_req').checked;
+    var auto2fa_in = dojoDom.byId('auto2fa_in').value.trim();
+    var cond2fa = dojoDom.byId('cond2fa_req').checked;
+    var cond2fa_in = dojoDom.byId('cond2fa_in').value.trim();
+    var default2fa = dojoDom.byId('default2fa_req').checked;
+    var default2fa_in = dojoDom.byId('default2fa_in').value.trim();
+    var cond = dojoDom.byId('conditional_req').checked;
+
+    var cond_in = dojoDom.byId('conditional_in').value.trim();
+
+    if (auto2fa) {
+        type_2fa = "auto"
+    } else if (cond2fa) {
+        type_2fa = "cond";
+    } else { type_2fa = "default"; }
+
+    xml = '<Attributes>';
+    if (cond) {
+        if (cond_in == '') {
+            xml += '<Add id="conditional_access (group below)"/>';
+            _okmsg += '<li>Adding: conditional access</li>';
+            }
+        if (cond_group == '') {
+            iam_showTheNotice('Error: You must specify a group name when enabling conditional access.');
+            return;
+        }
+        if (cond_group == cond_group_in) {
+            true; //noop
+        } else {
+            _okmsg += '<li>Adding: conditional access group</li>';
+            gws_text += '\n\nConditional access groups requested:\n' + cond_group;
+            if (cond_group_in != '') gws_text += '\nConditional previous groups:\n' + cond_group_in;
+        }
+    } else {
+        if (cond_in != '') {
+            xml += '<Drop id="conditional_access"/>';
+            _okmsg += '<li>Dropping: conditional access</li>';
+        }
+    }
+    if (default2fa) {
+        if (default2fa_in == '') {
+            xml += '<Add id="default"/>';
+            _okmsg += '<li>Change 2FA type to: default</li>';
+        }
+    }
+    if (auto2fa) {
+        if (auto2fa_in == '') {
+            xml += '<Add id="auto2fa"/>';
+            _okmsg += '<li>Change 2FA type to: auto</li>';
+        }
+    }
+    if (cond2fa) {
+        if (cond2fa_in == '') {
+            xml += '<Add id="cond2fa"/>';
+            _okmsg += '<li>Change 2FA type to: conditional</li>';
+        }
+        if (group_2fa == '') {
+            iam_showTheNotice('Error: You must specify a group name when enabling conditional 2FA.');
+            return;
+        }
+        if (group_2fa == group_2fa_in) {
+            true; //noop
+        } else {
+            _okmsg += '<li>Adding: 2FA access group</li>';
+            gws_text += '\n\nConditional 2FA groups requested:\n' + group_2fa;
+            if (group_2fa_in != '') gws_text += '\n2FA Previous groups:\n' + group_2fa_in;
+        }
+    }
+    if (_okmsg == '') {
+        iam_showTheNotice('There are no changes to request.');
+        return;
+    }
+    _okmsg = 'Request submitted<ul>' + _okmsg + '</ul>';
+    xml = xml + '<Comments>' + iam_makeOkXml(gws_text) + '</Comments>';
+    xml = xml + '</Attributes>';
+    action = v_root + v_vers + '/rp/accessCtrlReq?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
+    iam_putRequest(action, null, xml, null, _postReqAccessCtrl());
+}
+
+
+;

@@ -1,20 +1,23 @@
 drop table if exists proxy;
 
 CREATE TABLE proxy (
+    id integer NOT NULL AUTO_INCREMENT,
+    uuid uuid NOT NULL,
     entity_id text,
-    social_provider text,
-    social_key text,
-    social_secret text,
-    status integer,
-    update_time timestamp DEFAULT now()
+    end_time timestamp NULL,
+    start_time timestamp DEFAULT now(),
+    updated_by text,
+    status integer
 );
 
-insert into proxy (entity_id, social_provider, social_key, social_secret, status)
-  values ('https://gettest.example.com', 'Google', 'thisisthegoog','shhh', 1);
-insert into proxy (entity_id, social_provider, social_key, social_secret, status)
-  values ('https://gettest.example.com', 'Twitter', 'thisisthetwit','lkdsjf', 1);
-insert into proxy (entity_id, social_provider, social_key, social_secret, status)
-  values ('https://notgettest.example.com', 'Twitter', 'thisisthetwit','lkdsjf', 1);
+insert into proxy (uuid, entity_id, end_time, start_time)
+  values ('58e115ef-36e7-4db6-bad6-cafd784f3faa', 'https://gettest.example.com',  null, now());
+insert into proxy (uuid, entity_id, end_time, start_time)
+  values ('298b2a35-a117-48d0-8d89-9957a6e4c91d', 'https://gettest.example.com', null, now());
+insert into proxy (uuid, entity_id, end_time, start_time)
+  values ('80f79afb-0fa5-4d41-ae17-1a599299344a', 'https://notgettest.example.com', null, now());
+
+
 
 
 drop table if exists filter_group;
@@ -38,15 +41,20 @@ insert into filter_group (id, header_xml, footer_xml, status, update_time, edit_
 
 drop table if exists filter;
 CREATE TABLE filter (
+    uuid uuid NOT NULL,
     entity_id character varying(128) NOT NULL,
     xml text,
     group_id character varying(48),
-    status integer,
-    update_time timestamp DEFAULT now()
+    start_time timestamp DEFAULT now(),
+    end_time timestamp NULL,
+    updated_by text,
+    id integer NOT NULL AUTO_INCREMENT,
+    status INTEGER
 );
 
 ALTER TABLE filter
-    ADD PRIMARY KEY (entity_id);
+    ADD PRIMARY KEY (id);
+
 
 ALTER TABLE filter
     ADD FOREIGN KEY (group_id) REFERENCES filter_group(id);
@@ -72,15 +80,40 @@ insert into metadata_group (id, header_xml, footer_xml, status, update_time, edi
 
 drop table if exists metadata;
 CREATE TABLE metadata (
+    id integer NOT NULL AUTO_INCREMENT,
+    uuid uuid NOT NULL,
     entity_id character varying(128) NOT NULL,
     xml text,
     group_id character varying(48),
-    status integer,
-    update_time timestamp DEFAULT now()
+    end_time timestamp NULL,
+    start_time timestamp DEFAULT now(),
+    updated_by character varying(48),
+    status INTEGER
 );
 
 ALTER TABLE metadata
-    ADD PRIMARY KEY (entity_id);
+    ADD PRIMARY KEY (id);
 
 ALTER TABLE metadata
     ADD FOREIGN KEY (group_id) REFERENCES metadata_group(id);
+
+
+
+drop table if exists access_control;
+CREATE TABLE access_control (
+id integer NOT NULL AUTO_INCREMENT,
+uuid uuid NOT NULL,
+entity_id text NOT NULL,
+end_time timestamp NULL,
+start_time timestamp DEFAULT now() NOT NULL,
+updated_by text,
+auto_2fa boolean DEFAULT false,
+auto_2fa_group varchar(135),
+conditional boolean DEFAULT false,
+conditional_group varchar(135)
+);
+
+alter table access_control
+    ADD PRIMARY KEY (id);
+
+

@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.registry.exception.RelyingPartyException;
 
-public class XMLMetadata implements  MetadataDAO {
+public class XMLMetadata implements MetadataDAO {
  
    private final Logger log = LoggerFactory.getLogger(getClass());
    private final ReentrantReadWriteLock locker = new ReentrantReadWriteLock();
@@ -186,7 +186,7 @@ public class XMLMetadata implements  MetadataDAO {
    }
 
    @Override
-   public void updateRelyingParty(RelyingParty rp) {
+   public void updateRelyingParty(RelyingParty rp, String updatedBy) {
       if (!editable) return;
 
       refreshMetadataIfNeeded();
@@ -208,7 +208,7 @@ public class XMLMetadata implements  MetadataDAO {
 
    // remove a single rp
    @Override
-   public void removeRelyingParty(String id) {
+   public void removeRelyingParty(String id, String updatedBy) {
       if (!editable) return;
       refreshMetadataIfNeeded();
       locker.readLock().lock();
@@ -222,6 +222,13 @@ public class XMLMetadata implements  MetadataDAO {
       locker.readLock().unlock();
       writeMetadata();
    }
+
+    @Override
+    public List<RelyingParty> getRelyingPartyHistoryById(String rpid) throws RelyingPartyException {
+        log.debug("md " + id + " looking for history for fixed rp" + rpid);
+        log.debug(" ..nope.  No history for fixed rps.  ");
+        throw new RelyingPartyException("not found--no history for fixed rps");
+    }
 
    // get rp by id
    @Override

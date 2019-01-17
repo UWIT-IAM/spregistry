@@ -1,9 +1,10 @@
 package edu.washington.iam.registry.filter;
 
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
+import edu.washington.iam.registry.rp.RelyingParty;
+import org.junit.*;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -17,20 +18,37 @@ import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-db-context.xml")
 public class DBFilterPolicyDAOTest {
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
     @Autowired
     private DBFilterPolicyDAO dao;
 
     @Autowired
     private JdbcTemplate template;
+
+    private String remoteUser  = "mattjm";
+
+
+    private List<String> fakeEntityIds = Arrays.asList(
+            "https://testupdate.s.uw.edu/shibboleth",
+            "https://testcreate.s.uw.edu/shibboleth",
+            "https://testnoupdate.s.uw.edu/shibboleth");
+
+    @Before
+    public void setupInitialData() {
+        setupWithRPs(fakeEntityIds);
+    }
+
+    @After
+    public void teardown(){
+        teardownRPs(fakeEntityIds);
+    }
 
     @Test
     public void testGetFilterPolicyGroups() throws Exception {
@@ -50,9 +68,9 @@ public class DBFilterPolicyDAOTest {
         filterPolicyGroup.setId("uwrp");
         List<String> fakeEntityIds = Arrays.asList("testsp1", "testsp2", "testsp3", "testsp4");
         for(String fakeId : fakeEntityIds){
-            template.update("insert into filter (group_id, entity_id, xml, status, update_time) " +
-                    "values (?, ?, ?, 1, now())",
-                    filterPolicyGroup.getId(), fakeId, fakeAttributeFilterPolicyXml(fakeId));
+            template.update("insert into filter (uuid, group_id, entity_id, xml, end_time, start_time) " +
+                    "values (?, ?, ?, ?, null, now())",
+                    genUUID(), filterPolicyGroup.getId(), fakeId, fakeAttributeFilterPolicyXml(fakeId));
         }
 
         List<AttributeFilterPolicy> afps = dao.getFilterPolicies(filterPolicyGroup);
@@ -68,9 +86,9 @@ public class DBFilterPolicyDAOTest {
         filterPolicyGroup.setId("uwrp");
         List<String> fakeEntityIds = Arrays.asList("testsp1", "testsp2", "testsp3", "testsp4");
         for(String fakeId : fakeEntityIds){
-            template.update("insert into filter (group_id, entity_id, xml, status, update_time) " +
-                    "values (?, ?, ?, 1, now())",
-                    filterPolicyGroup.getId(), fakeId, fakeAttributeFilterPolicyXml(fakeId));
+            template.update("insert into filter (uuid, group_id, entity_id, xml, end_time, start_time) " +
+                            "values (?, ?, ?, ?, null, now())",
+                    genUUID(), filterPolicyGroup.getId(), fakeId, fakeAttributeFilterPolicyXml(fakeId));
         }
 
         List<AttributeFilterPolicy> afps = dao.getFilterPolicies(filterPolicyGroup);
@@ -182,37 +200,38 @@ public class DBFilterPolicyDAOTest {
         // check that there's nothing in there already
         Assert.assertEquals(0, qResults.size());
         Timestamp preUpdateTime = new Timestamp(new Date().getTime());
+        Thread.sleep(500);
+        attributeFilterPolicy.setUuid(genUUID());
+        dao.createFilterPolicy(filterPolicyGroup, attributeFilterPolicy, remoteUser);
 
-        dao.createFilterPolicy(filterPolicyGroup, attributeFilterPolicy);
-
-        qResults = template.queryForList("select update_time from filter where entity_id = ?"
+        qResults = template.queryForList("select start_time from filter where entity_id = ?"
                 , new Object[] {entityId}
                 , Timestamp.class);
         Assert.assertEquals(1, qResults.size());
-        // Assert.assertTrue(qResults.get(0).after(preUpdateTime));
+        Assert.assertTrue(qResults.get(0).after(preUpdateTime));
 
         template.update("delete from filter where entity_id = ?", entityId);
     }
 
     @Test
-    public void testCreateFilterPolicyStatus0() throws Exception {
-        // status 0 in the DB means the entry is deleted, though we talk of just deleting the entry rather
-        // than changing status. Until then, make sure a delete and insert won't fail.
+    public void testCreateFilterPolicyPreviouslyDeleted() throws Exception {
+        //make sure an old end_time is null status doesn't break "updating" the status again
         String entityId = "https://testcreate.s.uw.edu/shibboleth";
         FilterPolicyGroup filterPolicyGroup = fakeFilterPolicyGroup();
         AttributeFilterPolicy attributeFilterPolicy = fakeAttributeFilterPolicy(filterPolicyGroup, entityId);
 
         template.update("delete from filter where entity_id = ?", entityId);
-        template.update("insert into filter (group_id, entity_id, xml, status, update_time) values (?, ?, ?, 0, now())",
-                filterPolicyGroup.getId(), entityId,  fakeAttributeFilterPolicyXml(entityId));
-        List<Timestamp> qResults = template.queryForList("select update_time from filter where entity_id = ?"
+        template.update("insert into filter (uuid, group_id, entity_id, xml, end_time, start_time) values (?, ?, ?, ?, now(), now())",
+                genUUID(), filterPolicyGroup.getId(), entityId,  fakeAttributeFilterPolicyXml(entityId));
+        List<Timestamp> qResults = template.queryForList("select start_time from filter where entity_id = ? and end_time is null"
                 , new Object[]{entityId}
                 , Timestamp.class);
-        Assert.assertEquals(1, qResults.size());
-        Timestamp preUpdateTime = qResults.get(0);
-        dao.updateFilterPolicies(filterPolicyGroup, Arrays.asList(attributeFilterPolicy));
+        Assert.assertEquals(0, qResults.size());
+        Timestamp preUpdateTime = new Timestamp(new Date().getTime());
+        Thread.sleep(500);
+        dao.updateFilterPolicies(filterPolicyGroup, Arrays.asList(attributeFilterPolicy), remoteUser);
 
-        qResults = template.queryForList("select update_time from filter where entity_id = ?"
+        qResults = template.queryForList("select start_time from filter where entity_id = ? and end_time is null"
                 , new Object[] {entityId}
                 , Timestamp.class);
         Assert.assertEquals(1, qResults.size());
@@ -228,22 +247,23 @@ public class DBFilterPolicyDAOTest {
         AttributeFilterPolicy attributeFilterPolicy = fakeAttributeFilterPolicy(filterPolicyGroup, entityId);
 
         template.update("delete from filter where entity_id = ?", entityId);
-        template.update("insert into filter (group_id, entity_id, xml, status, update_time) values (?, ?, ?, 1, now())",
-                filterPolicyGroup.getId(), entityId, fakeAttributeFilterPolicyXml(entityId));
-        List<Timestamp> qResults = template.queryForList("select update_time from filter where entity_id = ?"
+        template.update("insert into filter (group_id, entity_id, xml, start_time, end_time, uuid) values (?, ?, ?, now(), ?, ?)",
+                filterPolicyGroup.getId(), entityId, fakeAttributeFilterPolicyXml(entityId), null, genUUID());
+        List<Timestamp> qResults = template.queryForList("select start_time from filter where entity_id = ? and end_time is null"
                 , new Object[]{entityId}
                 , Timestamp.class);
         Assert.assertEquals(1, qResults.size());
         Timestamp preUpdateTime = qResults.get(0);
+        //it's too fast!
+        Thread.sleep(500);
+        dao.updateFilterPolicy(filterPolicyGroup, attributeFilterPolicy, remoteUser);
 
-        dao.updateFilterPolicy(filterPolicyGroup, attributeFilterPolicy);
-
-        qResults = template.queryForList("select update_time from filter where entity_id = ?"
+        qResults = template.queryForList("select start_time from filter where entity_id = ? and end_time is null"
                 , new Object[] {entityId}
                 , Timestamp.class);
+        log.info("before: " + preUpdateTime.toString() + " after: " + qResults.get(0).toString());
         Assert.assertEquals(1, qResults.size());
         Assert.assertTrue(qResults.get(0).after(preUpdateTime));
-
         template.update("delete from filter where entity_id = ?", entityId);
     }
 
@@ -259,20 +279,20 @@ public class DBFilterPolicyDAOTest {
                 new MapSqlParameterSource().addValue("ids", entityIds));
         insertFakeData(filterPolicyGroup, updateEntityId);
         insertFakeData(filterPolicyGroup, noUpdateEntityId);
-        List<Timestamp> qResults = namedTemplate.queryForList("select update_time from filter where entity_id in (:ids)"
+        List<Timestamp> qResults = namedTemplate.queryForList("select start_time from filter where entity_id in (:ids)"
                 , new MapSqlParameterSource().addValue("ids", entityIds)
                 , Timestamp.class);
         Assert.assertEquals(2, qResults.size());
         Timestamp preUpdateTime = new Timestamp(new Date().getTime());
-
+        Thread.sleep(500);
 
         List<AttributeFilterPolicy> updatePolicies = new ArrayList<>();
         updatePolicies.add(fakeAttributeFilterPolicy(filterPolicyGroup, updateEntityId));
         updatePolicies.add(fakeAttributeFilterPolicy(filterPolicyGroup, createEntityId));
 
-        dao.updateFilterPolicies(filterPolicyGroup, updatePolicies);
+        dao.updateFilterPolicies(filterPolicyGroup, updatePolicies, remoteUser);
 
-        qResults = namedTemplate.queryForList("select update_time from filter where entity_id in (:ids)"
+        qResults = namedTemplate.queryForList("select start_time from filter where end_time is null and entity_id in (:ids)"
                 , new MapSqlParameterSource().addValue("ids", entityIds)
                 , Timestamp.class);
         Assert.assertEquals(3, qResults.size());
@@ -289,8 +309,11 @@ public class DBFilterPolicyDAOTest {
     }
 
     private void insertFakeData(FilterPolicyGroup filterPolicyGroup, String entityId) throws Exception {
-        template.update("insert into filter (group_id, entity_id, xml, status, update_time) values (?, ?, ?, 1, now())",
-                filterPolicyGroup.getId(), entityId, fakeAttributeFilterPolicyXml(entityId));
+        List<UUID> uuid = template.queryForList("select uuid from metadata where entity_id = ? and end_time is null",
+                UUID.class,
+                entityId);
+        template.update("insert into filter (uuid, group_id, entity_id, xml, end_time, start_time) values (?, ?, ?, ?, null, now())",
+                uuid.get(0), filterPolicyGroup.getId(), entityId, fakeAttributeFilterPolicyXml(entityId));
     }
     private FilterPolicyGroup fakeFilterPolicyGroup() {
         FilterPolicyGroup filterPolicyGroup = new FilterPolicyGroup();
@@ -324,4 +347,73 @@ public class DBFilterPolicyDAOTest {
                 entityId.replaceAll("[:/.]", "_"),
                 entityId);
     }
+
+    private UUID genUUID() { return UUID.randomUUID(); }
+
+
+    private void setupWithRPs(List<String> entityIds){
+        String groupId = "uwrp";
+        for (String entityId : entityIds) {
+
+            template.update("insert into metadata (uuid, group_id, entity_id, xml, end_time, start_time) " +
+                            "values (?, ?, ?, ?, ?, now())",
+                    genUUID(), groupId, entityId, fakeRelyingPartyXml(entityId), null);
+        }
+    }
+
+    private void teardownRPs(List<String> entityIds){
+        NamedParameterJdbcTemplate namedTemplate = new NamedParameterJdbcTemplate(template);
+        namedTemplate.update("delete from metadata where entity_id in (:ids)",
+                new MapSqlParameterSource().addValue("ids", entityIds));
+    }
+
+    private RelyingParty fakeRelyingParty(String entityId) throws Exception {
+        RelyingParty relyingParty;
+        String relyingPartyXml = fakeRelyingPartyXml(entityId);
+
+        relyingParty = new RelyingParty(
+                DocumentBuilderFactory
+                        .newInstance()
+                        .newDocumentBuilder()
+                        .parse(new ByteArrayInputStream(relyingPartyXml.getBytes()))
+                        .getDocumentElement(),
+                "uwrp", true, "mattjm", "2001-01-01", null, genUUID());
+
+        return relyingParty;
+    }
+
+    private String fakeRelyingPartyXml(String entityId){
+        String xml = ("<EntityDescriptor entityID=\"{entityId}\">\n" +
+                "  <SPSSODescriptor  protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:1.0:protocol\">\n" +
+                // no keydescriptor in the dao test, test elsewhere
+                // "   <KeyDescriptor>...</KeyDescriptor>\n" +*/
+                "   <AssertionConsumerService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\" Location=\"https://urizen4.cac.washington.edu/Shibboleth.sso/SAML2/POST\" index=\"0\"/>\n" +
+                "   <AssertionConsumerService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign\" Location=\"https://urizen4.cac.washington.edu/Shibboleth.sso/SAML2/POST-SimpleSign\" index=\"1\"/>\n" +
+                "   <AssertionConsumerService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:PAOS\" Location=\"https://urizen4.cac.washington.edu/Shibboleth.sso/SAML2/ECP\" index=\"3\"/>\n" +
+                "   <AssertionConsumerService Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\" Location=\"https://urizen4.cac.washington.edu/stepup/Shibboleth.sso/SAML2/POST\" index=\"6\"/>\n" +
+                "  </SPSSODescriptor>\n" +
+                "  <Organization>\n" +
+                "   <OrganizationName xml:lang=\"en\">AIE-IAM urizen4 test and development</OrganizationName>\n" +
+                "   <OrganizationDisplayName xml:lang=\"en\">Urizen4 est and dev system for AIE-IAM</OrganizationDisplayName>\n" +
+                "   <OrganizationURL xml:lang=\"en\">https://urizen4.cac.washington.edu/</OrganizationURL>\n" +
+                "  </Organization>\n" +
+                "  <ContactPerson contactType=\"technical\">\n" +
+                "   <GivenName>J F</GivenName>\n" +
+                "   <EmailAddress>jf@example.com</EmailAddress>\n" +
+                "  </ContactPerson>\n" +
+                "  <ContactPerson contactType=\"administrative\">\n" +
+                "   <GivenName>J F</GivenName>\n" +
+                "   <EmailAddress>jf@example.com</EmailAddress>\n" +
+                "  </ContactPerson>\n" +
+                "  <ContactPerson contactType=\"support\">\n" +
+                "   <GivenName>Super Bob</GivenName>\n" +
+                "   <EmailAddress>bob@spud.edu</EmailAddress>\n" +
+                "  </ContactPerson>\n" +
+                " </EntityDescriptor>")
+                .replace("{entityId}", entityId);
+        return  xml;
+    }
+
+
+
 }

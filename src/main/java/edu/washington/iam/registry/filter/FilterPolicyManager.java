@@ -38,14 +38,14 @@ public interface FilterPolicyManager extends Serializable {
    public List<AttributeFilterPolicy> getFilterPolicies(RelyingParty rp);
     public AttributeFilterPolicy getFilterPolicy(FilterPolicyGroup filterPolicyGroup, String rpid);
 
-    public int removeRelyingParty(String entityId, String pgid)
+    public int removeRelyingParty(String entityId, String pgid, String updatedBy)
            throws FilterPolicyException;
 
-    public int removeEditableRelyingParty(String entityId)
+    public int removeEditableRelyingParty(String entityId, String updatedBy)
             throws FilterPolicyException;
 
     public List<FilterPolicyGroup> getFilterPolicyGroups();
-    public void updateRelyingParty(String pgid, Document doc)
+    public void updateRelyingParty(String pgid, Document doc, String updatedBy)
              throws FilterPolicyException;
     public FilterPolicyGroup getPolicyGroup(String pgid);
 

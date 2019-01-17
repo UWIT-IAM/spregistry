@@ -114,9 +114,9 @@ v_xsrf = '${xsrf}';
   <div class="dijitDialogPaneContentArea">
     Identity and Access Management
     <br/>
-    Service Provider Registry 2.4.0
+    Service Provider Registry 2.5.0
     <br/>
-    Revision 2017-11-30
+    Revision 2018-11-15
     <p>
     <a href="https://wiki.cac.washington.edu/x/gjyoAQ">Learn more about the registry</a>
   </div>
@@ -218,7 +218,7 @@ v_xsrf = '${xsrf}';
 
 ## banner
 <div id="banner" data-dojo-type="dijit/layout/ContentPane">
-    <span id="title"><a tabindex=-1 href="javascript:showHomePage()">SERVICE PROVIDER REGISTRY</a></span>
+    <span id="title"><a tabindex=-1 href="javascript:showHomePage()">SERVICE PROVIDER REGISTRY (TOOLS-TEST)</a></span>
     <span id="banner_notice">
 #if ($adminRole)
    <span style="font-size:larger;color:#a00000">Acting as administrator</span>
@@ -346,7 +346,7 @@ function openNewSPForm() {
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.4.0</a></li>
+        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.5.0</a></li>
     </ul>
     </span>
 </div>

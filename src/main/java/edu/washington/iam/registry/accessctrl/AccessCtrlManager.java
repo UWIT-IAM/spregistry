@@ -15,31 +15,19 @@
  * ========================================================================
  */
 
-package edu.washington.iam.registry.proxy;
+package edu.washington.iam.registry.accessctrl;
+
+import edu.washington.iam.registry.exception.AccessCtrlException;
+import edu.washington.iam.registry.exception.ProxyException;
+import edu.washington.iam.registry.proxy.Proxy;
 
 import java.io.Serializable;
 import java.util.List;
 
-import org.w3c.dom.Document;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
-import edu.washington.iam.registry.exception.ProxyException;
-import edu.washington.iam.registry.exception.NoPermissionException;
-
-public interface ProxyManager extends Serializable {
-   public List<Proxy> getProxys();
-   public Proxy getProxy(String entityId);
-   public int removeProxy(String rpid, String updatedBy) throws ProxyException;
-   public List<Proxy> getProxyHistory(String entityId) throws ProxyException;
-    ;
-
-    /**
-     *
-     * @param proxy Takes a validated proxy and stores it
-     */
-   public void updateProxy(Proxy proxy, String updatedBy) throws ProxyException;
+public interface AccessCtrlManager extends Serializable {
+   public AccessCtrl getAccessCtrl(String entityId);
+   public void updateAccessCtrl(AccessCtrl accessCtrl, String updatedBy) throws AccessCtrlException;
+   public List<AccessCtrl> getAccessCtrlHistory(String entityId) throws AccessCtrlException;
+   public int removeAccessCtrl(String entityId, String updatedBy) throws AccessCtrlException;
 
 }

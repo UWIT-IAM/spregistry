@@ -56,7 +56,7 @@ public class XMLFilterPolicyDAO implements FilterPolicyDAO {
 
     @Override
     public void updateFilterPolicies(FilterPolicyGroup filterPolicyGroup,
-                                     List<AttributeFilterPolicy> attributeFilterPolicies)
+                                     List<AttributeFilterPolicy> attributeFilterPolicies, String updatedBy)
             throws FilterPolicyException
     {
         // updates against AttributeFilterPolicy mean that existing afps are already updated in memory
@@ -72,7 +72,7 @@ public class XMLFilterPolicyDAO implements FilterPolicyDAO {
     }
 
     @Override
-    public int removeRelyingParty(FilterPolicyGroup filterPolicyGroup, String entityId)
+    public int removeRelyingParty(FilterPolicyGroup filterPolicyGroup, String entityId, String updatedBy)
             throws FilterPolicyException {
         return this.getXMLFilterPolicyGroup(filterPolicyGroup).removeFilterPolicy(entityId);
     }
