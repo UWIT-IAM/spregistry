@@ -218,7 +218,7 @@ v_xsrf = '${xsrf}';
 
 ## banner
 <div id="banner" data-dojo-type="dijit/layout/ContentPane">
-    <span id="title"><a tabindex=-1 href="javascript:showHomePage()">SERVICE PROVIDER REGISTRY (TOOLS-TEST)</a></span>
+    <span id="title"><a tabindex=-1 href="javascript:showHomePage()">SERVICE PROVIDER REGISTRY</a></span>
     <span id="banner_notice">
 #if ($adminRole)
    <span style="font-size:larger;color:#a00000">Acting as administrator</span>
