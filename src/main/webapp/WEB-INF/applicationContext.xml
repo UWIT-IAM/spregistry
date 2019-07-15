@@ -75,6 +75,7 @@
 
     <bean id="spacManager" class="edu.washington.iam.registry.accessctrl.AccessCtrlManagerDB">
         <property name="template" ref="jdbcTemplate" />
+        <property name="idpHelper" ref = "idpHelper" />
     </bean>
 
     <bean id="uuidManager" class="edu.washington.iam.registry.rp.UuidManager">
