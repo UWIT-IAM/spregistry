@@ -350,10 +350,11 @@ function loadSpList()
 
 function toggleListMine () {
   if (dijitRegistry.byId('justmine').get('checked')) {
-     dojoCookie('sp-mine', 'm');
+     // dojoCookie('sp-mine', 'm', {max-age: 31536000});
+     document.cookie = 'sp-mine=m; max-age=31536000';
      spListMine = true;
   } else {
-     dojoCookie('sp-mine', 'a');
+     document.cookie = 'sp-mine=a; max-age=31536000';
      spListMine = false;
   }
   showSpList();
