@@ -105,6 +105,40 @@ public class DBMetadata implements MetadataDAO {
     }
 
     @Override
+    public List<RelyingParty> getRelyingPartiesById(String search){
+        String sql;
+        log.debug("DB search for id like " + search);
+        List<RelyingParty> rps = template.query(
+              "select * from metadata where end_time is null and group_id = ? and entity_id like ?",
+               new Object[]{groupId, '%' + search + '%'},
+               new RelyingPartyMapper());
+        return rps;
+    }
+
+    @Override
+    public List<RelyingParty> getRelyingPartiesByAdmin(String admin){
+        String sql;
+        log.debug("DB search for admin " + admin);
+        List<RelyingParty> rps = null;
+        if (admin.indexOf("@")>0) {
+           rps = template.query(
+              "select * from metadata where end_time is null and group_id = ? and (xml like ? or xml like ?)",
+               new Object[]{groupId, "%<EmailAddress>"+admin+"</EmailAddress>%",
+                                     "%<EmailAddress>mailto:"+admin+"</EmailAddress>%"},
+               new RelyingPartyMapper());
+        } else {
+           rps = template.query(
+              "select * from metadata where end_time is null and group_id = ? and (xml like ? or xml like ? or xml like ? or xml like ?)",
+               new Object[]{groupId, "%<EmailAddress>"+admin+"@uw.edu</EmailAddress>%",
+                                     "%<EmailAddress>"+admin+"@washington.edu</EmailAddress>%",
+                                     "%<EmailAddress>mailto:"+admin+"@uw.edu</EmailAddress>%",
+                                     "%<EmailAddress>mailto:"+admin+"@washington.edu</EmailAddress>%"},
+               new RelyingPartyMapper());
+        }
+        return rps;
+    }
+
+    @Override
     public void updateRelyingParty(RelyingParty relyingParty, String updatedBy) {
         log.info(String.format("updating metadata for rp %s in %s", relyingParty.getEntityId(), groupId));
         try {

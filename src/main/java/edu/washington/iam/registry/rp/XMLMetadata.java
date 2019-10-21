@@ -264,7 +264,50 @@ public class XMLMetadata implements MetadataDAO {
         return list;
     }
 
-   // write the metadata
+    @Override
+    public List<RelyingParty> getRelyingPartiesById(String search) {
+        refreshMetadataIfNeeded();
+        List<RelyingParty> rps = new ArrayList<>();
+        search = search.toLowerCase();
+        locker.readLock().lock();
+        try {
+            for(RelyingParty rp : relyingParties){
+                if (rp.getEntityId().toLowerCase().indexOf(search)>=0) rps.add(rp);
+            }
+        }
+        finally {
+            locker.readLock().unlock();
+        }
+        return rps;
+    }
+
+    @Override
+    public List<RelyingParty> getRelyingPartiesByAdmin(String admin) {
+        refreshMetadataIfNeeded();
+        List<RelyingParty> rps = new ArrayList<>();
+        admin = admin.toLowerCase();
+        locker.readLock().lock();
+        try {
+            for (RelyingParty rp : relyingParties){
+               for (ContactPerson contact: rp.getContactPersons()) {
+                  String cmail = contact.getEmail();
+                  // log.debug(".. try: " + cmail);
+                  if (cmail!=null && (cmail.equals(admin) ||
+                         cmail.equals(admin+"@uw.edu") || cmail.equals(admin+"@washington.edu"))) {
+                     log.debug(".. adding by admin: " + rp.getEntityId());
+                     rps.add(rp);
+                     break;
+                  }
+               }
+            }
+        }
+        finally {
+            locker.readLock().unlock();
+        }
+        return rps;
+    }
+
+    // write the metadata
     public int writeMetadata() {
 
       locker.readLock().lock();

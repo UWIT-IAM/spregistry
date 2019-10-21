@@ -22,13 +22,13 @@
 
 <p>
 <div class="indentPars">
-<h2>You have logged out of the Service Provider Registry</h2>
+<h2>You have signed out of the Service Provider Registry</h2>
 <ul>
-<li>You are still logged in to your identity provider!
+<li>You are still signed in to your identity provider!
 <p>
-Close your browser to completely log out of all applications!
+Close your browser to completely sign out of all applications!
 <p>
-<i>(Some additional <a href="http://www.washington.edu/computing/weblogin/logout.html">help</a> with logging out.)</i>
+<i>(Some additional <a href="http://www.washington.edu/computing/weblogin/logout.html">help</a> with signing out.)</i>
 </li>
 </ul>
 

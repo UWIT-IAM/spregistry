@@ -49,6 +49,7 @@ import javax.servlet.http.Cookie;
 
 import edu.washington.iam.registry.rp.RelyingParty;
 import edu.washington.iam.registry.rp.RelyingPartyManager;
+import edu.washington.iam.registry.rp.RelyingPartyEntry;
 import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.tools.DNSVerifier;
 import edu.washington.iam.tools.DNSVerifyException;
@@ -617,6 +618,7 @@ public class RelyingPartyController {
     @RequestMapping(value="/rps", method=RequestMethod.GET)
     public ModelAndView getRelyingParties(@RequestParam(value="selectrp", required=false) String selRp,
             @RequestParam(value="selecttype", required=false) String selType,
+            @RequestParam(value="selectmine", required=false) String selMine,
             HttpServletRequest request, HttpServletResponse response) {
 
 
@@ -626,14 +628,11 @@ public class RelyingPartyController {
            return (emptyMV());
         }
         if (session.mv!=null) return (session.mv);
+        log.info("match: " + selRp);
+        log.info("mine: " + selMine);
 
-      
-        /** The optional args are actually ignored 
-        List<RelyingPartyEntry> relyingPartyIds = null;
-        if (selType!=null && selType.equalsIgnoreCase("all")) selType = null;
-        relyingPartyIds = rpManager.searchRelyingPartyIds(selRp, selType);
-         **/
-        List<RelyingParty> relyingPartyIds = rpManager.getRelyingParties();
+        List<RelyingParty> relyingPartyIds = rpManager.getRelyingParties(selRp, selMine==null?null:session.remoteUser);
+        // List<RelyingParty> relyingPartyIds = rpManager.getRelyingParties();
         log.info("found " + relyingPartyIds.size() + " rps" );
  
         ModelAndView mv = basicModelAndView(session, "json", "rps");

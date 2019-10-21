@@ -243,7 +243,8 @@ function checkSpFilter(e) {
   console.log(e);
   if (curselsp>=0) {
      if (e.keyCode==13) {  // enter
-        showSp(curselsp, 'm');
+        if (spList[curselsp].id.indexOf(dijitRegistry.byId('filterSpList').get('value'))>=0) showSp(curselsp, 'm');
+        else timeShowSpList(); 
         return;
      }
      if (e.keyCode==40) {  // down
@@ -322,6 +323,7 @@ function showSpList() {
 
 function timeShowSpList() {
   console.log("auto show millisec");
+  if (keytimer!=null) window.clearTimeout(keytimer);
   var txsp = dijitRegistry.byId('filterSpList').get('value').replace('<','').replace('>','');
   dojoDom.byId('spListTitle').innerHTML = "Service providers like '" + txsp + "'";
   loadSpList(txsp, false);
@@ -400,6 +402,7 @@ function loadSpList(sel, mine)
       });
 }
 
+/**
 function toggleListMine () {
   if (dijitRegistry.byId('justmine').get('checked')) {
      // dojoCookie('sp-mine', 'm', {max-age: 31536000});
@@ -411,6 +414,7 @@ function toggleListMine () {
   }
   showSpList();
 }
+**/
 
 
 /* panel sizing */
