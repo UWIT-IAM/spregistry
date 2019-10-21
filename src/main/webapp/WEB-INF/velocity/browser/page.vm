@@ -114,9 +114,9 @@ v_xsrf = '${xsrf}';
   <div class="dijitDialogPaneContentArea">
     Identity and Access Management
     <br/>
-    Service Provider Registry 2.5.0
+    Service Provider Registry 2.6.0
     <br/>
-    Revision 2018-11-15
+    Revision 2019-11-01
     <p>
     <a href="https://wiki.cac.washington.edu/x/gjyoAQ">Learn more about the registry</a>
   </div>
@@ -185,8 +185,6 @@ v_xsrf = '${xsrf}';
  </div>
 </div>
 
-
-
 ## page
 ## loader flash
 <div role="presentation" id="theflash" data-dojo-type="dijit/layout/ContentPane" style="width:100%; height:100%; z-index: 1001; display:block;">
@@ -244,7 +242,7 @@ v_xsrf = '${xsrf}';
       dojo.connect( window, "onresize", iam_setPanelSizes);
 
       // start with SP list
-      loadSpList();
+      // loadSpList();
       on(dom.byId('filterSpList'), 'keyup', checkSpFilter);
       on(dom.byId('newSp'), 'keyup', checkNewSp);
       on(dom.byId('newSpUrl'), 'keyup', checkNewUrl);
@@ -257,6 +255,8 @@ v_xsrf = '${xsrf}';
       dom.byId('theflash').style.display = 'none';
       iam_fadeOutIn([],['thepage']);
 
+      dom.byId('filterSpList').focus()
+      iam_hashHandler();
   });
 }
 
@@ -293,13 +293,14 @@ function openNewSPForm() {
  <label for="filterSpList">Enter part of the SP's entityId
  </label><input id="filterSpList"  data-dojo-type="dijit/form/TextBox" />
 <br>
- <div><input data-dojo-type="dijit/form/CheckBox" id="justmine" value="1" aria-label="justmine" onClick="toggleListMine()"/>
-      <label for="justmine" >Show only my SPs</label>
- </div>
+ <div><button type="button" data-dojo-type="dijit/form/Button" aria-label="justmine" onClick="showMySps()"/>
+      <label for="justmine" >Show my SPs</label>
+  </div>
+
 
  <div class="spList" id="spIndexPane" data-dojo-type="dijit/layout/ContentPane"
          style="margin-top:6px;overflow:auto">
-     <i role="presentation">Retrieving the list of service providers</i>
+    <span><i>Awaiting your selection</i></span>
   </div>
 
 </div>

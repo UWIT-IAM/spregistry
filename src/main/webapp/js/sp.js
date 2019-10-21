@@ -28,6 +28,7 @@ var v_loadErrorMessage = "Operation failed. You may need to reload the page to r
 // track current sp by hash
 var v_currentSpTab = 'm';
 var v_spLoading = false;
+var autoshowsp = false;
 
 // sp list ( loaded by api from the server )
 
@@ -48,6 +49,7 @@ iam_set('rightSide', 'spDisplay');
 // hash change causes sp display (callback from iam tools)
 function hashHandler(tab, spid) {
    console.log('hash handler: tab=' + tab + ' sp=' + spid);
+   autoshowsp = false;
    if (v_spLoading) {
       console.log('load in progress. ignoring');
       return;
@@ -61,7 +63,12 @@ function hashHandler(tab, spid) {
            return;
         }
       }
-   } else showHomePage();
+   }
+   if (spid!=null) {
+      console.log("loading " + spid);
+      autoshowsp = true;
+      loadSpList(spid, false)
+   }
 }
 
 var roleCookie = 'spck2';
@@ -277,18 +284,59 @@ function _isadmin(sp) {
    return false;
 }
 
+function showMySps() {
+  loadSpList('', true);
+}
+   
+var lastkeytime = 0
+var keytimer = null;
 function showSpList() {
   
-  curselsp = (-1);
-  nsp = spList.length;
-
   var txsp = dijitRegistry.byId('filterSpList').get('value');
+  console.log('txsp = ' + txsp);
+
+  keytime = new Date().valueOf();
+  if (txsp.length==0) return;
+  if (txsp.length<3) {
+     lastkeytime = keytime;
+     console.log("<3 sec=" + lastkeytime);
+     return;
+  }
+
+  if (keytime < lastkeytime + 1000) {
+     if (keytimer!=null) window.clearTimeout(keytimer);
+     lastkeytime = keytime;
+     console.log("<1000 = " + lastkeytime);
+     keytimer = setTimeout(timeShowSpList, 1000);
+     return
+  }
+  console.log(">1000 = " + lastkeytime);
+  // iam_hashHandler();
+  console.log("currentSp: " + currentSp);
+  loadSpList(txsp, false);
+}
+
+function timeShowSpList() {
+   console.log("auto show millisec");
+   var txsp = dijitRegistry.byId('filterSpList').get('value');
+   loadSpList(txsp, false);
+}
+
+function finalShowSpList() {
+  
+   
+  curselsp = (-1);
+  if (spList==null) {
+     console.log('no matches');
+     return;
+  }
+  nsp = spList.length;
+  console.log('splist size = ' + nsp);
 
   // Count how many will show.  We darken the list when it gets short
   var ndsp = 0;
   var dc = 'dim0';
   for (i=0; i<nsp; i++) {
-    if ((txsp.length>0) && spList[i].id.indexOf(txsp)<0) continue;
     if (spListMine && !_isadmin(spList[i])) continue;
     ndsp += 1;
     if (ndsp==5) dc = 'dim1';
@@ -301,12 +349,10 @@ function showSpList() {
   var htm = '';
   ndsp = 0;
   for (i=0; i<nsp; i++) {
-    if ((txsp.length>0) && spList[i].id.indexOf(txsp)<0) continue;
     if (spListMine && !_isadmin(spList[i])) continue;
     ndsp += 1;
     if (ndsp>10000) {  // the 10000 effectively disables this ... feature
        htm += '<span class="listitem dim4"><i>.&nbsp;.&nbsp;.&nbsp;</i></span>';
-       break;
        break;
     }
    
@@ -315,6 +361,7 @@ function showSpList() {
     if (spList[i].meta.substring(0,2)=='UW') ttl += ' (UW)';
     else ttl += ' (InCommon)';
    
+    console.log('adding ' + i + ' = ' + spList[i].id );
     if (curselsp<0) {
        cls = ' class="listitem listitemhover ' + dc + '" '
        curselsp = i;
@@ -334,26 +381,27 @@ function showSpList() {
 }
 
 // load the list of SPs.  API call to server.
-function loadSpList()
+function loadSpList(sel, mine)
 {
-   var url = v_root + v_vers + '/rps';
-   if (dojoCookie('sp-mine')=='m') {
-      dijitRegistry.byId('justmine').set('checked', 1);
-      spListMine = true;
+   var url = v_root + v_vers + '/rps?selectrp=' + sel;
+   if (mine) {
+      url = url + '&selectmine=true';
    }
+   document.getElementById("spIndexPane").innerHTML = '<img src="/img/circle_loader.gif"/>';
    iam_getRequest(url, null, 'javascript', function(data, args) {
         spList = data;
-        showSpList();
-        iam_hashHandler();
+        finalShowSpList();
+        if (autoshowsp) iam_hashHandler();
       });
 }
 
 function toggleListMine () {
   if (dijitRegistry.byId('justmine').get('checked')) {
-     dojoCookie('sp-mine', 'm');
+     // dojoCookie('sp-mine', 'm', {max-age: 31536000});
+     document.cookie = 'sp-mine=m; max-age=31536000';
      spListMine = true;
   } else {
-     dojoCookie('sp-mine', 'a');
+     document.cookie = 'sp-mine=a; max-age=31536000';
      spListMine = false;
   }
   showSpList();
@@ -387,6 +435,7 @@ function setPaneSizes() {
         left: '0px'
       });
 
+   console.log('currentSp: ' + currentSp);
      if (currentSp!=null) showCurrentSp();
 
 }

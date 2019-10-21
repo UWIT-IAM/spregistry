@@ -14,6 +14,7 @@ import edu.washington.iam.registry.exception.RelyingPartyException;
 public interface RelyingPartyManager extends Serializable {
 
    public List<RelyingParty> getRelyingParties();
+   public List<RelyingParty> getRelyingParties(String search, String admin);
    public List<RelyingParty> getRelyingPartyHistoryById(String id) throws RelyingPartyException;
    public List<String> getMetadataIds();
    public List<RelyingPartyEntry> searchRelyingPartyIds(String searchStr, String metadataId);

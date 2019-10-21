@@ -103,6 +103,37 @@ public class RelyingPartyManagerImpl implements RelyingPartyManager {
     }
 
     @Override
+    public List<RelyingParty> getRelyingParties(String search, String admin){
+        if (search==null && admin==null) return getRelyingParties();
+        if (search!=null) search = search.toLowerCase();
+        // log.debug("rp search: " + search);
+        List<RelyingParty> list = new ArrayList<>();
+        for(String mdid : metadataDAOs.keySet()){
+            for (RelyingParty rp: metadataDAOs.get(mdid).getRelyingParties()) {
+               if ( search!=null && search.length()>0 && rp.getEntityId().toLowerCase().indexOf(search)>=0) {
+                   log.debug(".. adding by match: " + rp.getEntityId());
+                   list.add(rp);
+               }
+               if (admin!=null && admin.length()>0) {
+                   log.debug(".. contact: " + admin);
+                   for (ContactPerson contact: rp.getContactPersons()) {
+                      String cmail = contact.getEmail();
+                      log.debug(".. try: " + cmail);
+                      if (cmail!=null && (cmail.equals(admin) ||
+                             cmail.equals(admin+"@uw.edu") || cmail.equals(admin+"@washington.edu"))) {
+                         log.debug(".. adding by admin: " + rp.getEntityId());
+                         list.add(rp);
+                         break;
+                      }
+                   }
+               }
+            }
+        }
+        Collections.sort(list, new RelyingPartyComparator());
+        return list;
+    }
+
+    @Override
     public List<RelyingPartyEntry> searchRelyingPartyIds(String searchStr, String metadataId){
         log.debug("rp search: " + searchStr + ", md=" + metadataId);
         List<RelyingPartyEntry> list = new ArrayList<>();
