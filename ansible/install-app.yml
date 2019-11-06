@@ -75,28 +75,6 @@
   # run any handlers 
   - meta: flush_handlers
 
-  # always run the test
-  - name: run service tests
-    command: "wget  -O /dev/null
-           --certificate={{ spreg_webclient_certFile }}
-           --private-key={{ spreg_webclient_keyFile }}
-           --ca-certificate={{ spreg_webclient_caFile }}
-           --no-check-certificate
-            'https://{{inventory_hostname}}/spreg/ws/metadata?mdid=UW&id=https://iam-ws.u.washington.edu/'"
-    register: wget_result
-    changed_when: "wget_result.rc != 0"
-
-  # idle loadr if test fails
-  - name: idle loadr if test fail
-    command: /usr/bin/nohup /data/local/bin/ansible_command loadr idle
-    when: "wget_result.rc != 0"
-      
-  # fail if test fails
-  - name: fail if test fail
-    fail: msg="API service test fails after install"
-    when: "wget_result.rc != 0"
-      
-
   # handlers mostly standard from iam-ansible
 
   handlers:
