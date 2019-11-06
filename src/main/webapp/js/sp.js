@@ -322,6 +322,7 @@ function showSpList() {
 
 function timeShowSpList() {
   console.log("auto show millisec");
+  if (keytimer!=null) window.clearTimeout(keytimer);
   var txsp = dijitRegistry.byId('filterSpList').get('value').replace('<','').replace('>','');
   dojoDom.byId('spListTitle').innerHTML = "Service providers like '" + txsp + "'";
   loadSpList(txsp, false);
