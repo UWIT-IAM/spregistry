@@ -1253,6 +1253,7 @@ function accessCtrl_reqAccessCtrl(entityId) {
         if (group_2fa == group_2fa_in) {
             true; //noop
         } else {
+            xml += '<Add id="cond2fa"/>';
             _okmsg += '<li>Adding: 2FA access group</li>';
             gws_text += '\n\nConditional 2FA groups requested:\n' + group_2fa;
             if (group_2fa_in != '') gws_text += '\n2FA Previous groups:\n' + group_2fa_in;

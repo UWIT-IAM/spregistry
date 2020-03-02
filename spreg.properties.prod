@@ -11,7 +11,7 @@ spreg.root=/data/local/spreg
 spreg.db.url=iamdb11.cac.washington.edu/spregistry
 
 # web service parameters
-spreg.gws.baseUrl=https://iam-ws.u.washington.edu:7443/group_sws/v2
+spreg.gws.baseUrl=https://groups.uw.edu/group_sws/v2
 spreg.gws.ownerBase=/group/u_weblogin_dns-owners_
 spreg.webclient.certFile=/data/local/spreg/urizen3.crt
 spreg.webclient.keyFile=/data/local/spreg/urizen3.key

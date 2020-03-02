@@ -3,15 +3,16 @@
 # spreg will look for this file first in the spreg directory
 # if that is undefined or not found this installed copy will be used
 #
-spreg.version=2.5.0
-spreg.versionDate=2018-11-15
+spreg.version=2.6.0
+spreg.versionDate=2020-03-13
 spreg.root=/data/local/spreg
 
 # database parameters
-spreg.db.url=iamdbdev01.s.uw.edu/spreghistory2018
+# gcloud db via proxy
+spreg.db.url=127.0.0.1:5431/spregistry
 
 # web service parameters
-spreg.gws.baseUrl=https://iam-ws.u.washington.edu:7443/group_sws/v2
+spreg.gws.baseUrl=https://groups.uw.edu/group_sws/v2
 spreg.gws.ownerBase=/group/u_weblogin_dns-owners_
 spreg.webclient.certFile=/data/local/spreg/urizen3.crt
 spreg.webclient.keyFile=/data/local/spreg/urizen3.key
