@@ -103,6 +103,12 @@
                     <input data-dojo-type="dijit/form/TextBox" id="conditional_group_in" #if(${accessCtrl.conditional}) value="${accessCtrl.conditionalGroup}" #else value = "" #end type="hidden" aria-hidden="true" />
                 </div>
             </li>
+            <li><div class="dd"><label for="conditional_link_req">Conditional access hemp link:</label></div>
+                <div class="dd">
+                    <input data-dojo-type="dijit/form/TextBox" id="conditional_link_req" #if(${accessCtrl.conditional}) value="$!{accessCtrl.conditionalLink}" #end /><div style="float:right;font-size:.8em"></div>
+                    <input data-dojo-type="dijit/form/TextBox" id="conditional_link_in" #if(${accessCtrl.conditional}) value="$!{accessCtrl.conditionalLink}" #else value = "" #end type="hidden" aria-hidden="true" />
+                </div>
+            </li>
 
         </ul>
 
@@ -111,7 +117,7 @@
 
     </div>
     <div class="dijitDialogPaneActionBar">
-        <button dojoType="dijit.form.Button" id="accessCtrlReqSaver" type="button" onClick="accessCtrl_reqAccessCtrl('${relyingPartyId}')">Save changes</button>
+        <button dojoType="dijit.form.Button" id="accessCtrlReqSaver" type="button" onClick="accessCtrl_reqAccessCtrl('${relyingPartyId}')">Request access</button>
         <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('accessCtrlReqDialog')">Close</button>
     </div>
 

@@ -101,6 +101,7 @@ public class RelyingPartyController {
     private static DNSVerifier dnsVerifier;
     private static GroupManager groupManager;
     private String adminGroupName = null;
+    private String auto2faPath = null;
     private Group adminGroup = null;
 
     public DNSVerifier getDnsVerifier() {
@@ -1445,6 +1446,7 @@ public class RelyingPartyController {
                                                    @RequestParam(value="group_2fa", required=true) String group2FA,
                                                    @RequestParam(value="conditional_flag", required=true) boolean conditional,
                                                    @RequestParam(value="conditional_group_name", required=true) String conditionalGroup,
+                                                   @RequestParam(value="conditional_link", required=false) String conditionalLink,
 
                                                    InputStream in,
                                                    HttpServletRequest request,
@@ -1486,14 +1488,22 @@ public class RelyingPartyController {
 
         try {
             AccessCtrl newAccessCtrl = new AccessCtrl();
+            newAccessCtrl.setEntityId(id);
 
             if(type2FA.equals("cond")) {
+                // verify the 2fa group is setup correctly
+                String gn = auto2faPath + hostFromId(id);
+                Group g = groupManager.getGroup(gn);
+                if (g==null) throw new AccessCtrlException("Group " + gn + " must exist for conditional 2fa");
+                if (!g.isMember(group2FA)) throw new AccessCtrlException(group2FA + " must be a member of " + gn);
                 newAccessCtrl.setCond2FA(group2FA);
             } else if (type2FA.equals("auto")) {
+                String gn = auto2faPath + hostFromId(id);
+                Group g = groupManager.getGroup(gn);
+                if (g!=null) throw new AccessCtrlException("Group " + gn + " must not exist for auto 2fa");
                 newAccessCtrl.setAuto2FA(true);
             }
-            newAccessCtrl.setEntityId(id);
-            newAccessCtrl.setConditionalByUser(conditional, conditionalGroup);
+            newAccessCtrl.setConditionalByUser(conditional, conditionalGroup, conditionalLink);
             accessCtrlManager.updateAccessCtrl(newAccessCtrl, session.remoteUser);
             status = 200;
         } catch (AccessCtrlException e) {
@@ -1504,6 +1514,17 @@ public class RelyingPartyController {
         response.setStatus(status);
         return mv;
     }
+
+    private String hostFromId(String id) throws AccessCtrlException {
+       String ret = "";
+       if (id.startsWith("https://")) ret = id.substring(8);
+       else if (id.startsWith("http://")) ret = id.substring(7);
+       else if (id.startsWith("oidc/")) ret = id.substring(5);
+       else throw new AccessCtrlException("Cannot form a group name from that id");
+       if (ret.indexOf("/")>0) ret = ret.substring(0, ret.indexOf("/"));
+       return ret;
+    }
+
 
     // request for access control
     @RequestMapping(value="/rp/accessCtrlReq", method=RequestMethod.PUT)
@@ -1662,6 +1683,9 @@ public class RelyingPartyController {
     public void setAdminGroupName(String v) {
         log.debug("admin group = " + v);
         adminGroupName = v;
+    }
+    public void setAuto2faPath(String v) {
+        auto2faPath = v;
     }
     public void setStandardLoginSec(long v) {
         standardLoginSec = v;

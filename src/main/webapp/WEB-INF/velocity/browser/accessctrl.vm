@@ -86,6 +86,11 @@
                               <li>
                                   Conditional access is enabled using authorization group(s): $accessCtrl.conditionalGroup <font color="green">&#x2714;</font>
                               </li>
+                              #if ($accessCtrl.conditionalLink)
+                                <li>
+                                Link to access policy: $accessCtrl.conditionalLink <font color="green">&#x2714;</font>
+                                </li>
+                              #end
                           </ul>
                       </div>
                   </fieldset>

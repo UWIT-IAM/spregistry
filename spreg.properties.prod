@@ -17,6 +17,7 @@ spreg.webclient.certFile=/data/local/spreg/urizen3.crt
 spreg.webclient.keyFile=/data/local/spreg/urizen3.key
 spreg.webclient.caFile=/data/local/spreg/uw-incommon-ca.crt
 spreg.gws.adminGroupName=u_weblogin_admins
+spreg.gws.auto2faPath=u_weblogin_idp2fa_
 
 # mail settings
 spreg.smtp.host=appsubmit.cac.washington.edu

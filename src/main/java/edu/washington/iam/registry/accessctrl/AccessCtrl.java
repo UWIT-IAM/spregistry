@@ -35,6 +35,7 @@ public class AccessCtrl implements Serializable  {
     private String groupAuto2FA;
     private Boolean conditional;
     private String conditionalGroup;
+    private String conditionalLink;
     private String entityId;
     private UUID uuid;
     private String startTime;
@@ -58,6 +59,7 @@ public class AccessCtrl implements Serializable  {
         groupAuto2FA = "";
         conditional = false;
         conditionalGroup = "";
+        conditionalLink = "";
         entityId = "";
         uuid = null;
         startTime = null;
@@ -144,13 +146,22 @@ public class AccessCtrl implements Serializable  {
         this.conditionalGroup = conditionalGroup;
     }
 
+    public String getConditionalLink() {
+        return conditionalLink;
+    }
+
+    public void setConditionalLink(String conditionalLink) {
+        this.conditionalLink = conditionalLink;
+    }
+
     //for setting conditional access using user input--DB uses plain "unsafe" methods above
-    public void setConditionalByUser(Boolean conditional, String conditionalGroup) throws AccessCtrlException {
+    public void setConditionalByUser(Boolean conditional, String conditionalGroup, String conditionalLink) throws AccessCtrlException {
 
         if (conditional) {
             if (StringUtils.isNotBlank(conditionalGroup))
             {
                 this.conditionalGroup = conditionalGroup;
+                this.conditionalLink = conditionalLink;
                 this.conditional = true;
             } else {
                 throw new AccessCtrlException("tried to set conditional access but provided empty or whitespace" +
