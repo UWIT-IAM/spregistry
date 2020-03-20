@@ -82,7 +82,7 @@
                   <input data-dojo-type="dijit/form/TextBox" id="conditional_group_name" #if(${accessCtrl.conditional}) value=${accessCtrl.conditionalGroup} #end /><div style="float:right;font-size:.8em"></div>
               </div>
           </li>
-          <li><div class="dd"><label for="conditional_link_name">Conditional access link:</label></div>
+          <li><div class="dd"><label for="conditional_link_name">Access error URL:</label></div>
               <div class="dd">
                   <input data-dojo-type="dijit/form/TextBox" id="conditional_link_name" #if(${accessCtrl.conditional}) value=$!{accessCtrl.conditionalLink} #end /><div style="float:right;font-size:.8em"></div>
               </div>

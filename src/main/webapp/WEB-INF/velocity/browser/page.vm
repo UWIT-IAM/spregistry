@@ -43,7 +43,6 @@ dojoConfig = {
 
 <link rel="stylesheet" type="text/css" href="/spreg/css/iam-dojo-2.css"/>
     <link rel="stylesheet" type="text/css" href="/spreg/css/octicons.css"/>
-    <link rel="stylesheet" type="text/css" href="/spreg/css/sp-2.6.0.css"/>
 
 
 

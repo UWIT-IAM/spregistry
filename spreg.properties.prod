@@ -34,7 +34,7 @@ spreg.browserRoot=/spreg
 spreg.certRoot=/spreg/ws
 
 # location of incommon metadata
-incommon.metadata.path=/usr/local/etc/shibboleth/InCommon-metadata.xml
+incommon.metadata.path=/data/local/spreg/metadata/InCommon-metadata.xml
 uw.metadata.path=/data/local/spreg/UW-base-metadata.xml
 
 # idp notifications

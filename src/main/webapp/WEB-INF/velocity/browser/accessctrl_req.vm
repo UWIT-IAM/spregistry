@@ -103,7 +103,7 @@
                     <input data-dojo-type="dijit/form/TextBox" id="conditional_group_in" #if(${accessCtrl.conditional}) value="${accessCtrl.conditionalGroup}" #else value = "" #end type="hidden" aria-hidden="true" />
                 </div>
             </li>
-            <li><div class="dd"><label for="conditional_link_req">Conditional access hemp link:</label></div>
+            <li><div class="dd"><label for="conditional_link_req">Access error URL:</label></div>
                 <div class="dd">
                     <input data-dojo-type="dijit/form/TextBox" id="conditional_link_req" #if(${accessCtrl.conditional}) value="$!{accessCtrl.conditionalLink}" #end /><div style="float:right;font-size:.8em"></div>
                     <input data-dojo-type="dijit/form/TextBox" id="conditional_link_in" #if(${accessCtrl.conditional}) value="$!{accessCtrl.conditionalLink}" #else value = "" #end type="hidden" aria-hidden="true" />

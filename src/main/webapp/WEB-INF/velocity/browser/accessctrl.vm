@@ -88,7 +88,7 @@
                               </li>
                               #if ($accessCtrl.conditionalLink)
                                 <li>
-                                Link to access policy: $accessCtrl.conditionalLink <font color="green">&#x2714;</font>
+                                Access error URL: $accessCtrl.conditionalLink <font color="green">&#x2714;</font>
                                 </li>
                               #end
                           </ul>

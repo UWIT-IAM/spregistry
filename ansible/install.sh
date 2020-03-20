@@ -16,7 +16,7 @@ base=${dir%/ansible}
 
 cd $dir
 
-playbook="install-app.yml"
+playbook="install.yml"
 list_hosts=0
 verb=0
 debug=0
@@ -50,24 +50,9 @@ done
 eval target="\${$OPTIND}"
 [[ -z $target ]] && usage
 
-# get ansible-tools
-
-[[ -d ansible-tools ]] || {
-   echo "installing ansible-tools tools"
-   git clone ssh://git@git.s.uw.edu/iam/ansible-tools.git
-   gettools=0
-} || {
-(( gettools>0 )) && {
-      cd ansible-tools
-      git pull origin master
-      cd ..
-   }
-}
-
-export ANSIBLE_LIBRARY=ansible-tools/modules:/usr/share/ansible
 
 ((listhosts>0)) && {
-   ansible-playbook ${playbook} --list-hosts -i ansible-tools/hosts  --extra-vars "target=${target}"
+   ansible-playbook ${playbook} --list-hosts -i hosts  --extra-vars "target=${target}"
    exit 0
 }
 
@@ -113,6 +98,6 @@ vars=
 (( debug>0 )) && vars="$vars -vvvv "
 [[ -n $limit ]] && vars="$vars -l $limit "
 set -x
-ansible-playbook ${playbook} $vars -i ansible-tools/hosts  --extra-vars "target=${target}"
+ansible-playbook ${playbook} $vars -i hosts  --extra-vars "target=${target}"
 
 
