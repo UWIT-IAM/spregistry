@@ -1,33 +1,26 @@
-# IAM clusters and hosts
+# IAM tools hosts
 
-[tools_prod]
+[prod]
 iamtools11.s.uw.edu idle_wait_sec=10
 iamtools12.s.uw.edu idle_wait_sec=10
 
-[tools_prod:vars]
+[prod:vars]
 cluster_type=prod
 cluster_name=iam-tools.u.washington.edu
 cluster_hosts=["iamtools11.s.uw.edu", "iamtools12.s.uw.edu"]
 clustering_method=loadr
-apps="spreg cs"
+apps="spreg cs workday irws-watcher"
+ansible_ssh_group=iam-dev
 
 
-[tools_eval]
+[eval] 
 iamtools-test01.s.uw.edu idle_wait_sec=10 wd_cron_offset=01
 iamtools-test02.s.uw.edu idle_wait_sec=10 wd_cron_offset=31
 
-[tools_eval:vars]
+[eval:vars]
 cluster_type=eval
 cluster_name=iam-tools-test.u.washington.edu
 cluster_hosts=["iamtools-test01.s.uw.edu", "iamtools-test02.s.uw.edu"]
 clustering_method=loadr
-apps="spreg cs"
-
-
-[tools:children]
-tools_prod
-tools_eval
-[tools:vars]
-apps="spreg cs"
+apps="spreg cs workday irws-watcher"
 ansible_ssh_group=iam-dev
-idle_wait_sec=4
