@@ -4,12 +4,11 @@
 # if that is undefined or not found this installed copy will be used
 #
 spreg.version=2.6.0
-spreg.versionDate=2020-03-13
+spreg.versionDate=2020-04-30
 spreg.root=/data/local/spreg
 
 # database parameters
-# gcloud db via proxy
-spreg.db.url=127.0.0.1:5431/spregistry
+spreg.db.url=iamdbdev01.s.uw.edu/spregistry
 
 # web service parameters
 spreg.gws.baseUrl=https://dev.groups.uw.edu/group_sws/v2
