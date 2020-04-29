@@ -7,27 +7,8 @@
   max_fail_percentage: 10
   gather_facts: false
   remote_user: iamcert
-  vars:
-    app_name: spreg
 
   tasks:
-  - local_action: stat path=./local_vars.yml
-    register: local_vars_stat
-
-  - include_vars: "local_vars.yml"
-    when: local_vars_stat.stat.exists
-
-  - name: create properties yml file
-    local_action: "property_to_yml name=spreg type={{ cluster_type }}"
- 
-  - include_vars: "properties.yml"
-
-  - name: check for secrets file
-    stat: path={{ spreg_root }}/spreg-secrets.properties
-    register: spregsecrets
-  - fail: msg="secrets file not preloaded on target"
-    when: not spregsecrets.stat.exists
-
   # copy spreg properties file
   # change restarts tomcat
   - name: copy properties file
@@ -36,26 +17,18 @@
  
   # configure tomcat startup properties
   # change restarts tomcat
-  - name: tomcat startup params
-    daemon_config: "service=tomcat key=spreg.properties.path value=file:{{ spreg_root }}"
-    notify: restart tomcat
+  # - name: tomcat startup params
+  #   daemon_config: "service=tomcat key=spreg.properties.path value=file:{{ spreg_root }}"
+  #   notify: restart tomcat
 
-  # update http and https config
-  # change restarts apache
-  - include: "ansible-tools/tasks/apache_config.yml file=https prod=spreg"
-  - include: "ansible-tools/tasks/apache_config.yml file=http prod=spreg"
+  #- name: copy http apache config
+  #  template: "src=apache/http.gws dest=/data/conf/apache.conf.d/http.gws group=iam-dev mode=644"
+  #  notify: restart_apache
 
+  #- name: copy https apache config
+  #  template: "src=apache/https.gws dest=/data/conf/apache.conf.d/https.gws group=iam-dev mode=644"
+  #  notify: restart_apache
 
-  # update certs and keys (used by spreg)
-  # change restarts tomcat
-  - name: copy certs and keys
-    copy: "src={{ item.src }} dest={{ item.dest }} group=iam-dev mode=664 "
-    with_items:
-       - { src: '{{local_webclient_certFile}}', dest: '{{spreg_webclient_certFile}}' }
-       - { src: '{{local_webclient_keyFile}}', dest: '{{spreg_webclient_keyFile}}' }
-       - { src: '{{local_webclient_caFile}}', dest: '{{spreg_webclient_caFile}}' }
-    when: have_local_certs is defined and item.src != ""
-    notify: restart tomcat
 
   # copy the attributes data file
   # until this is in the dataabse 
@@ -77,8 +50,15 @@
 
   # handlers mostly standard from iam-ansible
 
-  handlers:
-  - include: "ansible-tools/tasks/iam_handlers.yml"
+  - name: restart_tomcat
+    command: /usr/bin/nohup /data/local/bin/ansible_command tomcat restart
+    notify:
+      - wait_for_tomcat
 
+  # wait for tomcat to restart
+  - name: wait_for_tomcat
+    shell: "c=0;while [ $c -lt 20 ]; do [[ \"`curl -f http://localhost/tomcatmanager/text/list 2>/dev/null  | grep 'gws_grouper'`\" == *\"gws_grouper\"* ]] && exit 0; let c=c+1;sleep 5; done; exit 1"
+    register: wait_result
+    failed_when: "wait_result.rc != 0"
 
 

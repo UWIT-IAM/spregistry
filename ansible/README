@@ -1,60 +1,5 @@
 This is the ansible spreg installer
 
-prerequisites
--------------
-
-On your build host:
-
-1) Ansible
-
-   see: http://docs.ansible.com/
-
-   via git:  git clone https://github.com/ansible/ansible.git
-
-   via pip:  pip install ansible
-     (python-dev package required)
-
-2) iam-ansible tools
-
-   git clone ssh://git@git.s.uw.edu/iam/ansible-tools.git
-
-3) echo "iam_ansible=<your ansibletools install path>" > install.properties
-
-## 4) httest
-## 
-##    see: http://htt.sourceforge.net/cgi-bin/cwiki/bin/public
-## 
-
-
-On the target:
-
-1) Ansible 'as-root' controller
-
-   /data/local/bin/ansible_command
-
-   see: iam-ansible tools / host-tools
-
-
-2) Directories to be chgrp to 'iam-dev' and chmod g+w
-
-   /etc/daemons/tomcat
-   /data/local/spreg
-   /data/webapps
-   /data/conf
-   /data/conf/apache.conf.d/
-   /logs/spreg (writeable by tomcat)
-
----------------------
-
-Install
---------
-
-1) Be sure there is a spreg.properties.xxx file for the type of host
-   you're installing.  xxx = prod | eval | dev
-
-2) Also edit your ansible/local_vars.yml to point to a valid ca and cert/key pair.
-   Clear the line with "have_local_certs" if you don't want your cert/key copied
-   over to the target.
 
 3) Make the package.  In base product directory:
 
@@ -64,6 +9,6 @@ Install
 
    $ ./install.sh <host_type>
 
-   host_type = tools_dev | tools_eval | tools_prod
+   host_type = eval | prod
 
 
