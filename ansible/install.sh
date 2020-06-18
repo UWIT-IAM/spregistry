@@ -17,8 +17,8 @@ target help:    $0 targets
 
 function targets {
   echo "
-     eval                       Installs to eval hosts (iamtools-test01, 02)
-     prod                       Installs to prod hosts (iamtoosl11, 12)
+     eval                       Installs to eval hosts (iamtools-test11)
+     prod                       Installs to prod hosts (iamtools21, 22)
   "
   exit 1
 }
@@ -29,7 +29,7 @@ base=${dir%/ansible}
 cd $dir
 
 playbook="install-app.yml"
-list_hosts=0
+listhosts=0
 verb=0
 debug=0
 target=
@@ -58,7 +58,8 @@ done
 
 shift $((OPTIND-1))
 target="$1"
-[[ "$target" == "eval" || "$target" == "prod" ]] || usage
+[[ "$target" == "eval" || "$target" == "prod" || "$target" == "targets" ]] || usage
+[[ "$target" != "targets" ]] || targets
 [[ -z $playbook ]] && playbook="install-app.yml"
 echo "Installing $playbook to $target"
 [[ -r $playbook ]] || {
@@ -67,7 +68,7 @@ echo "Installing $playbook to $target"
 }
 
 ((listhosts>0)) && {
-   ansible-playbook ${playbook} --list-hosts -i ansible-tools/hosts  --extra-vars "target=${target}"
+   ansible-playbook ${playbook} --list-hosts -i ./hosts  --extra-vars "target=${target}"
    exit 0
 }
 
@@ -108,6 +109,6 @@ vars=
   [[ $limit == *"."* ]] || limit=${limit}.s.uw.edu
   vars="$vars -l $limit "
 }
-ansible-playbook ${playbook} $vars -i hosts  --extra-vars "target=${target}"
+ansible-playbook ${playbook} $vars -i ./hosts  --extra-vars "target=${target}"
 
 
