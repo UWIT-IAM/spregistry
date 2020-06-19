@@ -17,7 +17,11 @@
   # copy spreg properties file
   # change restarts tomcat
   - name: copy properties file
-    copy: "src=../spreg.properties.{{ cluster_type }}  dest={{ spreg_root }}/spreg.properties group=iam-dev mode=664"
+    copy:
+      src: ../spreg.properties.{{ cluster_type }}
+      dest: "{{ spreg_root }}/spreg.properties"
+      group: iam-dev
+      mode: 0664
     notify:
       - restart tomcat
  
@@ -30,13 +34,17 @@
   - name: copy http apache config
     template:
       src: apache/http.j2
-      dest: /data/conf/apache.conf.d/http.spreg group=iam-dev mode=644
+      dest: /data/conf/apache.conf.d/http.spreg
+      group: iam-dev
+      mode: 0644
     notify: restart apache
 
   - name: copy https apache config
     template:
       src: apache/https.j2
-      dest: /data/conf/apache.conf.d/https.spreg group=iam-dev mode=644
+      dest: /data/conf/apache.conf.d/https.spreg
+      group: iam-dev
+      mode: 0644
     notify: restart apache
 
   # copy the attributes data file
