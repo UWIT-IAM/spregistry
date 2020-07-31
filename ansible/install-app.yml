@@ -8,12 +8,22 @@
   gather_facts: false
   remote_user: iamcert
 
+  vars:
+    app_name: spreg
+    spreg_root: /data/local/spreg
+    spreg_spRegistryUrl: https://iam-tools.u.washington.edu/spreg/
+
   tasks:
   # copy spreg properties file
   # change restarts tomcat
   - name: copy properties file
-    copy: "src=../spreg.properties.{{ cluster_type }}  dest={{ spreg_root }}/spreg.properties group=iam-dev mode=664"
-    notify: restart tomcat
+    copy:
+      src: ../spreg.properties.{{ cluster_type }}
+      dest: "{{ spreg_root }}/spreg.properties"
+      group: iam-dev
+      mode: 0664
+    notify:
+      - restart tomcat
  
   # configure tomcat startup properties
   # change restarts tomcat
@@ -21,24 +31,32 @@
   #   daemon_config: "service=tomcat key=spreg.properties.path value=file:{{ spreg_root }}"
   #   notify: restart tomcat
 
-  #- name: copy http apache config
-  #  template: "src=apache/http.gws dest=/data/conf/apache.conf.d/http.gws group=iam-dev mode=644"
-  #  notify: restart_apache
+  # copy http apache config; change restarts httpd
+  - name: copy http apache config
+    template:
+      src: apache/http.j2
+      dest: /data/conf/apache.conf.d/http.spreg
+      group: iam-dev
+      mode: 0644
+    notify: restart apache
 
-  #- name: copy https apache config
-  #  template: "src=apache/https.gws dest=/data/conf/apache.conf.d/https.gws group=iam-dev mode=644"
-  #  notify: restart_apache
-
+  - name: copy https apache config
+    template:
+      src: apache/https.j2
+      dest: /data/conf/apache.conf.d/https.spreg
+      group: iam-dev
+      mode: 0644
+    notify: restart apache
 
   # copy the attributes data file
-  # until this is in the dataabse 
+  # until this is in the database 
   - name: copy attribute data
     copy: "src=../attribute.xml dest={{ spreg_root }}/attribute.xml group=iam-dev mode=664"
     notify: restart tomcat
 
   # update the spreg.war file
   - name: copy war
-    copy: "src=../target/spreg.war dest=/data/webapps/spreg.war group=iam-dev mode=664"
+    copy: "src=../target/{{ app_name }}.war dest=/data/webapps/{{ app_name }}.war group=iam-dev mode=664"
     notify: restart tomcat
 
   # copy xmlsectool
@@ -48,7 +66,9 @@
   # run any handlers 
   - meta: flush_handlers
 
-  # handlers mostly standard from iam-ansible
+# handlers mostly standard from iam-ansible
+
+  handlers:
 
   - name: restart_tomcat
     command: /usr/bin/nohup /data/local/bin/ansible_command tomcat restart
@@ -61,4 +81,5 @@
     register: wait_result
     failed_when: "wait_result.rc != 0"
 
-
+  - name: restart apache
+    command: /usr/bin/nohup /data/local/bin/ansible_command apache restart

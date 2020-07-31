@@ -110,7 +110,8 @@ updated_by text,
 auto_2fa boolean DEFAULT false,
 auto_2fa_group varchar(135),
 conditional boolean DEFAULT false,
-conditional_group varchar(135)
+conditional_group varchar(135),
+conditional_link varchar
 );
 
 alter table access_control

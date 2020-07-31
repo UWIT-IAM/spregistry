@@ -3,20 +3,22 @@
 # spreg will look for this file first in the spreg directory
 # if that is undefined or not found this installed copy will be used
 #
-spreg.version=2.6.0
-spreg.versionDate=2002-04-30
+spreg.version=2.4.0
+spreg.versionDate=2020-07-31
 spreg.root=/data/local/spreg
-
-# database parameters ( prod db )
 spreg.db.url=iamdb21.s.uw.edu/spregistry
+
 
 # web service parameters
 spreg.gws.baseUrl=https://groups.uw.edu/group_sws/v2
 spreg.gws.ownerBase=/group/u_weblogin_dns-owners_
-spreg.webclient.certFile=/data/local/spreg/urizen3.crt
-spreg.webclient.keyFile=/data/local/spreg/urizen3.key
+spreg.webclient.certFile=/data/local/spreg/gws.cac-uw.crt
+spreg.webclient.keyFile=/data/local/spreg/gws.cac-uw.key
 spreg.webclient.caFile=/data/local/spreg/uw-incommon-ca.crt
 spreg.gws.adminGroupName=u_weblogin_admins
+
+spreg.gws.auto2faPath=u_weblogin_idp2fa_
+
 
 # mail settings
 spreg.smtp.host=appsubmit.cac.washington.edu
@@ -33,7 +35,7 @@ spreg.browserRoot=/spreg
 spreg.certRoot=/spreg/ws
 
 # location of incommon metadata
-incommon.metadata.path=/usr/local/etc/shibboleth/InCommon-metadata.xml
+incommon.metadata.path=/data/local/spreg/metadata/InCommon-metadata.xml
 uw.metadata.path=/data/local/spreg/UW-base-metadata.xml
 
 # idp notifications

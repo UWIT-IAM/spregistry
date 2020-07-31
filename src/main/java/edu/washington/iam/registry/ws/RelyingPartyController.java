@@ -49,6 +49,7 @@ import javax.servlet.http.Cookie;
 
 import edu.washington.iam.registry.rp.RelyingParty;
 import edu.washington.iam.registry.rp.RelyingPartyManager;
+import edu.washington.iam.registry.rp.RelyingPartyEntry;
 import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.tools.DNSVerifier;
 import edu.washington.iam.tools.DNSVerifyException;
@@ -100,6 +101,7 @@ public class RelyingPartyController {
     private static DNSVerifier dnsVerifier;
     private static GroupManager groupManager;
     private String adminGroupName = null;
+    private String auto2faPath = null;
     private Group adminGroup = null;
 
     public DNSVerifier getDnsVerifier() {
@@ -617,6 +619,7 @@ public class RelyingPartyController {
     @RequestMapping(value="/rps", method=RequestMethod.GET)
     public ModelAndView getRelyingParties(@RequestParam(value="selectrp", required=false) String selRp,
             @RequestParam(value="selecttype", required=false) String selType,
+            @RequestParam(value="selectmine", required=false) String selMine,
             HttpServletRequest request, HttpServletResponse response) {
 
 
@@ -626,14 +629,11 @@ public class RelyingPartyController {
            return (emptyMV());
         }
         if (session.mv!=null) return (session.mv);
+        log.info("match: " + selRp);
+        log.info("mine: " + selMine);
 
-      
-        /** The optional args are actually ignored 
-        List<RelyingPartyEntry> relyingPartyIds = null;
-        if (selType!=null && selType.equalsIgnoreCase("all")) selType = null;
-        relyingPartyIds = rpManager.searchRelyingPartyIds(selRp, selType);
-         **/
-        List<RelyingParty> relyingPartyIds = rpManager.getRelyingParties();
+        List<RelyingParty> relyingPartyIds = rpManager.getRelyingParties(selRp, selMine==null?null:session.remoteUser);
+        // List<RelyingParty> relyingPartyIds = rpManager.getRelyingParties();
         log.info("found " + relyingPartyIds.size() + " rps" );
  
         ModelAndView mv = basicModelAndView(session, "json", "rps");
@@ -865,11 +865,8 @@ public class RelyingPartyController {
               if(!hostPortFromEntityId(rpid).equals(hostPortFromEntityId(rp.getEntityId()))){
                   log.info(String.format("requested dns '%s' not equal to fetched entityId '%s'",
                                          hostPortFromEntityId(rpid), rp.getEntityId()));
-                  return emptyMV(
-                   "The entityID you supplied appears to be on a host already registered with a different entityID. " +
-                   "Shibboleth can support multiple entityIDs on one SP, but in most cases that isn't the best approach. " + 
-                   "If you actually do need to register additional entityIDs for an existing SP, " + 
-                   "you'll need to use the manual registration process.");
+                  return emptyMV(String.format("The requested entity id's domain name, '%s', does not match the fetched name: '%s'",
+                                                hostPortFromEntityId(rpid), rp.getEntityId()));
               }
 
               mv.addObject("relyingParty", rp);
@@ -1449,6 +1446,7 @@ public class RelyingPartyController {
                                                    @RequestParam(value="group_2fa", required=true) String group2FA,
                                                    @RequestParam(value="conditional_flag", required=true) boolean conditional,
                                                    @RequestParam(value="conditional_group_name", required=true) String conditionalGroup,
+                                                   @RequestParam(value="conditional_link", required=false) String conditionalLink,
 
                                                    InputStream in,
                                                    HttpServletRequest request,
@@ -1490,14 +1488,22 @@ public class RelyingPartyController {
 
         try {
             AccessCtrl newAccessCtrl = new AccessCtrl();
+            newAccessCtrl.setEntityId(id);
 
             if(type2FA.equals("cond")) {
+                // verify the 2fa group is setup correctly
+                String gn = auto2faPath + hostFromId(id);
+                Group g = groupManager.getGroup(gn);
+                if (g==null) throw new AccessCtrlException("Group " + gn + " must exist for conditional 2fa");
+                if (!g.isMember(group2FA)) throw new AccessCtrlException(group2FA + " must be a member of " + gn);
                 newAccessCtrl.setCond2FA(group2FA);
             } else if (type2FA.equals("auto")) {
+                String gn = auto2faPath + hostFromId(id);
+                Group g = groupManager.getGroup(gn);
+                if (g!=null) throw new AccessCtrlException("Group " + gn + " must not exist for auto 2fa");
                 newAccessCtrl.setAuto2FA(true);
             }
-            newAccessCtrl.setEntityId(id);
-            newAccessCtrl.setConditionalByUser(conditional, conditionalGroup);
+            newAccessCtrl.setConditionalByUser(conditional, conditionalGroup, conditionalLink);
             accessCtrlManager.updateAccessCtrl(newAccessCtrl, session.remoteUser);
             status = 200;
         } catch (AccessCtrlException e) {
@@ -1508,6 +1514,17 @@ public class RelyingPartyController {
         response.setStatus(status);
         return mv;
     }
+
+    private String hostFromId(String id) throws AccessCtrlException {
+       String ret = "";
+       if (id.startsWith("https://")) ret = id.substring(8);
+       else if (id.startsWith("http://")) ret = id.substring(7);
+       else if (id.startsWith("oidc/")) ret = id.substring(5);
+       else throw new AccessCtrlException("Cannot form a group name from that id");
+       if (ret.indexOf("/")>0) ret = ret.substring(0, ret.indexOf("/"));
+       return ret;
+    }
+
 
     // request for access control
     @RequestMapping(value="/rp/accessCtrlReq", method=RequestMethod.PUT)
@@ -1666,6 +1683,9 @@ public class RelyingPartyController {
     public void setAdminGroupName(String v) {
         log.debug("admin group = " + v);
         adminGroupName = v;
+    }
+    public void setAuto2faPath(String v) {
+        auto2faPath = v;
     }
     public void setStandardLoginSec(long v) {
         standardLoginSec = v;

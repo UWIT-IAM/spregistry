@@ -51,15 +51,16 @@
         <property name="accessCtrlManager" ref="spacManager"/>
         <property name="uuidManager" ref="uuidManager"/>
         <property name="mailSender" ref="mailSender"/>
-         <property name="templateMessage" ref="templateMessage"/>
-         <property name="mailTo" value="${spreg.smtp.to}"/>
-         <property name="requestMailTo" value="${spreg.smtp.requestMailTo}"/>
-         <property name="adminGroupName" value="${spreg.gws.adminGroupName}"/>
+        <property name="templateMessage" ref="templateMessage"/>
+        <property name="mailTo" value="${spreg.smtp.to}"/>
+        <property name="requestMailTo" value="${spreg.smtp.requestMailTo}"/>
+        <property name="adminGroupName" value="${spreg.gws.adminGroupName}"/>
+        <property name="auto2faPath" value="${spreg.gws.auto2faPath}"/>
 
         <property name="dnsVerifier" ref="comboDnsVerifier" />
         <property name="groupManager" ref="gwsGroupManager" />
 
-       <property name="browserRootPath" value="/spreg"/>
+        <property name="browserRootPath" value="/spreg"/>
         <property name="certRootPath" value="/spreg-s"/>
         <property name="loginCookie" value="sprsession"/>
         <property name="cryptKey" value="${spreg.cookieCryptKey}"/>

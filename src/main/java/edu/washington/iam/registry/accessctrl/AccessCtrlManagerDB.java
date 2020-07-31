@@ -78,10 +78,11 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
             // add new active record
             log.info(Integer.toString(template.update(
                     "insert into access_control (uuid, entity_id, end_time, start_time, updated_by, auto_2fa," +
-                            "auto_2fa_group, conditional, conditional_group) values " +
-                            "(? ,?, ?,  now(), ?, ?, ?, ?, ?)",
+                            "auto_2fa_group, conditional, conditional_group, conditional_link) values " +
+                            "(? ,?, ?,  now(), ?, ?, ?, ?, ?, ?)",
                     accessCtrl.getUuid(), accessCtrl.getEntityId(), null, updatedBy, accessCtrl.getAuto2FAInternal(),
-                    accessCtrl.getGroupAuto2FA(), accessCtrl.getConditional(), accessCtrl.getConditionalGroup())));
+                    accessCtrl.getGroupAuto2FA(), accessCtrl.getConditional(),
+                    accessCtrl.getConditionalGroup(), accessCtrl.getConditionalLink())));
             log.debug("updated existing access control for " + accessCtrl.getEntityId());
 
             if (idpHelper!=null) idpHelper.notifyIdps("accessctrl");
@@ -132,6 +133,7 @@ public class AccessCtrlManagerDB implements AccessCtrlManager {
                     accessCtrlItem.setAuto2FAInternal(rs.getBoolean("auto_2fa"));
                     accessCtrlItem.setConditional(rs.getBoolean("conditional"));
                     accessCtrlItem.setConditionalGroup(rs.getString("conditional_group"));
+                    accessCtrlItem.setConditionalLink(rs.getString("conditional_link"));
                     accessCtrlItem.setGroupAuto2FA(rs.getString("auto_2fa_group"));
                     accessCtrlList.add(accessCtrlItem);
                 }
