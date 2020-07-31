@@ -15,7 +15,7 @@
  * ========================================================================
  *#
 
-## sp registry webservice (login chooser page)
+## sp registry webservice (shgn in chooser page)
 
 #parse ( 'definitions.vm' )
 
@@ -98,9 +98,9 @@ function redirectToLogin(path) {
   <div class="dijitDialogPaneContentArea">
     Identity and Access Management
     <br/>
-    Service Provider Registry 2.2.0
+    Service Provider Registry 2.5.0
     <br/>
-    Revision 11/19/2014
+    Revision 2018-11-15
     <p/>
     <a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a>
   </div>
@@ -110,15 +110,6 @@ function redirectToLogin(path) {
 </div>
 
 
-
-## page
-## loader flash
-<div role="presentation" id="theflashch" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height:100%">
-<div style="width: 100%; height:50%">
-</div>
-<div align="center"><img src="/spreg/img/circle_loader.gif">
-</div>
-</div>
 
 
 <div id="thepage" data-dojo-type="dijit.layout.ContentPane" style="width: 100%; height: 100%;overflow:hidden">
@@ -164,17 +155,17 @@ function redirectToLogin(path) {
 <ul class="iamlist">
    
   <li><div class="dt "><a href="javascript:redirectToLogin('$uwloginpath');" title="Login with your UW NetID">UW NetID</a></div>
-   <div class="dd">People with UW NetIDs should log in with them.</div>
+   <div class="dd">People with UW NetIDs should sign in with them.</div>
   </li>
 
   <li><div class="dt "><a href="javascript:redirectToLogin('$googleloginpath');">Gmail</a></div>
-   <div class="dd">Your Google gmail address will be your login identity.
-        <br><i>(Google "@uw.edu" logins will not be not accepted.  Use UW NetID login)</i>
+   <div class="dd">Your Google gmail address will be your shgn in identity.
+        <br><i>(Google "@uw.edu" shgn ins will not be not accepted.  Use UW NetID sign in)</i>
    </div>
   </li>
 
   <li><div class="dt "><a href="javascript:redirectToLogin('$incommonloginpath');">InCommon</a></div>
-   <div class="dd">Your ePPN will be your login identity.
+   <div class="dd">Your ePPN will be your sign in identity.
        <br><i>(Your InCommon IdP must provide your ePPN to us.)</i>
    </div>
   </li>
@@ -204,7 +195,7 @@ function redirectToLogin(path) {
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.4.0</a></li>
+        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.5.0</a></li>
     </ul>
     </span>
 </div>

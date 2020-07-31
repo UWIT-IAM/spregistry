@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.registry.exception.RelyingPartyException;
 
-public class XMLMetadata implements  MetadataDAO {
+public class XMLMetadata implements MetadataDAO {
  
    private final Logger log = LoggerFactory.getLogger(getClass());
    private final ReentrantReadWriteLock locker = new ReentrantReadWriteLock();
@@ -186,7 +186,7 @@ public class XMLMetadata implements  MetadataDAO {
    }
 
    @Override
-   public void updateRelyingParty(RelyingParty rp) {
+   public void updateRelyingParty(RelyingParty rp, String updatedBy) {
       if (!editable) return;
 
       refreshMetadataIfNeeded();
@@ -208,7 +208,7 @@ public class XMLMetadata implements  MetadataDAO {
 
    // remove a single rp
    @Override
-   public void removeRelyingParty(String id) {
+   public void removeRelyingParty(String id, String updatedBy) {
       if (!editable) return;
       refreshMetadataIfNeeded();
       locker.readLock().lock();
@@ -222,6 +222,13 @@ public class XMLMetadata implements  MetadataDAO {
       locker.readLock().unlock();
       writeMetadata();
    }
+
+    @Override
+    public List<RelyingParty> getRelyingPartyHistoryById(String rpid) throws RelyingPartyException {
+        log.debug("md " + id + " looking for history for fixed rp" + rpid);
+        log.debug(" ..nope.  No history for fixed rps.  ");
+        throw new RelyingPartyException("not found--no history for fixed rps");
+    }
 
    // get rp by id
    @Override
@@ -257,7 +264,50 @@ public class XMLMetadata implements  MetadataDAO {
         return list;
     }
 
-   // write the metadata
+    @Override
+    public List<RelyingParty> getRelyingPartiesById(String search) {
+        refreshMetadataIfNeeded();
+        List<RelyingParty> rps = new ArrayList<>();
+        search = search.toLowerCase();
+        locker.readLock().lock();
+        try {
+            for(RelyingParty rp : relyingParties){
+                if (rp.getEntityId().toLowerCase().indexOf(search)>=0) rps.add(rp);
+            }
+        }
+        finally {
+            locker.readLock().unlock();
+        }
+        return rps;
+    }
+
+    @Override
+    public List<RelyingParty> getRelyingPartiesByAdmin(String admin) {
+        refreshMetadataIfNeeded();
+        List<RelyingParty> rps = new ArrayList<>();
+        admin = admin.toLowerCase();
+        locker.readLock().lock();
+        try {
+            for (RelyingParty rp : relyingParties){
+               for (ContactPerson contact: rp.getContactPersons()) {
+                  String cmail = contact.getEmail();
+                  // log.debug(".. try: " + cmail);
+                  if (cmail!=null && (cmail.equals(admin) ||
+                         cmail.equals(admin+"@uw.edu") || cmail.equals(admin+"@washington.edu"))) {
+                     log.debug(".. adding by admin: " + rp.getEntityId());
+                     rps.add(rp);
+                     break;
+                  }
+               }
+            }
+        }
+        finally {
+            locker.readLock().unlock();
+        }
+        return rps;
+    }
+
+    // write the metadata
     public int writeMetadata() {
 
       locker.readLock().lock();

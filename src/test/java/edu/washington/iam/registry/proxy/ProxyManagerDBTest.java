@@ -26,7 +26,7 @@ public class ProxyManagerDBTest {
         Assert.assertNotNull(p);
         Assert.assertEquals("https://gettest.example.com", p.getEntityId());
         Assert.assertEquals(true, p.getSocialActive());
-
+        Assert.assertNotNull(p.getUuid());
     }
 
     /*
@@ -52,6 +52,6 @@ public class ProxyManagerDBTest {
     @Test
     public void testRemoveRelyingParty()
     {
-        dao.removeRelyingParty("https://www.example.com");
+        dao.removeProxy("https://www.example.com");
     }*/
 }

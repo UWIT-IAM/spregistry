@@ -16,7 +16,7 @@
  *#
 
 ##
-## Template for login failed messages
+## Template for sign in failed messages
 ##
 
 #parse ( "crumbs.vm" )
@@ -35,8 +35,8 @@ v_sectionType = 'nologin';
 
 <p/>
 
-Your login service did not provide enough information for the SP-Registry
-to authenticate you.  Please contact the administrators where you log in
+Your sign in service did not provide enough information for the SP-Registry
+to authenticate you.  Please contact the administrators where you sign in
 and ask them to send the attribute "<tt>eduPersonPrincipalName</tt>" (ePPN) to us.
 <p/>
 <table cellpadding="4">
@@ -54,8 +54,8 @@ and ask them to send the attribute "<tt>eduPersonPrincipalName</tt>" (ePPN) to u
 
 
 <table class="helptext" cellpadding="4px">
-<tr><th align="left" colspan="99">Federated login</td></tr>
-<tr><td width="10px"/><td valign="top" colspan="2">Federated login is not
+<tr><th align="left" colspan="99">Federated sign in</td></tr>
+<tr><td width="10px"/><td valign="top" colspan="2">Federated sign in is not
   yet all that it will be.
    </td></tr>
 

@@ -38,19 +38,24 @@ import org.w3c.dom.Node;
 import edu.washington.iam.tools.XMLHelper;
 
 import edu.washington.iam.registry.exception.ProxyException;
+import java.util.UUID;
 
 public class Proxy implements Serializable  {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    private UUID uuid;
     private String entityId;
     private boolean socialActive;
+    private String updatedBy;
+    private String startTime;
+    private String endTime;
+
 
     private String safePy(String in) {
        return in.replaceAll("\"","\\\"");
     }
 
-    // create from document element
     public Proxy (){}
 
     //2017-11-13 mattjm constructor taking XML document as argument removed (and deleted XMLProxyManager)
@@ -68,6 +73,34 @@ public class Proxy implements Serializable  {
     }
     public boolean getSocialActive() { return (socialActive); }
 
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+    public UUID getUuid() { return uuid; }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
 
 }
 

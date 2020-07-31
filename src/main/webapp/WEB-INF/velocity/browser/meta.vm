@@ -77,6 +77,9 @@
      #if ( $ct.email )
       #X($!ct.email)</br>
      #end
+     #if ( $ct.phone )
+      #X($!ct.phone)</br>
+     #end
      </fieldset>
    #end
     </div>

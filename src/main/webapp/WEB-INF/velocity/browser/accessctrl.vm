@@ -1,0 +1,110 @@
+#* ========================================================================
+ * Copyright (c) 2013 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ *#
+##
+## access control tab
+##
+
+#parse ( 'definitions.vm' )
+
+#if ($isAdmin)
+    #parse ( "browser/accessctrl_edit.vm" )
+#end
+#if ($canEdit || $newEntity)
+    #parse ( "browser/accessctrl_req.vm" )
+#end
+
+
+<div id="zaccessCtrlSpContainer" dojoType="dijit.layout.ContentPane" title="Access Control" selected="false" style="overflow:hidden"
+     onClose="return(true)" doLayout="false" >
+
+  <ul class="buttonBar" role="navigation">
+    #if ($canEdit || $newEntity)
+    <li><button dojoType="dijit.form.Button" type="button"
+                onClick="iam_showTheDialog('accessCtrlReqDialog',['sp/accessctrllib'])">Request Access Control</button>
+    </li>
+    #end
+    #if ($isAdmin)
+    <li><button dojoType="dijit.form.Button" type="button" onClick="iam_showTheDialog('accessCtrlEditDialog',['sp/accessctrllib'])">Edit</button></li>
+    #end
+  </ul>
+
+  <div id="accessCtrlViewPane" tabindex="0" dojoType="dijit.layout.ContentPane" doLayout="false" style="overflow:auto;"
+       onShow="adjustSpPaneSize('accessCtrlViewPane')">
+
+    <p />
+      <h3>Access Control</h3>
+      <ul class="iamlist" style="padding-left: 20px">
+        #if (${accessCtrl.getAuto2FA()} || ${accessCtrl.getCond2FA()})
+            <li>
+                <fieldset style="margin-bottom:8px">
+                    <legend class="h4">2FA</legend>
+                    <div class="dd">
+                        <ul class="iamlist">
+                            #if (${accessCtrl.getAuto2FA()})
+                                <li>
+                                    Auto 2FA is enabled. <font color="green">&#x2714;</font>
+                                </li>
+                            #end
+                            #if (${accessCtrl.getCond2FA()})
+                                <li>
+                                    Conditional 2FA is enabled using authorization group(s): $accessCtrl.getGroupAuto2FA() <font color="green">&#x2714;</font>
+                                </li>
+                            #end
+                        </ul>
+                    </div>
+                </fieldset>
+            </li>
+        #else
+        <li>
+            Conditional/Auto 2FA is not configured for this Service Provider.
+        </li>
+        #end
+
+      </ul>
+      <p />
+      <ul class="iamlist" style="padding-left: 20px">
+          #if ($accessCtrl.conditional)
+              <li>
+                  <fieldset style="margin-bottom:8px">
+                      <legend class="h4">Conditional Access</legend>
+                      <div class="dd">
+                          <ul class="iamlist">
+                              <li>
+                                  Conditional access is enabled using authorization group(s): $accessCtrl.conditionalGroup <font color="green">&#x2714;</font>
+                              </li>
+                              #if ($accessCtrl.conditionalLink)
+                                <li>
+                                Access error URL: $accessCtrl.conditionalLink <font color="green">&#x2714;</font>
+                                </li>
+                              #end
+                          </ul>
+                      </div>
+                  </fieldset>
+              </li>
+          #else
+              <li>
+                  Conditional access is not configured for this Service Provider.
+              </li>
+          #end
+
+      </ul>
+
+  </div>
+</div> 
+
+
+

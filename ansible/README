@@ -43,11 +43,27 @@ On the target:
    /data/conf
    /data/conf/apache.conf.d/
    /logs/spreg (writeable by tomcat)
+   
+   To accomplish this, copy:  
+     * makefile  
+     * ansible_command.c   
 
----------------------
-
+   to the target host (using sftp or scp) from ansible-tools/host-tools (found [here](ssh://git@git.s.uw.edu/iam/ansible-tools.git)). Then the following commands should complete
+   <pre><code>sudo mkdir -p /data/local/bin
+   sudo make install
+   sudo mkdir -p /etc/daemons/tomcat
+   sudo mkdir /data/local/spreg
+   sudo mkdir /data/webapps
+   sudo mkdir /data/conf
+   sudo mkdir -p /data/conf/apache.conf.d
+   sudo mkdir -p /data/logs/spreg
+   sudo mkdir -p /data/logs/tomcat
+   sudo chgrp iam-dev /etc/daemons/tomcat /data/local/spreg /data/webapps /data/conf /data/conf/apache.conf.d/ /logs/spreg
+   sudo chmod g+w /etc/daemons/tomcat /data/local/spreg /data/webapps /data/conf /data/conf/apache.conf.d/ /logs/spreg /logs/tomcat
+   sudo chown iamcert /logs/tomcat
+***
 Install
---------
+***
 
 1) Be sure there is a spreg.properties.xxx file for the type of host
    you're installing.  xxx = prod | eval | dev

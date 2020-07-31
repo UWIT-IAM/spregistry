@@ -243,7 +243,8 @@ function checkSpFilter(e) {
   console.log(e);
   if (curselsp>=0) {
      if (e.keyCode==13) {  // enter
-        showSp(curselsp, 'm');
+        if (spList[curselsp].id.indexOf(dijitRegistry.byId('filterSpList').get('value'))>=0) showSp(curselsp, 'm');
+        else timeShowSpList(); 
         return;
      }
      if (e.keyCode==40) {  // down
@@ -401,6 +402,7 @@ function loadSpList(sel, mine)
       });
 }
 
+/**
 function toggleListMine () {
   if (dijitRegistry.byId('justmine').get('checked')) {
      // dojoCookie('sp-mine', 'm', {max-age: 31536000});
@@ -412,6 +414,7 @@ function toggleListMine () {
   }
   showSpList();
 }
+**/
 
 
 /* panel sizing */
@@ -1155,8 +1158,6 @@ function _postReqAccessCtrl() {
 function accessCtrl_saveAccessCtrl(entityId) {
 
     var my2FAValue = dojoDom.byId('cond2fa_flag').checked;
-
-
     var type_2fa = '';
     var default2fa = dojoDom.byId('default2fa_flag').checked;
     var cond2fa = dojoDom.byId('cond2fa_flag').checked;
@@ -1164,6 +1165,7 @@ function accessCtrl_saveAccessCtrl(entityId) {
     var group_2fa = dojoDom.byId('group2fa').value.trim();
     var cond = dojoDom.byId('conditional_flag').checked;
     var cond_group = dojoDom.byId('conditional_group_name').value;
+    var cond_link = dojoDom.byId('conditional_link_name').value;
     if (auto2fa) {
         type_2fa = "auto"
     } else if (cond2fa) {
@@ -1173,7 +1175,7 @@ function accessCtrl_saveAccessCtrl(entityId) {
     }
 
     var url = v_root + v_vers + '/rp/accessCtrl?id=' + entityId + '&type_2fa=' + type_2fa  + '&conditional_flag='
-        + cond + '&conditional_group_name=' + cond_group + '&group_2fa=' + group_2fa + '&xsrf=' + v_xsrf + adminQS;
+        + cond + '&conditional_group_name=' + cond_group + '&conditional_link=' + cond_link + '&group_2fa=' + group_2fa + '&xsrf=' + v_xsrf + adminQS;
     iam_putRequest(url, null, null, null, _postSaveAccessCtrl);
 }
 
@@ -1187,6 +1189,8 @@ function accessCtrl_reqAccessCtrl(entityId) {
     var group_2fa_in = dojoDom.byId('group2fa_in').value.trim();
     var cond_group = dojoDom.byId('conditional_group_req').value.trim();
     var cond_group_in = dojoDom.byId('conditional_group_in').value.trim();
+    var cond_link = dojoDom.byId('conditional_link_req').value.trim();
+    var cond_link_in = dojoDom.byId('conditional_link_in').value.trim();
     var auto2fa = dojoDom.byId('auto2fa_req').checked;
     var auto2fa_in = dojoDom.byId('auto2fa_in').value.trim();
     var cond2fa = dojoDom.byId('cond2fa_req').checked;
@@ -1220,6 +1224,13 @@ function accessCtrl_reqAccessCtrl(entityId) {
             gws_text += '\n\nConditional access groups requested:\n' + cond_group;
             if (cond_group_in != '') gws_text += '\nConditional previous groups:\n' + cond_group_in;
         }
+        if (cond_link == cond_link_in) {
+            true; //noop
+        } else {
+            _okmsg += '<li>Adding: conditional link</li>';
+            gws_text += '\n\nConditional help link requested:\n' + cond_link;
+            if (cond_link_in != '') gws_text += '\nConditional previous link:\n' + cond_link_in;
+        }
     } else {
         if (cond_in != '') {
             xml += '<Drop id="conditional_access"/>';
@@ -1250,6 +1261,7 @@ function accessCtrl_reqAccessCtrl(entityId) {
         if (group_2fa == group_2fa_in) {
             true; //noop
         } else {
+            xml += '<Add id="cond2fa"/>';
             _okmsg += '<li>Adding: 2FA access group</li>';
             gws_text += '\n\nConditional 2FA groups requested:\n' + group_2fa;
             if (group_2fa_in != '') gws_text += '\n2FA Previous groups:\n' + group_2fa_in;

@@ -23,6 +23,7 @@ import java.io.IOException;
 
 import java.util.List;
 import java.util.Vector;
+import java.util.UUID;
 
 import edu.washington.iam.tools.XMLSerializable;
 import org.slf4j.Logger;
@@ -42,6 +43,10 @@ public class AttributeFilterPolicy implements XMLSerializable {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     private String entityId;
+    private UUID uuid;
+    private String start_time;
+    private String end_time;
+    private String updatedBy;
     private boolean regex;
     private boolean editable;
     private List<AttributeRule> attributeRules;
@@ -195,6 +200,39 @@ public class AttributeFilterPolicy implements XMLSerializable {
     public List<AttributeRule> getAttributeRules() {
        return (attributeRules);
     }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getStart_time() {
+        return start_time;
+    }
+
+    public void setStart_time(String start_time) {
+        this.start_time = start_time;
+    }
+
+    public String getEnd_time() {
+        return end_time;
+    }
+
+    public void setEnd_time(String end_time) {
+        this.end_time = end_time;
+    }
+
+    public String getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(String updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
 
 }
 

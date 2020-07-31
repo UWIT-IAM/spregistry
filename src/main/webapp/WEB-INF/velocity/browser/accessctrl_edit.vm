@@ -1,0 +1,105 @@
+#* ========================================================================
+ * Copyright (c) 2012-2013 The University of Washington
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ *#
+##
+
+
+
+#macro(accessCtrlItemEdit $friendlyName $name $isActive)
+<h4>$friendlyName</h4>
+
+<ul class="iamlist">
+  <li><label for="${name}_flag">Enable Auto 2FA</label>
+    <div class="dd">
+        <input id="${name}_flag" dojoType="dijit/form/CheckBox"
+                           #if(${isActive}) checked #end
+                           />
+    </div>
+  </li>
+</ul>
+#end
+
+<div id="accessCtrlEditDialog" data-dojo-type="dijit/Dialog" title="Edit access control data for ${relyingPartyId}" ${hide}>
+  <div class="dijitDialogPaneContentArea" data-dojo-type="dijit/layout/ContentPane" >
+
+    <div style="float:right;font-size:.8em"><a href="https://wiki.cac.washington.edu/x/rAZNBQ" target="spghelp">help</a></div>
+    <h3>Access Control</h3>
+    <h4>2FA</h4>
+
+    <ul class="iamlist">
+        <li><label for="auto2fa_flag">2FA by SP request (default)</label>
+            <div class="dd">
+                <input id="default2fa_flag" dojoType="dijit/form/RadioButton" value="default2fa_flag" name="type_2fa"
+                    #if(!(${accessCtrl.getAuto2FA()}) && !(${accessCtrl.getCond2FA()})) checked="checked" #end
+                />
+            </div>
+        </li>
+        <li><label for="auto2fa_flag">Auto 2FA: All users must use 2FA</label>
+          <div class="dd">
+              <input id="auto2fa_flag" dojoType="dijit/form/RadioButton" value="auto2fa_flag" name="type_2fa"
+                  #if(${accessCtrl.getAuto2FA()}) checked="checked" #end
+              />
+          </div>
+      </li>
+        <li><label for="cond2fa_flag">Conditional 2FA: Only members of group must use 2FA</label>
+            <div class="dd">
+                <input id="cond2fa_flag" dojoType="dijit/form/RadioButton" value="cond2fa_flag" name="type_2fa"
+                    #if(${accessCtrl.getCond2FA()}) checked="checked" #end
+                />
+            </div>
+        </li>
+        <li><div class="dd"><label for="conditional_group">Conditional 2FA group:</label></div>
+            <div class="dd">
+                <input data-dojo-type="dijit/form/TextBox" id="group2fa" #if(${accessCtrl.getCond2FA()}) value=${accessCtrl.getGroupAuto2FA()} #end /><div style="float:right;font-size:.8em"></div>
+            </div>
+        </li>
+    </ul>
+      <h4>Conditional Access</h4>
+      <ul class="iamlist">
+          <li><label for="conditional_flag">Enable conditional access</label>
+              <div class="dd">
+                  <input id="conditional_flag" dojoType="dijit/form/CheckBox"
+                      #if(${accessCtrl.conditional}) checked #end
+                  />
+
+              </div>
+          </li>
+          <li><div class="dd"><label for="conditional_group_name">Conditional access group:</label></div>
+              <div class="dd">
+                  <input data-dojo-type="dijit/form/TextBox" id="conditional_group_name" #if(${accessCtrl.conditional}) value=${accessCtrl.conditionalGroup} #end /><div style="float:right;font-size:.8em"></div>
+              </div>
+          </li>
+          <li><div class="dd"><label for="conditional_link_name">Access error URL:</label></div>
+              <div class="dd">
+                  <input data-dojo-type="dijit/form/TextBox" id="conditional_link_name" #if(${accessCtrl.conditional}) value=$!{accessCtrl.conditionalLink} #end /><div style="float:right;font-size:.8em"></div>
+              </div>
+          </li>
+      </ul>
+
+
+
+
+</div>
+ <div class="dijitDialogPaneActionBar">
+    <button dojoType="dijit.form.Button" id="accessCtrlEditSaver" type="button" onClick="accessCtrl_saveAccessCtrl('${relyingPartyId}')">Save changes</button>
+    <button dojoType="dijit.form.Button" type="button" onClick="iam_hideTheDialog('accessCtrlEditDialog')">Close</button>
+ </div>
+
+
+
+
+</div>
+

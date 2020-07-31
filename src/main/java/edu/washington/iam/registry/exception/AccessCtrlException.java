@@ -1,5 +1,5 @@
-#* ========================================================================
- * Copyright (c) 2012 The University of Washington
+/* ========================================================================
+ * Copyright (c) 2011 The University of Washington
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  * ========================================================================
- *#
-##
-## groups logged out page
-##
+ */
 
-<div dojoType="dijit.layout.ContentPane" >
+package edu.washington.iam.registry.exception;
 
-<p>
-<div class="indentPars">
-<h2>You have signed out of the Service Provider Registry</h2>
-<ul>
-<li>You are still signed in to your identity provider!
-<p>
-Close your browser to completely sign out of all applications!
-<p>
-<i>(Some additional <a href="http://www.washington.edu/computing/weblogin/logout.html">help</a> with signing out.)</i>
-</li>
-</ul>
-
-</div>
-</div>
-
+public class AccessCtrlException extends Exception {
+  public AccessCtrlException() {
+    super();
+  }
+  public AccessCtrlException(String msg) {
+    super(msg);
+  }
+  public AccessCtrlException(String msg, Throwable cause) {
+    super(msg, cause);
+  }
+  public AccessCtrlException(Throwable cause) {
+    super(cause);
+  }
+}

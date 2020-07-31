@@ -21,11 +21,18 @@ package edu.washington.iam.registry.rp;
 import java.io.BufferedWriter;
 import java.io.IOException;
 
-import java.util.List;
-import java.util.Vector;
-import java.util.Arrays;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.*;
 
 import edu.washington.iam.tools.XMLSerializable;
+
+import org.javers.core.diff.Change;
+import org.javers.core.diff.changetype.NewObject;
+import org.javers.core.diff.changetype.ObjectRemoved;
+import org.javers.core.diff.changetype.ValueChange;
+import org.javers.core.metamodel.annotation.Id;
+import org.javers.core.metamodel.annotation.TypeName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +47,29 @@ import edu.washington.iam.tools.XMLHelper;
 
 import edu.washington.iam.registry.exception.RelyingPartyException;
 
+import org.javers.core.*;
+import org.javers.core.diff.Diff;
+import org.javers.core.metamodel.object.*;
 
+import edu.washington.iam.registry.rp.HistoryItem;
+import edu.washington.iam.registry.rp.HistoryItem.*;
+
+import javax.xml.bind.ValidationEvent;
+
+import static org.javers.core.diff.ListCompareAlgorithm.LEVENSHTEIN_DISTANCE;
+
+//decorator for javers compare functions
+@TypeName("RelyingParty")
 public class RelyingParty implements XMLSerializable {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    private UUID uuid;
+    @Id //decorator for javers
     private String entityId;
+    private String startTime;
+    private String endTime;
+    private String updatedBy;
     private String metadataId;
     private boolean editable;
     private String protocolSupportEnumerationsUnsplit;
@@ -65,6 +89,11 @@ public class RelyingParty implements XMLSerializable {
     // initialize
     private void localInit () {
        metadataId = "";
+
+       updatedBy = "";
+       startTime = "";
+       endTime = "";
+       uuid = null;
        editable = false;
        // extensions = new Vector();
        keyDescriptors = new Vector();
@@ -80,16 +109,29 @@ public class RelyingParty implements XMLSerializable {
 //       this(ele, md.getId(), md.isEditable());
 //    }
 
-    // create from document element
     public RelyingParty (Element ele, String mdid, boolean edit) throws RelyingPartyException {
 
+        this(ele, mdid, edit, "", "", "", null);
+
+    }
+
+    // create from document element
+
+    public RelyingParty (Element ele, String mdid, boolean edit, String updatedBy, String startTime, String endTime,
+                         UUID uuid)
+            throws RelyingPartyException {
+
        localInit();
-       entityId = ele.getAttribute("entityID");
+       this.entityId = ele.getAttribute("entityID");
        if (entityId==null) throw new RelyingPartyException("No entity id attribute");
        // log.debug("create from doc: " + entityId);
 
-       metadataId = mdid;
-       editable = edit;
+       this.metadataId = mdid;
+       this.editable = edit;
+       this.updatedBy = updatedBy;
+       this.startTime = startTime;
+       this.endTime = endTime;
+       this.uuid = uuid;
 
        NodeList nl1 = ele.getChildNodes();
        for (int i=0; i<nl1.getLength(); i++) {
@@ -229,6 +271,155 @@ public class RelyingParty implements XMLSerializable {
        xout.write(" </EntityDescriptor>\n");
     }
 
+    public HistoryItem RpCompare(RelyingParty obj){
+
+        HistoryItem historyItems;
+
+        Javers javers = JaversBuilder.javers()
+                .withListCompareAlgorithm(LEVENSHTEIN_DISTANCE)
+                .build();
+
+        //take a diff
+        Diff diff = javers.compare(this, obj);
+       String foo = javers.getJsonConverter().toJson(diff).toString();
+        //get the date
+        ValueChange effectiveDate = (ValueChange)diff.getPropertyChanges("startTime").get(0);
+        //create new history item using date
+        historyItems = new HistoryItem(effectiveDate.getRight().toString(), obj.getUpdatedBy());
+        //now iterate over all changes and put into history item (ignore start and end times now)
+        try {
+            //select out ValueChange objects only
+            int objDupIndex = -1;  //prevent duplicates
+            Object objDupType = null;  //prevent duplicates
+            List<ValueChange> myValueChanges = diff.getChangesByType(ValueChange.class);
+            for (ValueChange change : myValueChanges) {
+                //changed value
+                Object obj1 = change.getAffectedObject();  //returns changed object
+                //we don't care about these fields
+                if (change.getPropertyName().equalsIgnoreCase("startTime") ||
+                        change.getPropertyName().equalsIgnoreCase("endTime") ||
+                        change.getPropertyName().equalsIgnoreCase("uuid") ||
+                        change.getPropertyName().equalsIgnoreCase("updatedBy")) continue;
+                //if object type is RelyingParty then this change is a single valued field, not a list of fields of a different object type (e.g. contactPersons).
+                if (obj1 instanceof RelyingParty) {
+                    String propertyName = change.getPropertyName().toString();
+                    String left = change.getLeft().toString();
+                    String right = change.getRight().toString();
+                    historyItems.AddChangeItem(propertyName, left, right);
+
+                } else {  //else should catch any "object" type fields of RelyingParty
+                    String propertyName = change.getPropertyName().toString();
+                    //string containing index of affected object
+                    GlobalId globalId = change.getAffectedGlobalId();
+                    ValueObjectId valueId = (ValueObjectId) globalId;
+                    String[] idList = valueId.getFragment().split("/");
+                    int objIndex = Integer.parseInt(idList[1]);
+                    //since we grab the entire object when we detect one change,
+                    //don't bother tracking additional changes
+                    if (objIndex == objDupIndex && obj1.equals(objDupType)) {
+                        continue;
+                    }
+                    objDupIndex = objIndex;  //keep track of this instance index
+                    objDupType = obj1;  //keep track of this object so we don't duplicate it
+                    //easy to get the change TO value from the change object
+                    Object right = change.getAffectedObject().get();
+                    //some nutty reflection to get the original value
+                    Class leftCls = this.getClass();
+                    Field leftField = leftCls.getDeclaredField(idList[0]);
+                    Object left = ((Vector) leftField.get(this)).get(objIndex);
+
+                    //idList[0] is the name of the property in RelyingParty Object
+                    //note the object type name from left and right are different from idlist[0].  The latter is the name of
+                    //the list of the former objects in RelyingParty Object.
+                    historyItems.AddChangeItem(idList[0], left, right);
+
+
+                }
+            }
+            List<NewObject> myNewObjects = diff.getChangesByType(NewObject.class);
+            for (Change change : myNewObjects) {
+                Object obj2 = change.getAffectedObject().get();
+                String[] classNameSplit = obj2.getClass().toString().split("\\.");
+                String className = classNameSplit[classNameSplit.length - 1];
+                if (className.equalsIgnoreCase("startTime") ||
+                        className.equalsIgnoreCase("endTime") ||
+                        className.equalsIgnoreCase("uuid") ||
+                        className.equalsIgnoreCase("loggerRemoteView") ||
+                        className.equalsIgnoreCase("logger") ||
+                        className.equalsIgnoreCase("updatedBy")) continue;
+                //if object type is RelyingParty then this change is a single valued field, not a list of fields of a different object type (e.g. contactPersons).
+                if (obj2 instanceof RelyingParty) {
+                    historyItems.AddNewItem(className, obj2);
+                } else {  //else should catch any "object" type fields of RelyingParty
+                    String propertyName = className;
+                    //string containing index of affected object
+                    GlobalId globalId = change.getAffectedGlobalId();
+                    ValueObjectId valueId = (ValueObjectId) globalId;
+                    String[] idList = valueId.getFragment().split("/");
+                    int objIndex = Integer.parseInt(idList[1]);
+                    //since we grab the entire object when we detect one change,
+                    //don't bother tracking additional changes
+                    if (objIndex == objDupIndex && obj2.equals(objDupType)) {
+                        continue;
+                    }
+                    objDupIndex = objIndex;  //keep track of this instance index
+                    objDupType = obj2;  //keep track of this object so we don't duplicate it
+                    //idList[0] is the name of the property in RelyingParty Object
+                    //note the object type (classname above) is different from idlist[0].  The latter is the name of
+                    //the list of the former objects in RelyingParty Object.
+                    historyItems.AddNewItem(idList[0], obj2);
+
+
+                }
+
+            }
+            List<ObjectRemoved> myRemovedObjects = diff.getChangesByType(ObjectRemoved.class);
+            for (Change change : myRemovedObjects) {
+                Object obj3 = change.getAffectedObject().get();
+                String[] classNameSplit = obj3.getClass().toString().split("\\.");
+                String className = classNameSplit[classNameSplit.length - 1];
+                if (className.equalsIgnoreCase("startTime") ||
+                        className.equalsIgnoreCase("endTime") ||
+                        className.equalsIgnoreCase("uuid") ||
+                        className.equalsIgnoreCase("loggerRemoteView") ||
+                        className.equalsIgnoreCase("logger") ||
+                        className.equalsIgnoreCase("updatedBy")) continue;
+                //if object type is RelyingParty then this change is a single valued field, not a list of fields of a different object type (e.g. contactPersons).
+                if (obj3 instanceof RelyingParty) {
+                    historyItems.AddDeleteItem(className, change.toString()); //will that work?
+                } else {  //else should catch any "object" type fields of RelyingParty
+                    String propertyName = className;
+                    //string containing index of affected object
+                    GlobalId globalId = change.getAffectedGlobalId();
+                    ValueObjectId valueId = (ValueObjectId) globalId;
+                    String[] idList = valueId.getFragment().split("/");
+                    int objIndex = Integer.parseInt(idList[1]);
+                    //since we grab the entire object when we detect one change,
+                    //don't bother tracking additional changes
+                    if (objIndex == objDupIndex && obj3.equals(objDupType)) {
+                        continue;
+                    }
+                    objDupIndex = objIndex;  //keep track of this instance index
+                    objDupType = obj3;  //keep track of this object so we don't duplicate it
+                    //some nutty reflection to get the original value
+                    Class leftCls = this.getClass();
+                    Field leftField = leftCls.getDeclaredField(idList[0]);
+                    Object left = ((Vector) leftField.get(this)).get(objIndex);
+                    //idList[0] is the name of the property in RelyingParty Object
+                    //note the object type (classname above) is different from idlist[0].  The latter is the name of
+                    //the list of the former objects in RelyingParty Object.
+                    historyItems.AddDeleteItem(idList[0], left);
+                }
+
+            }
+        }
+        catch (Exception e) {
+            Exception ee = e;
+        }
+
+        return historyItems;
+    }
+
     public RelyingParty replicate(String dns) {
          return null;
     }
@@ -246,6 +437,32 @@ public class RelyingParty implements XMLSerializable {
     public String getMetadataId() {
        return (metadataId);
     }
+
+    public void setStartTime(String v) {
+        startTime = v;
+    }
+    public String getStartTime() {
+        return (startTime);
+    }
+    public void setEndTime(String v) {
+        endTime = v;
+    }
+    public String getEndTime() {
+        return (endTime);
+    }
+    public void setUuid(UUID v) {
+        uuid = v;
+    }
+    public UUID getUuid() {
+        return (uuid);
+    }
+    public void setUpdatedBy(String v) {
+        updatedBy = v;
+    }
+    public String getUpdatedBy() {
+        return (updatedBy);
+    }
+
 
     public void setEditable(boolean v) {
        editable = v;
@@ -299,7 +516,7 @@ public class RelyingParty implements XMLSerializable {
     }
 
     public String getEntityCategory() {
-       return (entityCategory);
+        return (entityCategory);
     }
 
 }
