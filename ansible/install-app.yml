@@ -11,14 +11,15 @@
   vars:
     app_name: spreg
     spreg_root: /data/local/spreg
-    spreg_spRegistryUrl: https://iam-tools.u.washington.edu/spreg/
+    proj_root: ..
+    spreg_spRegistryUrl: https://iam-tools-test.u.washington.edu/spreg/
 
   tasks:
   # copy spreg properties file
   # change restarts tomcat
   - name: copy properties file
     copy:
-      src: ../spreg.properties.{{ cluster_type }}
+      src: "{{ proj_root }}/spreg.properties.{{ cluster_type }}"
       dest: "{{ spreg_root }}/spreg.properties"
       group: iam-dev
       mode: 0664
@@ -55,9 +56,20 @@
     notify: restart tomcat
 
   # update the spreg.war file
-  - name: copy war
-    copy: "src=../target/{{ app_name }}.war dest=/data/webapps/{{ app_name }}.war group=iam-dev mode=664"
-    notify: restart tomcat
+  - name: copy spreg.war
+    copy:
+      src: "{{ proj_root }}/target/{{ app_name }}.war"
+      dest: /tmp/{{app_name }}.war
+      group: iam-dev
+      mode: 0664
+    register: warfile
+
+  # unpack the spreg.war file
+  - name: unpack spreg.war
+    shell: "rm -rf /data/webapps/{{ app_name }}; mkdir /data/webapps/{{ app_name }}; cd /data/webapps/{{ app_name }}; jar xf /tmp/{{ app_name }}.war"
+    when: warfile.changed
+    notify:
+      - restart tomcat
 
   # copy xmlsectool
   - name: copy xmlsectool
@@ -66,20 +78,21 @@
   # run any handlers 
   - meta: flush_handlers
 
-# handlers mostly standard from iam-ansible
+  # handlers mostly standard from iam-ansible
 
   handlers:
 
-  - name: restart_tomcat
-    command: /usr/bin/nohup /data/local/bin/ansible_command tomcat restart
-    notify:
-      - wait_for_tomcat
-
-  # wait for tomcat to restart
-  - name: wait_for_tomcat
-    shell: "c=0;while [ $c -lt 20 ]; do [[ \"`curl -f http://localhost/tomcatmanager/text/list 2>/dev/null  | grep 'gws_grouper'`\" == *\"gws_grouper\"* ]] && exit 0; let c=c+1;sleep 5; done; exit 1"
-    register: wait_result
-    failed_when: "wait_result.rc != 0"
-
   - name: restart apache
     command: /usr/bin/nohup /data/local/bin/ansible_command apache restart
+#   notify:
+#     - wait_for_apache
+
+  - name: restart tomcat
+    command: /usr/bin/nohup /data/local/bin/ansible_command tomcat restart
+    notify: wait for tomcat
+
+  # wait for tomcat to restart
+  - name: wait for tomcat
+    shell: "c=0;while [ $c -lt 20 ]; do [[ \"`curl -k -f https://localhost/tomcatmanager/text/list 2>/dev/null  | grep 'spreg'`\" =~ 'spreg' ]] && exit 0; let c=c+1;sleep 5; done; exit 1"
+    register: wait_result
+    failed_when: "wait_result.rc != 0"
