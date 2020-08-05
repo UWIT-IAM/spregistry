@@ -109,10 +109,5 @@ vars=
   [[ $limit == *"."* ]] || limit=${limit}.s.uw.edu
   vars="$vars -l $limit "
 }
-<<<<<<< HEAD
-ansible-playbook ${playbook} $vars -i hosts  --extra-vars "target=${target}"
-=======
 ansible-playbook ${playbook} $vars -i ./hosts  --extra-vars "target=${target}"
->>>>>>> c86af03f5038efcd03e410cd6120a6d3964df022
-
 

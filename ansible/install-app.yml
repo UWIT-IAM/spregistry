@@ -59,14 +59,14 @@
   - name: copy spreg.war
     copy:
       src: "{{ proj_root }}/target/{{ app_name }}.war"
-      dest: /tmp/{{app_name }}.war
+      dest: /data/local/wars/{{app_name }}.war
       group: iam-dev
       mode: 0664
     register: warfile
 
   # unpack the spreg.war file
   - name: unpack spreg.war
-    shell: "rm -rf /data/webapps/{{ app_name }}; mkdir /data/webapps/{{ app_name }}; cd /data/webapps/{{ app_name }}; jar xf /tmp/{{ app_name }}.war"
+    shell: "rm -rf /data/webapps/{{ app_name }}; mkdir /data/webapps/{{ app_name }}; cd /data/webapps/{{ app_name }}; jar xf /data/local/wars/{{ app_name }}.war"
     when: warfile.changed
     notify:
       - restart tomcat
