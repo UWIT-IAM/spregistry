@@ -12,11 +12,12 @@ spreg.db.url=iamdb21.s.uw.edu/spregistry
 # web service parameters
 spreg.gws.baseUrl=https://groups.uw.edu/group_sws/v2
 spreg.gws.ownerBase=/group/u_weblogin_dns-owners_
-spreg.webclient.certFile=/data/local/etc/gws.cac-uw.crt
-spreg.webclient.keyFile=/data/local/etc/gws.cac-uw.key
-spreg.webclient.caFile=/data/local/etc/uw-incommon-ca.crt
-spreg.gws.adminGroupName=u_weblogin_admins
 
+spreg.webclient.certFile=/data/local/spreg/gws.cac-uw.crt
+spreg.webclient.keyFile=/data/local/spreg/gws.cac-uw.key
+spreg.webclient.caFile=/data/local/spreg/ca.crt
+
+spreg.gws.adminGroupName=u_weblogin_admins
 spreg.gws.auto2faPath=u_weblogin_idp2fa_
 
 
