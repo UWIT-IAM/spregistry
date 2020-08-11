@@ -62,7 +62,7 @@
 
         <property name="browserRootPath" value="/spreg"/>
         <property name="certRootPath" value="/spreg-s"/>
-        <property name="loginCookie" value="sprsession"/>
+        <property name="loginCookie" value="sprsession2"/>
         <property name="cryptKey" value="${spreg.cookieCryptKey}"/>
 
         <property name="myEntityId" value="${spreg.myEntityId}"/>
