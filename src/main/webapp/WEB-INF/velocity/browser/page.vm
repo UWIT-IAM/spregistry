@@ -65,7 +65,7 @@ dojoConfig = {
 </script>
 
 <script type="text/javascript" src="/spreg/js/iam-dojo.js"></script>
-<script type="text/javascript" src="/spreg/js/sp-2.6.0.js"></script>
+<script type="text/javascript" src="/spreg/js/sp-2.6.1.js"></script>
 
 <script>
     require(["dojo/dom",
@@ -349,7 +349,7 @@ function openNewSPForm() {
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.6.0</a></li>
+        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.6.1</a></li>
     </ul>
     </span>
 </div>

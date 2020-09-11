@@ -3,8 +3,8 @@
 # spreg will look for this file first in the spreg directory
 # if that is undefined or not found this installed copy will be used
 #
-spreg.version=2.6.0
-spreg.versionDate=2020-04-30
+spreg.version=2.6.1
+spreg.versionDate=2020-09-11
 spreg.root=/data/local/spreg
 
 # database parameters
