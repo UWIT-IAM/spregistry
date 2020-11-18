@@ -38,6 +38,7 @@
 
 <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
   <property name="host" value="${spreg.smtp.host}"/>
+  <property name="port" value="587"/>
 </bean>
 <bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
   <property name="from" value="${spreg.smtp.from}"/>
