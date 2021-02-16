@@ -15,7 +15,7 @@
  * ========================================================================
  *#
 
-## sp registry webservice (shgn in chooser page)
+## sp registry webservice (sign in chooser page)
 
 #parse ( 'definitions.vm' )
 
@@ -159,8 +159,8 @@ function redirectToLogin(path) {
   </li>
 
   <li><div class="dt "><a href="javascript:redirectToLogin('$googleloginpath');">Gmail</a></div>
-   <div class="dd">Your Google gmail address will be your shgn in identity.
-        <br><i>(Google "@uw.edu" shgn ins will not be not accepted.  Use UW NetID sign in)</i>
+   <div class="dd">Your Google gmail address will be your sign in identity.
+        <br><i>(Google "@uw.edu" sign ins will not be not accepted.  Use UW NetID sign in)</i>
    </div>
   </li>
 
