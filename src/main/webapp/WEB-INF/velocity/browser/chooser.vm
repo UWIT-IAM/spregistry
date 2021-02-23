@@ -98,9 +98,9 @@ function redirectToLogin(path) {
   <div class="dijitDialogPaneContentArea">
     Identity and Access Management
     <br/>
-    Service Provider Registry 2.5.0
+    Service Provider Registry 2.6.2
     <br/>
-    Revision 2018-11-15
+    Revision 2021-02-23
     <p/>
     <a href="https://wiki.cac.washington.edu/x/fiOD">Learn more about the registry</a>
   </div>
@@ -195,7 +195,7 @@ function redirectToLogin(path) {
     </span>
     <span id="footright">
     <ul id="navigation">
-        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.5.0</a></li>
+        <li><a href="javascript:iam_showTheDialog('helpAbout');">SP Registry 2.6.2</a></li>
     </ul>
     </span>
 </div>
