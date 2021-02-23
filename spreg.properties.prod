@@ -3,8 +3,8 @@
 # spreg will look for this file first in the spreg directory
 # if that is undefined or not found this installed copy will be used
 #
-spreg.version=2.4.0
-spreg.versionDate=2020-07-31
+spreg.version=2.6.2
+spreg.versionDate=2021-02-23
 spreg.root=/data/local/spreg
 spreg.db.url=iamdb21.s.uw.edu/spregistry
 
