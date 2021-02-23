@@ -221,7 +221,7 @@ public class RelyingPartyController {
 
         // see if logged in (browser has login cookie; cert user has cert)
 
-        int resetAdmin = 1;  // on expired or no cookie, reset the 'admin role cookei'
+        int resetAdmin = 1;  // on expired or no cookie, reset the 'admin role cookie'
         Cookie[] cookies = request.getCookies();
         if (cookies!=null) {
           for (int i=0; i<cookies.length; i++) {
@@ -1491,16 +1491,8 @@ public class RelyingPartyController {
             newAccessCtrl.setEntityId(id);
 
             if(type2FA.equals("cond")) {
-                // verify the 2fa group is setup correctly
-                String gn = auto2faPath + hostFromId(id);
-                Group g = groupManager.getGroup(gn);
-                if (g==null) throw new AccessCtrlException("Group " + gn + " must exist for conditional 2fa");
-                if (!g.isMember(group2FA)) throw new AccessCtrlException(group2FA + " must be a member of " + gn);
                 newAccessCtrl.setCond2FA(group2FA);
             } else if (type2FA.equals("auto")) {
-                String gn = auto2faPath + hostFromId(id);
-                Group g = groupManager.getGroup(gn);
-                if (g!=null) throw new AccessCtrlException("Group " + gn + " must not exist for auto 2fa");
                 newAccessCtrl.setAuto2FA(true);
             }
             newAccessCtrl.setConditionalByUser(conditional, conditionalGroup, conditionalLink);
