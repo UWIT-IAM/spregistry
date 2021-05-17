@@ -30,6 +30,8 @@
  <Attribute id="preferredSurname" description="Preferred surname  (PDS: uwPersonPreferredSurname)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="registeredGivenName" description="Registered givenname  (PDS: uwPersonRegisteredFirstMidddle)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="registeredSurname" description="Registered surname  (PDS: uwPersonRegisteredSurname)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="uwPronouns" description="UW Pronouns (PDS: uwPersonPronoun)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="displayNameAndPronouns" description="if PDS:uwPersonPronoun available, displayName (uwPronouns), else displayName"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="scopedAffiliation" description="affiliation with '@washington.edu'"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="surname" description="PDS: uwPersonPreferredSurname if available, else PDS:uwPersonRegisteredSurname" authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="title" description="Title (PDS: uwEWPTitle1)"  authorizingGroup="u_weblogin_admins"  type="attribute" />

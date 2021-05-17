@@ -1,0 +1,27 @@
+#
+# spreg upgrade attribute playbook
+#
+
+- hosts: "{{ target }}"
+  serial: 1
+  max_fail_percentage: 10
+  gather_facts: false
+  remote_user: iamcert
+
+  vars:
+    app_name: spreg
+    spreg_root: /data/local/spreg
+    proj_root: ..
+    spreg_spRegistryUrl: https://iam-tools-test.u.washington.edu/spreg/
+
+  tasks:
+
+  # copy the attributes data file
+  # until this is in the database 
+  - name: copy attribute data
+    copy: "src=../attribute.xml dest={{ spreg_root }}/attribute.xml group=iam-dev mode=664"
+    notify: restart tomcat
+
+  handlers:
+  - name: restart tomcat
+    command: /usr/bin/nohup /data/local/bin/ansible_command tomcat restart
