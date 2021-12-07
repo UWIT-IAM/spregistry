@@ -40,4 +40,4 @@ incommon.metadata.path=/data/local/spreg/metadata/InCommon-metadata.xml
 uw.metadata.path=/data/local/spreg/UW-base-metadata.xml
 
 # idp notifications
-spreg.idphosts=idp11.s.uw.edu,idp12.s.uw.edu,idp13.s.uw.edu,idp14.s.uw.edu,idp15.s.uw.edu,idp16.s.uw.edu,
+spreg.idphosts=idp11.s.uw.edu,idp12.s.uw.edu,idp13.s.uw.edu,idp14.s.uw.edu,idp15.s.uw.edu,idp16.s.uw.edu
