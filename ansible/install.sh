@@ -4,13 +4,23 @@
 
 function usage {
   echo "
-usage:  $0 [options] target
+usage:  $0 [options] product target
 options:        [-v]            ( verbose )
                 [-d]            ( very verbose )
                 [-l hostname]   ( limit install to 'hostname' )
                 [-H]            ( list hosts in the cluster )
 
+product help:   $0 products
+
 target help:    $0 targets
+  "
+  exit 1
+}
+
+function products {
+  echo "
+     app                        Installs the entire SPRegistry product
+     attributes                 Installs new attribute.xml
   "
   exit 1
 }
@@ -28,15 +38,14 @@ dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 base=${dir%/ansible}
 cd $dir
 
-playbook="install-app.yml"
-listhosts=0
-verb=0
-debug=0
+playbook=
 target=
 limit=
+verb=0
+debug=0
+listhosts=0
 
 # limited args to playbook
-OPTIND=1
 while getopts 'h?l:Hvdp:' opt; do
   case "$opt" in
     h) usage
@@ -45,22 +54,24 @@ while getopts 'h?l:Hvdp:' opt; do
        ;;
     l) limit=$OPTARG
        ;;
-    p) playbook=$OPTARG
-       ;;
     H) listhosts=1
        ;;
     v) verb=1
        ;;
     d) debug=1
        ;;
+    p) playbook=$OPTARG
+       ;;
   esac
 done
 
 shift $((OPTIND-1))
-target="$1"
+product="$1"
+[[ "$product" == "products" ]] && products
+target="$2"
 [[ "$target" == "eval" || "$target" == "prod" || "$target" == "targets" ]] || usage
 [[ "$target" != "targets" ]] || targets
-[[ -z $playbook ]] && playbook="install-app.yml"
+[[ -z $playbook ]] && playbook="install-${product}.yml"
 echo "Installing $playbook to $target"
 [[ -r $playbook ]] || {
   echo "Playbook $playbook not found!"
@@ -89,8 +100,10 @@ status:
 `git status -uno --porcelain`
 END
 
-# make sure the war file is up-to-date
-[[ -z $force ]] && {
+# make sure the war file is up-to-date, if installing the app
+# Maybe we should have a 'force' option
+# [[ -z $force || "$product" == "app" ]] && {
+[[ "$product" == "app" ]] && {
    mod="`find ../src -newer ../target/spreg.war|egrep -v '\.js$|\.css$'`"
    [[ -n $mod ]] && {
       echo "spreg war file appears out of date"
