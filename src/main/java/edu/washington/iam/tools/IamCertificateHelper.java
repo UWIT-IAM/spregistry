@@ -74,12 +74,12 @@ public final class IamCertificateHelper {
 
       try {
          PEMReader  pRd = new PEMReader(new StringReader(cert.pemRequest));
-         PKCS10CertificationRequest request = (PKCS10CertificationRequest)pRd.readObject();
+         PKCS10CertificationRequest request = (PKCS10CertificationRequest) pRd.readObject();
          if (request==null) throw new IamCertificateException("invalid CSR (request)");
          CertificationRequestInfo info = request.getCertificationRequestInfo();
          if (info==null) throw new IamCertificateException("invalid CSR (info)");
    
-         X509Name dn = info.getSubject();
+         X509Name dn = X509Name.getInstance(info.getSubject());
          if (dn==null) throw new IamCertificateException("invalid CSR (dn)");
          log.debug("dn=" + dn.toString());
          cert.dn = dn.toString();
