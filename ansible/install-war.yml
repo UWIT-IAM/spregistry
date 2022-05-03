@@ -1,0 +1,44 @@
+#
+# spreg install playbook - warfile only
+#
+
+- hosts: "{{ target }}"
+  serial: 1
+  max_fail_percentage: 10
+  gather_facts: false
+  remote_user: iamcert
+  vars:
+    
+    spreg_root: /data/local/spreg
+
+  tasks:
+
+  # update the spreg.war file
+  - name: copy war
+    copy: "src=../target/spreg.war dest=/tmp/spreg.war group=iam-dev mode=664"
+    notify: restart tomcat
+
+
+  - name: unpack spreg.war
+    shell: "rm -rf /data/webapps/spreg; mkdir /data/webapps/spreg; cd /data/webapps/spreg; jar xf /tmp/spreg.war"
+    notify:
+      - restart tomcat
+
+  # run any handlers 
+  - meta: flush_handlers
+
+  # handlers mostly standard from iam-ansible
+
+  handlers:
+
+  # restart tomcat
+  - name: restart tomcat
+    command: /usr/bin/nohup /data/local/bin/ansible_command tomcat restart
+    notify:
+      - wait_for_tomcat
+
+  # wait_for_tomcat
+  - name: wait_for_tomcat
+    shell: "c=0;while [ $c -lt 20 ]; do wget -O /dev/null -q  http://localhost/tomcatmanager/text/serverinfo;[ $? -eq 0 ] && exit 0;let c=c+1;sleep 5; done;exit 1"
+    register: wait_result
+    failed_when: "wait_result.rc != 0"
