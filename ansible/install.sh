@@ -20,6 +20,7 @@ target help:    $0 targets
 function products {
   echo "
      app                        Installs the entire SPRegistry product
+     war                        Installs just the SPRegistry warfile
      attributes                 Installs new attribute.xml
   "
   exit 1
@@ -103,7 +104,7 @@ END
 # make sure the war file is up-to-date, if installing the app
 # Maybe we should have a 'force' option
 # [[ -z $force || "$product" == "app" ]] && {
-[[ "$product" == "app" ]] && {
+[[ "$product" == "app" || "$target" == "war" ]] && {
    mod="`find ../src -newer ../target/spreg.war|egrep -v '\.js$|\.css$'`"
    [[ -n $mod ]] && {
       echo "spreg war file appears out of date"
