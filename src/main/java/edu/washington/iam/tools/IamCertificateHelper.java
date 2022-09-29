@@ -46,15 +46,15 @@ import java.security.cert.CertificateParsingException;
 import javax.security.auth.x500.X500Principal;
 
 
-import org.bouncycastle.openssl.PEMReader;
+import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.jce.PKCS10CertificationRequest;
 import org.bouncycastle.asn1.x509.X509Name;
 import org.bouncycastle.asn1.pkcs.CertificationRequestInfo;
 import org.bouncycastle.asn1.ASN1Object;
 import org.bouncycastle.asn1.ASN1Set;
-import org.bouncycastle.asn1.DEREncodable;
+import org.bouncycastle.asn1.ASN1Encodable;
 import org.bouncycastle.asn1.DERSequence;
-import org.bouncycastle.asn1.DERObjectIdentifier;
+import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.x509.GeneralName;
 import org.bouncycastle.asn1.x509.Attribute;
 import org.bouncycastle.asn1.x509.X509Extensions;
@@ -62,7 +62,8 @@ import org.bouncycastle.asn1.x509.X509Extension;
 import org.bouncycastle.asn1.pkcs.PKCSObjectIdentifiers;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 
 public final class IamCertificateHelper {
 
@@ -73,7 +74,7 @@ public final class IamCertificateHelper {
    public static int parseCsr(IamCertificate cert) throws IamCertificateException {
 
       try {
-         PEMReader  pRd = new PEMReader(new StringReader(cert.pemRequest));
+         PEMParser  pRd = new PEMParser(new StringReader(cert.pemRequest));
          PKCS10CertificationRequest request = (PKCS10CertificationRequest) pRd.readObject();
          if (request==null) throw new IamCertificateException("invalid CSR (request)");
          CertificationRequestInfo info = request.getCertificationRequestInfo();
@@ -109,7 +110,7 @@ public final class IamCertificateHelper {
                X509Extensions extensions = X509Extensions.getInstance(attr.getAttrValues().getObjectAt(0)); 
     
                // get the subAltName extension
-               DERObjectIdentifier sanoid = new DERObjectIdentifier(X509Extensions.SubjectAlternativeName.getId());
+               ASN1ObjectIdentifier sanoid = new ASN1ObjectIdentifier(X509Extensions.SubjectAlternativeName.getId());
                X509Extension  xext = extensions.getExtension(sanoid);
                if (xext!=null) {
                   log.debug("processing altname extensions");
@@ -155,8 +156,9 @@ public final class IamCertificateHelper {
 
       try {
          // log.debug("parse certt: " + cert.pemCert);
-         PEMReader  pRd = new PEMReader(new StringReader(cert.pemCert));
-         X509Certificate x509 = (X509Certificate)pRd.readObject();
+         PEMParser  pRd = new PEMParser(new StringReader(cert.pemCert));
+         X509CertificateHolder holder = (X509CertificateHolder)pRd.readObject();
+         X509Certificate x509 = new JcaX509CertificateConverter().getCertificate(holder);
 
          if (x509==null) {
             log.info("bad cert");
