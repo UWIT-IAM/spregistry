@@ -37,7 +37,7 @@
                 #if ($rpHistory)
                 #foreach ( $item in $rpHistory )
                     <li><ul>
-                        <li><h4>Metadata history entry ${velocityCount}</h4></li>
+                        <li><h4>Metadata history entry ${foreach.count}</h4></li>
                         <li>Date and Time of change: ${item.effectiveDate}</li>
                         <li>Change made by: ${item.updatedBy}</li>
                     #foreach ($change in ${item.changes})
