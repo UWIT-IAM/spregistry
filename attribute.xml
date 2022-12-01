@@ -42,16 +42,17 @@
  <Attribute id="uwStudentID" description="UW Student ID"  authorizingGroup="u_weblogin_admins"  type="attribute" /> 
  <Attribute id="uwStudentSystemKey" description="UW Student System Key"  authorizingGroup="u_weblogin_admins"  type="attribute" /> 
  <!--following attributes hidden except from admins or on attribute pages of SPs that receive them-->
+ <Attribute id="alt1_surname" description="surname (released as LastName)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="alt1_givenName" description="givenName (released as GivenName)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="alt1_email" description="email (released as EmailAddress)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="awsrole" description="AWS Account ID and roles (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="awssession" description="AWS Session Duration (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="awsname" description="AWS Role Session Name (eppn) (for Amazon Web Services)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="nsc_pid" description="Student ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="nsc_opeid" description="UW's ID (for National Student Clearinghouse)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
+ <Attribute id="nschub_pid" description="Student ID (for NSC MyHub)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="slack_email" description="Slack email (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="slack_user" description="Slack user (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="slack_fname" description="Slack first name (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="slack_lname" description="Slack last name (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
-
-
-
 </Attributes>
