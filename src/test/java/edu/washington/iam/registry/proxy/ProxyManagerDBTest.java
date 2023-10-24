@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("/test-db-context.xml")
+@ContextConfiguration("classpath:test-db-context.xml")
 public class ProxyManagerDBTest {
     /* Integration tests commented out to placate CI */
     @Autowired

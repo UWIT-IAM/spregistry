@@ -1,7 +1,7 @@
 drop table if exists proxy;
 
 CREATE TABLE proxy (
-    id integer NOT NULL AUTO_INCREMENT,
+    id SERIAL NOT NULL,
     uuid uuid NOT NULL,
     entity_id text,
     end_time timestamp NULL,
@@ -48,7 +48,7 @@ CREATE TABLE filter (
     start_time timestamp DEFAULT now(),
     end_time timestamp NULL,
     updated_by text,
-    id integer NOT NULL AUTO_INCREMENT,
+    id SERIAL NOT NULL,
     status INTEGER
 );
 
@@ -80,7 +80,7 @@ insert into metadata_group (id, header_xml, footer_xml, status, update_time, edi
 
 drop table if exists metadata;
 CREATE TABLE metadata (
-    id integer NOT NULL AUTO_INCREMENT,
+    id SERIAL NOT NULL,
     uuid uuid NOT NULL,
     entity_id character varying(128) NOT NULL,
     xml text,
@@ -101,7 +101,7 @@ ALTER TABLE metadata
 
 drop table if exists access_control;
 CREATE TABLE access_control (
-id integer NOT NULL AUTO_INCREMENT,
+id SERIAL NOT NULL,
 uuid uuid NOT NULL,
 entity_id text NOT NULL,
 end_time timestamp NULL,
@@ -116,5 +116,3 @@ conditional_link varchar
 
 alter table access_control
     ADD PRIMARY KEY (id);
-
-

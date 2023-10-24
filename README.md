@@ -11,35 +11,31 @@ The application is quite specific to resources at the University, such as a DNS 
 
 Create spreg.properties.dev and spreg.properties.prod  from spreg.properties.tmpl
 
-```
-
-```
 ## Dependencies
 
 See README.dependencies for information on a special step needed to prepare dependencies for the build.
 
-```
 ## Build
 
+```
 $> mvn clean compile package
 ```
 
-```
 ## Install
 
+```
 $> cd ansible
 
-see the README for configuration steps
+# see the README for configuration steps
 
 $> ./install.sh -h (target)
 ```
 
-```
 ## IdP install
 
+```
 $> cd idp-tools
 
 see the README for configuration steps
 $> ./install.sh -h (target)
 ```
-

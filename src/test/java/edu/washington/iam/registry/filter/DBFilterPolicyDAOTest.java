@@ -96,6 +96,7 @@ public class DBFilterPolicyDAOTest {
         // get it again to test that update check works
         afps = dao.getFilterPolicies(filterPolicyGroup);
         Assert.assertEquals(fakeEntityIds.size(), afps.size());
+
         NamedParameterJdbcTemplate namedTemplate = new NamedParameterJdbcTemplate(template);
         namedTemplate.update("delete from filter where entity_id in (:entityIds)",
                 new MapSqlParameterSource().addValue("entityIds", fakeEntityIds));
@@ -359,6 +360,9 @@ public class DBFilterPolicyDAOTest {
                             "values (?, ?, ?, ?, ?, now())",
                     genUUID(), groupId, entityId, fakeRelyingPartyXml(entityId), null);
         }
+
+        // All tests expect filter to be empty at start.
+        template.update("delete from filter");
     }
 
     private void teardownRPs(List<String> entityIds){
