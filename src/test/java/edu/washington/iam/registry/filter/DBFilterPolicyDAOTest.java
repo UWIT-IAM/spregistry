@@ -24,6 +24,13 @@ import java.util.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-db-context.xml")
 public class DBFilterPolicyDAOTest {
+    /**
+     * Amount of time for tests to sleep waiting for DB operations.
+     *
+     * Set as low as possible.
+     */
+    private static int SLEEP_DELAY_MS = 10;
+
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -201,7 +208,7 @@ public class DBFilterPolicyDAOTest {
         // check that there's nothing in there already
         Assert.assertEquals(0, qResults.size());
         Timestamp preUpdateTime = new Timestamp(new Date().getTime());
-        Thread.sleep(500);
+        Thread.sleep(SLEEP_DELAY_MS);
         attributeFilterPolicy.setUuid(genUUID());
         dao.createFilterPolicy(filterPolicyGroup, attributeFilterPolicy, remoteUser);
 
@@ -229,7 +236,7 @@ public class DBFilterPolicyDAOTest {
                 , Timestamp.class);
         Assert.assertEquals(0, qResults.size());
         Timestamp preUpdateTime = new Timestamp(new Date().getTime());
-        Thread.sleep(500);
+        Thread.sleep(SLEEP_DELAY_MS);
         dao.updateFilterPolicies(filterPolicyGroup, Arrays.asList(attributeFilterPolicy), remoteUser);
 
         qResults = template.queryForList("select start_time from filter where entity_id = ? and end_time is null"
@@ -256,7 +263,7 @@ public class DBFilterPolicyDAOTest {
         Assert.assertEquals(1, qResults.size());
         Timestamp preUpdateTime = qResults.get(0);
         //it's too fast!
-        Thread.sleep(500);
+        Thread.sleep(SLEEP_DELAY_MS);
         dao.updateFilterPolicy(filterPolicyGroup, attributeFilterPolicy, remoteUser);
 
         qResults = template.queryForList("select start_time from filter where entity_id = ? and end_time is null"
@@ -284,8 +291,7 @@ public class DBFilterPolicyDAOTest {
                 , new MapSqlParameterSource().addValue("ids", entityIds)
                 , Timestamp.class);
         Assert.assertEquals(2, qResults.size());
-        Timestamp preUpdateTime = new Timestamp(new Date().getTime());
-        Thread.sleep(500);
+        Thread.sleep(SLEEP_DELAY_MS);
 
         List<AttributeFilterPolicy> updatePolicies = new ArrayList<>();
         updatePolicies.add(fakeAttributeFilterPolicy(filterPolicyGroup, updateEntityId));
@@ -293,16 +299,13 @@ public class DBFilterPolicyDAOTest {
 
         dao.updateFilterPolicies(filterPolicyGroup, updatePolicies, remoteUser);
 
-        qResults = namedTemplate.queryForList("select start_time from filter where end_time is null and entity_id in (:ids)"
+        // The two updated policies should have later start_times than other one
+        qResults = namedTemplate.queryForList(
+          "select start_time from filter where end_time is null and entity_id in (:ids)" +
+          " and start_time > (select min(start_time) from filter where end_time is null)"
                 , new MapSqlParameterSource().addValue("ids", entityIds)
                 , Timestamp.class);
-        Assert.assertEquals(3, qResults.size());
-        int updateCount = 0;
-        for(Timestamp result : qResults){
-            if(result.after(preUpdateTime))
-                updateCount++;
-        }
-        Assert.assertEquals(2, updateCount);
+        Assert.assertEquals(2, qResults.size());
 
         //clean up
         namedTemplate.update("delete from filter where entity_id in (:ids)",
