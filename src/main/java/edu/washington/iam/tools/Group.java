@@ -15,26 +15,25 @@
  * ========================================================================
  */
 
-
 package edu.washington.iam.tools;
 
 import java.util.List;
 import java.util.Vector;
 
 public class Group {
-    public String name;
-    public List<String> members;
-    public long mtime;
+  public String name;
+  public List<String> members;
+  public long mtime;
 
-    public Group(String n) {
-        name = n;
-        members = new Vector();
-        mtime = 0;
-    }
+  public Group(String n) {
+    name = n;
+    members = new Vector();
+    mtime = 0;
+  }
 
-    // test membership
-    public boolean isMember(String user) {
-       for (int j=0;j<members.size();j++) if (members.get(j).equals(user)) return true;
-       return false;
-    }
+  // test membership
+  public boolean isMember(String user) {
+    for (int j = 0; j < members.size(); j++) if (members.get(j).equals(user)) return true;
+    return false;
+  }
 }

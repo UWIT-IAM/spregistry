@@ -21,12 +21,15 @@ public class IamCertificateException extends Exception {
   public IamCertificateException() {
     super();
   }
+
   public IamCertificateException(String msg) {
     super(msg);
   }
+
   public IamCertificateException(String msg, Throwable cause) {
     super(msg, cause);
   }
+
   public IamCertificateException(Throwable cause) {
     super(cause);
   }

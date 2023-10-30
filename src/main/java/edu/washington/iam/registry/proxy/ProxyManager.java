@@ -17,29 +17,23 @@
 
 package edu.washington.iam.registry.proxy;
 
+import edu.washington.iam.registry.exception.ProxyException;
 import java.io.Serializable;
 import java.util.List;
 
-import org.w3c.dom.Document;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
-import edu.washington.iam.registry.exception.ProxyException;
-import edu.washington.iam.registry.exception.NoPermissionException;
-
 public interface ProxyManager extends Serializable {
-   public List<Proxy> getProxys();
-   public Proxy getProxy(String entityId);
-   public int removeProxy(String rpid, String updatedBy) throws ProxyException;
-   public List<Proxy> getProxyHistory(String entityId) throws ProxyException;
-    ;
+  public List<Proxy> getProxys();
 
-    /**
-     *
-     * @param proxy Takes a validated proxy and stores it
-     */
-   public void updateProxy(Proxy proxy, String updatedBy) throws ProxyException;
+  public Proxy getProxy(String entityId);
 
+  public int removeProxy(String rpid, String updatedBy) throws ProxyException;
+
+  public List<Proxy> getProxyHistory(String entityId) throws ProxyException;
+  ;
+
+  /**
+   *
+   * @param proxy Takes a validated proxy and stores it
+   */
+  public void updateProxy(Proxy proxy, String updatedBy) throws ProxyException;
 }
