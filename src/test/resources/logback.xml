@@ -1,0 +1,30 @@
+<configuration>
+
+
+  <appender name="SP_LOGS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>target/test.log</File>
+
+         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- Unused during tests, files unlikely to roll over -->
+            <FileNamePattern>target/test-%d{yyyy-MM-dd}.log</FileNamePattern>
+         </rollingPolicy>
+
+       <layout class="ch.qos.logback.classic.PatternLayout">
+            <!-- General logging pattern -->
+            <Pattern>%date{HH:mm:ss.SSS} %level [%logger:%line] - %msg%n %ex{1}</Pattern>
+        </layout>
+
+  </appender>
+
+  <root>
+     <level value="ERROR" />
+     <appender-ref ref="SP_LOGS" />
+  </root>
+
+   <logger name="edu.washington">
+       <level value="INFO"/>
+   </logger>
+
+
+
+</configuration>
