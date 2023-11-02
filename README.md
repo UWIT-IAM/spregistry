@@ -6,6 +6,10 @@ Operation is 90% automatic.  The only manual intervention is release of attribut
 
 The application is quite specific to resources at the University, such as a DNS ownership API, that may not be available to other institutions.
 
+## Quick Links
+
+*   Prod endpoint: https://iam-tools.u.washington.edu/spreg/
+*   Test endpoint: https://iam-tools-test.u.washington.edu/spreg/
 
 ## Configure
 
