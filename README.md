@@ -6,6 +6,9 @@ Operation is 90% automatic.  The only manual intervention is release of attribut
 
 The application is quite specific to resources at the University, such as a DNS ownership API, that may not be available to other institutions.
 
+SLO: 90% availability. This is a developer-facing tool, and callers are usually willing to wait or
+email us if any issues come up.
+
 Links:
 
 *   Prod endpoint: https://iam-tools.u.washington.edu/spreg/
