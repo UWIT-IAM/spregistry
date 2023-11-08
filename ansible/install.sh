@@ -63,6 +63,8 @@ while getopts 'h?l:Hvdp:' opt; do
        ;;
     p) playbook=$OPTARG
        ;;
+    y) force=1
+       ;;
   esac
 done
 
@@ -73,6 +75,21 @@ target="$2"
 [[ "$target" == "eval" || "$target" == "prod" || "$target" == "targets" ]] || usage
 [[ "$target" != "targets" ]] || targets
 [[ -z $playbook ]] && playbook="install-${product}.yml"
+
+if [[ $target =~ "prod" && force -eq 0 ]]
+then
+   target=
+   read -p "Are you sure you want to push prod? [yN] " -r -n1
+   echo
+   if [[ $REPLY =~ ^[Yy]$ ]]
+   then
+      target="prod"
+   else
+      echo "Aborting"
+      exit 1
+   fi
+fi
+
 echo "Installing $playbook to $target"
 [[ -r $playbook ]] || {
   echo "Playbook $playbook not found!"
@@ -114,7 +131,7 @@ END
 }
 
 
-# run the installer 
+# run the installer
 
 vars=
 (( verb>0 )) && vars="$vars -v "
@@ -124,4 +141,3 @@ vars=
   vars="$vars -l $limit "
 }
 ansible-playbook ${playbook} $vars -i ./hosts  --extra-vars "target=${target}"
-
