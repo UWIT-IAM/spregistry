@@ -25,7 +25,7 @@
       mode: 0664
     notify:
       - restart tomcat
- 
+
   # configure tomcat startup properties
   # change restarts tomcat
   # - name: tomcat startup params
@@ -50,7 +50,7 @@
     notify: restart apache
 
   # copy the attributes data file
-  # until this is in the database 
+  # until this is in the database
   - name: copy attribute data
     copy: "src=../attribute.xml dest={{ spreg_root }}/attribute.xml group=iam-dev mode=664"
     notify: restart tomcat
@@ -75,8 +75,17 @@
   - name: copy xmlsectool
     synchronize: "src=../xmlsectool  dest={{ spreg_root }} "
 
-  # run any handlers 
+  # run any handlers
   - meta: flush_handlers
+
+    # Do a basic smoke test
+  - name: smoke test (fetch url)
+    uri:
+      url: https://iam-tools-test.u.washington.edu/spreg/
+      method: GET
+      return_content: true
+    register: this
+    failed_when: this is failed or "'Login with your UW NetID' not in this.content"
 
   # handlers mostly standard from iam-ansible
 
