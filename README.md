@@ -14,13 +14,13 @@ Links:
 *   Prod endpoint: https://iam-tools.u.washington.edu/spreg/
 *   Test endpoint: https://iam-tools-test.u.washington.edu/spreg/
 
+## Cloning
+
+This repo uses submodules for its dependencies, so to clone the repo use `git clone --recurse-submodules`. 
+
 ## Configure
 
 Create spreg.properties.dev and spreg.properties.prod  from spreg.properties.tmpl
-
-## Dependencies
-
-See README.dependencies for information on a special step needed to prepare dependencies for the build.
 
 ## Build
 
