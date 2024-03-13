@@ -21,12 +21,15 @@ public class AccessCtrlException extends Exception {
   public AccessCtrlException() {
     super();
   }
+
   public AccessCtrlException(String msg) {
     super(msg);
   }
+
   public AccessCtrlException(String msg, Throwable cause) {
     super(msg, cause);
   }
+
   public AccessCtrlException(Throwable cause) {
     super(cause);
   }

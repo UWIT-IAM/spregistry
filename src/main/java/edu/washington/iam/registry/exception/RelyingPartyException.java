@@ -21,12 +21,15 @@ public class RelyingPartyException extends Exception {
   public RelyingPartyException() {
     super();
   }
+
   public RelyingPartyException(String msg) {
     super(msg);
   }
+
   public RelyingPartyException(String msg, Throwable cause) {
     super(msg, cause);
   }
+
   public RelyingPartyException(Throwable cause) {
     super(cause);
   }

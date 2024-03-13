@@ -15,16 +15,11 @@
  * ========================================================================
  */
 
-
 package edu.washington.iam.tools;
-
-import java.util.List;
-import java.util.Vector;
 
 public interface GroupManager {
 
-    public Group getGroup(String name);
-    public void init();
+  public Group getGroup(String name);
 
+  public void init();
 }
-

@@ -21,12 +21,15 @@ public class AttributeException extends Exception {
   public AttributeException() {
     super();
   }
+
   public AttributeException(String msg) {
     super(msg);
   }
+
   public AttributeException(String msg, Throwable cause) {
     super(msg, cause);
   }
+
   public AttributeException(Throwable cause) {
     super(cause);
   }

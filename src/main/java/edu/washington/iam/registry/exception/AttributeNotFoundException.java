@@ -21,12 +21,15 @@ public class AttributeNotFoundException extends Exception {
   public AttributeNotFoundException() {
     super();
   }
+
   public AttributeNotFoundException(String msg) {
     super(msg);
   }
+
   public AttributeNotFoundException(String msg, Throwable cause) {
     super(msg, cause);
   }
+
   public AttributeNotFoundException(Throwable cause) {
     super(cause);
   }

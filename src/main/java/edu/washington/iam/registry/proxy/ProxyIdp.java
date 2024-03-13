@@ -18,90 +18,95 @@
 /*TODO mattjm 2017-11-13 this class can be deleted soon--no non-test JAVA code reaches it (some tests and javascript
 still do)*/
 
-
 package edu.washington.iam.registry.proxy;
 
-import java.io.Serializable;
-
-import java.util.List;
-import java.util.Vector;
-import java.util.Arrays;
+import edu.washington.iam.registry.exception.ProxyException;
+import edu.washington.iam.tools.XMLHelper;
 import java.io.BufferedWriter;
 import java.io.IOException;
-
-
+import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
 
-import edu.washington.iam.tools.XMLHelper;
+public class ProxyIdp implements Serializable {
 
-import edu.washington.iam.registry.exception.ProxyException;
+  private final Logger log = LoggerFactory.getLogger(getClass());
 
-public class ProxyIdp implements Serializable  {
+  private String idp;
+  private String clientId;
+  private String clientSecret;
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+  private String safePy(String in) {
+    return in.replaceAll("\"", "\\\"");
+  }
 
-    private String idp;
-    private String clientId;
-    private String clientSecret;
+  // TODO: Our new constructor doesn't check for 'invalid' characters. Sort out if these are really
+  // invalid
+  // check for any bad chars
+  private void isOK(String s) throws ProxyException {
+    if (s.indexOf('<') >= 0 || s.indexOf('>') >= 0 || s.indexOf('"') >= 0 || s.indexOf('\'') >= 0)
+      throw new ProxyException("invalid characters");
+  }
 
-    private String safePy(String in) {
-       return in.replaceAll("\"","\\\"");
-    }
+  // create from document element
+  public ProxyIdp() {}
 
-    // TODO: Our new constructor doesn't check for 'invalid' characters. Sort out if these are really invalid
-    // check for any bad chars
-    private void isOK(String s) throws ProxyException {
-       if (s.indexOf('<')>=0 || s.indexOf('>')>=0 || s.indexOf('"')>=0 || s.indexOf('\'')>=0 ) throw new ProxyException("invalid characters");
-    }
+  public ProxyIdp(Element ele) throws ProxyException {
 
-    // create from document element
-    public ProxyIdp(){}
-    public ProxyIdp (Element ele) throws ProxyException {
+    idp = ele.getAttribute("idp");
+    clientId = ele.getAttribute("clientId");
+    clientSecret = ele.getAttribute("clientSecret");
+    isOK(clientId);
+    isOK(clientSecret);
+    log.debug("create from doc: " + clientId);
+  }
 
-       idp = ele.getAttribute("idp");
-       clientId = ele.getAttribute("clientId");
-       clientSecret = ele.getAttribute("clientSecret");
-       isOK(clientId);
-       isOK(clientSecret);
-       log.debug("create from doc: " + clientId);
-    }
+  // write xml doc
+  public void writeXml(BufferedWriter xout) throws IOException {
+    xout.write(
+        "<ProxyIdp idp=\""
+            + XMLHelper.safeXml(idp)
+            + "\" clientId=\""
+            + XMLHelper.safeXml(clientId)
+            + "\" clientSecret=\""
+            + XMLHelper.safeXml(clientSecret)
+            + "\"/>\n");
+  }
 
-    // write xml doc
-    public void writeXml(BufferedWriter xout) throws IOException {
-        xout.write("<ProxyIdp idp=\"" + XMLHelper.safeXml(idp) 
-                   + "\" clientId=\"" + XMLHelper.safeXml(clientId) 
-                   + "\" clientSecret=\"" + XMLHelper.safeXml(clientSecret) + "\"/>\n");
-    }
+  // write py doc
+  public void writePy(BufferedWriter xout) throws IOException {
+    xout.write(
+        "\""
+            + idp
+            + "\": {\"key\": \""
+            + safePy(clientId)
+            + "\", \"secret\": \""
+            + safePy(clientSecret)
+            + "\"},\n");
+  }
 
-    // write py doc
-    public void writePy(BufferedWriter xout) throws IOException {
-       xout.write("\"" + idp + "\": {\"key\": \"" + safePy(clientId) + "\", \"secret\": \"" + safePy(clientSecret) + "\"},\n");
-    }
+  public void setIdp(String v) {
+    idp = v;
+  }
 
-    public void setIdp(String v) {
-       idp = v;
-    }
-    public String getIdp() {
-       return (idp);
-    }
-    public void setClientId(String v) {
-       clientId = v;
-    }
-    public String getClientId() {
-       return (clientId);
-    }
-    public void setClientSecret(String v) {
-       clientSecret = v;
-    }
-    public String getClientSecret() {
-       return (clientSecret);
-    }
+  public String getIdp() {
+    return (idp);
+  }
 
+  public void setClientId(String v) {
+    clientId = v;
+  }
+
+  public String getClientId() {
+    return (clientId);
+  }
+
+  public void setClientSecret(String v) {
+    clientSecret = v;
+  }
+
+  public String getClientSecret() {
+    return (clientSecret);
+  }
 }
-
