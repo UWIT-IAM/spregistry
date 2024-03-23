@@ -38,6 +38,12 @@
       <artifactId>postgresql</artifactId>
       <version>42.4.1</version>
     </dependency>
+    <dependency>
+      <groupId>com.mchange</groupId>
+      <artifactId>c3p0</artifactId>
+      <version>0.10.0</version>
+    </dependency>
+
     <!-- https://mvnrepository.com/artifact/org.javers/javers-core -->
     <dependency>
       <groupId>org.javers</groupId>
