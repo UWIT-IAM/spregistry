@@ -121,6 +121,14 @@
         <property name="url" value="jdbc:postgresql://${spreg.db.url}"/>
         <property name="username" value="${spreg.db.username}"/>
         <property name="password" value="${spreg.db.password}"/>
+        <property name="connectionProperties">
+            <props>
+                <prop key="sslrootcert">${spreg.db.sslrootcert}</prop>
+                <prop key="sslcert">${spreg.db.sslcert}</prop>
+                <prop key="sslkey">${spreg.db.sslkey}</prop>
+                <prop key="sslpassword">${spreg.db.sslpassword}</prop>
+            </props>
+        </property>
     </bean>
 
 </beans>
