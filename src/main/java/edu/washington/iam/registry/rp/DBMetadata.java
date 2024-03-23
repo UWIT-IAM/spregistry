@@ -54,14 +54,15 @@ public class DBMetadata implements MetadataDAO {
         try {
             rps = template.query(
                     "select * from metadata where group_id = ? and entity_id = ?" +
-                    "order by start_time ASC",
+                    " order by start_time ASC",
                     new Object[]{groupId, id},
                     new RelyingPartyMapper());
+            log.info("Got a response in getRelyingPartyHistoryById");
             return rps;
         }
         catch (Exception e){
-            String errorMsg = String.format("error getting rp: %s, rps size = %s", id, rps.size());
-            log.debug(errorMsg);
+            String errorMsg = String.format("error getting rp: %s, rps size = %s", id, (rps == null) ? 0 : rps.size());
+            log.error(errorMsg, e);
             throw new RelyingPartyException(errorMsg);
         }
 
@@ -79,8 +80,8 @@ public class DBMetadata implements MetadataDAO {
             return rps.get(0);
         }
         else {
-            String errorMsg = String.format("error getting rp: %s, rps size = %s", id, rps.size());
-            log.debug(errorMsg);
+            String errorMsg = String.format("error getting rp: %s, rps size = %s", id, (rps == null) ? 0 : rps.size());
+            log.error(errorMsg);
             throw new RelyingPartyException(errorMsg);
         }
     }
