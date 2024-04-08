@@ -115,12 +115,12 @@
         <property name="dataSource" ref="postgresDataSource" />
     </bean>
 
-    <bean id="postgresDataSource"
-          class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="org.postgresql.Driver"/>
-        <property name="url" value="jdbc:postgresql://${spreg.db.url}"/>
-        <property name="username" value="${spreg.db.username}"/>
+    <bean id="postgresDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="org.postgresql.Driver"/>
+        <property name="jdbcUrl" value="jdbc:postgresql://${spreg.db.host}/${spreg.db.name}?sslmode=verify-ca&amp;sslrootcert=${spreg.db.sslrootcert}&amp;sslcert=${spreg.db.sslcert}&amp;sslkey=${spreg.db.sslkey}"/>
+        <property name="user" value="${spreg.db.username}"/>
         <property name="password" value="${spreg.db.password}"/>
+        <property name="testConnectionOnCheckout" value="true"/>
     </bean>
 
 </beans>
