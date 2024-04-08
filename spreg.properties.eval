@@ -3,12 +3,17 @@
 # spreg will look for this file first in the spreg directory
 # if that is undefined or not found this installed copy will be used
 #
-spreg.version=2.6.2
-spreg.versionDate=2021-02-23
+spreg.version=2.6.4
+spreg.versionDate=2024-04-10
 spreg.root=/data/local/spreg
 
 # database parameters
-spreg.db.url=iamdbeval20.s.uw.edu/spregdev
+spreg.db.host=35.199.173.195
+spreg.db.name=spregistry_eval
+spreg.db.username=app_spregistry_eval
+spreg.db.sslrootcert=/data/local/spreg/prodDb/iamtools-prod-server-ca.pem
+spreg.db.sslcert=/data/local/spreg/prodDb/iamtools-prod-client-cert.pem
+spreg.db.sslkey=/data/local/spreg/prodDb/iamtools-prod-client-key.pem.raw
 
 # web service parameters
 spreg.gws.baseUrl=https://dev.groups.uw.edu/group_sws/v2
