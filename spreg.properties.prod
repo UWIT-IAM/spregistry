@@ -8,12 +8,12 @@ spreg.versionDate=2024-04-10
 spreg.root=/data/local/spreg
 
 # database parameters
-spreg.db.host=35.199.173.195
+spreg.db.host=34.168.149.69
 spreg.db.name=spregistry
 spreg.db.username=app_spregistry_prod
-spreg.db.sslrootcert=/data/local/spreg/prodDb/iamtools-prod-server-ca.pem
-spreg.db.sslcert=/data/local/spreg/prodDb/iamtools-prod-client-cert.pem
-spreg.db.sslkey=/data/local/spreg/prodDb/iamtools-prod-client-key.pem.raw
+spreg.db.sslrootcert=/data/local/spreg/iamtools-server-ca.pem
+spreg.db.sslcert=/data/local/spreg/iamtools-client-cert.pem
+spreg.db.sslkey=/data/local/spreg/iamtools-client-key.pem.raw
 
 # web service parameters
 spreg.gws.baseUrl=https://groups.uw.edu/group_sws/v2
