@@ -15,92 +15,78 @@
  * ========================================================================
  */
 
-
 package edu.washington.iam.registry.proxy;
 
 import java.io.Serializable;
-
-import java.util.List;
-import java.util.Vector;
-import java.util.Arrays;
-import java.io.BufferedWriter;
-import java.io.IOException;
-
-
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
+public class Proxy implements Serializable {
 
-import edu.washington.iam.tools.XMLHelper;
+  private final Logger log = LoggerFactory.getLogger(getClass());
 
-import edu.washington.iam.registry.exception.ProxyException;
-import java.util.UUID;
+  private UUID uuid;
+  private String entityId;
+  private boolean socialActive;
+  private String updatedBy;
+  private String startTime;
+  private String endTime;
 
-public class Proxy implements Serializable  {
+  private String safePy(String in) {
+    return in.replaceAll("\"", "\\\"");
+  }
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+  public Proxy() {}
 
-    private UUID uuid;
-    private String entityId;
-    private boolean socialActive;
-    private String updatedBy;
-    private String startTime;
-    private String endTime;
+  // 2017-11-13 mattjm constructor taking XML document as argument removed (and deleted
+  // XMLProxyManager)
 
+  public void setEntityId(String entityId) {
+    this.entityId = entityId;
+  }
 
-    private String safePy(String in) {
-       return in.replaceAll("\"","\\\"");
-    }
+  public String getEntityId() {
+    return (entityId);
+  }
 
-    public Proxy (){}
+  public void setSocialActive(boolean socialActive) {
+    this.socialActive = socialActive;
+  }
 
-    //2017-11-13 mattjm constructor taking XML document as argument removed (and deleted XMLProxyManager)
+  public boolean getSocialActive() {
+    return (socialActive);
+  }
 
+  public void setUuid(UUID uuid) {
+    this.uuid = uuid;
+  }
 
-    public void setEntityId(String entityId) {
-        this.entityId = entityId;
-    }
-    public String getEntityId() {
-        return (entityId);
-    }
+  public UUID getUuid() {
+    return uuid;
+  }
 
-    public void setSocialActive(boolean socialActive) {
-        this.socialActive = socialActive;
-    }
-    public boolean getSocialActive() { return (socialActive); }
+  public String getUpdatedBy() {
+    return updatedBy;
+  }
 
-    public void setUuid(UUID uuid) {
-        this.uuid = uuid;
-    }
-    public UUID getUuid() { return uuid; }
+  public void setUpdatedBy(String updatedBy) {
+    this.updatedBy = updatedBy;
+  }
 
-    public String getUpdatedBy() {
-        return updatedBy;
-    }
+  public String getStartTime() {
+    return startTime;
+  }
 
-    public void setUpdatedBy(String updatedBy) {
-        this.updatedBy = updatedBy;
-    }
+  public void setStartTime(String startTime) {
+    this.startTime = startTime;
+  }
 
-    public String getStartTime() {
-        return startTime;
-    }
+  public String getEndTime() {
+    return endTime;
+  }
 
-    public void setStartTime(String startTime) {
-        this.startTime = startTime;
-    }
-
-    public String getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(String endTime) {
-        this.endTime = endTime;
-    }
-
+  public void setEndTime(String endTime) {
+    this.endTime = endTime;
+  }
 }
-

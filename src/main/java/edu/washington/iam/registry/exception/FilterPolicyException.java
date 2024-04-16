@@ -21,12 +21,15 @@ public class FilterPolicyException extends Exception {
   public FilterPolicyException() {
     super();
   }
+
   public FilterPolicyException(String msg) {
     super(msg);
   }
+
   public FilterPolicyException(String msg, Throwable cause) {
     super(msg, cause);
   }
+
   public FilterPolicyException(Throwable cause) {
     super(cause);
   }

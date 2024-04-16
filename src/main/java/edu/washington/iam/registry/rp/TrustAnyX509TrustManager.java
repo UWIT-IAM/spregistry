@@ -15,7 +15,6 @@
  * ========================================================================
  */
 
-
 package edu.washington.iam.registry.rp;
 
 import java.security.cert.X509Certificate;
@@ -23,14 +22,11 @@ import javax.net.ssl.X509TrustManager;
 
 public class TrustAnyX509TrustManager implements X509TrustManager {
 
-    public void checkClientTrusted(X509Certificate[] certs, String auth) {
-    }
+  public void checkClientTrusted(X509Certificate[] certs, String auth) {}
 
-    public void checkServerTrusted(X509Certificate[] certs, String auth) {
-    }
+  public void checkServerTrusted(X509Certificate[] certs, String auth) {}
 
-    public X509Certificate[] getAcceptedIssuers() {
-        return (new X509Certificate[] {});
-    }
+  public X509Certificate[] getAcceptedIssuers() {
+    return (new X509Certificate[] {});
+  }
 }
-

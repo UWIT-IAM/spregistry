@@ -21,12 +21,15 @@ public class ProxyException extends Exception {
   public ProxyException() {
     super();
   }
+
   public ProxyException(String msg) {
     super(msg);
   }
+
   public ProxyException(String msg, Throwable cause) {
     super(msg, cause);
   }
+
   public ProxyException(Throwable cause) {
     super(cause);
   }
