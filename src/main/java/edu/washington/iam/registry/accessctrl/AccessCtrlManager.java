@@ -18,16 +18,15 @@
 package edu.washington.iam.registry.accessctrl;
 
 import edu.washington.iam.registry.exception.AccessCtrlException;
-import edu.washington.iam.registry.exception.ProxyException;
-import edu.washington.iam.registry.proxy.Proxy;
-
 import java.io.Serializable;
 import java.util.List;
 
 public interface AccessCtrlManager extends Serializable {
-   public AccessCtrl getAccessCtrl(String entityId);
-   public void updateAccessCtrl(AccessCtrl accessCtrl, String updatedBy) throws AccessCtrlException;
-   public List<AccessCtrl> getAccessCtrlHistory(String entityId) throws AccessCtrlException;
-   public int removeAccessCtrl(String entityId, String updatedBy) throws AccessCtrlException;
+  public AccessCtrl getAccessCtrl(String entityId);
 
+  public void updateAccessCtrl(AccessCtrl accessCtrl, String updatedBy) throws AccessCtrlException;
+
+  public List<AccessCtrl> getAccessCtrlHistory(String entityId) throws AccessCtrlException;
+
+  public int removeAccessCtrl(String entityId, String updatedBy) throws AccessCtrlException;
 }

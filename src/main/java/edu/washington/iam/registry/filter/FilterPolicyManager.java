@@ -17,36 +17,32 @@
 
 package edu.washington.iam.registry.filter;
 
+import edu.washington.iam.registry.exception.FilterPolicyException;
+import edu.washington.iam.registry.rp.RelyingParty;
 import java.io.Serializable;
 import java.util.List;
-
 import org.w3c.dom.Document;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-
-import edu.washington.iam.registry.rp.RelyingParty;
-import edu.washington.iam.registry.exception.FilterPolicyException;
-import edu.washington.iam.registry.exception.AttributeNotFoundException;
-import edu.washington.iam.registry.exception.NoPermissionException;
 
 public interface FilterPolicyManager extends Serializable {
 
-   public List<Attribute> getAttributes();
-   public List<Attribute> getAttributes(RelyingParty rp);
-   public List<AttributeFilterPolicy> getFilterPolicies(RelyingParty rp);
-    public AttributeFilterPolicy getFilterPolicy(FilterPolicyGroup filterPolicyGroup, String rpid);
+  public List<Attribute> getAttributes();
 
-    public int removeRelyingParty(String entityId, String pgid, String updatedBy)
-           throws FilterPolicyException;
+  public List<Attribute> getAttributes(RelyingParty rp);
 
-    public int removeEditableRelyingParty(String entityId, String updatedBy)
-            throws FilterPolicyException;
+  public List<AttributeFilterPolicy> getFilterPolicies(RelyingParty rp);
 
-    public List<FilterPolicyGroup> getFilterPolicyGroups();
-    public void updateRelyingParty(String pgid, Document doc, String updatedBy)
-             throws FilterPolicyException;
-    public FilterPolicyGroup getPolicyGroup(String pgid);
+  public AttributeFilterPolicy getFilterPolicy(FilterPolicyGroup filterPolicyGroup, String rpid);
 
+  public int removeRelyingParty(String entityId, String pgid, String updatedBy)
+      throws FilterPolicyException;
+
+  public int removeEditableRelyingParty(String entityId, String updatedBy)
+      throws FilterPolicyException;
+
+  public List<FilterPolicyGroup> getFilterPolicyGroups();
+
+  public void updateRelyingParty(String pgid, Document doc, String updatedBy)
+      throws FilterPolicyException;
+
+  public FilterPolicyGroup getPolicyGroup(String pgid);
 }

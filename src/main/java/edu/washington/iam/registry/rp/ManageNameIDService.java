@@ -15,66 +15,57 @@
  * ========================================================================
  */
 
-
 package edu.washington.iam.registry.rp;
 
-import java.io.Serializable;
+import edu.washington.iam.registry.exception.RelyingPartyException;
 import java.io.BufferedWriter;
 import java.io.IOException;
-
-import java.lang.NumberFormatException;
-import java.util.List;
-import java.util.Vector;
-
+import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
-import edu.washington.iam.registry.exception.RelyingPartyException;
+public class ManageNameIDService implements Serializable {
 
-public class ManageNameIDService implements Serializable  {
+  private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+  private String binding;
+  private String location;
+  private String index;
 
-    private String binding;
-    private String location;
-    private String index;
-      
-    // create from document element 
-    public ManageNameIDService (Element ele) throws RelyingPartyException {
-       binding = ele.getAttribute("Binding");
-       location = ele.getAttribute("Location");
-       if (binding==null || location==null) throw new RelyingPartyException("missing NIM attributes");
-       if (!binding.startsWith("urn:")) throw new RelyingPartyException("invalid NIM binding");
-       if (!location.startsWith("http")) throw new RelyingPartyException("invalid NIM location");
-    }
+  // create from document element
+  public ManageNameIDService(Element ele) throws RelyingPartyException {
+    binding = ele.getAttribute("Binding");
+    location = ele.getAttribute("Location");
+    if (binding == null || location == null)
+      throw new RelyingPartyException("missing NIM attributes");
+    if (!binding.startsWith("urn:")) throw new RelyingPartyException("invalid NIM binding");
+    if (!location.startsWith("http")) throw new RelyingPartyException("invalid NIM location");
+  }
 
-    public ManageNameIDService (String b, String l) {
-       binding = b;
-       location = l;
-    }
+  public ManageNameIDService(String b, String l) {
+    binding = b;
+    location = l;
+  }
 
-    public void writeXml(BufferedWriter xout) throws IOException {
-       xout.write("   <ManageNameIDService Binding=\"" + binding + "\" Location=\"" + location + "\"/>\n");
-    }
+  public void writeXml(BufferedWriter xout) throws IOException {
+    xout.write(
+        "   <ManageNameIDService Binding=\"" + binding + "\" Location=\"" + location + "\"/>\n");
+  }
 
-    public void setBinding(String v) {
-       binding = v;
-    }
-    public String getBinding() {
-       return (binding);
-    }
+  public void setBinding(String v) {
+    binding = v;
+  }
 
-    public void setLocation(String v) {
-       location = v;
-    }
-    public String getLocation() {
-       return (location);
-    }
+  public String getBinding() {
+    return (binding);
+  }
 
+  public void setLocation(String v) {
+    location = v;
+  }
+
+  public String getLocation() {
+    return (location);
+  }
 }
-

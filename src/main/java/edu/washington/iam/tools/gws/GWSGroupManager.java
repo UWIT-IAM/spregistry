@@ -15,73 +15,60 @@
  * ========================================================================
  */
 
-
 package edu.washington.iam.tools.gws;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-
-import edu.washington.iam.tools.DNSVerifier;
-import edu.washington.iam.tools.DNSVerifyException;
-import edu.washington.iam.tools.WebClient;
-import edu.washington.iam.tools.XMLHelper;
 import edu.washington.iam.tools.Group;
 import edu.washington.iam.tools.GroupManager;
-
+import edu.washington.iam.tools.WebClient;
+import edu.washington.iam.tools.XMLHelper;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Element;
 
 public class GWSGroupManager implements GroupManager {
 
-   private final Logger log =   LoggerFactory.getLogger(getClass());
+  private final Logger log = LoggerFactory.getLogger(getClass());
 
-   private WebClient webClient;
-   private String gwsBase = null;
+  private WebClient webClient;
+  private String gwsBase = null;
 
-   /**
-    * Get a group
-    *
-    */
+  /**
+   * Get a group
+   *
+   */
+  public Group getGroup(String name) {
 
-    public Group getGroup(String name) {
+    Group group = new Group(name);
+    log.debug("looking for gws group: " + name);
 
-       Group group = new Group(name);
-       log.debug("looking for gws group: " + name);
+    try {
+      String url = gwsBase + name + "/effective_member";
+      Element resp = webClient.doRestGet(url);
+      Element grpE = XMLHelper.getElementByName(resp, "group");
+      Element mbrsE = XMLHelper.getElementByName(grpE, "members");
+      List<Element> mbrs = XMLHelper.getElementsByName(mbrsE, "member");
+      log.debug("get  " + mbrs.size() + " group members");
+      for (int i = 0; i < mbrs.size(); i++) {
+        String mbr = mbrs.get(i).getTextContent();
+        log.debug("mbr: " + mbr);
+        group.members.add(mbr);
+      }
 
-       try {
-          String url = gwsBase + name + "/effective_member";
-          Element resp = webClient.doRestGet(url);
-          Element grpE = XMLHelper.getElementByName(resp, "group");
-          Element mbrsE = XMLHelper.getElementByName(grpE, "members");
-          List<Element> mbrs = XMLHelper.getElementsByName(mbrsE, "member");
-          log.debug("get  " + mbrs.size() + " group members");
-          for (int i=0; i<mbrs.size(); i++) {
-             String mbr = mbrs.get(i).getTextContent();
-             log.debug("mbr: " + mbr);
-             group.members.add(mbr);
-          }
-
-       } catch (Exception e) {
-          log.debug("gws lookup error: " + e);
-          return null;
-       }
-       return group;
+    } catch (Exception e) {
+      log.debug("gws lookup error: " + e);
+      return null;
     }
+    return group;
+  }
 
-    public void setWebClient(WebClient v) {
-       webClient = v;
-    }
+  public void setWebClient(WebClient v) {
+    webClient = v;
+  }
 
-    public void setGwsBase(String v) {
-       gwsBase = v;
-    }
+  public void setGwsBase(String v) {
+    gwsBase = v;
+  }
 
-
-    public void init() {
-    }
+  public void init() {}
 }
- 

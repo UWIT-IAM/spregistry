@@ -15,88 +15,82 @@
  * ========================================================================
  */
 
-
 package edu.washington.iam.registry.filter;
 
-import java.io.Serializable;
+import edu.washington.iam.registry.exception.FilterPolicyException;
+import edu.washington.iam.tools.XMLHelper;
 import java.io.BufferedWriter;
 import java.io.IOException;
-
-import java.util.List;
-import java.util.Vector;
-import java.util.Arrays;
-
+import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
 
-import edu.washington.iam.tools.XMLHelper;
+public class Rule implements Serializable {
 
-import edu.washington.iam.registry.exception.FilterPolicyException;
+  private final Logger log = LoggerFactory.getLogger(getClass());
 
-public class Rule implements Serializable  {
+  private String id;
+  private String type;
+  private String value;
 
-    private final Logger log = LoggerFactory.getLogger(getClass());
+  // create from document element
+  public Rule(Element ele) throws FilterPolicyException {
 
-    private String id;
-    private String type;
-    private String value;
+    type = ele.getAttribute("xsi:type");
+    if (type == null) throw new FilterPolicyException("No type attribute");
+    // log.debug("create from doc: " + type);
 
-    // create from document element
-    public Rule (Element ele) throws FilterPolicyException {
-
-       type = ele.getAttribute("xsi:type");
-       if (type==null) throw new FilterPolicyException("No type attribute");
-       // log.debug("create from doc: " + type);
-
-       if (type.equals("basic:AttributeValueString")) {
-          value = ele.getAttribute("value");
-       } else if (type.equals("basic:AttributeValueRegex")) {
-          value = ele.getAttribute("regex");
-       } else {
-          throw new FilterPolicyException("unknown rule requirement rules not editable");
-       }
+    if (type.equals("basic:AttributeValueString")) {
+      value = ele.getAttribute("value");
+    } else if (type.equals("basic:AttributeValueRegex")) {
+      value = ele.getAttribute("regex");
+    } else {
+      throw new FilterPolicyException("unknown rule requirement rules not editable");
     }
+  }
 
-    // create from strings
-    public Rule (String t, String v) throws FilterPolicyException {
-       type = t;
-       if (type==null) throw new FilterPolicyException("No type attribute");
-       value = v;
-    }
+  // create from strings
+  public Rule(String t, String v) throws FilterPolicyException {
+    type = t;
+    if (type == null) throw new FilterPolicyException("No type attribute");
+    value = v;
+  }
 
-    public void writeXml(BufferedWriter xout) throws IOException {
-       String valueStr = "value";
-       if (type.equals("basic:AttributeValueRegex")) valueStr = "regex";
-       xout.write("     <basic:Rule xsi:type=\"" + type + "\" " + valueStr + "=\"" 
-                  + XMLHelper.safeXml(value) + "\"/>\n");
-    }
+  public void writeXml(BufferedWriter xout) throws IOException {
+    String valueStr = "value";
+    if (type.equals("basic:AttributeValueRegex")) valueStr = "regex";
+    xout.write(
+        "     <basic:Rule xsi:type=\""
+            + type
+            + "\" "
+            + valueStr
+            + "=\""
+            + XMLHelper.safeXml(value)
+            + "\"/>\n");
+  }
 
-    public void setType(String v) {
-       type = v;
-    }
-    public String getType() {
-       return (type);
-    }
+  public void setType(String v) {
+    type = v;
+  }
 
-    public void setValue(String v) {
-       value = v;
-    }
-    public String getValue() {
-       return (value);
-    }
+  public String getType() {
+    return (type);
+  }
 
-    public boolean isString() {
-       return type.equals("basic:AttributeValueString");
-    }
-    public boolean isRegex() {
-       return type.equals("basic:AttributeValueRegex");
-    }
+  public void setValue(String v) {
+    value = v;
+  }
+
+  public String getValue() {
+    return (value);
+  }
+
+  public boolean isString() {
+    return type.equals("basic:AttributeValueString");
+  }
+
+  public boolean isRegex() {
+    return type.equals("basic:AttributeValueRegex");
+  }
 }
-
