@@ -11,13 +11,13 @@ email us if any issues come up.
 
 Links:
 
-*   Prod endpoint: https://iam-tools.u.washington.edu/spreg/
-*   Test endpoint: https://iam-tools-test.u.washington.edu/spreg/
+* Prod endpoint: <https://iam-tools.u.washington.edu/spreg/>
+* Test endpoint: <https://iam-tools-test.u.washington.edu/spreg/>
 
 ## Cloning
 
 Use `git clone --recurse-submodules` to clone this repo, because it uses
-[submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules). 
+[submodules](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
 ## Configure
 
@@ -25,25 +25,26 @@ Create spreg.properties.dev and spreg.properties.prod  from spreg.properties.tmp
 
 ## Build
 
-```
-$> mvn clean compile package
+```bash
+mvn clean compile package
 ```
 
 ## Install
 
-```
-$> cd ansible
+Get access to SSH into the `iamcert` user with an SSH key, then run:
 
+```bash
+cd ansible
 # see the README for configuration steps
-
-$> ./install.sh -h (target)
+./install.sh -h (target)
 ```
 
 ## IdP install
 
-```
-$> cd idp-tools
+Get access to SSH into the `iamcert` user with an SSH key, then run:
 
-see the README for configuration steps
-$> ./install.sh -h (target)
+```bash
+cd idp-tools
+# see the README for configuration steps
+./install.sh -h (target)
 ```
