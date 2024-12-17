@@ -17,7 +17,8 @@
  <Attribute id="eppnNameId" description="&lt;i&gt;uwnetid&lt;/i&gt;@washington.edu"  authorizingGroup="u_weblogin_admins"  type="nameid" />
  <Attribute id="ePTID" description="The persistent id as a SAML1 targeted id"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="givenName" description="Based on preferred name parts (first, middle) if available, else PDS: uwPersonRegisteredFirstMiddle" authorizingGroup="u_weblogin_admins"  type="attribute" />
- <Attribute id="gws_groups" description="GWS group effective memberships"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="gws_groups" description="GWS group effective memberships with scope prefix"  authorizingGroup="u_weblogin_admins"  type="attribute" />
+ <Attribute id="gws_groups_unscoped" description="GWS group effective memberships without scope prefix"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="homedept" description="Home department (PDS: uwEmployeeHomeDepartment)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
  <Attribute id="idNameId" description="&lt;i&gt;uwnetid&lt;/i&gt;"  authorizingGroup="u_weblogin_admins"  type="nameid" />
  <Attribute id="mailstop" description="Mail stop (PDS: uwEmployeeMailstop)"  authorizingGroup="u_weblogin_admins"  type="attribute" />
@@ -59,5 +60,4 @@
  <Attribute id="slack_user" description="Slack user (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="slack_fname" description="Slack first name (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
  <Attribute id="slack_lname" description="Slack last name (for Slack only)"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
- <Attribute id="gws_groups_unscoped" description="GWS group effective memberships without scope prefix"  authorizingGroup="u_weblogin_admins"  type="attribute" reqHidden="true" />
 </Attributes>
