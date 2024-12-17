@@ -93,6 +93,7 @@ Check the attributes you need. Uncheck those you no longer want.
   #set ( $chk = '' )
   #set ( $dis = '' )
   #set ( $grps='')
+  #set ( $grps_unscoped='')
   #set ( $reqhide = '')
   #if (${attr.attributeFilterPolicy})
     #set ($ar = $attr.attributeRule )
@@ -109,6 +110,17 @@ Check the attributes you need. Uncheck those you no longer want.
            #end
         #end ## vrules
     #end  ## if
+    #if ($attr.id == 'gws_groups_unscoped')   
+        #set ( $nl='')
+        #foreach ( $r in ${ar.valueRules} )
+           #foreach ( $v in ${r.rules} )
+             #set ($grps_unscoped = $grps_unscoped + $nl + ${v.getValue()} )
+#set ($nl='
+')
+           #end
+        #end ## vrules
+    #end  ## if
+
   #else
       #if ($attr.reqHidden) #set ($reqhide = $hide) #end
   #end ## afp
@@ -117,6 +129,9 @@ Check the attributes you need. Uncheck those you no longer want.
          $chk $dis value="${attr.id}"
        #if ($attr.id == 'gws_groups')
         onChange="local_check_gws()"
+       #end
+       #if ($attr.id == 'gws_groups_unscoped')
+        onChange="local_check_gws_unscoped()"
        #end
          class="attr_req_chk" aria-label="${attr.id}"/>
       </div>
@@ -131,6 +146,15 @@ Check the attributes you need. Uncheck those you no longer want.
              <textarea style="font-size:smaller" data-dojo-type="dijit.form.Textarea"
                   id="attr_req_gws_text" rows="2" cols="40" aria-label="which groups, required">#X($grps)</textarea>
              <textarea data-dojo-type="dijit.form.Textarea" id="attr_req_gws_text_in" $hide >#X($grps)</textarea>
+         </div>
+       #end
+       #if ($attr.id == 'gws_groups_unscoped')
+         <br>
+         <div id="attr_req_gws_unscoped_text_tr" #if ($grps_unscoped!='')#else $hide #end>
+           <label for="attr_req_gws_unscoped_text">Which groups?$rstar</label><br>
+             <textarea style="font-size:smaller" data-dojo-type="dijit.form.Textarea"
+                  id="attr_req_gws_unscoped_text" rows="2" cols="40" aria-label="which groups, required">#X($grps_unscoped)</textarea>
+             <textarea data-dojo-type="dijit.form.Textarea" id="attr_req_gws_unscoped_text_in" $hide >#X($grps_unscoped)</textarea>
          </div>
        #end
       </div>
