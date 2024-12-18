@@ -926,6 +926,13 @@ function local_check_gws() {
    else iam_hideShow(['attr_req_gws_text_tr'],[]);
 }
 
+function local_check_gws_unscoped() {
+   ck = dijitRegistry.byId('attr_req_gws_groups_unscoped').get('checked');
+   console.log('ck='+ck);
+   if (ck) iam_hideShow([],['attr_req_gws_unscoped_text_tr']);
+   else iam_hideShow(['attr_req_gws_unscoped_text_tr'],[]);
+}
+
 var _okmsg;
 
 function _postReqAttrs() {
@@ -938,7 +945,9 @@ function attr_requestAttrs(entityId) {
 
    _okmsg = '';
    var gws_text = '';
+   var gws_unscoped_text = '';
    var grps = dijitRegistry.byId('attr_req_gws_text').get('value').trim();
+   var grps_unscoped = dijitRegistry.byId('attr_req_gws_unscoped_text').get('value').trim();
    alist = dojoQuery('.attr_req_chk');
    xml = '<Attributes>';
    for (a=0; a<alist.length; a++) {
@@ -959,8 +968,19 @@ function attr_requestAttrs(entityId) {
            }
            xml += '<Add id="' + aid + '"/>';
            _okmsg += '<li>Adding: ' + aid + '</li>';
-           gws_text = '\n\nGroups requested:\n' + grps;
+           gws_text = '\n\nGroups (scoped) requested:\n' + grps;
            if (grpsin!='') gws_text += '\nPrevious groups:\n' + grpsin;
+        } else if (aid=='gws_groups_unscoped') {
+           var grps_unscoped_in = dijitRegistry.byId('attr_req_gws_unscoped_text_in').get('value').trim();
+           if (grps_unscoped==grps_unscoped_in) continue;
+           if (grps_unscoped=='') {
+              iam_showTheNotice('You must identify the groups you need.');
+              return;
+           }
+           xml += '<Add id="' + aid + '"/>';
+           _okmsg += '<li>Adding: ' + aid + '</li>';
+           gws_unscoped_text = '\n\nGroups (unscoped) requested:\n' + grps_unscoped;
+           if (grps_unscoped_in!='') gws_unscoped_text += '\nPrevious groups:\n' + grps_unscoped_in;
         } else if (inn.value=='') {
            xml += '<Add id="' + aid + '"/>';
            _okmsg += '<li>Adding: ' + aid + '</li>';
@@ -982,7 +1002,7 @@ function attr_requestAttrs(entityId) {
       iam_showTheNotice('You must explain why you need the attributes');
       return;
    }
-   xml = xml + '<Comments>' + iam_makeOkXml(msg+gws_text) + '</Comments>';
+   xml = xml + '<Comments>' + iam_makeOkXml(msg+gws_text+gws_unscoped_text) + '</Comments>';
    xml = xml + '</Attributes>';
    action = v_root + v_vers + '/rp/attrReq?id=' + entityId + '&xsrf=' + v_xsrf + adminQS;
    iam_putRequest(action, null, xml, null, _postReqAttrs);
