@@ -42,9 +42,9 @@ import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.slf4j.Logger;
@@ -197,9 +197,9 @@ public class RelyingPartyController {
     log.info("RP new session =============== path=" + request.getPathInfo());
 
     session.isMobile = false;
-    Device currentDevice = DeviceUtils.getCurrentDevice(request);
-    if (currentDevice != null) session.isMobile = currentDevice.isMobile();
-    log.debug("mobile? " + session.isMobile);
+    //Device currentDevice = DeviceUtils.getCurrentDevice(request);
+    //if (currentDevice != null) session.isMobile = currentDevice.isMobile();
+    //log.debug("mobile? " + session.isMobile);
 
     // see if logged in (browser has login cookie; cert user has cert)
 
@@ -276,7 +276,7 @@ public class RelyingPartyController {
       // maybe is cert client
       // use the CN portion of the DN as the client userid
       X509Certificate[] certs =
-          (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
+          (X509Certificate[]) request.getAttribute("jakarta.servlet.request.X509Certificate");
       if (certs != null) {
         session.viewType = "xml";
         session.isBrowser = false;
@@ -578,8 +578,8 @@ public class RelyingPartyController {
      * return emptyMV("configuration error");
      **/
     String view = "browser";
-    Device currentDevice = DeviceUtils.getCurrentDevice(request);
-    if (currentDevice != null && currentDevice.isMobile()) view = "mobile";
+    //Device currentDevice = DeviceUtils.getCurrentDevice(request);
+    //if (currentDevice != null && currentDevice.isMobile()) view = "mobile";
     ModelAndView mv = new ModelAndView(view + "/chooser");
     mv.addObject("root", browserRootPath);
     mv.addObject("vers", request.getServletPath());
