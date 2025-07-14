@@ -1,0 +1,78 @@
+# Action to build and deploy the SP Registry Webapp container.
+# Place this file in .github/workflows/
+
+name: Deploy spreg
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        type: string
+        required: true
+        default: 'spring6'
+        description: >
+          (branch_name)
+          Name of the branch to build, defaults to main.
+      uw_version:
+        type: string
+        required: true
+        default: 'XXXX_uw_version_xxxx'
+        description: >
+          (uw_version)
+          UW version number for this build.
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    concurrency:
+      group: ${{ github.repository }}
+      cancel-in-progress: false
+    env:
+      registry_name: us-docker.pkg.dev/uwit-mci-iam/containers
+      app_name: spreg
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout repository
+        id: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch_name }}
+
+      - name: Setup Java 17 with Maven
+        id: maven-build
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          java-package: 'jdk'
+          check-latest: false
+      - run: mvn clean package
+
+      - name: Authenticate with Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.MCI_GCLOUD_AUTH_JSON }}' 
+          token_format: 'access_token'
+
+      - name: Authenticate to Artifact Registry
+        run: |
+          echo '${{ steps.auth.outputs.access_token }}' | docker login -u oauth2accesstoken --password-stdin https://us-docker.pkg.dev
+
+      - name: Build and push Docker image
+        id: docker-build
+        run: |
+          repo_commit=$(git show --abbrev-commit | head -1 | awk '{print $2}')
+          tag_name=${{ github.event.inputs.uw_version }}-${{ github.event.inputs.branch_name }}-${repo_commit}
+          target=${{ env.registry_name }}/${{ env.app_name }}:${tag_name}
+          echo "target_image=${target}" >> $GITHUB_ENV
+          docker buildx build --no-cache -f Dockerfile.spregistry --tag ${target}
+          docker push ${target}
+
+      - name: Output Image Summary
+        run: |
+          echo "### ✅ Docker Image Pushed" >> $GITHUB_STEP_SUMMARY
+          echo "**Image Tag:** \`${{ env.target_image }}\`" >> $GITHUB_STEP_SUMMARY
