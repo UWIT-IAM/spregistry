@@ -13,10 +13,10 @@ on:
         description: >
           (branch_name)
           Name of the branch to build, defaults to main.
-      version:
+      uw_version:
         type: string
         required: true
-        default: 'XXXX_uw_version_xxxx' (Verify with Andrew)
+        default: 'XXXX_uw_version_xxxx'
         description: >
           (uw_version)
           UW version number for this build.
