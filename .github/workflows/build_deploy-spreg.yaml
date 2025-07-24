@@ -69,7 +69,7 @@ jobs:
           tag_name=${{ github.event.inputs.uw_version }}-${{ github.event.inputs.branch_name }}-${repo_commit}
           target=${{ env.registry_name }}/${{ env.app_name }}:${tag_name}
           echo "target_image=${target}" >> $GITHUB_ENV
-          docker buildx build --no-cache -f Dockerfile.spregistry --tag ${target} .
+          docker buildx build --no-cache -f Dockerfile.spreg --tag ${target} .
           docker push ${target}
 
       - name: Output Image Summary
