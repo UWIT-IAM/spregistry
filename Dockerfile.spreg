@@ -1,22 +1,18 @@
-# Use the latest Tomcat 10 base image with Java 17 and auto patch updates
 FROM tomcat:10-jdk17-temurin
 
-# Set environment variables (optional)
-ENV CATALINA_HOME /usr/local/tomcat
+ENV CATALINA_HOME=/usr/local/tomcat
 
-# Remove default ROOT app to avoid conflicts
+# Remove default ROOT app
 RUN rm -rf $CATALINA_HOME/webapps/ROOT
 
-# Copy your WAR file into the webapps directory as ROOT.war
-# This will deploy it at http://host:8080/
+# Deploy your WAR
 COPY target/spreg.war $CATALINA_HOME/webapps/ROOT.war
 
-# (Optional) Copy configuration files into the container
-# E.g., logging.properties, server.xml, etc.
-COPY config/ $CATALINA_HOME/conf/
-
-# Expose the default Tomcat port
+# EXPOSE Tomcat port
 EXPOSE 8080
+
+# Run as non-root user (optional, recommended)
+USER 1000
 
 # Start Tomcat
 CMD ["catalina.sh", "run"]
