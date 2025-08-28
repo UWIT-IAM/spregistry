@@ -1,3 +1,15 @@
+Update August 2025:
+The files in this directory are not current and actually are not part of SPRegistry.
+These scripts run on the IdP servers to pull data from SPRegistry and perform other
+actions. The current versions of these scripts are checked into the UWIT-IAM/uw-idp-custom
+GitHUb repostory in the local-bin directory.
+
+A version of one of these scripts, refresh_ic.sh, does run daily on the SPRegistry servers
+to get the latest version of the InCommon metadata. The production version of that script
+is checked in to the scripts/ directory of this repository.
+
+----
+
 These are tools run on the IdP hosts to keep metadata and filters up-to-date with
 the SP Registry database.  The tools are specific to our IdP configurations, so should be
 considered examples -- not directly installable components.
