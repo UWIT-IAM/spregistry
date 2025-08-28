@@ -19,7 +19,7 @@ else
 fi
 
 /usr/sbin/sendmail -f "uw_iam_sm_auth_core-team" -t  << END
-To: jim7@uw.edu, markiel@uw.edu
+To: markiel@uw.edu
 Subject: InCommon metadata daily refresh
 Reply-To: uw_iam_sm_auth_core-team@uw.edu
 
