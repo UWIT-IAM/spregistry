@@ -7,7 +7,7 @@ echo "SPReg InCommon metadata refresh starting" > $log
 date >> $log
 
 cd /data/local/spreg/metadata
-curl --cacert /usr/local/ssl/certs/cacerts.cert -o metadata.tmp http://md.incommon.org/InCommon/InCommon-metadata.xml
+curl --cacert /usr/local/ssl/certs/cacerts.cert -o metadata.tmp https://mdq.incommon.org/entities
 # if metadata.tmp is less than 50000 blocks in size, it probably didn't download correctly
 (( $? == 0 && `ls -s metadata.tmp | awk '{print $1}'` > 50000)) && mv -f metadata.tmp InCommon-metadata.xml
 # if it's still there, its size was <= 50000 blocks
