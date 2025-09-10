@@ -1,0 +1,25 @@
+<Server port="8005" shutdown="SHUTDOWN">
+
+    <Service name="tomcat">
+
+        <Connector port="8009" address="127.0.0.1" tomcatAuthentication="false"
+                   packetSize="32768" secretRequired="false"
+                   enableLookups="false" protocol="AJP/1.3" />
+
+        <Engine name="Catalina" defaultHost="localhost" jvm-route="iam-tools" >
+            <Host name="localhost" appBase="/data/tomcat/webapps"
+                  unpackWARs="false" workDir="/data/tomcat/work"
+                  autoDeploy="true"
+                  xmlValidation="false" xmlNamespaceAware="false">>
+
+                <Valve className="org.apache.catalina.valves.AccessLogValve"
+                       directory="/data/tomcat/logs" pattern="combined"
+                       prefix="tomcat_access_log" fileDateFormat=".yyyyMMdd"
+                       resolveHosts="false"/>
+		<Valve className="org.apache.catalina.valves.rewrite.RewriteValve" />
+            </Host>
+        </Engine>
+
+    </Service>
+
+</Server>
