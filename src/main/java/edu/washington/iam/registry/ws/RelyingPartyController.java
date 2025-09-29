@@ -196,7 +196,7 @@ public class RelyingPartyController {
 
     log.info("RP new session =============== path=" + request.getPathInfo());
 
-    session.isMobile = false;
+    session.isMobile = isMobileDevice(request);
     //Device currentDevice = DeviceUtils.getCurrentDevice(request);
     //if (currentDevice != null) session.isMobile = currentDevice.isMobile();
     //log.debug("mobile? " + session.isMobile);
@@ -1822,4 +1822,16 @@ public class RelyingPartyController {
     log.info("Star view");
     return homePage(request, response);
   }
+
+  private boolean isMobileDevice(HttpServletRequest request) {
+	    String userAgent = request.getHeader("User-Agent");
+	    if (userAgent == null) return false;
+
+	    // Very simple check for common mobile indicators
+	    String ua = userAgent.toLowerCase();
+	    return ua.contains("android") ||
+	           ua.contains("iphone") ||
+	           ua.contains("ipad") ||
+	           ua.contains("mobi");  // covers many devices
+	}
 }

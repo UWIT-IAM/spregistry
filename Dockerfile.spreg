@@ -8,10 +8,25 @@ RUN rm -rf $CATALINA_HOME/webapps/ROOT
 # Deploy your WAR
 COPY target/spreg.war $CATALINA_HOME/webapps/ROOT.war
 
+# Create required directories for secrets, app data, and xmlsectool
+RUN mkdir -p /data/secrets \
+    /data/local/spreg \
+    /data/local/spreg/metadata \
+    /data/local/spreg/xmlsectool && \
+    chown -R 1000:0 /data && \
+    chmod -R 750 /data
+
+# Copy xmlsectool directory from repo into container
+COPY xmlsectool /data/local/spreg/xmlsectool
+
+# Fix permissions so non-root user can run it
+RUN chown -R 1000:0 /data/local/spreg/xmlsectool && \
+    chmod -R 750 /data/local/spreg/xmlsectool
+
 # EXPOSE Tomcat port
 EXPOSE 8080
 
-# Run as non-root user (optional, recommended)
+# Run as non-root user
 USER 1000
 
 # Start Tomcat

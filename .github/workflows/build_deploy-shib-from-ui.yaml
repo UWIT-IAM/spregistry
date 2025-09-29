@@ -1,0 +1,65 @@
+# Action to build and deploy our modified Shibboleth container in front of Grouper.
+# This will go into .github/workflows in a new GitHub repository.
+name: Deploy Grouper-Shib
+
+on:
+    workflow_dispatch:
+      inputs:
+        branch_name:
+          type: string
+          required: true
+          default: 'main'
+          description: >
+            (branch_name)
+            Name of the branch to build, defaults to main.
+        shib_version:
+          type: string
+          required: true
+          description: >
+            (shib_version)
+            Shibboleth SP version used as the base for this build.
+        uw_version:
+          type: string
+          required: true
+          description: >
+            (uw_version)
+            UW version number for this build.
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    concurrency:
+      group: ${{ github.repository }}
+      cancel-in-progress: false
+    env:
+      registry_name: us-docker.pkg.dev/uwit-mci-iam/containers
+      app_name: grouper-shib
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout repository
+        id: checkout
+        uses: 'actions/checkout@v4'
+        with:
+          ref: ${{ github.event.inputs.branch_name }}
+
+      - name: Auth to Google Cloud
+        id: auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.MCI_GCLOUD_AUTH_JSON }}'
+          token_format: 'access_token'
+
+      - name: Auth to Google Artifact Registry
+        run: |-
+          echo '${{ steps.auth.outputs.access_token }}' | docker login -u oauth2accesstoken --password-stdin https://us-docker.pkg.dev
+
+      - name: Build and push image
+        run: |
+          repo_commit=$(git show --abbrev-commit | head -1 | awk '{print $2}')
+          tag_name=${{ github.event.inputs.uw_version }}-${{ github.event.inputs.branch_name }}-${repo_commit}-${{ github.event.inputs.shib_version }}
+          target=${{ env.registry_name }}/${{ env.app_name }}:${tag_name}
+          docker buildx build --no-cache -f Dockerfile.shib --tag ${target} --build-arg SHIB_SP_VERSION=${{ github.event.inputs.shib_version }} .
+          docker push ${target}

@@ -1,0 +1,7 @@
+# The caller must provide the version of Shibboleth SP to use.
+# See https://spaces.at.internet2.edu/display/ITAP/InCommon+Trusted+Access+Platform+Release
+ARG SHIB_SP_VERSION
+
+FROM i2incommon/shibboleth_sp:${SHIB_SP_VERSION}
+
+COPY shib/slashRoot /
